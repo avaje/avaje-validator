@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Pojo {
+public class Customer {
   boolean active;
   String name = "";
   LocalDate activeDate;
@@ -14,7 +14,7 @@ public class Pojo {
 
   public List<Contact> contacts = new ArrayList<>();
 
-  public Pojo(boolean active, String name, LocalDate activeDate) {
+  public Customer(boolean active, String name, LocalDate activeDate) {
     this.active = active;
     this.name = name;
     this.activeDate = activeDate;

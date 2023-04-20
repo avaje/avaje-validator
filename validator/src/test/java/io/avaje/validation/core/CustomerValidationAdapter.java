@@ -11,13 +11,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 
-public final class AuthProvider$PojoAdapter implements ValidationAdapter<Pojo> {
+public final class CustomerValidationAdapter implements ValidationAdapter<Customer> {
 
   private final AnnotationValidationAdapter<Boolean> activeAdapter;
   private final AnnotationValidationAdapter<String> nameAdapter;
   private final AnnotationValidationAdapter<Object> activeDateAdapter;
 
-  public AuthProvider$PojoAdapter(Validator validator) {
+  public CustomerValidationAdapter(Validator validator) {
     this.activeAdapter =
         validator.<Boolean>annotationAdapter(AssertTrue.class).init(Map.of("message", "not true"));
 
@@ -33,7 +33,7 @@ public final class AuthProvider$PojoAdapter implements ValidationAdapter<Pojo> {
   }
 
   @Override
-  public void validate(Pojo value, ValidationRequest request) {
+  public void validate(Customer value, ValidationRequest request) {
     activeAdapter.validate(value.active, request);
     nameAdapter.validate(value.name, request);
     activeDateAdapter.validate(value.activeDate, request);
