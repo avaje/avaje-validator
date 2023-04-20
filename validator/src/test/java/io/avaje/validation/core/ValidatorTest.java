@@ -1,12 +1,17 @@
 package io.avaje.validation.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDate;
+import java.util.Set;
 
+import io.avaje.validation.ConstraintViolation;
+import io.avaje.validation.ConstraintViolationException;
+import org.assertj.core.api.AbstractObjectAssert;
+import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import io.avaje.validation.Validator;
+
+import static org.assertj.core.api.Assertions.*;
 
 class ValidatorTest {
 
@@ -15,30 +20,37 @@ class ValidatorTest {
 
   @Test
   void testAllFail() {
-
-    final var result = validator.validate(new Pojo(false, null, LocalDate.now().plusDays(3)));
-    assertThat(result).hasSize(3);
+    try {
+      validator.validate(new Pojo(false, null, LocalDate.now().plusDays(3)));
+      fail("");
+    } catch (ConstraintViolationException e) {
+      Set<ConstraintViolation> violations = e.violations();
+      assertThat(violations).hasSize(3);
+    }
   }
 
   @Test
   void testStrDate() {
-
-    final var result = validator.validate(new Pojo(true, "  ", LocalDate.now().plusDays(3)));
-    assertThat(result).hasSize(2);
+    try {
+      validator.validate(new Pojo(true, "  ", LocalDate.now().plusDays(3)));
+    } catch (ConstraintViolationException e) {
+      Set<ConstraintViolation> violations = e.violations();
+      assertThat(violations).hasSize(2);
+    }
   }
 
   @Test
   void testStrOnly() {
-
-    final var result = validator.validate(new Pojo(true, "  ", LocalDate.now().minusDays(3)));
-    assertThat(result).hasSize(1);
+    try {
+    validator.validate(new Pojo(true, "  ", LocalDate.now().minusDays(3)));
+    } catch (ConstraintViolationException e) {
+      Set<ConstraintViolation> violations = e.violations();
+      assertThat(violations).hasSize(1);
+    }
   }
 
   @Test
   void testSuccess() {
-    final var result =
-        validator.validate(new Pojo(true, " success ", LocalDate.now().minusDays(3)));
-
-    assertThat(result).isEmpty();
+    validator.validate(new Pojo(true, " success ", LocalDate.now().minusDays(3)));
   }
 }

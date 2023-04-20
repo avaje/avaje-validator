@@ -1,12 +1,11 @@
 package io.avaje.validation.core;
 
 import java.util.Map;
-import java.util.Set;
 
 import io.avaje.validation.AnnotationValidationAdapter;
-import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ValidationAdapter;
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,29 +13,29 @@ import jakarta.validation.constraints.Past;
 
 public final class AuthProvider$PojoAdapter implements ValidationAdapter<Pojo> {
 
-  private final AnnotationValidationAdapter<Boolean> booleanAdapter;
-  private final AnnotationValidationAdapter<String> strAdapter;
-  private final AnnotationValidationAdapter<Object> dateAdapter;
+  private final AnnotationValidationAdapter<Boolean> activeAdapter;
+  private final AnnotationValidationAdapter<String> nameAdapter;
+  private final AnnotationValidationAdapter<Object> activeDateAdapter;
 
-  public AuthProvider$PojoAdapter(Validator jsonb) {
-    this.booleanAdapter =
-        jsonb.<Boolean>annotationAdapter(AssertTrue.class).init(Map.of("message", "not true"));
+  public AuthProvider$PojoAdapter(Validator validator) {
+    this.activeAdapter =
+        validator.<Boolean>annotationAdapter(AssertTrue.class).init(Map.of("message", "not true"));
 
-    this.strAdapter =
-        jsonb
+    this.nameAdapter =
+        validator
             .<String>annotationAdapter(NotNull.class)
             .init(Map.of("message", "null"))
             .andThen(
-                jsonb.<String>annotationAdapter(NotBlank.class).init(Map.of("message", "empty")));
+                validator.<String>annotationAdapter(NotBlank.class).init(Map.of("message", "empty")));
 
-    this.dateAdapter =
-        jsonb.annotationAdapter(Past.class).init(Map.of("message", "not in the past"));
+    this.activeDateAdapter =
+        validator.annotationAdapter(Past.class).init(Map.of("message", "not in the past"));
   }
 
   @Override
-  public void validate(Pojo value, Set<ConstraintViolation> violations) {
-    booleanAdapter.validate(value.bool, violations);
-    strAdapter.validate(value.str, violations);
-    dateAdapter.validate(value.date, violations);
+  public void validate(Pojo value, ValidationRequest request) {
+    activeAdapter.validate(value.active, request);
+    nameAdapter.validate(value.name, request);
+    activeDateAdapter.validate(value.activeDate, request);
   }
 }

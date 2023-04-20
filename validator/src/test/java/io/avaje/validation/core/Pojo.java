@@ -5,23 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pojo {
-  boolean bool = false;
-  String str = "";
-  LocalDate date;
-
-  public String firstName;
-  public String lastName;
-  public LocalDate activeDate;
+  boolean active;
+  String name = "";
+  LocalDate activeDate;
 
   public Address billingAddress;
   public Address shippingAddress;
 
   public List<Contact> contacts = new ArrayList<>();
 
-  public Pojo(boolean bool, String str, LocalDate date) {
-    this.bool = bool;
-    this.str = str;
-    this.date = date;
+  public Pojo(boolean active, String name, LocalDate activeDate) {
+    this.active = active;
+    this.name = name;
+    this.activeDate = activeDate;
   }
 
   public static class Address {
