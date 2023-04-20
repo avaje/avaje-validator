@@ -28,6 +28,7 @@
 
   <modules>
     <module>validator</module>
+      <module>validator-constraints</module>
   </modules>
 
   <profiles>
