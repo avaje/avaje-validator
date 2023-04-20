@@ -16,5 +16,5 @@ public interface ScalarValidator<T> {
 
     boolean min(ValidationRequest ctx, T value, T minValue);
     boolean max(ValidationRequest ctx, T value, T maxValue);
-    boolean range(ValidationRequest ctx, T value, T minValue, int maxValue);
+    boolean range(ValidationRequest ctx, T value, T minValue, T maxValue);
 }

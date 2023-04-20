@@ -23,6 +23,7 @@ import io.avaje.validation.ValidationAdapter;
 import io.avaje.validation.ValidationType;
 import io.avaje.validation.Validator;
 import io.avaje.validation.ValidatorComponent;
+import io.avaje.validation.adapter.ValidationRequest;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator {
@@ -45,21 +46,21 @@ final class DValidator implements Validator {
 
   @Override
   @SuppressWarnings("unchecked")
-  public Set<ConstraintViolation> validate(Object any) {
+  public void validate(Object any) {
     final var type = (ValidationType<Object>) type(any.getClass());
-    return type.validate(any);
+    type.validate(any);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public Set<ConstraintViolation> validate(Collection<Object> any) {
-    final var violations = new HashSet<ConstraintViolation>();
-    for (final Object object : any) {
-      final var type = (ValidationType<Object>) type(object.getClass());
-      type.validate(any, violations);
-    }
-
-    return violations;
+  public void validateAll(Collection<Object> any) {
+//    final var req = new ValidationRequest();
+//    for (final Object object : any) {
+//      final var type = (ValidationType<Object>) type(object.getClass());
+//      type.validate(object, req);
+//    }
+//
+//    req.throwWithViolations();
   }
 
   private <T> ValidationType<T> type(Class<T> cls) {

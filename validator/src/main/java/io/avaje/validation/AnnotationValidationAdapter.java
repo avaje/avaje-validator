@@ -5,11 +5,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import io.avaje.validation.adapter.ValidationRequest;
 import io.avaje.validation.core.MessageInterpolator;
 
 public interface AnnotationValidationAdapter<T> {
 
-  void validate(T type, Set<ConstraintViolation> violations);
+  void validate(T type, ValidationRequest req);
 
   default AnnotationValidationAdapter<T> init(Map<String, String> annotationValueMap) {
     return this;

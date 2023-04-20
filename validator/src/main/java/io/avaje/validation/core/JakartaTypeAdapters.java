@@ -23,6 +23,7 @@ import java.util.Set;
 
 import io.avaje.validation.AnnotationValidationAdapter;
 import io.avaje.validation.ConstraintViolation;
+import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
@@ -55,15 +56,15 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public void validate(TemporalAccessor temporalAccessor, Set<ConstraintViolation> violations) {
+    public void validate(TemporalAccessor temporalAccessor, ValidationRequest req) {
 
       if (temporalAccessor == null) {
-        violations.add(new ConstraintViolation(message));
+        req.addViolation(message);
         return;
       }
       if (temporalAccessor instanceof LocalDate) {
         if (LocalDate.from(temporalAccessor).isAfter(LocalDate.now())) {
-          violations.add(new ConstraintViolation(message));
+          req.addViolation(message);
         }
       } else if (temporalAccessor instanceof LocalTime) {
         final LocalTime localTime = (LocalTime) temporalAccessor;
@@ -90,9 +91,9 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public void validate(String str, Set<ConstraintViolation> violations) {
+    public void validate(String str, ValidationRequest req) {
       if (str == null || str.isBlank()) {
-        violations.add(new ConstraintViolation(message));
+        req.addViolation(message);
       }
     }
   }
@@ -113,9 +114,9 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public void validate(Boolean type, Set<ConstraintViolation> violations) {
+    public void validate(Boolean type, ValidationRequest req) {
       if (Boolean.FALSE.equals(type)) {
-        violations.add(new ConstraintViolation(message));
+        req.addViolation(message);
       }
     }
   }

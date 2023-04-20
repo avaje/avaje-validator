@@ -1,12 +1,11 @@
 package io.avaje.validation.core;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 import io.avaje.validation.ValidationAdapter;
 import io.avaje.validation.ValidationType;
-import io.avaje.validation.ConstraintViolation;
+import io.avaje.validation.adapter.ValidationRequest;
 
 class DValidationType<T> implements ValidationType<T> {
 
@@ -21,15 +20,18 @@ class DValidationType<T> implements ValidationType<T> {
   }
 
   @Override
-  public Set<ConstraintViolation> validate(T object) {
-    final Set<ConstraintViolation> violations = new HashSet<>();
-    validate(object, violations);
-    violations.remove(null);
-    return violations;
+  public void validate(T object) {
+    final var req = new ValidationRequest();
+    adapter.validate(object, req);
+    req.throwWithViolations();
   }
 
   @Override
-  public void validate(T object, Set<ConstraintViolation> violations) {
-    adapter.validate(object, violations);
+  public void validateAll(Collection<T> collection) {
+    final var req = new ValidationRequest();
+    for (T element : collection) {
+      adapter.validate(element, req);
+    }
+    req.throwWithViolations();
   }
 }

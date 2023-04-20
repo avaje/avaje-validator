@@ -23,9 +23,9 @@ public interface Validator {
     return DefaultBootstrap.builder();
   }
 
-  Set<ConstraintViolation> validate(Object any);
+  void validate(Object any) throws ConstraintViolationException;
 
-  Set<ConstraintViolation> validate(Collection<Object> any);
+  void validateAll(Collection<Object> any) throws ConstraintViolationException;
 
   <T> ValidationAdapter<T> adapter(Class<T> cls);
 

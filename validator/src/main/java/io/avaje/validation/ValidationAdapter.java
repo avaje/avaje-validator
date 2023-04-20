@@ -15,12 +15,14 @@
  */
 package io.avaje.validation;
 
+import io.avaje.validation.adapter.ValidationRequest;
+
 import java.lang.reflect.Type;
 import java.util.Set;
 
 public interface ValidationAdapter<T> {
 
-  void validate(T value, Set<ConstraintViolation> violations);
+  void validate(T value, ValidationRequest req);
 
   /** Factory for creating a ValidationAdapter. */
   public interface Factory {
