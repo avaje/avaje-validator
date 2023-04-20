@@ -53,17 +53,6 @@ final class DValidator implements Validator {
     type.validate(any);
   }
 
-  @Override
-  @SuppressWarnings("unchecked")
-  public void validateAll(Collection<Object> any) {
-//    final var req = new ValidationRequest();
-//    for (final Object object : any) {
-//      final var type = (ValidationType<Object>) type(object.getClass());
-//      type.validate(object, req);
-//    }
-//
-//    req.throwWithViolations();
-  }
 
   private <T> ValidationType<T> type(Class<T> cls) {
     return typeWithCache(cls);

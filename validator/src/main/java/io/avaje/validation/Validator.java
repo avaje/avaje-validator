@@ -1,11 +1,5 @@
 package io.avaje.validation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.ServiceLoader;
-
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
@@ -13,10 +7,14 @@ import io.avaje.validation.adapter.ValidatorComponent;
 import io.avaje.validation.core.DefaultBootstrap;
 import io.avaje.validation.spi.Bootstrap;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.ServiceLoader;
+
 public interface Validator {
 
-
-  //void validate(Object any) throws ConstraintViolationException;
+  void validate(Object any) throws ConstraintViolationException;
 
   static Builder builder() {
     final Iterator<Bootstrap> bootstrapService = ServiceLoader.load(Bootstrap.class).iterator();
@@ -26,9 +24,6 @@ public interface Validator {
     return DefaultBootstrap.builder();
   }
 
-  void validate(Object any) throws ConstraintViolationException;
-
-  void validateAll(Collection<Object> any) throws ConstraintViolationException;
 
   <T> ValidationAdapter<T> adapter(Class<T> cls);
 
