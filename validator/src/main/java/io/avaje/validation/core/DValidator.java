@@ -16,12 +16,13 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.avaje.validation.AnnotationValidationAdapter;
+import io.avaje.validation.AnnotationValidationAdapter.Factory;
+import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ValidationAdapter;
 import io.avaje.validation.ValidationType;
 import io.avaje.validation.Validator;
 import io.avaje.validation.ValidatorComponent;
-import io.avaje.validation.core.AnnotationValidationAdapter.Factory;
-import io.avaje.validation.ConstraintViolation;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator {
@@ -83,11 +84,9 @@ final class DValidator implements Validator {
   }
 
   @Override
-  public <T> AnnotationValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls) {
-    final AnnotationValidationAdapter<T> result = builder.annotationAdapter(cls);
-    if (result != null) {
-      return result;
-    }
+  public <T> AnnotationValidationAdapter<T> annotationAdapter(
+      Class<? extends Annotation> cls) {
+
     return builder.annotationAdapter(cls);
   }
 

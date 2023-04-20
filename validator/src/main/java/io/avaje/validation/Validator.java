@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import io.avaje.validation.core.AnnotationValidationAdapter;
 import io.avaje.validation.core.DefaultBootstrap;
 import io.avaje.validation.spi.Bootstrap;
 

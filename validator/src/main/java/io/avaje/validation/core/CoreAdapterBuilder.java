@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.avaje.validation.AnnotationValidationAdapter;
 import io.avaje.validation.ValidationAdapter;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
