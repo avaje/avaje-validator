@@ -1,5 +1,6 @@
 package io.avaje.validation.core;
 
+import java.util.List;
 import java.util.Map;
 
 import io.avaje.validation.adapter.CoreValidation;
@@ -20,6 +21,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
   private final CoreValidation core;
 
   private final ValidationAdapter<Address> addressValidator;
+  private final ValidationAdapter<Contact> contactValidator;
 
   public CustomerValidationAdapter(Validator validator) {
     this.core = validator.core();
@@ -37,22 +39,28 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
         validator.annotationAdapter(Past.class).init(Map.of("message", "not in the past"));
 
     addressValidator = validator.adapter(Address.class);
+    contactValidator = validator.adapter(Contact.class);
   }
 
   @Override
-  public boolean validate(Customer value, ValidationRequest request) {
-    activeAdapter.validate(value.active, request);
-    nameAdapter.validate(value.name, request);
-    activeDateAdapter.validate(value.activeDate, request);
+  public boolean validate(Customer value, ValidationRequest request, String propertyName) {
+    activeAdapter.validate(value.active, request, "active");
+    nameAdapter.validate(value.name, request, "name");
+    activeDateAdapter.validate(value.activeDate, request, "activeDate");
 
     final var _billingAddress = value.billingAddress;
-    if (core.required(request, _billingAddress)) { // required / NotNull
-      addressValidator.validate(_billingAddress, request);
+    if (core.required(_billingAddress, request, "billingAddress")) { // required / NotNull
+      addressValidator.validate(_billingAddress, request, "billingAddress");
     }
 
     final var _shippingAddress = value.shippingAddress;
     if (_shippingAddress != null) { // is nullable
-      addressValidator.validate(_shippingAddress, request);
+      addressValidator.validate(_shippingAddress, request, "shippingAddress");
+    }
+
+    final var _contacts = value.contacts;
+    if (core.collection(request, "contacts", _contacts, 0, 2)) {
+      contactValidator.validateAll(_contacts, request, "contacts");
     }
     return true;
   }

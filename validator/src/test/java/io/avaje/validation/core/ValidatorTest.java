@@ -1,6 +1,7 @@
 package io.avaje.validation.core;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import io.avaje.validation.ConstraintViolation;
@@ -17,6 +18,7 @@ class ValidatorTest {
       Validator.builder()
               .add(Customer.class, CustomerValidationAdapter::new)
               .add(Address.class, AddressValidationAdapter::new)
+              .add(Contact.class, ContactValidationAdapter::new)
               .build();
 
   @Test
@@ -53,11 +55,18 @@ class ValidatorTest {
   @Test
   void testRecurse() {
     try {
-      validator.validate(new Customer(false, null, LocalDate.now().plusDays(3), null));
+      var cust = new Customer(false, null, LocalDate.now().plusDays(3));
+      cust.billingAddress.line1 = null;
+
+      var c0 = new Contact();
+      var c1 = new Contact(null, "hi");
+      c1.address = new Address();
+      cust.contacts = List.of(c0, c1 , c0, c0);
+      validator.validate(cust);
       fail("");
     } catch (ConstraintViolationException e) {
       Set<ConstraintViolation> violations = e.violations();
-      assertThat(violations).hasSize(4);
+      assertThat(violations).hasSize(7);
     }
   }
 

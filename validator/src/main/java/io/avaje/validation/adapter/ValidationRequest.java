@@ -12,8 +12,8 @@ public class ValidationRequest {
     private final Set<ConstraintViolation> violations = new LinkedHashSet<>();
 
 
-    public void addViolation(String msg) {
-        violations.add(new ConstraintViolation(currentPath(), msg));
+    public void addViolation(String msg, String propertyName) {
+        violations.add(new ConstraintViolation(currentPath(), propertyName, msg));
     }
 
     private String currentPath() {

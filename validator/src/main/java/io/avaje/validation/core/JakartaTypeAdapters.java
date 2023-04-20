@@ -54,14 +54,14 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public boolean validate(TemporalAccessor temporalAccessor, ValidationRequest req) {
+    public boolean validate(TemporalAccessor temporalAccessor, ValidationRequest req, String propertyName) {
       if (temporalAccessor == null) {
-        req.addViolation(message);
+        req.addViolation(message, propertyName);
         return false;
       }
       if (temporalAccessor instanceof LocalDate) {
         if (LocalDate.from(temporalAccessor).isAfter(LocalDate.now())) {
-          req.addViolation(message);
+          req.addViolation(message, propertyName);
           return false;
         }
       } else if (temporalAccessor instanceof LocalTime) {
@@ -90,9 +90,9 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public boolean validate(String str, ValidationRequest req) {
+    public boolean validate(String str, ValidationRequest req, String propertyName) {
       if (str == null || str.isBlank()) {
-        req.addViolation(message);
+        req.addViolation(message, propertyName);
         return false;
       }
       return true;
@@ -115,9 +115,9 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public boolean validate(Boolean type, ValidationRequest req) {
+    public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
       if (Boolean.FALSE.equals(type)) {
-        req.addViolation(message);
+        req.addViolation(message, propertyName);
         return false;
       }
       return true;

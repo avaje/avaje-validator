@@ -6,34 +6,32 @@ import io.avaje.validation.adapter.ValidationRequest;
 import java.util.Collection;
 
 final class DCoreValidation implements CoreValidation {
-    @Override
-    public boolean optional(ValidationRequest ctx, Object value) {
-        return value != null;
-    }
 
     @Override
-    public boolean required(ValidationRequest ctx, Object value) {
+    public boolean required(Object value, ValidationRequest ctx, String propertyName) {
         if (value == null) {
-            ctx.addViolation("Required");
+            ctx.addViolation("Required", propertyName);
             return false;
         }
         return true;
     }
 
     @Override
-    public boolean collection(ValidationRequest ctx, Collection<?> collection, int minSize, int maxSize) {
+    public boolean collection(ValidationRequest ctx, String propertyName, Collection<?> collection, int minSize, int maxSize) {
         if (collection == null) {
-            ctx.addViolation("CollectionNull");
+            if (minSize != -1) {
+                ctx.addViolation("CollectionNull", propertyName);
+            }
             return false;
         }
         final int size = collection.size();
         if (size < minSize) {
-            ctx.addViolation("CollectionMinSize");
+            ctx.addViolation("CollectionMinSize", propertyName);
         }
         if (maxSize > 0 && size > maxSize) {
-            ctx.addViolation("CollectionMaxSize");
+            ctx.addViolation("CollectionMaxSize", propertyName);
         }
         // also validate the collection elements
-        return true;
+        return size > 0;
     }
 }
