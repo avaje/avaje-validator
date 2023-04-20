@@ -1,19 +1,14 @@
 package io.avaje.validation.core;
 
-import java.util.Map;
+import java.util.Set;
 
+import io.avaje.validation.AnnotationValidationAdapter;
 import io.avaje.validation.ConstraintViolation;
-//TODO Create an avaje config interpolator
+
 public class NoopAnnotationValidator<T> implements AnnotationValidationAdapter<T> {
 
   @Override
-  public AnnotationValidationAdapter<T> init(Map<String, String> annotationValueMap) {
-
-    return this;
-  }
-
-  @Override
-  public ConstraintViolation validate(Object type) {
-    return null;
+  public void validate(T type, Set<ConstraintViolation> violations) {
+    // NOOP
   }
 }

@@ -20,7 +20,6 @@ import java.util.Set;
 
 public interface ValidationAdapter<T> {
 
-  /** */
   void validate(T value, Set<ConstraintViolation> violations);
 
   /** Factory for creating a ValidationAdapter. */
