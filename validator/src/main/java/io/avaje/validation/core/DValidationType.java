@@ -1,11 +1,10 @@
 package io.avaje.validation.core;
 
-import java.lang.reflect.Type;
-import java.util.Collection;
-
-import io.avaje.validation.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.ValidationType;
 import io.avaje.validation.adapter.ValidationRequest;
+
+import java.lang.reflect.Type;
 
 class DValidationType<T> implements ValidationType<T> {
 
@@ -26,12 +25,12 @@ class DValidationType<T> implements ValidationType<T> {
     req.throwWithViolations();
   }
 
-  @Override
-  public void validateAll(Collection<T> collection) {
-    final var req = new ValidationRequest();
-    for (T element : collection) {
-      adapter.validate(element, req);
-    }
-    req.throwWithViolations();
-  }
+//  @Override
+//  public void validateAll(Collection<T> collection) {
+//    final var req = new ValidationRequest();
+//    for (T element : collection) {
+//      adapter.validate(element, req);
+//    }
+//    req.throwWithViolations();
+//  }
 }

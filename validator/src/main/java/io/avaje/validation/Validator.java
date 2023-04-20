@@ -5,8 +5,10 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-import java.util.Set;
 
+import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidatorComponent;
 import io.avaje.validation.core.DefaultBootstrap;
 import io.avaje.validation.spi.Bootstrap;
 

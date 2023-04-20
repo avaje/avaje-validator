@@ -1,11 +1,10 @@
-package io.avaje.validation;
+package io.avaje.validation.adapter;
 
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
-import io.avaje.validation.adapter.ValidationRequest;
+import io.avaje.validation.Validator;
 import io.avaje.validation.core.MessageInterpolator;
 
 public interface AnnotationValidationAdapter<T> {
@@ -32,6 +31,6 @@ public interface AnnotationValidationAdapter<T> {
      * <p>Returning null means that the adapter could be created by another factory.
      */
     AnnotationValidationAdapter<?> create(
-        Type annotationType, Validator context, MessageInterpolator interpolator);
+            Type annotationType, Validator context, MessageInterpolator interpolator);
   }
 }

@@ -1,10 +1,12 @@
-package io.avaje.validation;
+package io.avaje.validation.adapter;
+
+import io.avaje.validation.Validator;
 
 /**
  * User defined components to register custom JsonAdapters with Validator.Builder.
  * <p>
  * These are service loaded when Validator starts. They can be specified in
- * {@code META-INF/services/io.avaje.validation.ValidatorComponent} or when using
+ * {@code META-INF/services/io.avaje.validation.adapter.ValidatorComponent} or when using
  * java module system via a {@code provides} clause in module-info.
  */
 @FunctionalInterface

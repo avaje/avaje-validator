@@ -19,10 +19,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Map;
-import java.util.Set;
 
-import io.avaje.validation.AnnotationValidationAdapter;
-import io.avaje.validation.ConstraintViolation;
+import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;

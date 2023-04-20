@@ -9,21 +9,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.avaje.validation.AnnotationValidationAdapter;
-import io.avaje.validation.AnnotationValidationAdapter.Factory;
-import io.avaje.validation.ConstraintViolation;
-import io.avaje.validation.ValidationAdapter;
+import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import io.avaje.validation.adapter.AnnotationValidationAdapter.Factory;
+import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.ValidationType;
 import io.avaje.validation.Validator;
-import io.avaje.validation.ValidatorComponent;
-import io.avaje.validation.adapter.ValidationRequest;
+import io.avaje.validation.adapter.ValidatorComponent;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator {

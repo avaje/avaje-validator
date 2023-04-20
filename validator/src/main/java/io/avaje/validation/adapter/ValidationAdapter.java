@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.avaje.validation;
+package io.avaje.validation.adapter;
 
-import io.avaje.validation.adapter.ValidationRequest;
+import io.avaje.validation.Validator;
 
 import java.lang.reflect.Type;
-import java.util.Set;
 
 public interface ValidationAdapter<T> {
 
