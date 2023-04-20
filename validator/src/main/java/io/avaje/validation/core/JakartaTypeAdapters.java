@@ -19,10 +19,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Map;
-import java.util.Set;
 
-import io.avaje.validation.AnnotationValidationAdapter;
-import io.avaje.validation.ConstraintViolation;
+import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
@@ -55,15 +54,15 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public void validate(TemporalAccessor temporalAccessor, Set<ConstraintViolation> violations) {
-
+    public boolean validate(TemporalAccessor temporalAccessor, ValidationRequest req, String propertyName) {
       if (temporalAccessor == null) {
-        violations.add(new ConstraintViolation(message));
-        return;
+        req.addViolation(message, propertyName);
+        return false;
       }
       if (temporalAccessor instanceof LocalDate) {
         if (LocalDate.from(temporalAccessor).isAfter(LocalDate.now())) {
-          violations.add(new ConstraintViolation(message));
+          req.addViolation(message, propertyName);
+          return false;
         }
       } else if (temporalAccessor instanceof LocalTime) {
         final LocalTime localTime = (LocalTime) temporalAccessor;
@@ -71,6 +70,7 @@ final class JakartaTypeAdapters {
 
         // TODO do the rest of them
       }
+      return true;
     }
   }
 
@@ -90,10 +90,12 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public void validate(String str, Set<ConstraintViolation> violations) {
+    public boolean validate(String str, ValidationRequest req, String propertyName) {
       if (str == null || str.isBlank()) {
-        violations.add(new ConstraintViolation(message));
+        req.addViolation(message, propertyName);
+        return false;
       }
+      return true;
     }
   }
 
@@ -113,10 +115,12 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public void validate(Boolean type, Set<ConstraintViolation> violations) {
+    public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
       if (Boolean.FALSE.equals(type)) {
-        violations.add(new ConstraintViolation(message));
+        req.addViolation(message, propertyName);
+        return false;
       }
+      return true;
     }
   }
 }

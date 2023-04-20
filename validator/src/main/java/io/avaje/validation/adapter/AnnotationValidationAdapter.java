@@ -1,27 +1,20 @@
-package io.avaje.validation;
+package io.avaje.validation.adapter;
 
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
+import io.avaje.validation.Validator;
 import io.avaje.validation.core.MessageInterpolator;
 
-public interface AnnotationValidationAdapter<T> {
+public interface AnnotationValidationAdapter<T> extends ValidationAdapter<T> {
 
-  void validate(T type, Set<ConstraintViolation> violations);
+  //void validate(T type, ValidationRequest req);
 
   default AnnotationValidationAdapter<T> init(Map<String, String> annotationValueMap) {
     return this;
   }
 
-  default AnnotationValidationAdapter<T> andThen(AnnotationValidationAdapter<? super T> after) {
-    Objects.requireNonNull(after);
-    return (t, v) -> {
-      validate(t, v);
-      after.validate(t, v);
-    };
-  }
   /** Factory for creating a ValidationAdapter. */
   public interface Factory {
 
@@ -31,6 +24,6 @@ public interface AnnotationValidationAdapter<T> {
      * <p>Returning null means that the adapter could be created by another factory.
      */
     AnnotationValidationAdapter<?> create(
-        Type annotationType, Validator context, MessageInterpolator interpolator);
+            Type annotationType, Validator context, MessageInterpolator interpolator);
   }
 }

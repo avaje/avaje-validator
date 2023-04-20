@@ -9,20 +9,18 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.avaje.validation.AnnotationValidationAdapter;
-import io.avaje.validation.AnnotationValidationAdapter.Factory;
-import io.avaje.validation.ConstraintViolation;
-import io.avaje.validation.ValidationAdapter;
+import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import io.avaje.validation.adapter.AnnotationValidationAdapter.Factory;
+import io.avaje.validation.adapter.CoreValidation;
+import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.ValidationType;
 import io.avaje.validation.Validator;
-import io.avaje.validation.ValidatorComponent;
+import io.avaje.validation.adapter.ValidatorComponent;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator {
@@ -44,23 +42,17 @@ final class DValidator implements Validator {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public Set<ConstraintViolation> validate(Object any) {
-    final var type = (ValidationType<Object>) type(any.getClass());
-    return type.validate(any);
+  public CoreValidation core() {
+    return new DCoreValidation();
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public Set<ConstraintViolation> validate(Collection<Object> any) {
-    final var violations = new HashSet<ConstraintViolation>();
-    for (final Object object : any) {
-      final var type = (ValidationType<Object>) type(object.getClass());
-      type.validate(any, violations);
-    }
-
-    return violations;
+  public void validate(Object any) {
+    final var type = (ValidationType<Object>) type(any.getClass());
+    type.validate(any);
   }
+
 
   private <T> ValidationType<T> type(Class<T> cls) {
     return typeWithCache(cls);
