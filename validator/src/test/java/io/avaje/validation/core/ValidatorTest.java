@@ -1,6 +1,7 @@
 package io.avaje.validation.core;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -67,6 +68,12 @@ class ValidatorTest {
     } catch (ConstraintViolationException e) {
       Set<ConstraintViolation> violations = e.violations();
       assertThat(violations).hasSize(7);
+      List<ConstraintViolation> asList = new ArrayList<>(violations);
+
+      var last = asList.get(violations.size() - 1);
+      assertThat(last.path()).isEqualTo("contacts.1.address");
+      assertThat(last.propertyName()).isEqualTo("line1");
+      assertThat(last.message()).isEqualTo("empty");
     }
   }
 

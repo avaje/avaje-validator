@@ -18,8 +18,9 @@ public class ValidationRequest {
 
     private String currentPath() {
         StringJoiner joiner = new StringJoiner(".");
-        for (String next : pathStack) {
-            joiner.add(next);
+        final var descendingIterator = pathStack.descendingIterator();
+        while (descendingIterator.hasNext()) {
+            joiner.add(descendingIterator.next());
         }
         return joiner.toString();
     }
