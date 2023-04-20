@@ -20,16 +20,4 @@ public class Customer {
     this.activeDate = activeDate;
   }
 
-  public static class Address {
-
-    public String line1;
-    public String line2;
-    public long longValue;
-
-  }
-
-  public static class Contact {
-    public String firstName;
-    public String lastName;
-  }
 }
