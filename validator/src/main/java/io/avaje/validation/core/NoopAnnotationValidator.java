@@ -6,7 +6,8 @@ import io.avaje.validation.adapter.ValidationRequest;
 public class NoopAnnotationValidator<T> implements AnnotationValidationAdapter<T> {
 
   @Override
-  public void validate(T type, ValidationRequest req) {
+  public boolean validate(T type, ValidationRequest req) {
     // NOOP
+    return true;
   }
 }

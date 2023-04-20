@@ -29,9 +29,10 @@ public final class AddressValidationAdapter implements ValidationAdapter<Address
   }
 
   @Override
-  public void validate(Address pojo, ValidationRequest request) {
+  public boolean validate(Address pojo, ValidationRequest request) {
     line1Adapter.validate(pojo.line1, request);
     //line2Adapter.validate(pojo.line2, request);
     //longValueAdapter.validate(pojo.longValue, request);
+    return true;
   }
 }

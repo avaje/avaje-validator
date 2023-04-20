@@ -18,10 +18,22 @@ package io.avaje.validation.adapter;
 import io.avaje.validation.Validator;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 public interface ValidationAdapter<T> {
 
-  void validate(T value, ValidationRequest req);
+  /** Return true if validation should recurse */
+  boolean validate(T value, ValidationRequest req);
+
+  default AnnotationValidationAdapter<T> then(ValidationAdapter<? super T> after) {
+    Objects.requireNonNull(after);
+    return (value, req) -> {
+      if (validate(value, req)) {
+        return after.validate(value, req);
+      }
+      return true;
+    };
+  }
 
   /** Factory for creating a ValidationAdapter. */
   public interface Factory {

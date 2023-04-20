@@ -14,7 +14,10 @@ import static org.assertj.core.api.Assertions.*;
 class ValidatorTest {
 
   private final Validator validator =
-      Validator.builder().add(Customer.class, CustomerValidationAdapter::new).build();
+      Validator.builder()
+              .add(Customer.class, CustomerValidationAdapter::new)
+              .add(Address.class, AddressValidationAdapter::new)
+              .build();
 
   @Test
   void testAllFail() {
@@ -44,6 +47,17 @@ class ValidatorTest {
     } catch (ConstraintViolationException e) {
       Set<ConstraintViolation> violations = e.violations();
       assertThat(violations).hasSize(1);
+    }
+  }
+
+  @Test
+  void testRecurse() {
+    try {
+      validator.validate(new Customer(false, null, LocalDate.now().plusDays(3), null));
+      fail("");
+    } catch (ConstraintViolationException e) {
+      Set<ConstraintViolation> violations = e.violations();
+      assertThat(violations).hasSize(4);
     }
   }
 

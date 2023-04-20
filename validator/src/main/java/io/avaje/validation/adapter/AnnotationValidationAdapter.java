@@ -7,9 +7,9 @@ import java.util.Objects;
 import io.avaje.validation.Validator;
 import io.avaje.validation.core.MessageInterpolator;
 
-public interface AnnotationValidationAdapter<T> {
+public interface AnnotationValidationAdapter<T> extends ValidationAdapter<T> {
 
-  void validate(T type, ValidationRequest req);
+  //void validate(T type, ValidationRequest req);
 
   default AnnotationValidationAdapter<T> init(Map<String, String> annotationValueMap) {
     return this;
@@ -18,10 +18,13 @@ public interface AnnotationValidationAdapter<T> {
   default AnnotationValidationAdapter<T> andThen(AnnotationValidationAdapter<? super T> after) {
     Objects.requireNonNull(after);
     return (t, v) -> {
-      validate(t, v);
-      after.validate(t, v);
+      if (validate(t, v)) {
+        return after.validate(t, v);
+      }
+      return true;
     };
   }
+
   /** Factory for creating a ValidationAdapter. */
   public interface Factory {
 
