@@ -6,7 +6,7 @@ import java.util.Set;
 
 import io.avaje.validation.ValidationAdapter;
 import io.avaje.validation.ValidationType;
-import io.avaje.validation.stream.ConstraintViolation;
+import io.avaje.validation.ConstraintViolation;
 
 class DValidationType<T> implements ValidationType<T> {
 

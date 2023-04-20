@@ -5,7 +5,7 @@ import java.util.Set;
 
 import io.avaje.validation.ValidationAdapter;
 import io.avaje.validation.Validator;
-import io.avaje.validation.stream.ConstraintViolation;
+import io.avaje.validation.ConstraintViolation;
 import jakarta.validation.constraints.AssertTrue;
 
 public final class AuthProvider$PojoAdapter implements ValidationAdapter<Pojo> {

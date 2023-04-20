@@ -18,9 +18,6 @@ package io.avaje.validation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import io.avaje.validation.stream.ConstraintViolation;
-
-/** The core API for serialization to and from json. */
 public interface ValidationAdapter<T> {
 
   /** */

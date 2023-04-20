@@ -4,7 +4,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import io.avaje.validation.Validator;
-import io.avaje.validation.stream.ConstraintViolation;
+import io.avaje.validation.ConstraintViolation;
 
 public interface AnnotationValidationAdapter<T> {
 
