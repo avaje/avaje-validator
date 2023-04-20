@@ -12,6 +12,9 @@ import io.avaje.validation.spi.Bootstrap;
 
 public interface Validator {
 
+
+  //void validate(Object any) throws ConstraintViolationException;
+
   static Builder builder() {
     final Iterator<Bootstrap> bootstrapService = ServiceLoader.load(Bootstrap.class).iterator();
     if (bootstrapService.hasNext()) {
