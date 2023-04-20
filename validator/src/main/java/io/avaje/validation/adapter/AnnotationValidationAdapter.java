@@ -15,16 +15,6 @@ public interface AnnotationValidationAdapter<T> extends ValidationAdapter<T> {
     return this;
   }
 
-  default AnnotationValidationAdapter<T> andThen(AnnotationValidationAdapter<? super T> after) {
-    Objects.requireNonNull(after);
-    return (t, v) -> {
-      if (validate(t, v)) {
-        return after.validate(t, v);
-      }
-      return true;
-    };
-  }
-
   /** Factory for creating a ValidationAdapter. */
   public interface Factory {
 

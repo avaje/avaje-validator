@@ -25,7 +25,7 @@ public interface ValidationAdapter<T> {
   /** Return true if validation should recurse */
   boolean validate(T value, ValidationRequest req);
 
-  default AnnotationValidationAdapter<T> then(ValidationAdapter<? super T> after) {
+  default AnnotationValidationAdapter<T> andThen(ValidationAdapter<? super T> after) {
     Objects.requireNonNull(after);
     return (value, req) -> {
       if (validate(value, req)) {

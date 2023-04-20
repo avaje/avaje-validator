@@ -2,7 +2,6 @@ package io.avaje.validation.core;
 
 import java.util.Map;
 
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.Validator;
