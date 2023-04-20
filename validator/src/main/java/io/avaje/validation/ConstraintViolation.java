@@ -1,4 +1,4 @@
-package io.avaje.validation.stream;
+package io.avaje.validation;
 
 /**
  * Describes a constraint violation. This object exposes the constraint violation context as well as

@@ -21,7 +21,7 @@ import io.avaje.validation.ValidationType;
 import io.avaje.validation.Validator;
 import io.avaje.validation.ValidatorComponent;
 import io.avaje.validation.core.AnnotationValidationAdapter.Factory;
-import io.avaje.validation.stream.ConstraintViolation;
+import io.avaje.validation.ConstraintViolation;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator {

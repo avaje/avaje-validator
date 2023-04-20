@@ -17,7 +17,7 @@ package io.avaje.validation.core;
 
 import java.util.Map;
 
-import io.avaje.validation.stream.ConstraintViolation;
+import io.avaje.validation.ConstraintViolation;
 import jakarta.validation.constraints.AssertTrue;
 final class JakartaTypeAdapters {
 
