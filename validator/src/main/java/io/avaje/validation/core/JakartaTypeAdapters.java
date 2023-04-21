@@ -15,9 +15,11 @@
  */
 package io.avaje.validation.core;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAccessor;
+import java.util.Collection;
 import java.util.Map;
 
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
@@ -25,8 +27,10 @@ import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 final class JakartaTypeAdapters {
+  private JakartaTypeAdapters() {}
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   static final AnnotationValidationAdapter.Factory FACTORY =
@@ -34,8 +38,71 @@ final class JakartaTypeAdapters {
         if (annotationType == AssertTrue.class) return new AssertTrueAdapter(interpolator);
         if (annotationType == NotBlank.class) return new NotBlankAdapter(interpolator);
         if (annotationType == Past.class) return new PastAdapter(interpolator);
+        if (annotationType == Size.class) return new SizeAdapter(interpolator);
         return null;
       };
+
+  private static final class SizeAdapter implements AnnotationValidationAdapter<Object> {
+
+    private String message;
+    private final MessageInterpolator interpolator;
+    private int min;
+    private int max;
+
+    public SizeAdapter(MessageInterpolator interpolator) {
+      this.interpolator = interpolator;
+    }
+
+    @Override
+    public AnnotationValidationAdapter<Object> init(Map<String, String> annotationValueMap) {
+      message = interpolator.interpolate(annotationValueMap.get("message"));
+      min = Integer.parseInt(interpolator.interpolate(annotationValueMap.get("min")));
+      max = Integer.parseInt(interpolator.interpolate(annotationValueMap.get("max")));
+      return this;
+    }
+
+    @Override
+    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+
+      if (value instanceof CharSequence) {
+        final var sequence = (CharSequence) value;
+        final var len = sequence.length();
+        if (len > max || len < min) {
+          req.addViolation(message, propertyName);
+          return false;
+        }
+      }
+
+      if (value instanceof Collection<?>) {
+        final var col = (Collection<?>) value;
+        final var len = col.size();
+        if (len > max || len < min) {
+          req.addViolation(message, propertyName);
+          return false;
+        }
+      }
+
+      if (value instanceof Map<?, ?>) {
+        final var col = (Map<?, ?>) value;
+        final var len = col.size();
+        if (len > max || len < min) {
+          req.addViolation(message, propertyName);
+          return false;
+        }
+      }
+
+      if (value.getClass().isArray()) {
+
+        final var len = Array.getLength(value);
+        if (len > max || len < min) {
+          req.addViolation(message, propertyName);
+          return false;
+        }
+      }
+
+      return true;
+    }
+  }
 
   private static final class PastAdapter implements AnnotationValidationAdapter<TemporalAccessor> {
 
