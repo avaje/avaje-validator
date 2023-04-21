@@ -1,10 +1,11 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.ValidPojo;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.avaje.validation.ValidPojo;
+import jakarta.validation.constraints.Size;
 
 @ValidPojo
 public class Customer {
@@ -17,6 +18,7 @@ public class Customer {
   // Optional | Nullable
   public Address shippingAddress;
 
+  @Size(min = 0, max = 2)
   public List<Contact> contacts = new ArrayList<>();
 
   public Customer(boolean active, String name, LocalDate activeDate) {

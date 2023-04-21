@@ -64,6 +64,13 @@ final class JakartaTypeAdapters {
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
 
+      if (value == null) {
+        if (min != -1) {
+          req.addViolation("CollectionNull", propertyName);
+        }
+        return false;
+      }
+
       if (value instanceof CharSequence) {
         final var sequence = (CharSequence) value;
         final var len = sequence.length();
@@ -78,7 +85,7 @@ final class JakartaTypeAdapters {
         final var len = col.size();
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
-          return false;
+          return len > 0;
         }
       }
 
@@ -87,7 +94,7 @@ final class JakartaTypeAdapters {
         final var len = col.size();
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
-          return false;
+          return len > 0;
         }
       }
 
@@ -96,7 +103,7 @@ final class JakartaTypeAdapters {
         final var len = Array.getLength(value);
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
-          return false;
+          return len > 0;
         }
       }
 
@@ -121,7 +128,8 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public boolean validate(TemporalAccessor temporalAccessor, ValidationRequest req, String propertyName) {
+    public boolean validate(
+        TemporalAccessor temporalAccessor, ValidationRequest req, String propertyName) {
       if (temporalAccessor == null) {
         req.addViolation(message, propertyName);
         return false;

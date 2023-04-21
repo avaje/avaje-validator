@@ -29,4 +29,10 @@ public class ConstraintViolation {
   public String message() {
     return message;
   }
+
+  @Override
+  public String toString() {
+
+    return message;
+  }
 }

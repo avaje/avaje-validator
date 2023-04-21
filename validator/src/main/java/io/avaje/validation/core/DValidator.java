@@ -8,18 +8,17 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.avaje.validation.ValidationType;
+import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.AnnotationValidationAdapter.Factory;
 import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
-import io.avaje.validation.ValidationType;
-import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.ValidatorComponent;
 
 /** Default implementation of Validator. */
@@ -77,9 +76,9 @@ final class DValidator implements Validator {
 
   @Override
   public <T> AnnotationValidationAdapter<T> annotationAdapter(
-      Class<? extends Annotation> cls) {
+      Class<? extends Annotation> cls, Map<String, String> annotationAttributes) {
 
-    return builder.annotationAdapter(cls);
+    return builder.<T>annotationAdapter(cls).init(annotationAttributes);
   }
 
   @Override
