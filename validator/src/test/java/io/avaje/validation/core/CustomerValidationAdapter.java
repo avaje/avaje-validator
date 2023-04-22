@@ -63,7 +63,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
     }
 
     final var _contacts = value.contacts;
-    //if field is nullable we could do _contacts != && contactsValidator.validate
+    //if field is nullable we could do _contacts != null && contactsValidator.validate
     if (contactsValidator.validate(_contacts, request, "contacts")) {
       contactValidator.validateAll(_contacts, request, "contacts");
     }
