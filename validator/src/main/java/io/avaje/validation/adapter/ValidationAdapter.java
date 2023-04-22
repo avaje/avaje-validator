@@ -44,6 +44,20 @@ public interface ValidationAdapter<T> {
     return true;
   }
 
+  default boolean validateAll(T[] value, ValidationRequest req, String propertName) {
+    if (propertName != null) {
+      req.pushPath(propertName);
+    }
+    int index = -1;
+    for (T element : value) {
+      validate(element, req, String.valueOf(++index));
+    }
+    if (propertName != null) {
+      req.popPath();
+    }
+    return true;
+  }
+
   default AnnotationValidationAdapter<T> andThen(ValidationAdapter<? super T> after) {
     Objects.requireNonNull(after);
     return (value, req, propertyName) -> {
