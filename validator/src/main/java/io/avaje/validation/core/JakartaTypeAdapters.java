@@ -22,7 +22,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.Map;
 
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import io.avaje.validation.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
@@ -54,10 +54,10 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public AnnotationValidationAdapter<Object> init(Map<String, String> annotationValueMap) {
-      message = interpolator.interpolate(annotationValueMap.get("message"));
-      min = Integer.parseInt(interpolator.interpolate(annotationValueMap.get("min")));
-      max = Integer.parseInt(interpolator.interpolate(annotationValueMap.get("max")));
+    public AnnotationValidationAdapter<Object> init(Map<String, Object> annotationValueMap) {
+      message = interpolator.interpolate((String) annotationValueMap.get("message"));
+      min = (int) annotationValueMap.get("min");
+      max = (int) annotationValueMap.get("max");
       return this;
     }
 
@@ -122,8 +122,8 @@ final class JakartaTypeAdapters {
 
     @Override
     public AnnotationValidationAdapter<TemporalAccessor> init(
-        Map<String, String> annotationValueMap) {
-      message = interpolator.interpolate(annotationValueMap.get("message"));
+        Map<String, Object> annotationValueMap) {
+      message = interpolator.interpolate((String) annotationValueMap.get("message"));
       return this;
     }
 
@@ -159,8 +159,8 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public AnnotationValidationAdapter<String> init(Map<String, String> annotationValueMap) {
-      message = interpolator.interpolate(annotationValueMap.get("message"));
+    public AnnotationValidationAdapter<String> init(Map<String, Object> annotationValueMap) {
+      message = interpolator.interpolate((String) annotationValueMap.get("message"));
       return this;
     }
 
@@ -184,8 +184,8 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public AnnotationValidationAdapter<Boolean> init(Map<String, String> annotationValueMap) {
-      message = interpolator.interpolate(annotationValueMap.get("message"));
+    public AnnotationValidationAdapter<Boolean> init(Map<String, Object> annotationValueMap) {
+      message = interpolator.interpolate((String) annotationValueMap.get("message"));
       return this;
     }
 

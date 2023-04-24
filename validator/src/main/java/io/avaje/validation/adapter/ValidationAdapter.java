@@ -15,6 +15,7 @@
  */
 package io.avaje.validation.adapter;
 
+import io.avaje.validation.AnnotationValidationAdapter;
 import io.avaje.validation.Validator;
 
 import java.lang.reflect.Type;

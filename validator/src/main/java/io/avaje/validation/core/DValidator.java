@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.avaje.validation.AnnotationValidationAdapter;
+import io.avaje.validation.AnnotationValidationAdapter.Factory;
 import io.avaje.validation.ValidationType;
 import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
-import io.avaje.validation.adapter.AnnotationValidationAdapter.Factory;
 import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidatorComponent;
@@ -76,7 +76,7 @@ final class DValidator implements Validator {
 
   @Override
   public <T> AnnotationValidationAdapter<T> annotationAdapter(
-      Class<? extends Annotation> cls, Map<String, String> annotationAttributes) {
+      Class<? extends Annotation> cls, Map<String, Object> annotationAttributes) {
 
     return builder.<T>annotationAdapter(cls).init(annotationAttributes);
   }

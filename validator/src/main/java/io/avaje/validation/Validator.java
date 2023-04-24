@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidatorComponent;
@@ -30,7 +29,7 @@ public interface Validator {
 
   <T> ValidationAdapter<T> adapter(Type type);
 
-  <T> AnnotationValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls, Map<String ,String> annotationAttributes);
+  <T> AnnotationValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls, Map<String, Object> annotationAttributes);
 
   CoreValidation core();
 

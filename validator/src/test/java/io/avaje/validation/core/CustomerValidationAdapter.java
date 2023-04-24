@@ -40,7 +40,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
 
     this.contactsValidator =
         validator.<List<Contact>>annotationAdapter(
-            Size.class, Map.of("message", "not sized correctly", "min", "0", "max", "2"));
+            Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2));
 
     addressValidator = validator.adapter(Address.class);
     contactValidator = validator.adapter(Contact.class);
