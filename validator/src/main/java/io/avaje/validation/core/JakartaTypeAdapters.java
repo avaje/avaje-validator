@@ -20,13 +20,17 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import io.avaje.validation.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern.Flag;
 import jakarta.validation.constraints.Size;
 
 final class JakartaTypeAdapters {
@@ -38,9 +42,51 @@ final class JakartaTypeAdapters {
         if (annotationType == AssertTrue.class) return new AssertTrueAdapter(interpolator);
         if (annotationType == NotBlank.class) return new NotBlankAdapter(interpolator);
         if (annotationType == Past.class) return new PastAdapter(interpolator);
+        if (annotationType == Pattern.class) return new PatternAdapter(interpolator);
         if (annotationType == Size.class) return new SizeAdapter(interpolator);
         return null;
       };
+
+  private static final class PatternAdapter implements AnnotationValidationAdapter<CharSequence> {
+
+    private String message;
+    private final MessageInterpolator interpolator;
+    private Predicate<String> pattern;
+
+    public PatternAdapter(MessageInterpolator interpolator) {
+      this.interpolator = interpolator;
+    }
+
+    @Override
+    public AnnotationValidationAdapter<CharSequence> init(Map<String, Object> annotationValueMap) {
+      message = interpolator.interpolate((String) annotationValueMap.get("message"));
+
+      int flags = 0;
+
+      for (final var flag : (List<Flag>) annotationValueMap.get("flags")) {
+        flags |= flag.getValue();
+      }
+
+      pattern =
+          java.util.regex.Pattern.compile((String) annotationValueMap.get("regexp"), flags)
+              .asMatchPredicate()
+              .negate();
+
+      return this;
+    }
+
+    @Override
+    public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
+
+      if (value == null || pattern.test(propertyName)) {
+
+        req.addViolation(message, propertyName);
+        return false;
+      }
+
+      return true;
+    }
+  }
 
   private static final class SizeAdapter implements AnnotationValidationAdapter<Object> {
 

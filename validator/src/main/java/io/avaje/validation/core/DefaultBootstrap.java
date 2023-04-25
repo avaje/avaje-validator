@@ -4,6 +4,7 @@ import io.avaje.validation.Validator;
 
 /** Default bootstrap of Validator. */
 public final class DefaultBootstrap {
+  private DefaultBootstrap() {}
 
   /** Create the Validator.Builder. */
   public static Validator.Builder builder() {
