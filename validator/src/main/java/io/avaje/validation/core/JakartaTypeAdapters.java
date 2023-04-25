@@ -16,10 +16,12 @@
 package io.avaje.validation.core;
 
 import java.lang.reflect.Array;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -157,7 +159,7 @@ final class JakartaTypeAdapters {
     }
   }
 
-  private static final class PastAdapter implements AnnotationValidationAdapter<TemporalAccessor> {
+  private static final class PastAdapter implements AnnotationValidationAdapter<Object> {
 
     private String message;
     private final MessageInterpolator interpolator;
@@ -167,29 +169,37 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public AnnotationValidationAdapter<TemporalAccessor> init(
-        Map<String, Object> annotationValueMap) {
+    public AnnotationValidationAdapter<Object> init(Map<String, Object> annotationValueMap) {
       message = interpolator.interpolate((String) annotationValueMap.get("message"));
       return this;
     }
 
     @Override
-    public boolean validate(
-        TemporalAccessor temporalAccessor, ValidationRequest req, String propertyName) {
-      if (temporalAccessor == null) {
+    public boolean validate(Object obj, ValidationRequest req, String propertyName) {
+
+      if (obj == null) {
         req.addViolation(message, propertyName);
         return false;
-      }
-      if (temporalAccessor instanceof LocalDate) {
-        if (LocalDate.from(temporalAccessor).isAfter(LocalDate.now())) {
+      } else if (obj instanceof Date) {
+        final Date date = (Date) obj;
+        if (date.after(Date.from(Instant.now()))) {
           req.addViolation(message, propertyName);
           return false;
         }
-      } else if (temporalAccessor instanceof LocalTime) {
-        final LocalTime localTime = (LocalTime) temporalAccessor;
-        // handle LocalTime
+      } else if (obj instanceof TemporalAccessor) {
 
-        // TODO do the rest of them
+        final TemporalAccessor temporalAccessor = (TemporalAccessor) obj;
+        if (temporalAccessor instanceof LocalDate) {
+          if (LocalDate.from(temporalAccessor).isAfter(LocalDate.now())) {
+            req.addViolation(message, propertyName);
+            return false;
+          }
+        } else if (temporalAccessor instanceof LocalTime) {
+          final LocalTime localTime = (LocalTime) temporalAccessor;
+          // handle LocalTime
+
+          // TODO do the rest of them
+        }
       }
       return true;
     }
