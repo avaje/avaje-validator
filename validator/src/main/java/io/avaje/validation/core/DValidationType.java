@@ -1,7 +1,6 @@
 package io.avaje.validation.core;
 
 import io.avaje.validation.adapter.ValidationAdapter;
-import io.avaje.validation.ValidationType;
 import io.avaje.validation.adapter.ValidationRequest;
 
 import java.lang.reflect.Type;

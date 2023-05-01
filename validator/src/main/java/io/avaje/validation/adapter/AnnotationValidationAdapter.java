@@ -1,9 +1,9 @@
-package io.avaje.validation;
+package io.avaje.validation.adapter;
 
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.Validator;
 import io.avaje.validation.core.MessageInterpolator;
 
 public interface AnnotationValidationAdapter<T> extends ValidationAdapter<T> {
