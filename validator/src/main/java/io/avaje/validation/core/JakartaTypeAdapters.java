@@ -28,12 +28,7 @@ import java.util.function.Predicate;
 
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Pattern.Flag;
-import jakarta.validation.constraints.Size;
 
 final class JakartaTypeAdapters {
   private JakartaTypeAdapters() {}
@@ -41,12 +36,20 @@ final class JakartaTypeAdapters {
   @SuppressWarnings({"unchecked", "rawtypes"})
   static final AnnotationValidationAdapter.Factory FACTORY =
       (annotationType, validator, interpolator) -> {
-        if (annotationType == AssertTrue.class) return new AssertTrueAdapter(interpolator);
-        if (annotationType == NotBlank.class) return new NotBlankAdapter(interpolator);
-        if (annotationType == Past.class) return new PastAdapter(interpolator);
-        if (annotationType == Pattern.class) return new PatternAdapter(interpolator);
-        if (annotationType == Size.class) return new SizeAdapter(interpolator);
-        return null;
+        switch (annotationType.getSimpleName()) {
+          case "AssertTrue":
+            return new AssertTrueAdapter(interpolator);
+          case "NotBlank":
+            return new NotBlankAdapter(interpolator);
+          case "Past":
+            return new PastAdapter(interpolator);
+          case "Pattern":
+            return new PatternAdapter(interpolator);
+          case "Size":
+            return new SizeAdapter(interpolator);
+          default:
+            return null;
+        }
       };
 
   private static final class PatternAdapter implements AnnotationValidationAdapter<CharSequence> {
