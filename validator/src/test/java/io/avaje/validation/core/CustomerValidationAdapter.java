@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
@@ -19,10 +20,13 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
   private final ValidationAdapter<Object> activeDateAdapter;
   private final ValidationAdapter<List<Contact>> contactsValidator;
 
+  private final CoreValidation core;
+
   private final ValidationAdapter<Address> addressValidator;
   private final ValidationAdapter<Contact> contactValidator;
 
   public CustomerValidationAdapter(Validator validator) {
+    this.core = validator.core();
     this.activeAdapter =
         validator.<Boolean>annotationAdapter(AssertTrue.class, Map.of("message", "not true"));
 
