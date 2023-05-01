@@ -1,13 +1,13 @@
 package io.avaje.validation.core;
 
+import java.util.Map;
+
+import io.avaje.validation.AnnotationValidationAdapter;
 import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-import java.util.Map;
 
 public final class ContactValidationAdapter implements ValidationAdapter<Contact> {
 
@@ -15,17 +15,14 @@ public final class ContactValidationAdapter implements ValidationAdapter<Contact
   private final AnnotationValidationAdapter<String> lastNameAdapter;
   private final ValidationAdapter<Address> addressValidator;
 
-
   public ContactValidationAdapter(Validator validator) {
     this.firstNameAdapter =
         validator
-            .<String>annotationAdapter(NotNull.class)
-            .init(Map.of("message", "null"))
-            .andThen(
-                validator.<String>annotationAdapter(NotBlank.class).init(Map.of("message", "empty")));
+            .<String>annotationAdapter(NotNull.class, Map.of("message", "null"))
+            .andThen(validator.annotationAdapter(NotBlank.class, Map.of("message", "empty")));
 
-    this.lastNameAdapter =  validator
-            .<String>annotationAdapter(NotNull.class);
+    this.lastNameAdapter =
+        validator.<String>annotationAdapter(NotNull.class, Map.of("message", "null"));
     this.addressValidator = validator.adapter(Address.class);
   }
 

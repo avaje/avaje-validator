@@ -15,6 +15,7 @@
  */
 package io.avaje.validation.adapter;
 
+import io.avaje.validation.AnnotationValidationAdapter;
 import io.avaje.validation.Validator;
 
 import java.lang.reflect.Type;
@@ -31,6 +32,20 @@ public interface ValidationAdapter<T> {
   }
 
   default boolean validateAll(Collection<T> value, ValidationRequest req, String propertName) {
+    if (propertName != null) {
+      req.pushPath(propertName);
+    }
+    int index = -1;
+    for (T element : value) {
+      validate(element, req, String.valueOf(++index));
+    }
+    if (propertName != null) {
+      req.popPath();
+    }
+    return true;
+  }
+
+  default boolean validateAll(T[] value, ValidationRequest req, String propertName) {
     if (propertName != null) {
       req.pushPath(propertName);
     }

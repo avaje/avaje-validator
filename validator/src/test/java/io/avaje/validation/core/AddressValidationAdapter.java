@@ -1,15 +1,13 @@
 package io.avaje.validation.core;
 
+import java.util.Map;
+
+import io.avaje.validation.AnnotationValidationAdapter;
 import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-
-import java.util.Map;
 
 public final class AddressValidationAdapter implements ValidationAdapter<Address> {
 
@@ -20,11 +18,9 @@ public final class AddressValidationAdapter implements ValidationAdapter<Address
   public AddressValidationAdapter(Validator validator) {
     this.line1Adapter =
         validator
-            .<String>annotationAdapter(NotNull.class)
-            .init(Map.of("message", "null"))
+            .<String>annotationAdapter(NotNull.class, Map.of("message", "null"))
             .andThen(
-                validator.<String>annotationAdapter(NotBlank.class).init(Map.of("message", "empty")));
-
+                validator.annotationAdapter(NotBlank.class, Map.of("message", "empty")));
   }
 
   @Override

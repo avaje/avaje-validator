@@ -16,17 +16,23 @@
 package io.avaje.validation.core;
 
 import java.lang.reflect.Array;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import io.avaje.validation.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern.Flag;
 import jakarta.validation.constraints.Size;
 
 final class JakartaTypeAdapters {
@@ -38,9 +44,51 @@ final class JakartaTypeAdapters {
         if (annotationType == AssertTrue.class) return new AssertTrueAdapter(interpolator);
         if (annotationType == NotBlank.class) return new NotBlankAdapter(interpolator);
         if (annotationType == Past.class) return new PastAdapter(interpolator);
+        if (annotationType == Pattern.class) return new PatternAdapter(interpolator);
         if (annotationType == Size.class) return new SizeAdapter(interpolator);
         return null;
       };
+
+  private static final class PatternAdapter implements AnnotationValidationAdapter<CharSequence> {
+
+    private String message;
+    private final MessageInterpolator interpolator;
+    private Predicate<String> pattern;
+
+    public PatternAdapter(MessageInterpolator interpolator) {
+      this.interpolator = interpolator;
+    }
+
+    @Override
+    public AnnotationValidationAdapter<CharSequence> init(Map<String, Object> annotationValueMap) {
+      message = interpolator.interpolate((String) annotationValueMap.get("message"));
+
+      int flags = 0;
+
+      for (final var flag : (List<Flag>) annotationValueMap.get("flags")) {
+        flags |= flag.getValue();
+      }
+
+      pattern =
+          java.util.regex.Pattern.compile((String) annotationValueMap.get("regexp"), flags)
+              .asMatchPredicate()
+              .negate();
+
+      return this;
+    }
+
+    @Override
+    public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
+
+      if (value == null || pattern.test(propertyName)) {
+
+        req.addViolation(message, propertyName);
+        return false;
+      }
+
+      return true;
+    }
+  }
 
   private static final class SizeAdapter implements AnnotationValidationAdapter<Object> {
 
@@ -54,15 +102,22 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public AnnotationValidationAdapter<Object> init(Map<String, String> annotationValueMap) {
-      message = interpolator.interpolate(annotationValueMap.get("message"));
-      min = Integer.parseInt(interpolator.interpolate(annotationValueMap.get("min")));
-      max = Integer.parseInt(interpolator.interpolate(annotationValueMap.get("max")));
+    public AnnotationValidationAdapter<Object> init(Map<String, Object> annotationValueMap) {
+      message = interpolator.interpolate((String) annotationValueMap.get("message"));
+      min = (int) annotationValueMap.get("min");
+      max = (int) annotationValueMap.get("max");
       return this;
     }
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
+
+      if (value == null) {
+        if (min != -1) {
+          req.addViolation("CollectionNull", propertyName);
+        }
+        return false;
+      }
 
       if (value instanceof CharSequence) {
         final var sequence = (CharSequence) value;
@@ -78,7 +133,7 @@ final class JakartaTypeAdapters {
         final var len = col.size();
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
-          return false;
+          return len > 0;
         }
       }
 
@@ -87,7 +142,7 @@ final class JakartaTypeAdapters {
         final var len = col.size();
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
-          return false;
+          return len > 0;
         }
       }
 
@@ -96,7 +151,7 @@ final class JakartaTypeAdapters {
         final var len = Array.getLength(value);
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
-          return false;
+          return len > 0;
         }
       }
 
@@ -104,7 +159,7 @@ final class JakartaTypeAdapters {
     }
   }
 
-  private static final class PastAdapter implements AnnotationValidationAdapter<TemporalAccessor> {
+  private static final class PastAdapter implements AnnotationValidationAdapter<Object> {
 
     private String message;
     private final MessageInterpolator interpolator;
@@ -114,28 +169,37 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public AnnotationValidationAdapter<TemporalAccessor> init(
-        Map<String, String> annotationValueMap) {
-      message = interpolator.interpolate(annotationValueMap.get("message"));
+    public AnnotationValidationAdapter<Object> init(Map<String, Object> annotationValueMap) {
+      message = interpolator.interpolate((String) annotationValueMap.get("message"));
       return this;
     }
 
     @Override
-    public boolean validate(TemporalAccessor temporalAccessor, ValidationRequest req, String propertyName) {
-      if (temporalAccessor == null) {
+    public boolean validate(Object obj, ValidationRequest req, String propertyName) {
+
+      if (obj == null) {
         req.addViolation(message, propertyName);
         return false;
-      }
-      if (temporalAccessor instanceof LocalDate) {
-        if (LocalDate.from(temporalAccessor).isAfter(LocalDate.now())) {
+      } else if (obj instanceof Date) {
+        final Date date = (Date) obj;
+        if (date.after(Date.from(Instant.now()))) {
           req.addViolation(message, propertyName);
           return false;
         }
-      } else if (temporalAccessor instanceof LocalTime) {
-        final LocalTime localTime = (LocalTime) temporalAccessor;
-        // handle LocalTime
+      } else if (obj instanceof TemporalAccessor) {
 
-        // TODO do the rest of them
+        final TemporalAccessor temporalAccessor = (TemporalAccessor) obj;
+        if (temporalAccessor instanceof LocalDate) {
+          if (LocalDate.from(temporalAccessor).isAfter(LocalDate.now())) {
+            req.addViolation(message, propertyName);
+            return false;
+          }
+        } else if (temporalAccessor instanceof LocalTime) {
+          final LocalTime localTime = (LocalTime) temporalAccessor;
+          // handle LocalTime
+
+          // TODO do the rest of them
+        }
       }
       return true;
     }
@@ -151,8 +215,8 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public AnnotationValidationAdapter<String> init(Map<String, String> annotationValueMap) {
-      message = interpolator.interpolate(annotationValueMap.get("message"));
+    public AnnotationValidationAdapter<String> init(Map<String, Object> annotationValueMap) {
+      message = interpolator.interpolate((String) annotationValueMap.get("message"));
       return this;
     }
 
@@ -176,8 +240,8 @@ final class JakartaTypeAdapters {
     }
 
     @Override
-    public AnnotationValidationAdapter<Boolean> init(Map<String, String> annotationValueMap) {
-      message = interpolator.interpolate(annotationValueMap.get("message"));
+    public AnnotationValidationAdapter<Boolean> init(Map<String, Object> annotationValueMap) {
+      message = interpolator.interpolate((String) annotationValueMap.get("message"));
       return this;
     }
 

@@ -1,16 +1,16 @@
 package io.avaje.validation;
 
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.ServiceLoader;
+
 import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidatorComponent;
 import io.avaje.validation.core.DefaultBootstrap;
 import io.avaje.validation.spi.Bootstrap;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.ServiceLoader;
 
 public interface Validator {
 
@@ -29,7 +29,7 @@ public interface Validator {
 
   <T> ValidationAdapter<T> adapter(Type type);
 
-  <T> AnnotationValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls);
+  <T> AnnotationValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls, Map<String, Object> annotationAttributes);
 
   CoreValidation core();
 

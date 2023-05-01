@@ -3,40 +3,40 @@ package io.avaje.validation.core;
 import java.util.List;
 import java.util.Map;
 
-import io.avaje.validation.adapter.CoreValidation;
-import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 public final class CustomerValidationAdapter implements ValidationAdapter<Customer> {
 
   private final ValidationAdapter<Boolean> activeAdapter;
   private final ValidationAdapter<String> nameAdapter;
   private final ValidationAdapter<Object> activeDateAdapter;
-
-  private final CoreValidation core;
+  private final ValidationAdapter<List<Contact>> contactsValidator;
 
   private final ValidationAdapter<Address> addressValidator;
   private final ValidationAdapter<Contact> contactValidator;
 
   public CustomerValidationAdapter(Validator validator) {
-    this.core = validator.core();
     this.activeAdapter =
-        validator.<Boolean>annotationAdapter(AssertTrue.class).init(Map.of("message", "not true"));
+        validator.<Boolean>annotationAdapter(AssertTrue.class, Map.of("message", "not true"));
 
     this.nameAdapter =
         validator
-            .<String>annotationAdapter(NotNull.class)
-            .init(Map.of("message", "null"))
-            .andThen(
-                validator.<String>annotationAdapter(NotBlank.class).init(Map.of("message", "empty")));
+            .<String>annotationAdapter(NotNull.class, Map.of("message", "null"))
+            .andThen(validator.annotationAdapter(NotBlank.class, Map.of("message", "empty")));
 
     this.activeDateAdapter =
-        validator.annotationAdapter(Past.class).init(Map.of("message", "not in the past"));
+        validator.annotationAdapter(Past.class, Map.of("message", "not in the past"));
+
+    this.contactsValidator =
+        validator.<List<Contact>>annotationAdapter(
+            Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2));
 
     addressValidator = validator.adapter(Address.class);
     contactValidator = validator.adapter(Contact.class);
@@ -59,7 +59,8 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
     }
 
     final var _contacts = value.contacts;
-    if (core.collection(request, "contacts", _contacts, 0, 2)) {
+    //if field is nullable we could do _contacts != null && contactsValidator.validate
+    if (contactsValidator.validate(_contacts, request, "contacts")) {
       contactValidator.validateAll(_contacts, request, "contacts");
     }
     return true;

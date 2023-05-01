@@ -1,17 +1,16 @@
-package io.avaje.validation.adapter;
+package io.avaje.validation;
 
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.Objects;
 
-import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.core.MessageInterpolator;
 
 public interface AnnotationValidationAdapter<T> extends ValidationAdapter<T> {
 
   //void validate(T type, ValidationRequest req);
 
-  default AnnotationValidationAdapter<T> init(Map<String, String> annotationValueMap) {
+  default AnnotationValidationAdapter<T> init(Map<String, Object> annotationValueMap) {
     return this;
   }
 
