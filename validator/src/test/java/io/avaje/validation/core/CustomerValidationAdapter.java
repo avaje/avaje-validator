@@ -53,9 +53,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
     activeDateAdapter.validate(value.activeDate, request, "activeDate");
 
     final var _billingAddress = value.billingAddress;
-    if (core.required(_billingAddress, request, "billingAddress")) { // required / NotNull
       addressValidator.validate(_billingAddress, request, "billingAddress");
-    }
 
     final var _shippingAddress = value.shippingAddress;
     if (_shippingAddress != null) { // is nullable
