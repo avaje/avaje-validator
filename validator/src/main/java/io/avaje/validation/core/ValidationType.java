@@ -1,4 +1,6 @@
-package io.avaje.validation;
+package io.avaje.validation.core;
+
+import io.avaje.validation.ConstraintViolationException;
 
 public interface ValidationType<T> {
 

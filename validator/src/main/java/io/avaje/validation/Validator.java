@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidatorComponent;

@@ -13,13 +13,12 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.avaje.validation.AnnotationValidationAdapter;
-import io.avaje.validation.AnnotationValidationAdapter.Factory;
-import io.avaje.validation.ValidationType;
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidatorComponent;
+import io.avaje.validation.adapter.AnnotationValidationAdapter.Factory;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator {
