@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 
 public final class AddressValidationAdapter implements ValidationAdapter<Address> {
 
-  private final AnnotationValidationAdapter<String> line1Adapter;
+  private final ValidationAdapter<String> line1Adapter;
 //  private final AnnotationValidationAdapter<String> line2Adapter;
 //  private final AnnotationValidationAdapter<Long> longValueAdapter;
 

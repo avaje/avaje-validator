@@ -12,8 +12,8 @@ import jakarta.validation.constraints.NotNull;
 
 public final class ContactValidationAdapter implements ValidationAdapter<Contact> {
 
-  private final AnnotationValidationAdapter<String> firstNameAdapter;
-  private final AnnotationValidationAdapter<String> lastNameAdapter;
+  private final ValidationAdapter<String> firstNameAdapter;
+  private final ValidationAdapter<String> lastNameAdapter;
   private final ValidationAdapter<Address> addressValidator;
 
   public ContactValidationAdapter(AdapterBuildContext validator) {

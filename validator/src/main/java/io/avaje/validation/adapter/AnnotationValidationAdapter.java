@@ -22,7 +22,7 @@ public interface AnnotationValidationAdapter<T> extends ValidationAdapter<T> {
      *
      * <p>Returning null means that the adapter could be created by another factory.
      */
-    AnnotationValidationAdapter<?> create(
+    ValidationAdapter<?> create(
             Class<? extends Annotation> annotationType, Validator context, MessageInterpolator interpolator);
   }
 }
