@@ -3,7 +3,7 @@ package io.avaje.validation.adapter;
 import io.avaje.validation.Validator;
 
 /**
- * User defined components to register custom JsonAdapters with Validator.Builder.
+ * User defined components to register custom ValidationAdapters with Validator.Builder.
  * <p>
  * These are service loaded when Validator starts. They can be specified in
  * {@code META-INF/services/io.avaje.validation.adapter.ValidatorComponent} or when using
@@ -13,7 +13,7 @@ import io.avaje.validation.Validator;
 public interface ValidatorComponent {
 
   /**
-   * Register JsonAdapters with the Builder.
+   * Register ValidationAdapters with the builder.
    */
   void register(Validator.Builder builder);
 }

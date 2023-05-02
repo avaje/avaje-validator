@@ -12,31 +12,31 @@ public interface ValidationAdapter<T> {
     return validate(value, req, null);
   }
 
-  default boolean validateAll(Collection<T> value, ValidationRequest req, String propertName) {
-    if (propertName != null) {
-      req.pushPath(propertName);
+  default boolean validateAll(Collection<T> value, ValidationRequest req, String propertyName) {
+    if (propertyName != null) {
+      req.pushPath(propertyName);
     }
     int index = -1;
     for (final T element : value) {
       index++;
-  validate(element, req, String.valueOf(index));
+      validate(element, req, String.valueOf(index));
     }
-    if (propertName != null) {
+    if (propertyName != null) {
       req.popPath();
     }
     return true;
   }
 
-  default boolean validateAll(T[] value, ValidationRequest req, String propertName) {
-    if (propertName != null) {
-      req.pushPath(propertName);
+  default boolean validateAll(T[] value, ValidationRequest req, String propertyName) {
+    if (propertyName != null) {
+      req.pushPath(propertyName);
     }
     int index = -1;
     for (final T element : value) {
       index++;
-  validate(element, req, String.valueOf(index));
+      validate(element, req, String.valueOf(index));
     }
-    if (propertName != null) {
+    if (propertyName != null) {
       req.popPath();
     }
     return true;

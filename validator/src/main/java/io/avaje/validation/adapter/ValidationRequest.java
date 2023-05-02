@@ -16,7 +16,6 @@ public interface ValidationRequest {
 
     void addViolation(String msg, String propertyName);
 
-
     void pushPath(String path);
 
     void popPath();

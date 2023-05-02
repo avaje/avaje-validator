@@ -34,13 +34,13 @@ public interface Validator {
     /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
     Builder add(Type type, AdapterBuilder builder);
 
-    /** Add a Component which can provide multiple JsonAdapters and or configuration. */
+    /** Add a Component which can provide multiple ValidationAdapters and or configuration. */
     Builder add(ValidatorComponent component);
 
-    /** Add a ValidationAdapter.Factory which provides JsonAdapters to use. */
+    /** Add a ValidationAdapter.Factory which provides ValidationAdapters to use. */
     Builder add(ValidationContext.AdapterFactory factory);
 
-    /** Add a ValidationAdapter.Factory which provides JsonAdapters to use. */
+    /** Add a ValidationAdapter.Factory which provides ValidationAdapters to use. */
     Builder add(ValidationContext.AnnotationFactory factory);
 
     /**
@@ -57,11 +57,11 @@ public interface Validator {
     ValidationAdapter<?> build(ValidationContext ctx);
   }
 
-  /** Components register JsonAdapters Validator.Builder */
+  /** Components register ValidationAdapters Validator.Builder */
   @FunctionalInterface
   interface GeneratedComponent extends ValidatorComponent {
 
-    /** Register JsonAdapters with the Builder. */
+    /** Register ValidationAdapters with the Builder. */
     @Override
     void register(Builder builder);
   }

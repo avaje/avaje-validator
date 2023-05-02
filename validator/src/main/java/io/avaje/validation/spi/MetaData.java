@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 public @interface MetaData {
 
   /**
-   * The generated JsonAdapters.
+   * The generated ValidationAdapters.
    */
   Class<?>[] value();
 
@@ -23,7 +23,7 @@ public @interface MetaData {
   @interface Factory {
 
     /**
-     * The generated JsonAdapters that have a factory.
+     * The generated ValidationAdapters that have a factory.
      */
     Class<?>[] value();
   }

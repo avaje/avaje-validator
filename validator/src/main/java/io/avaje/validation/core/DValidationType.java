@@ -7,12 +7,12 @@ import java.lang.reflect.Type;
 
 class DValidationType<T> implements ValidationType<T> {
 
-  protected final DValidator jsonb;
+  protected final DValidator validator;
   protected final Type type;
   protected final ValidationAdapter<T> adapter;
 
-  DValidationType(DValidator jsonb, Type type, ValidationAdapter<T> adapter) {
-    this.jsonb = jsonb;
+  DValidationType(DValidator validator, Type type, ValidationAdapter<T> adapter) {
+    this.validator = validator;
     this.type = type;
     this.adapter = adapter;
   }

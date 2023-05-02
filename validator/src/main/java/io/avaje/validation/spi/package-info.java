@@ -1,6 +1,4 @@
 /**
- * SPI for the underlying json parsing and generation.
- * <p>
- * The default implementation uses Jackson Core BaseValidator and JsonGenerator.
+ * SPI for the underlying validation adapters.
  */
 package io.avaje.validation.spi;

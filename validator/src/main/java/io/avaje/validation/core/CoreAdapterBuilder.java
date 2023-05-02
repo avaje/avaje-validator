@@ -26,7 +26,7 @@ final class CoreAdapterBuilder {
     this.context = context;
     this.factories.addAll(userFactories);
     this.annotationFactories.addAll(userAnnotationFactories);
-    this.annotationFactories.add(JakartaTypeAdapters.FACTORY);
+    this.annotationFactories.add(JakartaAdapters.FACTORY);
     interpolator = context.interpolator();
   }
 
@@ -50,7 +50,7 @@ final class CoreAdapterBuilder {
   @SuppressWarnings("unchecked")
   <T> ValidationAdapter<T> build(Type type, Object cacheKey) {
 
-    // Ask each factory to create the JSON adapter.
+    // Ask each factory to create the validation adapter.
     for (final ValidationContext.AdapterFactory factory : factories) {
       final ValidationAdapter<T> result = (ValidationAdapter<T>) factory.create(type, context);
       if (result != null) {
@@ -67,7 +67,7 @@ final class CoreAdapterBuilder {
   @SuppressWarnings("unchecked")
   <T> ValidationAdapter<T> buildAnnotation(Class<? extends Annotation> cls, Map<String, Object> attributes) {
 
-    // Ask each factory to create the JSON adapter.
+    // Ask each factory to create the validation adapter.
     for (final ValidationContext.AnnotationFactory factory : annotationFactories) {
       final var result =
           (ValidationAdapter<T>) factory.create(cls, context, attributes);

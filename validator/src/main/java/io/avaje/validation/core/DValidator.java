@@ -102,8 +102,8 @@ final class DValidator implements Validator, ValidationContext {
     }
 
     @Override
-    public <T> Builder add(Type type, ValidationAdapter<T> jsonAdapter) {
-      return add(newAdapterFactory(type, jsonAdapter));
+    public <T> Builder add(Type type, ValidationAdapter<T> adapter) {
+      return add(newAdapterFactory(type, adapter));
     }
 
     @Override
@@ -158,10 +158,10 @@ final class DValidator implements Validator, ValidationContext {
     }
 
     static <T> AdapterFactory newAdapterFactory(
-        Type type, ValidationAdapter<T> jsonAdapter) {
+        Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
-      requireNonNull(jsonAdapter);
-      return (targetType, jsonb) -> simpleMatch(type, targetType) ? jsonAdapter : null;
+      requireNonNull(adapter);
+      return (targetType, context) -> simpleMatch(type, targetType) ? adapter : null;
     }
 
     static <T> AdapterFactory newAdapterFactory(Type type, AdapterBuilder builder) {

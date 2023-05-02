@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-final class JakartaTypeAdapters {
-  private JakartaTypeAdapters() {}
+final class JakartaAdapters {
+  private JakartaAdapters() {}
 
   static final ValidationContext.AnnotationFactory FACTORY =
       (annotationType, context, attributes) -> {
