@@ -18,6 +18,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
 
   private final ValidationAdapter<Address> billingAddressValidator;
   private final ValidationAdapter<Address> shippingAddressValidator;
+  //private final ValidationAdapter<Address> addressValidator;
   private final ValidationAdapter<Contact> contactValidator;
 
   public CustomerValidationAdapter(ValidationContext ctx) {
@@ -35,14 +36,17 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
     this.contactsValidator =
         ctx.<List<Contact>>adapter(
             Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2));
+    this.contactValidator = ctx.adapter(Contact.class);
 
-    ValidationAdapter<Address> addressAdapter = ctx.adapter(Address.class);
-    shippingAddressValidator = addressAdapter;
-    billingAddressValidator = ctx
-            .<Address>adapter(NotNull.class, Collections.emptyMap())
-            .andThen(addressAdapter);
+    //this.addressValidator = ctx.adapter(Address.class);
+    this.shippingAddressValidator = ctx.adapter(Address.class);
 
-    contactValidator = ctx.adapter(Contact.class);
+    // Option A: billingAddressValidator combines NotNull + addressValidator
+    this.billingAddressValidator = ctx.<Address>adapter(NotNull.class, Collections.emptyMap())
+            .andThen(ctx.adapter(Address.class));
+
+    // Option B: billingAddressValidator only does NotNull ...
+    //this.billingAddressValidator = ctx.<Address>adapter(NotNull.class, Collections.emptyMap());
   }
 
   @Override
@@ -51,8 +55,14 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
     nameAdapter.validate(value.name, request, "name");
     activeDateAdapter.validate(value.activeDate, request, "activeDate");
 
-    final var _billingAddress = value.billingAddress;
-      billingAddressValidator.validate(_billingAddress, request, "billingAddress");
+    // Option A:
+    billingAddressValidator.validate(value.billingAddress, request, "billingAddress");
+
+    // Option B: Is more like cascading on collection
+    //final var _billingAddress = value.billingAddress;
+    //if (billingAddressValidator.validate(_billingAddress, request, "billingAddress")) {
+    //  addressValidator.validate(_billingAddress, request, "billingAddress");
+    //}
 
     final var _shippingAddress = value.shippingAddress;
     if (_shippingAddress != null) { // is nullable
