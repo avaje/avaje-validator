@@ -14,12 +14,9 @@ public final class AddressValidationAdapter implements ValidationAdapter<Address
 //  private final AnnotationValidationAdapter<String> line2Adapter;
 //  private final AnnotationValidationAdapter<Long> longValueAdapter;
 
-  public AddressValidationAdapter(AdapterBuildContext validator) {
-    this.line1Adapter =
-        validator
-            .<String>adapter(NotNull.class, Map.of("message", "null"))
-            .andThen(
-                validator.adapter(NotBlank.class, Map.of("message", "empty")));
+  public AddressValidationAdapter(AdapterBuildContext ctx) {
+    this.line1Adapter = ctx.<String>adapter(NotNull.class, Map.of("message", "myCustomNullMessage"))
+            .andThen(ctx.adapter(NotBlank.class, Map.of("message", "empty")));
   }
 
   @Override

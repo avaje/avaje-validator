@@ -22,6 +22,8 @@ final class JakartaTypeAdapters {
   static final AnnotationAdapterFactory FACTORY =
       (annotationType, context, attributes) -> {
         switch (annotationType.getSimpleName()) {
+          case "NotNull":
+            return new NotNullAdapter(context.message("NotNull", attributes));
           case "AssertTrue":
             return new AssertTrueAdapter(context.message("AssertTrue", attributes));
           case "NotBlank":
@@ -198,6 +200,24 @@ final class JakartaTypeAdapters {
     @Override
     public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
       if (Boolean.FALSE.equals(type)) {
+        req.addViolation(message, propertyName);
+        return false;
+      }
+      return true;
+    }
+  }
+
+  private static final class NotNullAdapter implements ValidationAdapter<Object> {
+
+    private final String message;
+
+    public NotNullAdapter(String message) {
+      this.message = message;
+    }
+
+    @Override
+    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+      if (value == null) {
         req.addViolation(message, propertyName);
         return false;
       }

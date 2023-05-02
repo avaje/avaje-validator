@@ -18,24 +18,24 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
   private final ValidationAdapter<Address> addressValidator;
   private final ValidationAdapter<Contact> contactValidator;
 
-  public CustomerValidationAdapter(AdapterBuildContext validator) {
+  public CustomerValidationAdapter(AdapterBuildContext ctx) {
     this.activeAdapter =
-        validator.<Boolean>adapter(AssertTrue.class, Map.of("message", "not true"));
+        ctx.<Boolean>adapter(AssertTrue.class, Map.of("message", "not true"));
 
     this.nameAdapter =
-        validator
+        ctx
             .<String>adapter(NotNull.class, Map.of("message", "null"))
-            .andThen(validator.adapter(NotBlank.class, Map.of("message", "empty")));
+            .andThen(ctx.adapter(NotBlank.class, Map.of("message", "empty")));
 
     this.activeDateAdapter =
-        validator.adapter(Past.class, Map.of("message", "not in the past"));
+        ctx.adapter(Past.class, Map.of("message", "not in the past"));
 
     this.contactsValidator =
-        validator.<List<Contact>>adapter(
+        ctx.<List<Contact>>adapter(
             Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2));
 
-    addressValidator = validator.adapter(Address.class);
-    contactValidator = validator.adapter(Contact.class);
+    addressValidator = ctx.adapter(Address.class);
+    contactValidator = ctx.adapter(Contact.class);
   }
 
   @Override
