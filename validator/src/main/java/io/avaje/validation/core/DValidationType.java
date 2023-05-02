@@ -19,17 +19,9 @@ class DValidationType<T> implements ValidationType<T> {
 
   @Override
   public void validate(T object) {
-    final var req = new ValidationRequest();
+    final var req = ValidationRequest.create();
     adapter.validate(object, req);
     req.throwWithViolations();
   }
 
-//  @Override
-//  public void validateAll(Collection<T> collection) {
-//    final var req = new ValidationRequest();
-//    for (T element : collection) {
-//      adapter.validate(element, req);
-//    }
-//    req.throwWithViolations();
-//  }
 }
