@@ -1,6 +1,6 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.adapter.AnnotationAdapterFactory;
+import io.avaje.validation.adapter.AdapterContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.Pattern.Flag;
@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 final class JakartaTypeAdapters {
   private JakartaTypeAdapters() {}
 
-  static final AnnotationAdapterFactory FACTORY =
+  static final AdapterContext.AnnotationFactory FACTORY =
       (annotationType, context, attributes) -> {
         switch (annotationType.getSimpleName()) {
           case "NotNull":

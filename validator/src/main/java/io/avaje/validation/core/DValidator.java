@@ -15,7 +15,7 @@ import static io.avaje.validation.core.Util.*;
 import static java.util.Objects.requireNonNull;
 
 /** Default implementation of Validator. */
-final class DValidator implements Validator, AdapterBuildContext {
+final class DValidator implements Validator, AdapterContext {
 
   private final CoreAdapterBuilder builder;
   private final Map<Type, DValidationType<?>> typeCache = new ConcurrentHashMap<>();
@@ -23,7 +23,7 @@ final class DValidator implements Validator, AdapterBuildContext {
 
   DValidator(
       List<AdapterFactory> factories,
-      List<AnnotationAdapterFactory> annotationFactories,
+      List<AnnotationFactory> annotationFactories,
       MessageInterpolator interpolator) {
     this.interpolator = interpolator;
     this.builder = new CoreAdapterBuilder(this, factories, annotationFactories);
@@ -94,7 +94,7 @@ final class DValidator implements Validator, AdapterBuildContext {
   static final class DBuilder implements Validator.Builder {
 
     private final List<AdapterFactory> factories = new ArrayList<>();
-    private final List<AnnotationAdapterFactory> afactories = new ArrayList<>();
+    private final List<AnnotationFactory> afactories = new ArrayList<>();
 
     @Override
     public Builder add(Type type, AdapterBuilder builder) {
@@ -124,7 +124,7 @@ final class DValidator implements Validator, AdapterBuildContext {
     }
 
     @Override
-    public Builder add(AnnotationAdapterFactory factory) {
+    public Builder add(AnnotationFactory factory) {
       afactories.add(factory);
       return this;
     }
@@ -150,7 +150,7 @@ final class DValidator implements Validator, AdapterBuildContext {
       return new DValidator(factories, afactories, interpolator);
     }
 
-    static <T> AnnotationAdapterFactory newAnnotationAdapterFactory(
+    static <T> AnnotationFactory newAnnotationAdapterFactory(
         Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);

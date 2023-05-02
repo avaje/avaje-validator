@@ -1,7 +1,6 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.adapter.AdapterFactory;
-import io.avaje.validation.adapter.AnnotationAdapterFactory;
+import io.avaje.validation.adapter.AdapterContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 
 import java.lang.annotation.Annotation;
@@ -15,15 +14,15 @@ import java.util.concurrent.ConcurrentHashMap;
 final class CoreAdapterBuilder {
 
   private final DValidator context;
-  private final List<AdapterFactory> factories = new ArrayList<>();
-  private final List<AnnotationAdapterFactory> annotationFactories = new ArrayList<>();
+  private final List<AdapterContext.AdapterFactory> factories = new ArrayList<>();
+  private final List<AdapterContext.AnnotationFactory> annotationFactories = new ArrayList<>();
   private final Map<Object, ValidationAdapter<?>> adapterCache = new ConcurrentHashMap<>();
   private final MessageInterpolator interpolator;
 
   CoreAdapterBuilder(
       DValidator context,
-      List<AdapterFactory> userFactories,
-      List<AnnotationAdapterFactory> userAnnotationFactories) {
+      List<AdapterContext.AdapterFactory> userFactories,
+      List<AdapterContext.AnnotationFactory> userAnnotationFactories) {
     this.context = context;
     this.factories.addAll(userFactories);
     this.annotationFactories.addAll(userAnnotationFactories);
@@ -52,7 +51,7 @@ final class CoreAdapterBuilder {
   <T> ValidationAdapter<T> build(Type type, Object cacheKey) {
 
     // Ask each factory to create the JSON adapter.
-    for (final AdapterFactory factory : factories) {
+    for (final AdapterContext.AdapterFactory factory : factories) {
       final ValidationAdapter<T> result = (ValidationAdapter<T>) factory.create(type, context);
       if (result != null) {
 
@@ -69,7 +68,7 @@ final class CoreAdapterBuilder {
   <T> ValidationAdapter<T> buildAnnotation(Class<? extends Annotation> cls, Map<String, Object> attributes) {
 
     // Ask each factory to create the JSON adapter.
-    for (final AnnotationAdapterFactory factory : annotationFactories) {
+    for (final AdapterContext.AnnotationFactory factory : annotationFactories) {
       final var result =
           (ValidationAdapter<T>) factory.create(cls, context, attributes);
       if (result != null) {
