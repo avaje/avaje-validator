@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import io.avaje.validation.adapter.AdapterBuildContext;
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidatorComponent;
@@ -24,12 +25,6 @@ public interface Validator {
     return DefaultBootstrap.builder();
   }
 
-
-  <T> ValidationAdapter<T> adapter(Class<T> cls);
-
-  <T> ValidationAdapter<T> adapter(Type type);
-
-  <T> AnnotationValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes);
 
   /** Build the Validator instance adding ValidationAdapter, Factory or AdapterBuilder. */
   interface Builder {
@@ -63,7 +58,7 @@ public interface Validator {
   interface AdapterBuilder {
 
     /** Create a ValidationAdapter given the Validator instance. */
-    ValidationAdapter<?> build(Validator jsonb);
+    ValidationAdapter<?> build(AdapterBuildContext ctx);
   }
 
   /** Components register JsonAdapters Validator.Builder */

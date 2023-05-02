@@ -3,6 +3,7 @@ package io.avaje.validation.core;
 import java.util.Map;
 
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.AdapterBuildContext;
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
@@ -15,7 +16,7 @@ public final class ContactValidationAdapter implements ValidationAdapter<Contact
   private final AnnotationValidationAdapter<String> lastNameAdapter;
   private final ValidationAdapter<Address> addressValidator;
 
-  public ContactValidationAdapter(Validator validator) {
+  public ContactValidationAdapter(AdapterBuildContext validator) {
     this.firstNameAdapter =
         validator
             .<String>adapter(NotNull.class, Map.of("message", "null"))

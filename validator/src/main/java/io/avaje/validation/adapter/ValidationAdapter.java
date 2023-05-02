@@ -56,13 +56,13 @@ public interface ValidationAdapter<T> {
   }
 
   /** Factory for creating a ValidationAdapter. */
-  public interface Factory {
+  interface Factory {
 
     /**
      * Create and return a ValidationAdapter given the type and annotations or return null.
      *
      * <p>Returning null means that the adapter could be created by another factory.
      */
-    ValidationAdapter<?> create(Type type, Validator jsonb);
+    ValidationAdapter<?> create(Type type, AdapterBuildContext ctx);
   }
 }

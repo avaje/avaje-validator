@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.AdapterBuildContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
@@ -22,7 +23,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
   private final ValidationAdapter<Address> addressValidator;
   private final ValidationAdapter<Contact> contactValidator;
 
-  public CustomerValidationAdapter(Validator validator) {
+  public CustomerValidationAdapter(AdapterBuildContext validator) {
     this.activeAdapter =
         validator.<Boolean>adapter(AssertTrue.class, Map.of("message", "not true"));
 
