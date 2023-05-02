@@ -1,9 +1,10 @@
 package io.avaje.validation.core;
 
+import io.avaje.validation.adapter.RegexFlag;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
-import jakarta.validation.constraints.Pattern.Flag;
+//import jakarta.validation.constraints.Pattern.Flag;
 
 import java.lang.reflect.Array;
 import java.time.Instant;
@@ -48,7 +49,7 @@ final class JakartaAdapters {
       this.message = message;
       int flags = 0;
 
-      for (final var flag : (List<Flag>) attributes.get("flags")) {
+      for (final var flag : (List<RegexFlag>) attributes.get("flags")) {
         flags |= flag.getValue();
       }
       this.pattern =
