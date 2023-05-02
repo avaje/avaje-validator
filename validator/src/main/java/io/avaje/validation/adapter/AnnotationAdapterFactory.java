@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Factory for creating a ValidationAdapter.
  */
-public interface AnnotationValidatorFactory {
+public interface AnnotationAdapterFactory {
 
     /**
      * Create and return a ValidationAdapter given the type and annotations or return null.

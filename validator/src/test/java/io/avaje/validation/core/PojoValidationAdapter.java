@@ -1,10 +1,6 @@
 package io.avaje.validation.core;
 
-import java.util.Collection;
-
-//import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.ValidationRequest;
 
 public final class PojoValidationAdapter {//implements ValidationAdapter<Pojo> {
 

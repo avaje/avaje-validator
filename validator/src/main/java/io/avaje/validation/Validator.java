@@ -38,10 +38,10 @@ public interface Validator {
     Builder add(ValidatorComponent component);
 
     /** Add a ValidationAdapter.Factory which provides JsonAdapters to use. */
-    Builder add(ValidationAdapter.Factory factory);
+    Builder add(AdapterFactory factory);
 
     /** Add a ValidationAdapter.Factory which provides JsonAdapters to use. */
-    Builder add(AnnotationValidatorFactory factory);
+    Builder add(AnnotationAdapterFactory factory);
 
     /**
      * Build and return the Validator instance with all the given adapters and factories registered.

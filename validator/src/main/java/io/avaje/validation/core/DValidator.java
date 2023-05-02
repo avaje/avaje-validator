@@ -22,8 +22,8 @@ final class DValidator implements Validator, AdapterBuildContext {
   private final MessageInterpolator interpolator;
 
   DValidator(
-      List<ValidationAdapter.Factory> factories,
-      List<AnnotationValidatorFactory> annotationFactories,
+      List<AdapterFactory> factories,
+      List<AnnotationAdapterFactory> annotationFactories,
       MessageInterpolator interpolator) {
     this.interpolator = interpolator;
     this.builder = new CoreAdapterBuilder(this, factories, annotationFactories);
@@ -93,8 +93,8 @@ final class DValidator implements Validator, AdapterBuildContext {
   /** Implementation of Validator.Builder. */
   static final class DBuilder implements Validator.Builder {
 
-    private final List<ValidationAdapter.Factory> factories = new ArrayList<>();
-    private final List<AnnotationValidatorFactory> afactories = new ArrayList<>();
+    private final List<AdapterFactory> factories = new ArrayList<>();
+    private final List<AnnotationAdapterFactory> afactories = new ArrayList<>();
 
     @Override
     public Builder add(Type type, AdapterBuilder builder) {
@@ -113,7 +113,7 @@ final class DValidator implements Validator, AdapterBuildContext {
     }
 
     @Override
-    public Builder add(ValidationAdapter.Factory factory) {
+    public Builder add(AdapterFactory factory) {
       factories.add(factory);
       return this;
     }
@@ -124,7 +124,7 @@ final class DValidator implements Validator, AdapterBuildContext {
     }
 
     @Override
-    public Builder add(AnnotationValidatorFactory factory) {
+    public Builder add(AnnotationAdapterFactory factory) {
       afactories.add(factory);
       return this;
     }
@@ -150,21 +150,21 @@ final class DValidator implements Validator, AdapterBuildContext {
       return new DValidator(factories, afactories, interpolator);
     }
 
-    static <T> AnnotationValidatorFactory newAnnotationAdapterFactory(
+    static <T> AnnotationAdapterFactory newAnnotationAdapterFactory(
         Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);
       return (targetType, context, attributes) -> simpleMatch(type, targetType) ? adapter : null;
     }
 
-    static <T> ValidationAdapter.Factory newAdapterFactory(
+    static <T> AdapterFactory newAdapterFactory(
         Type type, ValidationAdapter<T> jsonAdapter) {
       requireNonNull(type);
       requireNonNull(jsonAdapter);
       return (targetType, jsonb) -> simpleMatch(type, targetType) ? jsonAdapter : null;
     }
 
-    static <T> ValidationAdapter.Factory newAdapterFactory(Type type, AdapterBuilder builder) {
+    static <T> AdapterFactory newAdapterFactory(Type type, AdapterBuilder builder) {
       requireNonNull(type);
       requireNonNull(builder);
       return (targetType, ctx) -> simpleMatch(type, targetType) ? builder.build(ctx) : null;

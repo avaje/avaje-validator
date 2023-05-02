@@ -1,17 +1,17 @@
 package io.avaje.validation.core;
 
+import io.avaje.validation.ConstraintViolation;
+import io.avaje.validation.ConstraintViolationException;
+import io.avaje.validation.Validator;
+import org.junit.jupiter.api.Test;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import io.avaje.validation.ConstraintViolation;
-import io.avaje.validation.ConstraintViolationException;
-import org.junit.jupiter.api.Test;
-
-import io.avaje.validation.Validator;
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 class ValidatorTest {
 

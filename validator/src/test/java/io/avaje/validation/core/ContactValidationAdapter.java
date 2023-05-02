@@ -1,12 +1,12 @@
 package io.avaje.validation.core;
 
-import java.util.Map;
-
 import io.avaje.validation.adapter.AdapterBuildContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.Map;
 
 public final class ContactValidationAdapter implements ValidationAdapter<Contact> {
 
