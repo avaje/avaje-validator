@@ -5,6 +5,7 @@ import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,8 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
   private final ValidationAdapter<Object> activeDateAdapter;
   private final ValidationAdapter<List<Contact>> contactsValidator;
 
-  private final ValidationAdapter<Address> addressValidator;
+  private final ValidationAdapter<Address> billingAddressValidator;
+  private final ValidationAdapter<Address> shippingAddressValidator;
   private final ValidationAdapter<Contact> contactValidator;
 
   public CustomerValidationAdapter(AdapterBuildContext ctx) {
@@ -34,7 +36,12 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
         ctx.<List<Contact>>adapter(
             Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2));
 
-    addressValidator = ctx.adapter(Address.class);
+    ValidationAdapter<Address> addressAdapter = ctx.adapter(Address.class);
+    shippingAddressValidator = addressAdapter;
+    billingAddressValidator = ctx
+            .<Address>adapter(NotNull.class, Collections.emptyMap())
+            .andThen(addressAdapter);
+
     contactValidator = ctx.adapter(Contact.class);
   }
 
@@ -45,11 +52,11 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
     activeDateAdapter.validate(value.activeDate, request, "activeDate");
 
     final var _billingAddress = value.billingAddress;
-      addressValidator.validate(_billingAddress, request, "billingAddress");
+      billingAddressValidator.validate(_billingAddress, request, "billingAddress");
 
     final var _shippingAddress = value.shippingAddress;
     if (_shippingAddress != null) { // is nullable
-      addressValidator.validate(_shippingAddress, request, "shippingAddress");
+      shippingAddressValidator.validate(_shippingAddress, request, "shippingAddress");
     }
 
     final var _contacts = value.contacts;
