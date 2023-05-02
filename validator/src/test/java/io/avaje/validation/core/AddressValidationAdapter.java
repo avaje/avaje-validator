@@ -3,6 +3,7 @@ package io.avaje.validation.core;
 import java.util.Map;
 
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.AdapterBuildContext;
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
@@ -15,7 +16,7 @@ public final class AddressValidationAdapter implements ValidationAdapter<Address
 //  private final AnnotationValidationAdapter<String> line2Adapter;
 //  private final AnnotationValidationAdapter<Long> longValueAdapter;
 
-  public AddressValidationAdapter(Validator validator) {
+  public AddressValidationAdapter(AdapterBuildContext validator) {
     this.line1Adapter =
         validator
             .<String>adapter(NotNull.class, Map.of("message", "null"))

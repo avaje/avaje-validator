@@ -14,13 +14,14 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.AdapterBuildContext;
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidatorComponent;
 import io.avaje.validation.adapter.AnnotationValidationAdapter.Factory;
 
 /** Default implementation of Validator. */
-final class DValidator implements Validator {
+final class DValidator implements Validator, AdapterBuildContext {
 
   private final CoreAdapterBuilder builder;
   private final Map<Type, DValidationType<?>> typeCache = new ConcurrentHashMap<>();
@@ -162,7 +163,7 @@ final class DValidator implements Validator {
     static <T> ValidationAdapter.Factory newAdapterFactory(Type type, AdapterBuilder builder) {
       requireNonNull(type);
       requireNonNull(builder);
-      return (targetType, jsonb) -> simpleMatch(type, targetType) ? builder.build(jsonb) : null;
+      return (targetType, ctx) -> simpleMatch(type, targetType) ? builder.build(ctx) : null;
     }
   }
 
