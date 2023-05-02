@@ -15,7 +15,7 @@ import static io.avaje.validation.core.Util.*;
 import static java.util.Objects.requireNonNull;
 
 /** Default implementation of Validator. */
-final class DValidator implements Validator, AdapterContext {
+final class DValidator implements Validator, ValidationContext {
 
   private final CoreAdapterBuilder builder;
   private final Map<Type, DValidationType<?>> typeCache = new ConcurrentHashMap<>();

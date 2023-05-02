@@ -1,6 +1,6 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.adapter.AdapterContext;
+import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +15,7 @@ public final class ContactValidationAdapter implements ValidationAdapter<Contact
   private final ValidationAdapter<String> lastNameAdapter;
   private final ValidationAdapter<Address> addressValidator;
 
-  public ContactValidationAdapter(AdapterContext ctx) {
+  public ContactValidationAdapter(ValidationContext ctx) {
     this.firstNameAdapter =
         ctx
             .<String>adapter(NotNull.class, Map.of("message", "null"))

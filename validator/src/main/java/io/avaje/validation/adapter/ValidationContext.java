@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-public interface AdapterContext {
+public interface ValidationContext {
 
     /**
      * Return the adapter for the given type.
@@ -38,7 +38,7 @@ public interface AdapterContext {
          *
          * <p>Returning null means that the adapter could be created by another factory.
          */
-        ValidationAdapter<?> create(Type type, AdapterContext ctx);
+        ValidationAdapter<?> create(Type type, ValidationContext ctx);
     }
 
     /**
@@ -52,6 +52,6 @@ public interface AdapterContext {
          * <p>Returning null means that the adapter could be created by another factory.
          */
         ValidationAdapter<?> create(
-                Class<? extends Annotation> annotationType, AdapterContext ctx, Map<String, Object> attributes);
+                Class<? extends Annotation> annotationType, ValidationContext ctx, Map<String, Object> attributes);
     }
 }

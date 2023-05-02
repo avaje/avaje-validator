@@ -1,6 +1,6 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.adapter.AdapterContext;
+import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.*;
@@ -20,7 +20,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
   private final ValidationAdapter<Address> shippingAddressValidator;
   private final ValidationAdapter<Contact> contactValidator;
 
-  public CustomerValidationAdapter(AdapterContext ctx) {
+  public CustomerValidationAdapter(ValidationContext ctx) {
     this.activeAdapter =
         ctx.<Boolean>adapter(AssertTrue.class, Map.of("message", "not true"));
 

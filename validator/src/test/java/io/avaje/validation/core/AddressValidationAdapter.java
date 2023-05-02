@@ -1,6 +1,6 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.adapter.AdapterContext;
+import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +14,7 @@ public final class AddressValidationAdapter implements ValidationAdapter<Address
 //  private final AnnotationValidationAdapter<String> line2Adapter;
 //  private final AnnotationValidationAdapter<Long> longValueAdapter;
 
-  public AddressValidationAdapter(AdapterContext ctx) {
+  public AddressValidationAdapter(ValidationContext ctx) {
     this.line1Adapter = ctx.<String>adapter(NotNull.class, Map.of("message", "myCustomNullMessage"))
             .andThen(ctx.adapter(NotBlank.class, Map.of("message", "empty")));
   }
