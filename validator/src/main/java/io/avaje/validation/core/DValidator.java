@@ -145,19 +145,19 @@ final class DValidator implements Validator, ValidationContext {
       return new DValidator(factories, afactories, interpolator);
     }
 
-    static <T> AnnotationFactory newAnnotationAdapterFactory(Type type, ValidationAdapter<T> adapter) {
+    private static <T> AnnotationFactory newAnnotationAdapterFactory(Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);
       return (targetType, context, attributes) -> simpleMatch(type, targetType) ? adapter : null;
     }
 
-    static <T> AdapterFactory newAdapterFactory(Type type, ValidationAdapter<T> adapter) {
+    private static <T> AdapterFactory newAdapterFactory(Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);
       return (targetType, context) -> simpleMatch(type, targetType) ? adapter : null;
     }
 
-    static <T> AdapterFactory newAdapterFactory(Type type, AdapterBuilder builder) {
+    private static AdapterFactory newAdapterFactory(Type type, AdapterBuilder builder) {
       requireNonNull(type);
       requireNonNull(builder);
       return (targetType, ctx) -> simpleMatch(type, targetType) ? builder.build(ctx) : null;

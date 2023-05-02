@@ -4,7 +4,6 @@ import io.avaje.validation.adapter.RegexFlag;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
-//import jakarta.validation.constraints.Pattern.Flag;
 
 import java.lang.reflect.Array;
 import java.time.Instant;
@@ -16,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 final class JakartaAdapters {
   private JakartaAdapters() {}
@@ -52,8 +52,7 @@ final class JakartaAdapters {
       for (final var flag : (List<RegexFlag>) attributes.get("flags")) {
         flags |= flag.getValue();
       }
-      this.pattern =
-              java.util.regex.Pattern.compile((String) attributes.get("regexp"), flags)
+      this.pattern = Pattern.compile((String) attributes.get("regexp"), flags)
                       .asMatchPredicate()
                       .negate();
     }

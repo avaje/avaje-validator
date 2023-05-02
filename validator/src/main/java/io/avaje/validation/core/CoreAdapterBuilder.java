@@ -41,7 +41,7 @@ final class CoreAdapterBuilder {
     return build(type, type);
   }
 
-  public <T> ValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls, Map<String, Object> attributes) {
+  <T> ValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls, Map<String, Object> attributes) {
     return buildAnnotation(cls, attributes);
   }
 
