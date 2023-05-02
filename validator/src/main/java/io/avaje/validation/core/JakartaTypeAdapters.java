@@ -19,9 +19,8 @@ import jakarta.validation.constraints.Pattern.Flag;
 final class JakartaTypeAdapters {
   private JakartaTypeAdapters() {}
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
   static final AnnotationValidatorFactory FACTORY =
-      (annotationType, validator, interpolator) -> {
+      (annotationType, context, interpolator) -> {
         switch (annotationType.getSimpleName()) {
           case "AssertTrue":
             return new AssertTrueAdapter(interpolator);
