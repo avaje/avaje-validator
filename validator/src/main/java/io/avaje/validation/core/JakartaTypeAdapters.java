@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import io.avaje.validation.adapter.AnnotationValidatorFactory;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.Pattern.Flag;
 
@@ -19,7 +20,7 @@ final class JakartaTypeAdapters {
   private JakartaTypeAdapters() {}
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  static final AnnotationValidationAdapter.Factory FACTORY =
+  static final AnnotationValidatorFactory FACTORY =
       (annotationType, validator, interpolator) -> {
         switch (annotationType.getSimpleName()) {
           case "AssertTrue":

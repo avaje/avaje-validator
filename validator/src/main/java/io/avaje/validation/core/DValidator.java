@@ -18,7 +18,7 @@ import io.avaje.validation.adapter.AdapterBuildContext;
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidatorComponent;
-import io.avaje.validation.adapter.AnnotationValidationAdapter.Factory;
+import io.avaje.validation.adapter.AnnotationValidatorFactory;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator, AdapterBuildContext {
@@ -29,7 +29,7 @@ final class DValidator implements Validator, AdapterBuildContext {
 
   DValidator(
       List<ValidationAdapter.Factory> factories,
-      List<AnnotationValidationAdapter.Factory> annotationFactories,
+      List<AnnotationValidatorFactory> annotationFactories,
       MessageInterpolator interpolator) {
     this.interpolator = interpolator;
     this.builder = new CoreAdapterBuilder(this, factories, annotationFactories);
@@ -90,7 +90,7 @@ final class DValidator implements Validator, AdapterBuildContext {
   static final class DBuilder implements Validator.Builder {
 
     private final List<ValidationAdapter.Factory> factories = new ArrayList<>();
-    private final List<AnnotationValidationAdapter.Factory> afactories = new ArrayList<>();
+    private final List<AnnotationValidatorFactory> afactories = new ArrayList<>();
 
     @Override
     public Builder add(Type type, AdapterBuilder builder) {
@@ -120,7 +120,7 @@ final class DValidator implements Validator, AdapterBuildContext {
     }
 
     @Override
-    public Builder add(Factory factory) {
+    public Builder add(AnnotationValidatorFactory factory) {
       afactories.add(factory);
       return this;
     }
@@ -146,7 +146,7 @@ final class DValidator implements Validator, AdapterBuildContext {
       return new DValidator(factories, afactories, interpolator);
     }
 
-    static <T> AnnotationValidationAdapter.Factory newAnnotationAdapterFactory(
+    static <T> AnnotationValidatorFactory newAnnotationAdapterFactory(
         Type type, AnnotationValidationAdapter<T> jsonAdapter) {
       requireNonNull(type);
       requireNonNull(jsonAdapter);

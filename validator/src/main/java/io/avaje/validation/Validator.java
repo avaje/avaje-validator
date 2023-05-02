@@ -3,13 +3,9 @@ package io.avaje.validation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.ServiceLoader;
 
-import io.avaje.validation.adapter.AdapterBuildContext;
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
-import io.avaje.validation.adapter.ValidationAdapter;
-import io.avaje.validation.adapter.ValidatorComponent;
+import io.avaje.validation.adapter.*;
 import io.avaje.validation.core.DefaultBootstrap;
 import io.avaje.validation.spi.Bootstrap;
 
@@ -45,7 +41,7 @@ public interface Validator {
     Builder add(ValidationAdapter.Factory factory);
 
     /** Add a ValidationAdapter.Factory which provides JsonAdapters to use. */
-    Builder add(AnnotationValidationAdapter.Factory factory);
+    Builder add(AnnotationValidatorFactory factory);
 
     /**
      * Build and return the Validator instance with all the given adapters and factories registered.

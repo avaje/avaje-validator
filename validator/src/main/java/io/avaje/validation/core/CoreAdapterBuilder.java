@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import io.avaje.validation.adapter.AnnotationValidatorFactory;
 import io.avaje.validation.adapter.ValidationAdapter;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
@@ -15,14 +16,14 @@ final class CoreAdapterBuilder {
 
   private final DValidator context;
   private final List<ValidationAdapter.Factory> factories = new ArrayList<>();
-  private final List<AnnotationValidationAdapter.Factory> annotationFactories = new ArrayList<>();
+  private final List<AnnotationValidatorFactory> annotationFactories = new ArrayList<>();
   private final Map<Object, ValidationAdapter<?>> adapterCache = new ConcurrentHashMap<>();
   private final MessageInterpolator interpolator;
 
   CoreAdapterBuilder(
       DValidator context,
       List<ValidationAdapter.Factory> userFactories,
-      List<AnnotationValidationAdapter.Factory> userAnnotationFactories) {
+      List<AnnotationValidatorFactory> userAnnotationFactories) {
     this.context = context;
     this.factories.addAll(userFactories);
     this.annotationFactories.addAll(userAnnotationFactories);
@@ -68,7 +69,7 @@ final class CoreAdapterBuilder {
   <T> AnnotationValidationAdapter<T> buildAnnotation(Class<? extends Annotation> cls) {
 
     // Ask each factory to create the JSON adapter.
-    for (final AnnotationValidationAdapter.Factory factory : annotationFactories) {
+    for (final AnnotationValidatorFactory factory : annotationFactories) {
       final var result =
           (AnnotationValidationAdapter<T>) factory.create(cls, context, interpolator);
       if (result != null) {
