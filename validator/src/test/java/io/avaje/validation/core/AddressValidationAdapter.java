@@ -18,9 +18,9 @@ public final class AddressValidationAdapter implements ValidationAdapter<Address
   public AddressValidationAdapter(Validator validator) {
     this.line1Adapter =
         validator
-            .<String>annotationAdapter(NotNull.class, Map.of("message", "null"))
+            .<String>adapter(NotNull.class, Map.of("message", "null"))
             .andThen(
-                validator.annotationAdapter(NotBlank.class, Map.of("message", "empty")));
+                validator.adapter(NotBlank.class, Map.of("message", "empty")));
   }
 
   @Override

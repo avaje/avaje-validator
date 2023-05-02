@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.avaje</groupId>
-    <artifactId>avaje-jsonb-parent</artifactId>
+    <artifactId>avaje-validator-parent</artifactId>
     <version>1.5-SNAPSHOT</version>
   </parent>
 
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <version>1.4</version>
     </dependency>
 
 <!--    <dependency>-->
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb-generator</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <version>1.4</version>
       <scope>provided</scope>
     </dependency>
 

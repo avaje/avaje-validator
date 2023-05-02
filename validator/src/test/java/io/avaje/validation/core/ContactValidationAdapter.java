@@ -18,11 +18,11 @@ public final class ContactValidationAdapter implements ValidationAdapter<Contact
   public ContactValidationAdapter(Validator validator) {
     this.firstNameAdapter =
         validator
-            .<String>annotationAdapter(NotNull.class, Map.of("message", "null"))
-            .andThen(validator.annotationAdapter(NotBlank.class, Map.of("message", "empty")));
+            .<String>adapter(NotNull.class, Map.of("message", "null"))
+            .andThen(validator.adapter(NotBlank.class, Map.of("message", "empty")));
 
     this.lastNameAdapter =
-        validator.<String>annotationAdapter(NotNull.class, Map.of("message", "null"));
+        validator.<String>adapter(NotNull.class, Map.of("message", "null"));
     this.addressValidator = validator.adapter(Address.class);
   }
 
