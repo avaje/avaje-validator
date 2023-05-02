@@ -1,8 +1,8 @@
 package io.avaje.validation.adapter;
 
-import io.avaje.validation.core.MessageInterpolator;
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
 
 /**
  * Factory for creating a ValidationAdapter.
@@ -15,5 +15,5 @@ public interface AnnotationValidatorFactory {
      * <p>Returning null means that the adapter could be created by another factory.
      */
     ValidationAdapter<?> create(
-            Class<? extends Annotation> annotationType, AdapterBuildContext ctx, MessageInterpolator interpolator);
+            Class<? extends Annotation> annotationType, AdapterBuildContext ctx, Map<String, Object> attributes);
 }

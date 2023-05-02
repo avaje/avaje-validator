@@ -2,9 +2,7 @@ package io.avaje.validation.core;
 
 import java.util.Map;
 
-import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.AdapterBuildContext;
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.NotBlank;

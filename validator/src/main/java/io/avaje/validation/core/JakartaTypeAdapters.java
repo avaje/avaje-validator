@@ -1,5 +1,10 @@
 package io.avaje.validation.core;
 
+import io.avaje.validation.adapter.AnnotationValidatorFactory;
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationRequest;
+import jakarta.validation.constraints.Pattern.Flag;
+
 import java.lang.reflect.Array;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -11,58 +16,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
-import io.avaje.validation.adapter.AnnotationValidatorFactory;
-import io.avaje.validation.adapter.ValidationRequest;
-import jakarta.validation.constraints.Pattern.Flag;
-
 final class JakartaTypeAdapters {
   private JakartaTypeAdapters() {}
 
   static final AnnotationValidatorFactory FACTORY =
-      (annotationType, context, interpolator) -> {
+      (annotationType, context, attributes) -> {
         switch (annotationType.getSimpleName()) {
           case "AssertTrue":
-            return new AssertTrueAdapter(interpolator);
+            return new AssertTrueAdapter(context.message("AssertTrue", attributes));
           case "NotBlank":
-            return new NotBlankAdapter(interpolator);
+            return new NotBlankAdapter(context.message("NotBlank", attributes));
           case "Past":
-            return new PastAdapter(interpolator);
+            return new PastAdapter(context.message("Past", attributes));
           case "Pattern":
-            return new PatternAdapter(interpolator);
+            return new PatternAdapter(context.message("Pattern", attributes), attributes);
           case "Size":
-            return new SizeAdapter(interpolator);
+            return new SizeAdapter(context.message("Size", attributes), attributes);
           default:
             return null;
         }
       };
 
-  private static final class PatternAdapter implements AnnotationValidationAdapter<CharSequence> {
+  private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
 
-    private String message;
-    private final MessageInterpolator interpolator;
-    private Predicate<String> pattern;
+    private final String message;
+    private final Predicate<String> pattern;
 
-    public PatternAdapter(MessageInterpolator interpolator) {
-      this.interpolator = interpolator;
-    }
-
-    @Override
-    public AnnotationValidationAdapter<CharSequence> init(Map<String, Object> annotationValueMap) {
-      message = interpolator.interpolate((String) annotationValueMap.get("message"));
-
+    public PatternAdapter(String message, Map<String, Object> attributes) {
+      this.message = message;
       int flags = 0;
 
-      for (final var flag : (List<Flag>) annotationValueMap.get("flags")) {
+      for (final var flag : (List<Flag>) attributes.get("flags")) {
         flags |= flag.getValue();
       }
-
-      pattern =
-          java.util.regex.Pattern.compile((String) annotationValueMap.get("regexp"), flags)
-              .asMatchPredicate()
-              .negate();
-
-      return this;
+      this.pattern =
+              java.util.regex.Pattern.compile((String) attributes.get("regexp"), flags)
+                      .asMatchPredicate()
+                      .negate();
     }
 
     @Override
@@ -78,23 +68,16 @@ final class JakartaTypeAdapters {
     }
   }
 
-  private static final class SizeAdapter implements AnnotationValidationAdapter<Object> {
+  private static final class SizeAdapter implements ValidationAdapter<Object> {
 
-    private String message;
-    private final MessageInterpolator interpolator;
-    private int min;
-    private int max;
+    private final String message;
+    private final int min;
+    private final int max;
 
-    public SizeAdapter(MessageInterpolator interpolator) {
-      this.interpolator = interpolator;
-    }
-
-    @Override
-    public AnnotationValidationAdapter<Object> init(Map<String, Object> annotationValueMap) {
-      message = interpolator.interpolate((String) annotationValueMap.get("message"));
-      min = (int) annotationValueMap.get("min");
-      max = (int) annotationValueMap.get("max");
-      return this;
+    public SizeAdapter(String message, Map<String, Object> attributes) {
+      this.message = message;
+      this.min = (int) attributes.get("min");
+      this.max = (int) attributes.get("max");
     }
 
     @Override
@@ -147,19 +130,12 @@ final class JakartaTypeAdapters {
     }
   }
 
-  private static final class PastAdapter implements AnnotationValidationAdapter<Object> {
+  private static final class PastAdapter implements ValidationAdapter<Object> {
 
-    private String message;
-    private final MessageInterpolator interpolator;
+    private final String message;
 
-    public PastAdapter(MessageInterpolator interpolator) {
-      this.interpolator = interpolator;
-    }
-
-    @Override
-    public AnnotationValidationAdapter<Object> init(Map<String, Object> annotationValueMap) {
-      message = interpolator.interpolate((String) annotationValueMap.get("message"));
-      return this;
+    public PastAdapter(String message) {
+      this.message = message;
     }
 
     @Override
@@ -193,19 +169,12 @@ final class JakartaTypeAdapters {
     }
   }
 
-  private static final class NotBlankAdapter implements AnnotationValidationAdapter<String> {
+  private static final class NotBlankAdapter implements ValidationAdapter<String> {
 
-    private String message;
-    private final MessageInterpolator interpolator;
+    private final String message;
 
-    public NotBlankAdapter(MessageInterpolator interpolator) {
-      this.interpolator = interpolator;
-    }
-
-    @Override
-    public AnnotationValidationAdapter<String> init(Map<String, Object> annotationValueMap) {
-      message = interpolator.interpolate((String) annotationValueMap.get("message"));
-      return this;
+    public NotBlankAdapter(String message) {
+      this.message = message;
     }
 
     @Override
@@ -218,19 +187,12 @@ final class JakartaTypeAdapters {
     }
   }
 
-  private static final class AssertTrueAdapter implements AnnotationValidationAdapter<Boolean> {
+  private static final class AssertTrueAdapter implements ValidationAdapter<Boolean> {
 
-    private String message;
-    private final MessageInterpolator interpolator;
+    private final String message;
 
-    public AssertTrueAdapter(MessageInterpolator interpolator) {
-      this.interpolator = interpolator;
-    }
-
-    @Override
-    public AnnotationValidationAdapter<Boolean> init(Map<String, Object> annotationValueMap) {
-      message = interpolator.interpolate((String) annotationValueMap.get("message"));
-      return this;
+    public AssertTrueAdapter(String message) {
+      this.message = message;
     }
 
     @Override

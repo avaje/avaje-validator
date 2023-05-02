@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Objects;
 
-import io.avaje.validation.Validator;
-
 public interface ValidationAdapter<T> {
 
   /** Return true if validation should recurse */
@@ -45,7 +43,7 @@ public interface ValidationAdapter<T> {
     return true;
   }
 
-  default AnnotationValidationAdapter<T> andThen(ValidationAdapter<? super T> after) {
+  default ValidationAdapter<T> andThen(ValidationAdapter<? super T> after) {
     Objects.requireNonNull(after);
     return (value, req, propertyName) -> {
       if (validate(value, req, propertyName)) {

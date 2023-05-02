@@ -1,15 +1,14 @@
 package io.avaje.validation.core;
 
+import io.avaje.validation.adapter.AnnotationValidatorFactory;
+import io.avaje.validation.adapter.ValidationAdapter;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
-import io.avaje.validation.adapter.AnnotationValidatorFactory;
-import io.avaje.validation.adapter.ValidationAdapter;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
 final class CoreAdapterBuilder {
@@ -42,8 +41,8 @@ final class CoreAdapterBuilder {
     return build(type, type);
   }
 
-  public <T> AnnotationValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls) {
-    return (AnnotationValidationAdapter<T>) buildAnnotation(cls);
+  public <T> ValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls, Map<String, Object> attributes) {
+    return buildAnnotation(cls, attributes);
   }
 
   /** Build given type and annotations. */
@@ -66,12 +65,12 @@ final class CoreAdapterBuilder {
   /** Build given type and annotations. */
   // TODO understand that lookup chain stuff
   @SuppressWarnings("unchecked")
-  <T> AnnotationValidationAdapter<T> buildAnnotation(Class<? extends Annotation> cls) {
+  <T> ValidationAdapter<T> buildAnnotation(Class<? extends Annotation> cls, Map<String, Object> attributes) {
 
     // Ask each factory to create the JSON adapter.
     for (final AnnotationValidatorFactory factory : annotationFactories) {
       final var result =
-          (AnnotationValidationAdapter<T>) factory.create(cls, context, interpolator);
+          (ValidationAdapter<T>) factory.create(cls, context, attributes);
       if (result != null) {
 
         return result;

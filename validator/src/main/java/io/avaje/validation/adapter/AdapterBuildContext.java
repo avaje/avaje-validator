@@ -10,6 +10,7 @@ public interface AdapterBuildContext {
 
     <T> ValidationAdapter<T> adapter(Type type);
 
-    <T> AnnotationValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes);
+    <T> ValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes);
 
+    String message(String key, Map<String, Object> attributes);
 }

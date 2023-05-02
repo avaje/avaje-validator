@@ -1,13 +1,13 @@
 package io.avaje.validation;
 
+import io.avaje.validation.adapter.*;
+import io.avaje.validation.core.DefaultBootstrap;
+import io.avaje.validation.spi.Bootstrap;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-
-import io.avaje.validation.adapter.*;
-import io.avaje.validation.core.DefaultBootstrap;
-import io.avaje.validation.spi.Bootstrap;
 
 public interface Validator {
 
@@ -26,10 +26,10 @@ public interface Validator {
   interface Builder {
 
     /** Add a ValidationAdapter to use for the given type. */
-    <T> Builder add(Type type, ValidationAdapter<T> jsonAdapter);
+    <T> Builder add(Type type, ValidationAdapter<T> adapter);
 
     /** Add a AnnotationValidationAdapter to use for the given type. */
-    <T> Builder add(Class<Annotation> type, AnnotationValidationAdapter<T> jsonAdapter);
+    <T> Builder add(Class<Annotation> type, ValidationAdapter<T> adapter);
 
     /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
     Builder add(Type type, AdapterBuilder builder);

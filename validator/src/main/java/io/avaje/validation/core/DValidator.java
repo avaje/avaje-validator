@@ -1,9 +1,7 @@
 package io.avaje.validation.core;
 
-import static io.avaje.validation.core.Util.canonicalize;
-import static io.avaje.validation.core.Util.canonicalizeClass;
-import static io.avaje.validation.core.Util.removeSubtypeWildcard;
-import static java.util.Objects.requireNonNull;
+import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -13,12 +11,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.AdapterBuildContext;
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
-import io.avaje.validation.adapter.ValidationAdapter;
-import io.avaje.validation.adapter.ValidatorComponent;
-import io.avaje.validation.adapter.AnnotationValidatorFactory;
+import static io.avaje.validation.core.Util.*;
+import static java.util.Objects.requireNonNull;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator, AdapterBuildContext {
@@ -59,6 +53,16 @@ final class DValidator implements Validator, AdapterBuildContext {
   }
 
   @Override
+  public String message(String key, Map<String, Object> attributes) {
+    String msg = (String)attributes.get("message");
+    if (msg == null) {
+      // lookup default message for the given key
+      msg = key+"-todo-lookupDefaultMessage";
+    }
+    return msg;
+  }
+
+  @Override
   public <T> ValidationAdapter<T> adapter(Class<T> cls) {
     final Type cacheKey = canonicalizeClass(requireNonNull(cls));
     final ValidationAdapter<T> result = builder.get(cacheKey);
@@ -69,10 +73,10 @@ final class DValidator implements Validator, AdapterBuildContext {
   }
 
   @Override
-  public <T> AnnotationValidationAdapter<T> adapter(
-      Class<? extends Annotation> cls, Map<String, Object> annotationAttributes) {
+  public <T> ValidationAdapter<T> adapter(
+      Class<? extends Annotation> cls, Map<String, Object> attributes) {
 
-    return builder.<T>annotationAdapter(cls).init(annotationAttributes);
+    return builder.<T>annotationAdapter(cls, attributes);
   }
 
   @Override
@@ -115,8 +119,8 @@ final class DValidator implements Validator, AdapterBuildContext {
     }
 
     @Override
-    public <T> Builder add(Class<Annotation> type, AnnotationValidationAdapter<T> jsonAdapter) {
-      return add(newAnnotationAdapterFactory(type, jsonAdapter));
+    public <T> Builder add(Class<Annotation> type, ValidationAdapter<T> adapter) {
+      return add(newAnnotationAdapterFactory(type, adapter));
     }
 
     @Override
@@ -147,10 +151,10 @@ final class DValidator implements Validator, AdapterBuildContext {
     }
 
     static <T> AnnotationValidatorFactory newAnnotationAdapterFactory(
-        Type type, AnnotationValidationAdapter<T> jsonAdapter) {
+        Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
-      requireNonNull(jsonAdapter);
-      return (targetType, jsonb, i) -> simpleMatch(type, targetType) ? jsonAdapter : null;
+      requireNonNull(adapter);
+      return (targetType, context, attributes) -> simpleMatch(type, targetType) ? adapter : null;
     }
 
     static <T> ValidationAdapter.Factory newAdapterFactory(
