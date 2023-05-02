@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.AssertTrue;
@@ -20,26 +19,23 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
   private final ValidationAdapter<Object> activeDateAdapter;
   private final ValidationAdapter<List<Contact>> contactsValidator;
 
-  private final CoreValidation core;
-
   private final ValidationAdapter<Address> addressValidator;
   private final ValidationAdapter<Contact> contactValidator;
 
   public CustomerValidationAdapter(Validator validator) {
-    this.core = validator.core();
     this.activeAdapter =
-        validator.<Boolean>annotationAdapter(AssertTrue.class, Map.of("message", "not true"));
+        validator.<Boolean>adapter(AssertTrue.class, Map.of("message", "not true"));
 
     this.nameAdapter =
         validator
-            .<String>annotationAdapter(NotNull.class, Map.of("message", "null"))
-            .andThen(validator.annotationAdapter(NotBlank.class, Map.of("message", "empty")));
+            .<String>adapter(NotNull.class, Map.of("message", "null"))
+            .andThen(validator.adapter(NotBlank.class, Map.of("message", "empty")));
 
     this.activeDateAdapter =
-        validator.annotationAdapter(Past.class, Map.of("message", "not in the past"));
+        validator.adapter(Past.class, Map.of("message", "not in the past"));
 
     this.contactsValidator =
-        validator.<List<Contact>>annotationAdapter(
+        validator.<List<Contact>>adapter(
             Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2));
 
     addressValidator = validator.adapter(Address.class);

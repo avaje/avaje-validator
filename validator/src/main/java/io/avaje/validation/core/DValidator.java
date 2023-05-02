@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.AnnotationValidationAdapter;
-import io.avaje.validation.adapter.CoreValidation;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidatorComponent;
 import io.avaje.validation.adapter.AnnotationValidationAdapter.Factory;
@@ -37,11 +36,6 @@ final class DValidator implements Validator {
 
   public MessageInterpolator interpolator() {
     return this.interpolator;
-  }
-
-  @Override
-  public CoreValidation core() {
-    return new DCoreValidation();
   }
 
   @Override
@@ -74,7 +68,7 @@ final class DValidator implements Validator {
   }
 
   @Override
-  public <T> AnnotationValidationAdapter<T> annotationAdapter(
+  public <T> AnnotationValidationAdapter<T> adapter(
       Class<? extends Annotation> cls, Map<String, Object> annotationAttributes) {
 
     return builder.<T>annotationAdapter(cls).init(annotationAttributes);
