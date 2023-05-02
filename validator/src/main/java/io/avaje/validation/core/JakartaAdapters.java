@@ -59,13 +59,10 @@ final class JakartaAdapters {
 
     @Override
     public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
-
       if (value == null || pattern.test(propertyName)) {
-
         req.addViolation(message, propertyName);
         return false;
       }
-
       return true;
     }
   }
@@ -84,7 +81,6 @@ final class JakartaAdapters {
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-
       if (value == null) {
         if (min != -1) {
           req.addViolation("CollectionNull", propertyName);

@@ -54,7 +54,6 @@ final class CoreAdapterBuilder {
     for (final ValidationContext.AdapterFactory factory : factories) {
       final ValidationAdapter<T> result = (ValidationAdapter<T>) factory.create(type, context);
       if (result != null) {
-
         return result;
       }
     }
@@ -69,10 +68,8 @@ final class CoreAdapterBuilder {
 
     // Ask each factory to create the validation adapter.
     for (final ValidationContext.AnnotationFactory factory : annotationFactories) {
-      final var result =
-          (ValidationAdapter<T>) factory.create(cls, context, attributes);
+      final var result = (ValidationAdapter<T>) factory.create(cls, context, attributes);
       if (result != null) {
-
         return result;
       }
     }

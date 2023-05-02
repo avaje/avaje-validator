@@ -1,6 +1,6 @@
 package io.avaje.validation.core;
 
-public class NooPMessageInterpolator implements MessageInterpolator {
+final class NoopMessageInterpolator implements MessageInterpolator {
 
   @Override
   public String interpolate(String string) {

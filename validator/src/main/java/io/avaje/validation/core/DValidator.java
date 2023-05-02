@@ -40,16 +40,13 @@ final class DValidator implements Validator, ValidationContext {
     type.validate(any);
   }
 
-
   private <T> ValidationType<T> type(Class<T> cls) {
     return typeWithCache(cls);
   }
 
   @SuppressWarnings("unchecked")
   private <T> ValidationType<T> typeWithCache(Type type) {
-    return (ValidationType<T>)
-        typeCache.computeIfAbsent(
-            type, _type -> new DValidationType<>(this, _type, adapter(_type)));
+    return (ValidationType<T>)typeCache.computeIfAbsent(type, _type -> new DValidationType<>(adapter(_type)));
   }
 
   @Override
@@ -73,10 +70,8 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  public <T> ValidationAdapter<T> adapter(
-      Class<? extends Annotation> cls, Map<String, Object> attributes) {
-
-    return builder.<T>annotationAdapter(cls, attributes);
+  public <T> ValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes) {
+    return builder.annotationAdapter(cls, attributes);
   }
 
   @Override
@@ -146,19 +141,17 @@ final class DValidator implements Validator, ValidationContext {
       final var interpolator =
           ServiceLoader.load(MessageInterpolator.class)
               .findFirst()
-              .orElseGet(NooPMessageInterpolator::new);
+              .orElseGet(NoopMessageInterpolator::new);
       return new DValidator(factories, afactories, interpolator);
     }
 
-    static <T> AnnotationFactory newAnnotationAdapterFactory(
-        Type type, ValidationAdapter<T> adapter) {
+    static <T> AnnotationFactory newAnnotationAdapterFactory(Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);
       return (targetType, context, attributes) -> simpleMatch(type, targetType) ? adapter : null;
     }
 
-    static <T> AdapterFactory newAdapterFactory(
-        Type type, ValidationAdapter<T> adapter) {
+    static <T> AdapterFactory newAdapterFactory(Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);
       return (targetType, context) -> simpleMatch(type, targetType) ? adapter : null;
