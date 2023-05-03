@@ -1,14 +1,14 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.adapter.ValidationContext;
-import io.avaje.validation.adapter.ValidationAdapter;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
 final class CoreAdapterBuilder {
@@ -26,7 +26,7 @@ final class CoreAdapterBuilder {
     this.context = context;
     this.factories.addAll(userFactories);
     this.annotationFactories.addAll(userAnnotationFactories);
-    this.annotationFactories.add(JakartaAdapters.FACTORY);
+    this.annotationFactories.add(BasicAdapters.FACTORY);
     interpolator = context.interpolator();
   }
 
