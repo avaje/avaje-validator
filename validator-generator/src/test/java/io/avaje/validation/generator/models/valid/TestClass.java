@@ -3,11 +3,12 @@ package io.avaje.validation.generator.models.valid;
 import java.util.List;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 @Valid
 public class TestClass {
 
-  private String alias;
+  @NotBlank private String alias;
 
   private String s;
 

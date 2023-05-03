@@ -99,8 +99,9 @@ final class TypeReader {
         allGetterMethods.put(methodKey.toLowerCase(), methodReader);
       }
       // for reading methods
-      if (includeField(element)) {
-        localFields.add(new FieldReader(element, genericTypeParams));
+      if (includeField(element)) {final var reader=new FieldReader(element, genericTypeParams);
+        localFields.add(reader);
+        reader.getterMethod(new MethodReader(methodElement, type));
       }
     }
   }

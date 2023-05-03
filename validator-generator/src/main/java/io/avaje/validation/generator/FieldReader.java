@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 final class FieldReader {
@@ -28,9 +29,19 @@ final class FieldReader {
     this.genericTypeParams = genericTypeParams;
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
-    this.rawType = Util.trimAnnotations(element.asType().toString());
+
+    if (element instanceof ExecutableElement) {
+      final var executableElement = (ExecutableElement) element;
+      this.rawType = Util.trimAnnotations(executableElement.getReturnType().toString());
+
+    } else {
+      this.rawType = Util.trimAnnotations(element.asType().toString());
+    }
     genericType = GenericType.parse(rawType);
-    this.annotations= element.getAnnotationMirrors().stream().map(a->GenericType.parse(a.getAnnotationType().toString())).collect(toList());
+    this.annotations =
+        element.getAnnotationMirrors().stream()
+            .map(a -> GenericType.parse(a.getAnnotationType().toString()))
+            .collect(toList());
     final String shortType = genericType.shortType();
     adapterShortType = initAdapterShortType(shortType);
     adapterFieldName = initShortName();
@@ -52,10 +63,9 @@ final class FieldReader {
 
   private String initShortName() {
     if (genericTypeParameter) {
-      final String name = genericType.shortName();
-      return Util.initLower(name) + "ValidationAdapterGeneric";
+      return Util.initLower(fieldName) + "ValidationAdapterGeneric";
     }
-    return Util.initLower(genericType.shortName()) + "ValidationAdapter";
+    return Util.initLower(fieldName) + "ValidationAdapter";
   }
 
   static String trimAnnotations(String type) {
@@ -89,7 +99,7 @@ final class FieldReader {
   void addImports(Set<String> importTypes) {
 
     genericType.addImports(importTypes);
-    annotations.forEach(t->t.addImports(importTypes));
+    annotations.forEach(t -> t.addImports(importTypes));
   }
 
   void cascadeTypes(Set<String> types) {
@@ -104,7 +114,9 @@ final class FieldReader {
   }
 
   void getterMethod(MethodReader getter) {
-    this.getter = getter;
+    if (getter != null) {
+      this.getter = getter;
+    }
   }
 
   boolean isPublicField() {
@@ -145,9 +157,9 @@ final class FieldReader {
 
   void writeFromJsonSwitch(Append writer) {
 
-    writer.append("%s.validate(", adapterFieldName);
+    writer.append("    %s.validate(", adapterFieldName);
     writeGetValue(writer, "");
-    writer.append(" request, \"%s\"));", adapterFieldName);
+    writer.append(", request, \"%s\");", adapterFieldName);
 
     writer.eol().eol();
   }
