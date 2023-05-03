@@ -1,14 +1,15 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.adapter.RegexFlag;
-import io.avaje.validation.adapter.ValidationContext;
-import io.avaje.validation.adapter.ValidationAdapter;
-import io.avaje.validation.adapter.ValidationRequest;
-
 import java.lang.reflect.Array;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.Date;
@@ -17,8 +18,13 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-final class JakartaAdapters {
-  private JakartaAdapters() {}
+import io.avaje.validation.adapter.RegexFlag;
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationRequest;
+
+final class BasicAdapters {
+  private BasicAdapters() {}
 
   static final ValidationContext.AnnotationFactory FACTORY =
       (annotationType, context, attributes) -> {
@@ -27,10 +33,16 @@ final class JakartaAdapters {
             return new NotNullAdapter(context.message("NotNull", attributes));
           case "AssertTrue":
             return new AssertTrueAdapter(context.message("AssertTrue", attributes));
+          case "AssertFalse":
+            return new AssertFalseAdapter(context.message("AssertFalse", attributes));
           case "NotBlank":
             return new NotBlankAdapter(context.message("NotBlank", attributes));
           case "Past":
+          case "PastOrPresent":
             return new PastAdapter(context.message("Past", attributes));
+          case "Future":
+          case "FutureOrPresent":
+            return new FutureAdapter(context.message("Future", attributes));
           case "Pattern":
             return new PatternAdapter(context.message("Pattern", attributes), attributes);
           case "Size":
@@ -52,9 +64,8 @@ final class JakartaAdapters {
       for (final var flag : (List<RegexFlag>) attributes.get("flags")) {
         flags |= flag.getValue();
       }
-      this.pattern = Pattern.compile((String) attributes.get("regexp"), flags)
-                      .asMatchPredicate()
-                      .negate();
+      this.pattern =
+          Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
     }
 
     @Override
@@ -128,6 +139,53 @@ final class JakartaAdapters {
     }
   }
 
+  private static final class FutureAdapter implements ValidationAdapter<Object> {
+
+    private final String message;
+
+    public FutureAdapter(String message) {
+      this.message = message;
+    }
+
+    @Override
+    public boolean validate(Object obj, ValidationRequest req, String propertyName) {
+
+      if (obj == null) {
+        req.addViolation(message, propertyName);
+        return false;
+      }
+      if (obj instanceof Date) {
+        final Date date = (Date) obj;
+        if (date.before(Date.from(Instant.now()))) {
+          req.addViolation(message, propertyName);
+          return false;
+        }
+      } else if (obj instanceof TemporalAccessor) {
+
+        final TemporalAccessor temporalAccessor = (TemporalAccessor) obj;
+        if (temporalAccessor instanceof LocalDate
+                && LocalDate.from(temporalAccessor).isBefore(LocalDate.now())
+            || temporalAccessor instanceof LocalDateTime
+                && LocalDateTime.from(temporalAccessor).isBefore(LocalDateTime.now())
+            || temporalAccessor instanceof LocalTime
+                && LocalTime.from(temporalAccessor).isBefore(LocalTime.now())
+            || temporalAccessor instanceof ZonedDateTime
+                && ZonedDateTime.from(temporalAccessor).isBefore(ZonedDateTime.now())
+            || temporalAccessor instanceof OffsetDateTime
+                && OffsetDateTime.from(temporalAccessor).isBefore(OffsetDateTime.now())
+            || temporalAccessor instanceof OffsetTime
+                && OffsetTime.from(temporalAccessor).isBefore(OffsetTime.now())
+            || temporalAccessor instanceof Year && Year.from(temporalAccessor).isBefore(Year.now())
+            || temporalAccessor instanceof YearMonth
+                && YearMonth.from(temporalAccessor).isBefore(YearMonth.now())) {
+          req.addViolation(message, propertyName);
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+
   private static final class PastAdapter implements ValidationAdapter<Object> {
 
     private final String message;
@@ -142,7 +200,8 @@ final class JakartaAdapters {
       if (obj == null) {
         req.addViolation(message, propertyName);
         return false;
-      } else if (obj instanceof Date) {
+      }
+      if (obj instanceof Date) {
         final Date date = (Date) obj;
         if (date.after(Date.from(Instant.now()))) {
           req.addViolation(message, propertyName);
@@ -151,16 +210,23 @@ final class JakartaAdapters {
       } else if (obj instanceof TemporalAccessor) {
 
         final TemporalAccessor temporalAccessor = (TemporalAccessor) obj;
-        if (temporalAccessor instanceof LocalDate) {
-          if (LocalDate.from(temporalAccessor).isAfter(LocalDate.now())) {
-            req.addViolation(message, propertyName);
-            return false;
-          }
-        } else if (temporalAccessor instanceof LocalTime) {
-          final LocalTime localTime = (LocalTime) temporalAccessor;
-          // handle LocalTime
-
-          // TODO do the rest of them
+        if (temporalAccessor instanceof LocalDate
+                && LocalDate.from(temporalAccessor).isAfter(LocalDate.now())
+            || temporalAccessor instanceof LocalDateTime
+                && LocalDateTime.from(temporalAccessor).isAfter(LocalDateTime.now())
+            || temporalAccessor instanceof LocalTime
+                && LocalTime.from(temporalAccessor).isAfter(LocalTime.now())
+            || temporalAccessor instanceof ZonedDateTime
+                && ZonedDateTime.from(temporalAccessor).isAfter(ZonedDateTime.now())
+            || temporalAccessor instanceof OffsetDateTime
+                && OffsetDateTime.from(temporalAccessor).isAfter(OffsetDateTime.now())
+            || temporalAccessor instanceof OffsetTime
+                && OffsetTime.from(temporalAccessor).isAfter(OffsetTime.now())
+            || temporalAccessor instanceof Year && Year.from(temporalAccessor).isAfter(Year.now())
+            || temporalAccessor instanceof YearMonth
+                && YearMonth.from(temporalAccessor).isAfter(YearMonth.now())) {
+          req.addViolation(message, propertyName);
+          return false;
         }
       }
       return true;
@@ -196,6 +262,24 @@ final class JakartaAdapters {
     @Override
     public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
       if (Boolean.FALSE.equals(type)) {
+        req.addViolation(message, propertyName);
+        return false;
+      }
+      return true;
+    }
+  }
+
+  private static final class AssertFalseAdapter implements ValidationAdapter<Boolean> {
+
+    private final String message;
+
+    public AssertFalseAdapter(String message) {
+      this.message = message;
+    }
+
+    @Override
+    public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
+      if (Boolean.TRUE.equals(type)) {
         req.addViolation(message, propertyName);
         return false;
       }
