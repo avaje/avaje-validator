@@ -1,14 +1,12 @@
 package io.avaje.validation.core;
 
-import java.util.Map;
-
-import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.AdapterBuildContext;
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.Map;
 
 public final class AddressValidationAdapter implements ValidationAdapter<Address> {
 
@@ -16,12 +14,9 @@ public final class AddressValidationAdapter implements ValidationAdapter<Address
 //  private final AnnotationValidationAdapter<String> line2Adapter;
 //  private final AnnotationValidationAdapter<Long> longValueAdapter;
 
-  public AddressValidationAdapter(AdapterBuildContext validator) {
-    this.line1Adapter =
-        validator
-            .<String>adapter(NotNull.class, Map.of("message", "null"))
-            .andThen(
-                validator.adapter(NotBlank.class, Map.of("message", "empty")));
+  public AddressValidationAdapter(ValidationContext ctx) {
+    this.line1Adapter = ctx.<String>adapter(NotNull.class, Map.of("message", "myCustomNullMessage"))
+            .andThen(ctx.adapter(NotBlank.class, Map.of("message", "empty")));
   }
 
   @Override

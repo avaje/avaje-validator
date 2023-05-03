@@ -1,17 +1,13 @@
 package io.avaje.validation.core;
 
-import java.util.List;
-import java.util.Map;
-
-import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.AdapterBuildContext;
+import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public final class CustomerValidationAdapter implements ValidationAdapter<Customer> {
 
@@ -20,27 +16,37 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
   private final ValidationAdapter<Object> activeDateAdapter;
   private final ValidationAdapter<List<Contact>> contactsValidator;
 
-  private final ValidationAdapter<Address> addressValidator;
+  private final ValidationAdapter<Address> billingAddressValidator;
+  private final ValidationAdapter<Address> shippingAddressValidator;
+  //private final ValidationAdapter<Address> addressValidator;
   private final ValidationAdapter<Contact> contactValidator;
 
-  public CustomerValidationAdapter(AdapterBuildContext validator) {
+  public CustomerValidationAdapter(ValidationContext ctx) {
     this.activeAdapter =
-        validator.<Boolean>adapter(AssertTrue.class, Map.of("message", "not true"));
+        ctx.<Boolean>adapter(AssertTrue.class, Map.of("message", "not true"));
 
     this.nameAdapter =
-        validator
+        ctx
             .<String>adapter(NotNull.class, Map.of("message", "null"))
-            .andThen(validator.adapter(NotBlank.class, Map.of("message", "empty")));
+            .andThen(ctx.adapter(NotBlank.class, Map.of("message", "empty")));
 
     this.activeDateAdapter =
-        validator.adapter(Past.class, Map.of("message", "not in the past"));
+        ctx.adapter(Past.class, Map.of("message", "not in the past"));
 
     this.contactsValidator =
-        validator.<List<Contact>>adapter(
+        ctx.<List<Contact>>adapter(
             Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2));
+    this.contactValidator = ctx.adapter(Contact.class);
 
-    addressValidator = validator.adapter(Address.class);
-    contactValidator = validator.adapter(Contact.class);
+    //this.addressValidator = ctx.adapter(Address.class);
+    this.shippingAddressValidator = ctx.adapter(Address.class);
+
+    // Option A: billingAddressValidator combines NotNull + addressValidator
+    this.billingAddressValidator = ctx.<Address>adapter(NotNull.class, Collections.emptyMap())
+            .andThen(ctx.adapter(Address.class));
+
+    // Option B: billingAddressValidator only does NotNull ...
+    //this.billingAddressValidator = ctx.<Address>adapter(NotNull.class, Collections.emptyMap());
   }
 
   @Override
@@ -49,12 +55,18 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
     nameAdapter.validate(value.name, request, "name");
     activeDateAdapter.validate(value.activeDate, request, "activeDate");
 
-    final var _billingAddress = value.billingAddress;
-      addressValidator.validate(_billingAddress, request, "billingAddress");
+    // Option A:
+    billingAddressValidator.validate(value.billingAddress, request, "billingAddress");
+
+    // Option B: Is more like cascading on collection
+    //final var _billingAddress = value.billingAddress;
+    //if (billingAddressValidator.validate(_billingAddress, request, "billingAddress")) {
+    //  addressValidator.validate(_billingAddress, request, "billingAddress");
+    //}
 
     final var _shippingAddress = value.shippingAddress;
     if (_shippingAddress != null) { // is nullable
-      addressValidator.validate(_shippingAddress, request, "shippingAddress");
+      shippingAddressValidator.validate(_shippingAddress, request, "shippingAddress");
     }
 
     final var _contacts = value.contacts;

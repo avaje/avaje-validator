@@ -1,17 +1,17 @@
 package io.avaje.validation.core;
 
+import io.avaje.validation.ConstraintViolation;
+import io.avaje.validation.ConstraintViolationException;
+import io.avaje.validation.Validator;
+import org.junit.jupiter.api.Test;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import io.avaje.validation.ConstraintViolation;
-import io.avaje.validation.ConstraintViolationException;
-import org.junit.jupiter.api.Test;
-
-import io.avaje.validation.Validator;
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 class ValidatorTest {
 
@@ -73,7 +73,45 @@ class ValidatorTest {
       var last = asList.get(violations.size() - 1);
       assertThat(last.path()).isEqualTo("contacts.1.address");
       assertThat(last.propertyName()).isEqualTo("line1");
-      assertThat(last.message()).isEqualTo("empty");
+      assertThat(last.message()).isEqualTo("myCustomNullMessage");
+    }
+  }
+
+  @Test
+  void contactWhenLastNameNull() {
+    try {
+      var contact = new Contact("first", null);
+      validator.validate(contact);
+      fail("");
+    } catch (ConstraintViolationException e) {
+      Set<ConstraintViolation> violations = e.violations();
+      assertThat(violations).hasSize(1);
+      List<ConstraintViolation> asList = new ArrayList<>(violations);
+
+      var first = asList.get(0);
+      assertThat(first.path()).isEqualTo("");
+      assertThat(first.propertyName()).isEqualTo("lastName");
+      assertThat(first.message()).isEqualTo("NotNull-todo-lookupDefaultMessage");
+    }
+  }
+
+  @Test
+  void customerWhenBillingAddressNull() {
+    try {
+      var customer = new Customer(true, " success ", LocalDate.now().minusDays(3));
+      customer.billingAddress = null;
+      validator.validate(customer);
+
+      fail("");
+    } catch (ConstraintViolationException e) {
+      Set<ConstraintViolation> violations = e.violations();
+      assertThat(violations).hasSize(1);
+      List<ConstraintViolation> asList = new ArrayList<>(violations);
+
+      var first = asList.get(0);
+      assertThat(first.path()).isEqualTo("");
+      assertThat(first.propertyName()).isEqualTo("billingAddress");
+      assertThat(first.message()).isEqualTo("NotNull-todo-lookupDefaultMessage");
     }
   }
 

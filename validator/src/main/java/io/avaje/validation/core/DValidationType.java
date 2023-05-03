@@ -5,31 +5,19 @@ import io.avaje.validation.adapter.ValidationRequest;
 
 import java.lang.reflect.Type;
 
-class DValidationType<T> implements ValidationType<T> {
+final class DValidationType<T> implements ValidationType<T> {
 
-  protected final DValidator jsonb;
-  protected final Type type;
-  protected final ValidationAdapter<T> adapter;
+  private final ValidationAdapter<T> adapter;
 
-  DValidationType(DValidator jsonb, Type type, ValidationAdapter<T> adapter) {
-    this.jsonb = jsonb;
-    this.type = type;
+  DValidationType(ValidationAdapter<T> adapter) {
     this.adapter = adapter;
   }
 
   @Override
   public void validate(T object) {
-    final var req = new ValidationRequest();
+    final var req = ValidationRequest.create();
     adapter.validate(object, req);
     req.throwWithViolations();
   }
 
-//  @Override
-//  public void validateAll(Collection<T> collection) {
-//    final var req = new ValidationRequest();
-//    for (T element : collection) {
-//      adapter.validate(element, req);
-//    }
-//    req.throwWithViolations();
-//  }
 }

@@ -1,5 +1,8 @@
 package io.avaje.validation.core;
 
+import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationAdapter;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -7,26 +10,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
-import io.avaje.validation.adapter.ValidationAdapter;
-
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
 final class CoreAdapterBuilder {
 
   private final DValidator context;
-  private final List<ValidationAdapter.Factory> factories = new ArrayList<>();
-  private final List<AnnotationValidationAdapter.Factory> annotationFactories = new ArrayList<>();
+  private final List<ValidationContext.AdapterFactory> factories = new ArrayList<>();
+  private final List<ValidationContext.AnnotationFactory> annotationFactories = new ArrayList<>();
   private final Map<Object, ValidationAdapter<?>> adapterCache = new ConcurrentHashMap<>();
   private final MessageInterpolator interpolator;
 
   CoreAdapterBuilder(
       DValidator context,
-      List<ValidationAdapter.Factory> userFactories,
-      List<AnnotationValidationAdapter.Factory> userAnnotationFactories) {
+      List<ValidationContext.AdapterFactory> userFactories,
+      List<ValidationContext.AnnotationFactory> userAnnotationFactories) {
     this.context = context;
     this.factories.addAll(userFactories);
     this.annotationFactories.addAll(userAnnotationFactories);
-    this.annotationFactories.add(JakartaTypeAdapters.FACTORY);
+    this.annotationFactories.add(JakartaAdapters.FACTORY);
     interpolator = context.interpolator();
   }
 
@@ -41,8 +41,8 @@ final class CoreAdapterBuilder {
     return build(type, type);
   }
 
-  public <T> AnnotationValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls) {
-    return (AnnotationValidationAdapter<T>) buildAnnotation(cls);
+  <T> ValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls, Map<String, Object> attributes) {
+    return buildAnnotation(cls, attributes);
   }
 
   /** Build given type and annotations. */
@@ -50,11 +50,10 @@ final class CoreAdapterBuilder {
   @SuppressWarnings("unchecked")
   <T> ValidationAdapter<T> build(Type type, Object cacheKey) {
 
-    // Ask each factory to create the JSON adapter.
-    for (final ValidationAdapter.Factory factory : factories) {
+    // Ask each factory to create the validation adapter.
+    for (final ValidationContext.AdapterFactory factory : factories) {
       final ValidationAdapter<T> result = (ValidationAdapter<T>) factory.create(type, context);
       if (result != null) {
-
         return result;
       }
     }
@@ -65,14 +64,12 @@ final class CoreAdapterBuilder {
   /** Build given type and annotations. */
   // TODO understand that lookup chain stuff
   @SuppressWarnings("unchecked")
-  <T> AnnotationValidationAdapter<T> buildAnnotation(Class<? extends Annotation> cls) {
+  <T> ValidationAdapter<T> buildAnnotation(Class<? extends Annotation> cls, Map<String, Object> attributes) {
 
-    // Ask each factory to create the JSON adapter.
-    for (final AnnotationValidationAdapter.Factory factory : annotationFactories) {
-      final var result =
-          (AnnotationValidationAdapter<T>) factory.create(cls, context, interpolator);
+    // Ask each factory to create the validation adapter.
+    for (final ValidationContext.AnnotationFactory factory : annotationFactories) {
+      final var result = (ValidationAdapter<T>) factory.create(cls, context, attributes);
       if (result != null) {
-
         return result;
       }
     }

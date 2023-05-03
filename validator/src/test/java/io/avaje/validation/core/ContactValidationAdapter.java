@@ -1,14 +1,13 @@
 package io.avaje.validation.core;
 
-import java.util.Map;
-
-import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.AdapterBuildContext;
-import io.avaje.validation.adapter.AnnotationValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.Collections;
+import java.util.Map;
 
 public final class ContactValidationAdapter implements ValidationAdapter<Contact> {
 
@@ -16,15 +15,14 @@ public final class ContactValidationAdapter implements ValidationAdapter<Contact
   private final ValidationAdapter<String> lastNameAdapter;
   private final ValidationAdapter<Address> addressValidator;
 
-  public ContactValidationAdapter(AdapterBuildContext validator) {
+  public ContactValidationAdapter(ValidationContext ctx) {
     this.firstNameAdapter =
-        validator
+        ctx
             .<String>adapter(NotNull.class, Map.of("message", "null"))
-            .andThen(validator.adapter(NotBlank.class, Map.of("message", "empty")));
+            .andThen(ctx.adapter(NotBlank.class, Map.of("message", "empty")));
 
-    this.lastNameAdapter =
-        validator.<String>adapter(NotNull.class, Map.of("message", "null"));
-    this.addressValidator = validator.adapter(Address.class);
+    this.lastNameAdapter = ctx.adapter(NotNull.class, Collections.emptyMap());
+    this.addressValidator = ctx.adapter(Address.class);
   }
 
   @Override

@@ -1,11 +1,11 @@
 package io.avaje.validation.core;
 
+import io.avaje.validation.ValidPojo;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.avaje.validation.ValidPojo;
-import jakarta.validation.constraints.Size;
 
 @ValidPojo
 public class Customer {
