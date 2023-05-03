@@ -1,13 +1,17 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.adapter.ValidationContext;
-import io.avaje.validation.adapter.ValidationAdapter;
-import io.avaje.validation.adapter.ValidationRequest;
-import jakarta.validation.constraints.*;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationRequest;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 public final class CustomerValidationAdapter implements ValidationAdapter<Customer> {
 

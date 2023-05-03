@@ -1,14 +1,14 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.adapter.ValidationContext;
-import io.avaje.validation.adapter.ValidationAdapter;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
 final class CoreAdapterBuilder {
@@ -74,6 +74,6 @@ final class CoreAdapterBuilder {
       }
     }
     // unknown annotation have noop
-    return new NoopAnnotationValidator<>();
+    return NoopAnnotationValidator.INSTANCE;
   }
 }

@@ -9,7 +9,7 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-validator-parent</artifactId>
-  <version>1.5-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>validator parent</name>
@@ -18,7 +18,7 @@
   <scm>
     <connection>scm:git:git@github.com:avaje/avaje-validator.git</connection>
     <developerConnection>scm:git:git@github.com:avaje/avaje-validator.git</developerConnection>
-    <tag>avaje-validator-parent-1.1</tag>
+    <tag>avaje-validator-parent-0.1</tag>
   </scm>
 
   <properties>
@@ -28,7 +28,8 @@
 
   <modules>
     <module>validator</module>
-      <module>validator-constraints</module>
+    <module>validator-constraints</module>
+    <module>validator-generator</module>
   </modules>
 
   <profiles>

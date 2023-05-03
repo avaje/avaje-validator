@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.avaje</groupId>
+    <artifactId>avaje-validator-parent</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>avaje-validator-generator</artifactId>
+  <name>validator generator</name>
+  <description>annotation processor generating json adapters</description>
+  <properties>
+    <avaje.prisms.version>1.8</avaje.prisms.version>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-validator</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-prisms</artifactId>
+      <version>${avaje.prisms.version}</version>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+   <dependency>
+    <groupId>jakarta.validation</groupId>
+    <artifactId>jakarta.validation-api</artifactId>
+    <version>3.0.2</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+   </dependency>
+   <dependency>
+    <groupId>javax.validation</groupId>
+    <artifactId>validation-api</artifactId>
+    <version>2.0.1.Final</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+</dependency>
+
+    <!-- test dependencies -->
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>junit</artifactId>
+      <version>1.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.avaje</groupId>
+              <artifactId>avaje-prisms</artifactId>
+              <version>${avaje.prisms.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>
