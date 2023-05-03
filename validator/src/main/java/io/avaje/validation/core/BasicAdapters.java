@@ -163,7 +163,9 @@ final class BasicAdapters {
       } else if (obj instanceof TemporalAccessor) {
 
         final TemporalAccessor temporalAccessor = (TemporalAccessor) obj;
-        if (temporalAccessor instanceof LocalDate
+        if (temporalAccessor instanceof Instant
+                && Instant.from(temporalAccessor).isBefore(Instant.now())
+            || temporalAccessor instanceof LocalDate
                 && LocalDate.from(temporalAccessor).isBefore(LocalDate.now())
             || temporalAccessor instanceof LocalDateTime
                 && LocalDateTime.from(temporalAccessor).isBefore(LocalDateTime.now())
