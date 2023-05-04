@@ -33,7 +33,7 @@ class ValidatorProcessorTest {
           .sorted(Comparator.reverseOrder())
           .map(Path::toFile)
           .forEach(File::delete);
-      Paths.get("io.avaje.validation.adapter.ValidatorComponent").toAbsolutePath().toFile().delete();
+      Paths.get("io.avaje.validation.Validator$GeneratedComponent").toAbsolutePath().toFile().delete();
     } catch (final Exception e) {
     }
   }

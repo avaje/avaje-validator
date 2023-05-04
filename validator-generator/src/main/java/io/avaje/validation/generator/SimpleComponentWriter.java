@@ -92,7 +92,7 @@ final class SimpleComponentWriter {
     writeMetaDataEntry(all);
     writer.append("})").eol();
 
-    writer.append("public class %s implements ValidatorComponent {", shortName).eol().eol();
+    writer.append("public class %s implements GeneratedComponent {", shortName).eol().eol();
   }
 
   private void writeMetaDataEntry(List<String> entries) {
@@ -108,7 +108,7 @@ final class SimpleComponentWriter {
   private void writeImports() {
     importTypes.add(Constants.VALIDATOR);
     importTypes.add(Constants.VALID_SPI);
-    importTypes.add("io.avaje.validation.adapter.ValidatorComponent");
+    importTypes.add("io.avaje.validation.Validator.GeneratedComponent");
     importTypes.addAll(metaData.allImports());
 
     for (final String importType : importTypes) {
