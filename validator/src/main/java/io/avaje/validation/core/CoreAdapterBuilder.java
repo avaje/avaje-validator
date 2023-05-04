@@ -26,7 +26,7 @@ final class CoreAdapterBuilder {
     this.context = context;
     this.factories.addAll(userFactories);
     this.annotationFactories.addAll(userAnnotationFactories);
-    this.annotationFactories.add(JakartaAdapters.FACTORY);
+    this.annotationFactories.add(BasicAdapters.FACTORY);
     interpolator = context.interpolator();
   }
 
