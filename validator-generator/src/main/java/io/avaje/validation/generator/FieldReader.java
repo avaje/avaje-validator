@@ -22,7 +22,6 @@ final class FieldReader {
 
   private MethodReader getter;
   private boolean genericTypeParameter;
-  private int genericTypeParamPosition;
   private final boolean optionalValidation;
   private final Map<GenericType, String> annotations;
   private final Element element;
@@ -32,8 +31,7 @@ final class FieldReader {
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
     this.element = element;
-    if (element instanceof ExecutableElement) {
-      final var executableElement = (ExecutableElement) element;
+    if (element instanceof final ExecutableElement executableElement) {
       this.rawType = Util.trimAnnotations(executableElement.getReturnType().toString());
 
     } else {
@@ -54,11 +52,9 @@ final class FieldReader {
 
   private String initAdapterShortType(String shortType) {
     String typeWrapped = "ValidationAdapter<" + PrimitiveUtil.wrap(shortType) + ">";
-    for (int i = 0; i < genericTypeParams.size(); i++) {
-      final String typeParam = genericTypeParams.get(i);
+    for (final String typeParam : genericTypeParams) {
       if (typeWrapped.contains("<" + typeParam + ">")) {
         genericTypeParameter = true;
-        genericTypeParamPosition = i;
         typeWrapped = typeWrapped.replace("<" + typeParam + ">", "<Object>");
       }
     }
@@ -137,19 +133,6 @@ final class FieldReader {
     writer.append("  private final %s %s;", adapterShortType, adapterFieldName).eol();
   }
 
-  String asTypeDeclaration() {
-    final String asType = genericType.asTypeDeclaration().replace("? extends ", "");
-    if (genericTypeParameter) {
-      return genericTypeReplacement(asType, "param" + genericTypeParamPosition);
-    }
-    return asType;
-  }
-
-  private String genericTypeReplacement(String asType, String replaceWith) {
-    final String typeParam = genericTypeParams.get(genericTypeParamPosition);
-    return asType.replace(typeParam + ".class", replaceWith);
-  }
-
   private void writeGetValue(Append writer, String suffix) {
     if (getter != null) {
       writer.append("value.%s()%s", getter.getName(), suffix);
@@ -208,7 +191,7 @@ final class FieldReader {
               "            .andThen(ctx.adapter(%s.class,%s))",
               a.getKey().shortName(), a.getValue());
     }
-    final var topType = PrimitiveUtil.wrap(genericType.topType());
+    final var topType = genericType.topType();
     if (isBasicType(topType)) {
 
       writer.append(";").eol();
