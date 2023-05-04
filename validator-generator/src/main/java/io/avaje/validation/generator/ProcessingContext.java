@@ -20,7 +20,7 @@ final class ProcessingContext {
   private static final ThreadLocal<Ctx> CTX = new ThreadLocal<>();
 
   private static final class Ctx {
-    private final ProcessingEnvironment env;;
+    private final ProcessingEnvironment env;
     private final Messager messager;
     private final Filer filer;
     private final Elements elements;

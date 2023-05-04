@@ -1,6 +1,7 @@
 package io.avaje.validation.adapter;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
 public interface ValidationAdapter<T> {
@@ -18,6 +19,18 @@ public interface ValidationAdapter<T> {
     return (value, req, propertyName) -> {
       if (validate(value, req, propertyName)) {
         return after.validateAll((Collection<Object>) value, req, propertyName);
+      }
+      return true;
+    };
+  }
+
+  default ValidationAdapter<T> map(ValidationContext ctx, Class<?> clazz) {
+
+    final var after = ctx.<Object>adapter(clazz);
+    return (value, req, propertyName) -> {
+      if (validate(value, req, propertyName)) {
+        final var map = (Map<?, Object>) value;
+        return after.validateAll(map.values(), req, propertyName);
       }
       return true;
     };
