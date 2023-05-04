@@ -11,7 +11,7 @@
   <name>validator generator</name>
   <description>annotation processor generating json adapters</description>
   <properties>
-    <avaje.prisms.version>1.8</avaje.prisms.version>
+    <avaje.prisms.version>1.9</avaje.prisms.version>
   </properties>
 
   <dependencies>
@@ -19,6 +19,11 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-validator</artifactId>
+      <version>${project.version}</version>
+    </dependency>    
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>validator-constraints</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -29,7 +34,13 @@
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
-
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-validator</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
    <dependency>
     <groupId>jakarta.validation</groupId>
     <artifactId>jakarta.validation-api</artifactId>
@@ -44,6 +55,14 @@
       <scope>provided</scope>
       <optional>true</optional>
 </dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-api</artifactId>
+      <version>1.39</version>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
 
     <!-- test dependencies -->
     <dependency>

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -25,6 +26,7 @@ import javax.lang.model.util.ElementFilter;
 @SupportedAnnotationTypes({
   ValidPojoPrism.PRISM_TYPE,
   ImportPrism.PRISM_TYPE,
+  ValidPrism.PRISM_TYPE,
   JavaxValidPrism.PRISM_TYPE,
   JakartaValidPrism.PRISM_TYPE
 })
@@ -61,9 +63,18 @@ public final class Processor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
     readModule();
+
     writeAdapters(round.getElementsAnnotatedWith(element(ValidPojoPrism.PRISM_TYPE)));
-    writeAdapters(round.getElementsAnnotatedWith(element(JavaxValidPrism.PRISM_TYPE)));
-    writeAdapters(round.getElementsAnnotatedWith(element(JakartaValidPrism.PRISM_TYPE)));
+
+    Optional.ofNullable(element(ValidPrism.PRISM_TYPE))
+        .map(round::getElementsAnnotatedWith)
+        .ifPresent(this::writeAdapters);
+    Optional.ofNullable(element(JavaxValidPrism.PRISM_TYPE))
+        .map(round::getElementsAnnotatedWith)
+        .ifPresent(this::writeAdapters);
+    Optional.ofNullable(element(JakartaValidPrism.PRISM_TYPE))
+        .map(round::getElementsAnnotatedWith)
+        .ifPresent(this::writeAdapters);
     writeAdaptersForImported(round.getElementsAnnotatedWith(element(ImportPrism.PRISM_TYPE)));
     initialiseComponent();
     cascadeTypes();
