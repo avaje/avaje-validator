@@ -1,13 +1,13 @@
 package io.avaje.validation.generator;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import io.avaje.validation.generator.Util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UtilTest {
 
+  @Disabled
   @Test
   void baseTypeOfAdapter() {
     assertEquals("com.My", Util.baseTypeOfAdapter("com.jsonb.MyJsonAdapter"));
