@@ -12,23 +12,34 @@ public interface ValidationAdapter<T> {
     return validate(value, req, null);
   }
 
-  default <C> ValidationAdapter<T> list(ValidationContext ctx, Class<C> clazz) {
+  default ValidationAdapter<T> list(ValidationContext ctx, Class<?> clazz) {
 
-    final var after = ctx.adapter(clazz);
+    final var after = ctx.<Object>adapter(clazz);
     return (value, req, propertyName) -> {
       if (validate(value, req, propertyName)) {
-        return after.validateAll((Collection<C>) value, req, propertyName);
+        return after.validateAll((Collection<Object>) value, req, propertyName);
       }
       return true;
     };
   }
 
-  default boolean validateAll(Collection<T> value, ValidationRequest req, String propertyName) {
+  default ValidationAdapter<T> array(ValidationContext ctx, Class<?> clazz) {
+
+    final var after = ctx.<Object>adapter(clazz);
+    return (value, req, propertyName) -> {
+      if (validate(value, req, propertyName)) {
+        return after.validateArray((Object[]) value, req, propertyName);
+      }
+      return true;
+    };
+  }
+
+  private boolean validateAll(Collection<T> value, ValidationRequest req, String propertyName) {
     if (propertyName != null) {
       req.pushPath(propertyName);
     }
     int index = -1;
-    for (final T element : value) {
+    for (final var element : value) {
       index++;
       validate(element, req, String.valueOf(index));
     }
@@ -38,7 +49,7 @@ public interface ValidationAdapter<T> {
     return true;
   }
 
-  default boolean validateAll(T[] value, ValidationRequest req, String propertyName) {
+  private boolean validateArray(T[] value, ValidationRequest req, String propertyName) {
     if (propertyName != null) {
       req.pushPath(propertyName);
     }
@@ -62,5 +73,4 @@ public interface ValidationAdapter<T> {
       return true;
     };
   }
-
 }

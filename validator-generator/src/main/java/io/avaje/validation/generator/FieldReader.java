@@ -193,10 +193,9 @@ final class FieldReader {
     for (final var a : annotations.entrySet()) {
 
       if (first) {
-
         writer.append(
             "ctx.<%s>adapter(%s.class,%s)",
-            asTypeDeclaration().replace(".class", ""), a.getKey().shortName(), a.getValue());
+            PrimitiveUtil.wrap( genericType.shortType()), a.getKey().shortName(), a.getValue());
         first = false;
         continue;
       }
@@ -205,6 +204,12 @@ final class FieldReader {
           .append(
               "                                     .andThen(ctx.adapter(%s.class,%s))",
               a.getKey().shortName(), a.getValue());
+    }
+    if ("java.util.List".equals(genericType.topType())||"java.util.Set".equals(genericType.topType())) {
+      writer
+          .eol()
+          .append(
+              "                                     .list(ctx, %s.class)", Util.shortName(genericType.firstParamType()));
     }
     writer.append(";").eol();
   }

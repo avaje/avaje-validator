@@ -2,6 +2,9 @@ package io.avaje.validation.generator.models.valid;
 
 import java.util.List;
 
+import javax.validation.constraints.Negative;
+import javax.validation.constraints.NotEmpty;
+
 import io.avaje.lang.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -24,6 +27,7 @@ public class TestClass {
 
   private Character chara;
 
+  @NotEmpty
   private List<String> list;
 
   public String getAlias() {
@@ -42,6 +46,7 @@ public class TestClass {
     this.s = s;
   }
 
+  @Negative(message = "message")
   public int getI() {
     return i;
   }
