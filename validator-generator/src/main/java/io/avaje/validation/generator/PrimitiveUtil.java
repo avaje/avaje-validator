@@ -5,7 +5,8 @@ import java.util.Map;
 
 final class PrimitiveUtil {
 
-  static Map<String,String> wrapperMap = new HashMap<>();
+  static Map<String, String> wrapperMap = new HashMap<>();
+
   static {
     wrapperMap.put("char", "Character");
     wrapperMap.put("byte", "Byte");
@@ -18,7 +19,7 @@ final class PrimitiveUtil {
   }
 
   static String wrap(String shortName) {
-    String wrapped = wrapperMap.get(shortName);
+    final String wrapped = wrapperMap.get(shortName);
     return wrapped != null ? wrapped : shortName;
   }
 

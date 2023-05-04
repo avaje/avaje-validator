@@ -5,9 +5,11 @@ import java.util.Map;
 
 final class GenericTypeMap {
 
-  private final Map<String, String> basic = new HashMap<>();
+  private static final Map<String, String> basic = new HashMap<>();
 
-  GenericTypeMap() {
+  private GenericTypeMap() {}
+
+  static {
     basic.put("char", "Character.TYPE");
     basic.put("byte", "Byte.TYPE");
     basic.put("boolean", "Boolean.TYPE");
@@ -26,7 +28,7 @@ final class GenericTypeMap {
     basic.put("java.lang.String", "String.class");
   }
 
-  String typeOfRaw(String rawType) {
+  static String typeOfRaw(String rawType) {
     return basic.get(rawType);
   }
 }

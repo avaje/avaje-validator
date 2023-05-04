@@ -39,9 +39,7 @@ final class ComponentReader {
     }
   }
 
-  /**
-   * Read the existing JsonAdapters from the MetaData annotation of the generated component.
-   */
+  /** Read the existing JsonAdapters from the MetaData annotation of the generated component. */
   private void readMetaData(TypeElement moduleType) {
     for (final AnnotationMirror annotationMirror : moduleType.getAnnotationMirrors()) {
 
@@ -50,15 +48,11 @@ final class ComponentReader {
 
       if (metaData != null) {
 
-        metaData.value().stream()
-            .map(TypeMirror::toString)
-            .forEach(componentMetaData::add);
+        metaData.value().stream().map(TypeMirror::toString).forEach(componentMetaData::add);
 
       } else if (metaDataFactory != null) {
 
-        metaDataFactory.value().stream()
-            .map(TypeMirror::toString)
-            .forEach(componentMetaData::add);
+        metaDataFactory.value().stream().map(TypeMirror::toString).forEach(componentMetaData::add);
       }
     }
   }
@@ -70,9 +64,10 @@ final class ComponentReader {
 
   private List<String> loadMetaInf() {
     try {
-      final FileObject fileObject = env()
-        .getFiler()
-        .getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT);
+      final FileObject fileObject =
+          env()
+              .getFiler()
+              .getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT);
 
       if (fileObject != null) {
         final List<String> lines = new ArrayList<>();

@@ -17,9 +17,7 @@ final class ComponentMetaData {
     return allTypes.toString();
   }
 
-  /**
-   * Ensure the component name has been initialised.
-   */
+  /** Ensure the component name has been initialised. */
   void initialiseFullName() {
     fullName();
   }
@@ -63,9 +61,7 @@ final class ComponentMetaData {
     return factoryTypes;
   }
 
-  /**
-   * Return the package imports for the JsonAdapters and related types.
-   */
+  /** Return the package imports for the JsonAdapters and related types. */
   Collection<String> allImports() {
     final Set<String> packageImports = new TreeSet<>();
     for (final String adapterFullName : allTypes) {

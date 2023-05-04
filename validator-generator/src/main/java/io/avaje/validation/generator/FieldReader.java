@@ -260,8 +260,6 @@ final class FieldReader {
   }
 
   private boolean isBasicType(final String topType) {
-    return "java.lang.String".equals(topType)
-        || PrimitiveUtil.isPrimitive(adapterFieldName)
-        || PrimitiveUtil.wrapperMap.values().stream().anyMatch(topType::equals);
+    return "java.lang.String".equals(topType) || GenericTypeMap.typeOfRaw(topType) != null;
   }
 }

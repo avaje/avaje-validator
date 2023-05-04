@@ -15,7 +15,7 @@ final class TopPackage {
   }
 
   private TopPackage(Collection<String> values) {
-    for (String pkg : values) {
+    for (final String pkg : values) {
       topPackage = Util.commonParent(topPackage, pkg);
     }
   }

@@ -61,7 +61,9 @@ final class SimpleAdapterWriter {
       writer.append("  /**").eol();
       writer.append("   * Construct using Object for generic type parameters.").eol();
       writer.append("   */").eol();
-      writer.append("  public %sValidationAdapter(ValidationContext ctx) {", adapterShortName).eol();
+      writer
+          .append("  public %sValidationAdapter(ValidationContext ctx) {", adapterShortName)
+          .eol();
       writer.append("    this(ctx");
       for (int i = 0; i < genericParamsCount; i++) {
         writer.append(", Object.class");
@@ -81,7 +83,9 @@ final class SimpleAdapterWriter {
 
   private void writeClassStart() {
     writer.append("@Generated").eol();
-    writer.append("public final class %sValidationAdapter implements ValidationAdapter<%s> ", adapterShortName, beanReader.shortName());
+    writer.append(
+        "public final class %sValidationAdapter implements ValidationAdapter<%s> ",
+        adapterShortName, beanReader.shortName());
     writer.append("{").eol().eol();
   }
 

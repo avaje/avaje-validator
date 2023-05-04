@@ -4,22 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * A type with generic parameters and potentially nested.
- */
+/** A type with generic parameters and potentially nested. */
 final class GenericType {
 
-  private static final GenericTypeMap TYPE_MAP = new GenericTypeMap();
-
-  /**
-   * Trim off generic wildcard from the raw type if present.
-   */
+  /** Trim off generic wildcard from the raw type if present. */
   static String trimWildcard(String rawType) {
     if (rawType.endsWith("<?>")) {
       return rawType.substring(0, rawType.length() - 3);
-    } else {
-      return rawType;
     }
+    return rawType;
   }
 
   private final String raw;
@@ -27,30 +20,22 @@ final class GenericType {
 
   private final List<GenericType> params = new ArrayList<>();
 
-  /**
-   * Create for top level type.
-   */
+  /** Create for top level type. */
   GenericType(String raw) {
     this.raw = raw;
   }
 
-  /**
-   * Create for parameter type.
-   */
+  /** Create for parameter type. */
   GenericType() {
     this.raw = null;
   }
 
-  /**
-   * Return true if this is a generic type.
-   */
+  /** Return true if this is a generic type. */
   static boolean isGeneric(String raw) {
     return raw.contains("<");
   }
 
-  /**
-   * Parse and return as GenericType.
-   */
+  /** Parse and return as GenericType. */
   static GenericType parse(String raw) {
     raw = trimWildcard(raw);
     if (raw.indexOf('<') == -1) {
@@ -69,7 +54,7 @@ final class GenericType {
     if (includeInImports(type)) {
       importTypes.add(type);
     }
-    for (GenericType param : params) {
+    for (final GenericType param : params) {
       param.addImports(importTypes);
     }
   }
@@ -79,16 +64,14 @@ final class GenericType {
   }
 
   String shortType() {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     writeShortType(sb);
     return sb.toString();
   }
 
-  /**
-   * Append the short version of the type (given the type and parameters are in imports).
-   */
+  /** Append the short version of the type (given the type and parameters are in imports). */
   void writeShortType(StringBuilder sb) {
-    String main = Util.shortName(trimExtends());
+    final String main = Util.shortName(trimExtends());
     sb.append(main);
     final int paramCount = params.size();
     if (paramCount > 0) {
@@ -104,31 +87,31 @@ final class GenericType {
   }
 
   void writeType(String prefix, StringBuilder sb) {
-    String main = Util.shortName(trimExtends());
+    final String main = Util.shortName(trimExtends());
     sb.append(prefix).append(main).append(".class");
     final int paramCount = params.size();
     if (paramCount > 0) {
-      for (GenericType param : params) {
+      for (final GenericType param : params) {
         param.writeType(",", sb);
       }
     }
   }
 
   String shortName() {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     shortName(sb);
     return sb.toString().replace("[]", "Array");
   }
 
   void shortName(StringBuilder sb) {
     sb.append(Util.shortName(trimExtends()));
-    for (GenericType param : params) {
+    for (final GenericType param : params) {
       param.shortName(sb);
     }
   }
 
   private String trimExtends() {
-    String type = topType();
+    final String type = topType();
     if (type != null && type.startsWith("? extends ")) {
       return type.substring(10);
     }
@@ -136,7 +119,7 @@ final class GenericType {
   }
 
   String topType() {
-    return (mainType != null) ? mainType : raw;
+    return mainType != null ? mainType : raw;
   }
 
   void setMainType(String mainType) {
@@ -154,23 +137,23 @@ final class GenericType {
     if (params.size() == 1) {
       return asTypeContainer();
     }
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     writeType("Types.newParameterizedType(", sb);
     return sb.append(")").toString();
   }
 
   private String asTypeBasic() {
-    String topType = topType();
-    String adapterType = TYPE_MAP.typeOfRaw(topType);
+    final String topType = topType();
+    final String adapterType = GenericTypeMap.typeOfRaw(topType);
     if (adapterType != null) {
       return adapterType;
     }
-    return Util.shortName(topType)+".class";
+    return Util.shortName(topType) + ".class";
   }
 
   private String asTypeContainer() {
-    GenericType param = params.get(0);
-    String containerType = topType();
+    final GenericType param = params.get(0);
+    final String containerType = topType();
     switch (containerType) {
       case "java.util.List":
         return "Types.listOf(" + Util.shortName(param.topType()) + ".class)";

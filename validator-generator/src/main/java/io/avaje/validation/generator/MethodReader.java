@@ -1,11 +1,12 @@
 package io.avaje.validation.generator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import java.util.ArrayList;
-import java.util.List;
 
 final class MethodReader {
 
@@ -24,8 +25,8 @@ final class MethodReader {
   }
 
   MethodReader read() {
-    List<? extends VariableElement> ps = element.getParameters();
-    for (VariableElement p : ps) {
+    final List<? extends VariableElement> ps = element.getParameters();
+    for (final VariableElement p : ps) {
       params.add(new MethodParam(p));
     }
     return this;
@@ -38,7 +39,6 @@ final class MethodReader {
   List<MethodParam> getParams() {
     return params;
   }
-
 
   public boolean isPublic() {
     return element.getModifiers().contains(Modifier.PUBLIC);
@@ -59,6 +59,5 @@ final class MethodReader {
     String name() {
       return simpleName;
     }
-
   }
 }

@@ -37,8 +37,7 @@ final class ProcessingContext {
     }
   }
 
-  private ProcessingContext() {
-  }
+  private ProcessingContext() {}
 
   static void init(ProcessingEnvironment processingEnv) {
     CTX.set(new Ctx(processingEnv));
@@ -52,9 +51,7 @@ final class ProcessingContext {
     return CTX.get().jdkVersion;
   }
 
-  /**
-   * Log an error message.
-   */
+  /** Log an error message. */
   static void logError(Element e, String msg, Object... args) {
     CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
@@ -71,9 +68,7 @@ final class ProcessingContext {
     CTX.get().messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
   }
 
-  /**
-   * Create a file writer for the given class name.
-   */
+  /** Create a file writer for the given class name. */
   static JavaFileObject createWriter(String cls) throws IOException {
     return CTX.get().filer.createSourceFile(cls);
   }

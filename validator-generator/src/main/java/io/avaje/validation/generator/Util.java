@@ -12,9 +12,7 @@ final class Util {
         || JakartaValidPrism.isPresent(e);
   }
 
-  /**
-   * Return true if the element has a Nullable annotation.
-   */
+  /** Return true if the element has a Nullable annotation. */
   public static boolean isNullable(Element p) {
     for (final AnnotationMirror mirror : p.getAnnotationMirrors()) {
       if ("Nullable".equalsIgnoreCase(shortName(mirror.getAnnotationType().toString()))) {
@@ -30,23 +28,23 @@ final class Util {
 
   static String packageOf(String cls) {
     final int pos = cls.lastIndexOf('.');
-    return (pos == -1) ? "" : cls.substring(0, pos);
+    return pos == -1 ? "" : cls.substring(0, pos);
   }
 
   static String shortName(String fullType) {
     final int p = fullType.lastIndexOf('.');
     if (p == -1) {
       return fullType;
-    } else {
-      return fullType.substring(p + 1);
     }
+    return fullType.substring(p + 1);
   }
 
   static String shortType(String fullType) {
     final int p = fullType.lastIndexOf('.');
     if (p == -1) {
       return fullType;
-    } else if (fullType.startsWith("java")) {
+    }
+    if (fullType.startsWith("java")) {
       return fullType.substring(p + 1);
     } else {
       var result = "";
@@ -92,9 +90,8 @@ final class Util {
   static String initCap(String input) {
     if (input.length() < 2) {
       return input.toUpperCase();
-    } else {
-      return Character.toUpperCase(input.charAt(0)) + input.substring(1);
     }
+    return Character.toUpperCase(input.charAt(0)) + input.substring(1);
   }
 
   static String escapeQuotes(String input) {

@@ -161,9 +161,8 @@ final class TypeReader {
   private MethodReader getterLookup(String name, boolean loose) {
     if (!loose) {
       return maybeGetterMethods.get(name);
-    } else {
-      return allGetterMethods.get(name.toLowerCase());
     }
+    return allGetterMethods.get(name.toLowerCase());
   }
 
   private String getterName(String name) {

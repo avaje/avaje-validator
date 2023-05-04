@@ -64,8 +64,7 @@ public final class Processor extends AbstractProcessor {
     writeAdapters(round.getElementsAnnotatedWith(element(ValidPojoPrism.PRISM_TYPE)));
     writeAdapters(round.getElementsAnnotatedWith(element(JavaxValidPrism.PRISM_TYPE)));
     writeAdapters(round.getElementsAnnotatedWith(element(JakartaValidPrism.PRISM_TYPE)));
-    writeAdaptersForImported(
-        round.getElementsAnnotatedWith(element(ImportPrism.PRISM_TYPE)));
+    writeAdaptersForImported(round.getElementsAnnotatedWith(element(ImportPrism.PRISM_TYPE)));
     initialiseComponent();
     cascadeTypes();
     writeComponent(round.processingOver());

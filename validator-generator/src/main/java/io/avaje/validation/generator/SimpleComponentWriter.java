@@ -104,7 +104,6 @@ final class SimpleComponentWriter {
     }
   }
 
-
   private void writeImports() {
     importTypes.add(Constants.VALIDATOR);
     importTypes.add(Constants.VALID_SPI);
