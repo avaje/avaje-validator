@@ -160,10 +160,19 @@ final class FieldReader {
 
   void writeValidate(Append writer) {
 
-    writer.append("    %s.validate(", adapterFieldName);
-    writeGetValue(writer, "");
+    writer.append("    var _$%s = ", fieldName);
+    writeGetValue(writer, ";");
+    writer.eol();
+    if (optionalValidation) {
+
+      writer.append("    if(_$%s != null) {", fieldName);
+    }
+    writer.append("    %s.validate(_$%s", adapterFieldName, fieldName);
     writer.append(", request, \"%s\");", fieldName);
 
+    if (optionalValidation) {
+      writer.append("    }");
+    }
     writer.eol().eol();
   }
 

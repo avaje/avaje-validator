@@ -2,6 +2,7 @@ package io.avaje.validation.generator.models.valid;
 
 import java.util.List;
 
+import io.avaje.lang.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +14,7 @@ public class TestClass {
   @NotBlank(message = "blankLmao")
   private String alias;
 
-  private String s;
+  @Nullable private String s;
 
   private int i;
 
