@@ -25,7 +25,7 @@ class HibernateMessageTest {
             .buildValidatorFactory()
             .getValidator();
 
-    private Locale testLocale = Locale.getDefault();
+    private Locale testLocale = Locale.ENGLISH;
 
     class TestLocaleResolver implements LocaleResolver {
         @Override
