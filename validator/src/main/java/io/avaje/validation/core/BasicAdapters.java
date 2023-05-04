@@ -28,7 +28,7 @@ final class BasicAdapters {
 
   static final ValidationContext.AnnotationFactory FACTORY =
       (annotationType, context, attributes) ->
-          (switch (annotationType.getSimpleName()) {
+          switch (annotationType.getSimpleName()) {
             case "NotNull" -> new NotNullAdapter(context.message("NotNull", attributes));
             case "AssertTrue" -> new AssertTrueAdapter(context.message("AssertTrue", attributes));
             case "AssertFalse" -> new AssertFalseAdapter(
@@ -41,7 +41,7 @@ final class BasicAdapters {
                 context.message("Pattern", attributes), attributes);
             case "Size" -> new SizeAdapter(context.message("Size", attributes), attributes);
             default -> null;
-          });
+          };
 
   private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
 
