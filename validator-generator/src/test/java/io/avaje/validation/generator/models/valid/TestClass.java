@@ -9,7 +9,9 @@ import jakarta.validation.constraints.NotNull;
 @Valid
 public class TestClass {
 
-  @NotNull @NotBlank private String alias;
+  @NotNull
+  @NotBlank(message = "blankLmao")
+  private String alias;
 
   private String s;
 

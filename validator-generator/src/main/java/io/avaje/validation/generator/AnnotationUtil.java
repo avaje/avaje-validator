@@ -17,7 +17,7 @@ final class AnnotationUtil {
       if (!first) {
         sb.append(", ");
       }
-      sb.append(entry.getKey().getSimpleName()).append(",");
+      sb.append("\"" + entry.getKey().getSimpleName() + "\"").append(",");
       writeVal(sb, entry.getValue());
       first = false;
     }
