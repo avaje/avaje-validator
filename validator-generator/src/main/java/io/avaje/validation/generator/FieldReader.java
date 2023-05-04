@@ -1,8 +1,9 @@
 package io.avaje.validation.generator;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
@@ -23,7 +24,7 @@ final class FieldReader {
   private boolean genericTypeParameter;
   private int genericTypeParamPosition;
   private final boolean optionalValidation;
-  private final List<GenericType> annotations;
+  private final Map<GenericType, String> annotations;
 
   FieldReader(Element element, List<String> genericTypeParams) {
     this.genericTypeParams = genericTypeParams;
@@ -40,8 +41,10 @@ final class FieldReader {
     genericType = GenericType.parse(rawType);
     this.annotations =
         element.getAnnotationMirrors().stream()
-            .map(a -> GenericType.parse(a.getAnnotationType().toString()))
-            .collect(toList());
+            .collect(
+                toMap(
+                    a -> GenericType.parse(a.getAnnotationType().toString()),
+                    AnnotationUtil::getAnnotationAttributMap));
     final String shortType = genericType.shortType();
     adapterShortType = initAdapterShortType(shortType);
     adapterFieldName = initShortName();
@@ -99,7 +102,7 @@ final class FieldReader {
   void addImports(Set<String> importTypes) {
 
     genericType.addImports(importTypes);
-    annotations.forEach(t -> t.addImports(importTypes));
+    annotations.keySet().forEach(t -> t.addImports(importTypes));
   }
 
   void cascadeTypes(Set<String> types) {
@@ -155,11 +158,11 @@ final class FieldReader {
     }
   }
 
-  void writeFromJsonSwitch(Append writer) {
+  void writeValidate(Append writer) {
 
     writer.append("    %s.validate(", adapterFieldName);
     writeGetValue(writer, "");
-    writer.append(", request, \"%s\");", adapterFieldName);
+    writer.append(", request, \"%s\");", fieldName);
 
     writer.eol().eol();
   }
@@ -174,6 +177,26 @@ final class FieldReader {
   }
 
   public void writeConstructor(Append writer) {
-    writer.append("    this.%s = ctx.adapter(%s);", adapterFieldName, asTypeDeclaration()).eol();
+
+    writer.append("    this.%s = ", adapterFieldName);
+
+    boolean first = true;
+    for (final var a : annotations.entrySet()) {
+
+      if (first) {
+
+        writer.append(
+            "ctx.<%s>adapter(%s.class,%s)",
+            asTypeDeclaration().replace(".class", ""), a.getKey().shortName(), a.getValue());
+        first = false;
+        continue;
+      }
+      writer
+          .eol()
+          .append(
+              "                                     .andThen(ctx.adapter(%s.class,%s))",
+              a.getKey().shortName(), a.getValue());
+    }
+    writer.append(";").eol();
   }
 }

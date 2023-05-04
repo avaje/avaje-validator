@@ -8,7 +8,6 @@ import java.util.TreeSet;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-
 final class ClassReader implements BeanReader {
 
   private final TypeElement beanType;
@@ -116,8 +115,7 @@ final class ClassReader implements BeanReader {
   @Override
   public void cascadeTypes(Set<String> types) {
     for (final FieldReader allField : allFields) {
-        allField.cascadeTypes(types);
-
+      allField.cascadeTypes(types);
     }
   }
 
@@ -125,8 +123,7 @@ final class ClassReader implements BeanReader {
   public void writeFields(Append writer) {
 
     for (final FieldReader allField : allFields) {
-        allField.writeField(writer);
-
+      allField.writeField(writer);
     }
     writer.eol();
   }
@@ -134,8 +131,7 @@ final class ClassReader implements BeanReader {
   @Override
   public void writeConstructor(Append writer) {
     for (final FieldReader allField : allFields) {
-   allField.writeConstructor(writer);
-
+      allField.writeConstructor(writer);
     }
   }
 
@@ -145,7 +141,7 @@ final class ClassReader implements BeanReader {
     writer.append("  @Override").eol();
     writer
         .append(
-            "  public void validate(%s value, ValidationRequest request, String propertyName) {",
+            "  public boolean validate(%s value, ValidationRequest request, String propertyName) {",
             shortName)
         .eol();
     writer
@@ -156,9 +152,9 @@ final class ClassReader implements BeanReader {
             shortName)
         .eol();
     for (final FieldReader allField : allFields) {
-      allField.writeFromJsonSwitch(writer);
+      allField.writeValidate(writer);
     }
-
+    writer.append("    return true;", shortName).eol();
     writer.append("  }").eol();
   }
 }

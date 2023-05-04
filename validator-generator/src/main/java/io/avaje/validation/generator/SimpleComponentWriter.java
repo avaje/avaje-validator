@@ -54,7 +54,7 @@ final class SimpleComponentWriter {
 
   private void writeRegister() {
     writer.append("  @Override").eol();
-    writer.append("  public void register(Jsonb.Builder builder) {").eol();
+    writer.append("  public void register(Validator.Builder builder) {").eol();
     final List<String> strings = metaData.allFactories();
     for (final String adapterFullName : strings) {
       final String adapterShortName = Util.shortName(adapterFullName);
@@ -69,7 +69,7 @@ final class SimpleComponentWriter {
   }
 
   private String typeShortName(String adapterShortName) {
-    final String typeName = adapterShortName.substring(0, adapterShortName.length() - 11);
+    final String typeName = adapterShortName.substring(0, adapterShortName.length() - 17);
     return typeName.replace("$", ".");
   }
 
@@ -106,8 +106,9 @@ final class SimpleComponentWriter {
 
 
   private void writeImports() {
-    importTypes.add(Constants.JSONB);
-    importTypes.add(Constants.JSONB_SPI);
+    importTypes.add(Constants.VALIDATOR);
+    importTypes.add(Constants.VALID_SPI);
+    importTypes.add("io.avaje.validation.adapter.ValidatorComponent");
     importTypes.addAll(metaData.allImports());
 
     for (final String importType : importTypes) {

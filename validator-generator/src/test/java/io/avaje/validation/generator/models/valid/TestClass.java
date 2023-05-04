@@ -4,11 +4,12 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Valid
 public class TestClass {
 
-  @NotBlank private String alias;
+  @NotNull @NotBlank private String alias;
 
   private String s;
 

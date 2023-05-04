@@ -42,7 +42,7 @@ final class SimpleAdapterWriter {
     writeClassStart();
     writeFields();
     writeConstructor();
-    writeToFromValidation();
+    writeValidation();
     writeClassEnd();
     writer.close();
   }
@@ -71,7 +71,7 @@ final class SimpleAdapterWriter {
     }
   }
 
-  private void writeToFromValidation() {
+  private void writeValidation() {
     beanReader.writeValidatorMethod(writer);
   }
 

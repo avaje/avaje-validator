@@ -1,7 +1,9 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.*;
+import static io.avaje.validation.core.Util.canonicalize;
+import static io.avaje.validation.core.Util.canonicalizeClass;
+import static io.avaje.validation.core.Util.removeSubtypeWildcard;
+import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -11,8 +13,10 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static io.avaje.validation.core.Util.*;
-import static java.util.Objects.requireNonNull;
+import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidatorComponent;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator, ValidationContext {

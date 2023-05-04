@@ -126,7 +126,7 @@ final class Util {
   static String baseTypeOfAdapter(String adapterFullName) {
     final int posLast = adapterFullName.lastIndexOf('.');
     final int posPrior = adapterFullName.lastIndexOf('.', posLast - 1);
-    final int nameEnd = adapterFullName.length() - 11; // "JsonAdapter".length();
+    final int nameEnd = adapterFullName.length() - 17; // "ValidationAdapter".length();
     if (posPrior == -1) {
       return adapterFullName.substring(posLast + 1, nameEnd);
     }

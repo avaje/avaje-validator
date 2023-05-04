@@ -12,6 +12,17 @@ public interface ValidationAdapter<T> {
     return validate(value, req, null);
   }
 
+  default <C> ValidationAdapter<T> list(ValidationContext ctx, Class<C> clazz) {
+
+    final var after = ctx.adapter(clazz);
+    return (value, req, propertyName) -> {
+      if (validate(value, req, propertyName)) {
+        return after.validateAll((Collection<C>) value, req, propertyName);
+      }
+      return true;
+    };
+  }
+
   default boolean validateAll(Collection<T> value, ValidationRequest req, String propertyName) {
     if (propertyName != null) {
       req.pushPath(propertyName);
