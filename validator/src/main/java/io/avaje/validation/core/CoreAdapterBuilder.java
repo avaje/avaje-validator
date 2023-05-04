@@ -49,7 +49,6 @@ final class CoreAdapterBuilder {
   // TODO understand that lookup chain stuff
   @SuppressWarnings("unchecked")
   <T> ValidationAdapter<T> build(Type type, Object cacheKey) {
-
     // Ask each factory to create the validation adapter.
     for (final ValidationContext.AdapterFactory factory : factories) {
       final ValidationAdapter<T> result = (ValidationAdapter<T>) factory.create(type, context);
@@ -74,6 +73,6 @@ final class CoreAdapterBuilder {
       }
     }
     // unknown annotation have noop
-    return new NoopAnnotationValidator<>();
+    return NoopAnnotationValidator.INSTANCE;
   }
 }

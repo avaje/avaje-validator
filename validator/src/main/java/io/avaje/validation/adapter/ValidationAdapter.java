@@ -1,6 +1,7 @@
 package io.avaje.validation.adapter;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
 public interface ValidationAdapter<T> {
@@ -12,12 +13,46 @@ public interface ValidationAdapter<T> {
     return validate(value, req, null);
   }
 
-  default boolean validateAll(Collection<T> value, ValidationRequest req, String propertyName) {
+  default ValidationAdapter<T> list(ValidationContext ctx, Class<?> clazz) {
+
+    final var after = ctx.<Object>adapter(clazz);
+    return (value, req, propertyName) -> {
+      if (validate(value, req, propertyName)) {
+        return after.validateAll((Collection<Object>) value, req, propertyName);
+      }
+      return true;
+    };
+  }
+
+  default ValidationAdapter<T> map(ValidationContext ctx, Class<?> clazz) {
+
+    final var after = ctx.<Object>adapter(clazz);
+    return (value, req, propertyName) -> {
+      if (validate(value, req, propertyName)) {
+        final var map = (Map<?, Object>) value;
+        return after.validateAll(map.values(), req, propertyName);
+      }
+      return true;
+    };
+  }
+
+  default ValidationAdapter<T> array(ValidationContext ctx, Class<?> clazz) {
+
+    final var after = ctx.<Object>adapter(clazz);
+    return (value, req, propertyName) -> {
+      if (validate(value, req, propertyName)) {
+        return after.validateArray((Object[]) value, req, propertyName);
+      }
+      return true;
+    };
+  }
+
+  private boolean validateAll(Collection<T> value, ValidationRequest req, String propertyName) {
     if (propertyName != null) {
       req.pushPath(propertyName);
     }
     int index = -1;
-    for (final T element : value) {
+    for (final var element : value) {
       index++;
       validate(element, req, String.valueOf(index));
     }
@@ -27,7 +62,7 @@ public interface ValidationAdapter<T> {
     return true;
   }
 
-  default boolean validateAll(T[] value, ValidationRequest req, String propertyName) {
+  private boolean validateArray(T[] value, ValidationRequest req, String propertyName) {
     if (propertyName != null) {
       req.pushPath(propertyName);
     }
@@ -51,5 +86,4 @@ public interface ValidationAdapter<T> {
       return true;
     };
   }
-
 }

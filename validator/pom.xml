@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-validator-parent</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>avaje-validator</artifactId>
@@ -24,6 +24,7 @@
     <groupId>jakarta.validation</groupId>
     <artifactId>jakarta.validation-api</artifactId>
     <version>3.0.2</version>
+      <scope>test</scope>
 </dependency>
 
 

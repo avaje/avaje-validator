@@ -1,13 +1,17 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.adapter.ValidationContext;
-import io.avaje.validation.adapter.ValidationAdapter;
-import io.avaje.validation.adapter.ValidationRequest;
-import jakarta.validation.constraints.*;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationRequest;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 public final class CustomerValidationAdapter implements ValidationAdapter<Customer> {
 
@@ -19,7 +23,6 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
   private final ValidationAdapter<Address> billingAddressValidator;
   private final ValidationAdapter<Address> shippingAddressValidator;
   //private final ValidationAdapter<Address> addressValidator;
-  private final ValidationAdapter<Contact> contactValidator;
 
   public CustomerValidationAdapter(ValidationContext ctx) {
     this.activeAdapter =
@@ -35,8 +38,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
 
     this.contactsValidator =
         ctx.<List<Contact>>adapter(
-            Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2));
-    this.contactValidator = ctx.adapter(Contact.class);
+            Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2)).list(ctx, Contact.class);
 
     //this.addressValidator = ctx.adapter(Address.class);
     this.shippingAddressValidator = ctx.adapter(Address.class);
@@ -71,9 +73,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
 
     final var _contacts = value.contacts;
     //if field is nullable we could do _contacts != null && contactsValidator.validate
-    if (contactsValidator.validate(_contacts, request, "contacts")) {
-      contactValidator.validateAll(_contacts, request, "contacts");
-    }
+    contactsValidator.validate(_contacts, request, "contacts");
     return true;
   }
 }
