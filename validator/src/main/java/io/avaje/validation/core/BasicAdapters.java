@@ -27,30 +27,21 @@ final class BasicAdapters {
   private BasicAdapters() {}
 
   static final ValidationContext.AnnotationFactory FACTORY =
-      (annotationType, context, attributes) -> {
-        switch (annotationType.getSimpleName()) {
-          case "NotNull":
-            return new NotNullAdapter(context.message("NotNull", attributes));
-          case "AssertTrue":
-            return new AssertTrueAdapter(context.message("AssertTrue", attributes));
-          case "AssertFalse":
-            return new AssertFalseAdapter(context.message("AssertFalse", attributes));
-          case "NotBlank":
-            return new NotBlankAdapter(context.message("NotBlank", attributes));
-          case "Past":
-          case "PastOrPresent":
-            return new PastAdapter(context.message("Past", attributes));
-          case "Future":
-          case "FutureOrPresent":
-            return new FutureAdapter(context.message("Future", attributes));
-          case "Pattern":
-            return new PatternAdapter(context.message("Pattern", attributes), attributes);
-          case "Size":
-            return new SizeAdapter(context.message("Size", attributes), attributes);
-          default:
-            return null;
-        }
-      };
+      (annotationType, context, attributes) ->
+          switch (annotationType.getSimpleName()) {
+            case "NotNull" -> new NotNullAdapter(context.message("NotNull", attributes));
+            case "AssertTrue" -> new AssertTrueAdapter(context.message("AssertTrue", attributes));
+            case "AssertFalse" -> new AssertFalseAdapter(
+                context.message("AssertFalse", attributes));
+            case "NotBlank" -> new NotBlankAdapter(context.message("NotBlank", attributes));
+            case "Past", "PastOrPresent" -> new PastAdapter(context.message("Past", attributes));
+            case "Future", "FutureOrPresent" -> new FutureAdapter(
+                context.message("Future", attributes));
+            case "Pattern" -> new PatternAdapter(
+                context.message("Pattern", attributes), attributes);
+            case "Size" -> new SizeAdapter(context.message("Size", attributes), attributes);
+            default -> null;
+          };
 
   private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
 
@@ -99,8 +90,7 @@ final class BasicAdapters {
         return false;
       }
 
-      if (value instanceof CharSequence) {
-        final var sequence = (CharSequence) value;
+      if (value instanceof final CharSequence sequence) {
         final var len = sequence.length();
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
@@ -108,8 +98,7 @@ final class BasicAdapters {
         }
       }
 
-      if (value instanceof Collection<?>) {
-        final var col = (Collection<?>) value;
+      if (value instanceof final Collection<?> col) {
         final var len = col.size();
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
@@ -117,9 +106,8 @@ final class BasicAdapters {
         }
       }
 
-      if (value instanceof Map<?, ?>) {
-        final var col = (Map<?, ?>) value;
-        final var len = col.size();
+      if (value instanceof final Map<?, ?> map) {
+        final var len = map.size();
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
           return len > 0;
@@ -154,35 +142,26 @@ final class BasicAdapters {
         req.addViolation(message, propertyName);
         return false;
       }
-      if (obj instanceof Date) {
-        final Date date = (Date) obj;
+      if (obj instanceof final Date date) {
         if (date.before(Date.from(Instant.now()))) {
           req.addViolation(message, propertyName);
           return false;
         }
-      } else if (obj instanceof TemporalAccessor) {
-
-        final TemporalAccessor temporalAccessor = (TemporalAccessor) obj;
-        if (temporalAccessor instanceof Instant
-                && Instant.from(temporalAccessor).isBefore(Instant.now())
-            || temporalAccessor instanceof LocalDate
-                && LocalDate.from(temporalAccessor).isBefore(LocalDate.now())
-            || temporalAccessor instanceof LocalDateTime
-                && LocalDateTime.from(temporalAccessor).isBefore(LocalDateTime.now())
-            || temporalAccessor instanceof LocalTime
-                && LocalTime.from(temporalAccessor).isBefore(LocalTime.now())
-            || temporalAccessor instanceof ZonedDateTime
-                && ZonedDateTime.from(temporalAccessor).isBefore(ZonedDateTime.now())
-            || temporalAccessor instanceof OffsetDateTime
-                && OffsetDateTime.from(temporalAccessor).isBefore(OffsetDateTime.now())
-            || temporalAccessor instanceof OffsetTime
-                && OffsetTime.from(temporalAccessor).isBefore(OffsetTime.now())
-            || temporalAccessor instanceof Year && Year.from(temporalAccessor).isBefore(Year.now())
-            || temporalAccessor instanceof YearMonth
-                && YearMonth.from(temporalAccessor).isBefore(YearMonth.now())) {
-          req.addViolation(message, propertyName);
-          return false;
-        }
+      } else if (obj instanceof final TemporalAccessor temporalAccessor
+          && (temporalAccessor instanceof final Instant ins && ins.isBefore(Instant.now())
+              || temporalAccessor instanceof final LocalDate ld && ld.isBefore(LocalDate.now())
+              || temporalAccessor instanceof final LocalDateTime ldt
+                  && ldt.isBefore(LocalDateTime.now())
+              || temporalAccessor instanceof final LocalTime lt && lt.isBefore(LocalTime.now())
+              || temporalAccessor instanceof final ZonedDateTime zdt
+                  && zdt.isBefore(ZonedDateTime.now())
+              || temporalAccessor instanceof final OffsetDateTime odt
+                  && odt.isBefore(OffsetDateTime.now())
+              || temporalAccessor instanceof final OffsetTime ot && ot.isBefore(OffsetTime.now())
+              || temporalAccessor instanceof final Year y && y.isBefore(Year.now())
+              || temporalAccessor instanceof final YearMonth ym && ym.isBefore(YearMonth.now()))) {
+        req.addViolation(message, propertyName);
+        return false;
       }
       return true;
     }
@@ -203,33 +182,26 @@ final class BasicAdapters {
         req.addViolation(message, propertyName);
         return false;
       }
-      if (obj instanceof Date) {
-        final Date date = (Date) obj;
+      if (obj instanceof final Date date) {
         if (date.after(Date.from(Instant.now()))) {
           req.addViolation(message, propertyName);
           return false;
         }
-      } else if (obj instanceof TemporalAccessor) {
-
-        final TemporalAccessor temporalAccessor = (TemporalAccessor) obj;
-        if (temporalAccessor instanceof LocalDate
-                && LocalDate.from(temporalAccessor).isAfter(LocalDate.now())
-            || temporalAccessor instanceof LocalDateTime
-                && LocalDateTime.from(temporalAccessor).isAfter(LocalDateTime.now())
-            || temporalAccessor instanceof LocalTime
-                && LocalTime.from(temporalAccessor).isAfter(LocalTime.now())
-            || temporalAccessor instanceof ZonedDateTime
-                && ZonedDateTime.from(temporalAccessor).isAfter(ZonedDateTime.now())
-            || temporalAccessor instanceof OffsetDateTime
-                && OffsetDateTime.from(temporalAccessor).isAfter(OffsetDateTime.now())
-            || temporalAccessor instanceof OffsetTime
-                && OffsetTime.from(temporalAccessor).isAfter(OffsetTime.now())
-            || temporalAccessor instanceof Year && Year.from(temporalAccessor).isAfter(Year.now())
-            || temporalAccessor instanceof YearMonth
-                && YearMonth.from(temporalAccessor).isAfter(YearMonth.now())) {
-          req.addViolation(message, propertyName);
-          return false;
-        }
+      } else if (obj instanceof final TemporalAccessor temporalAccessor
+          && (temporalAccessor instanceof final Instant ins && ins.isAfter(Instant.now())
+              || temporalAccessor instanceof final LocalDate ld && ld.isAfter(LocalDate.now())
+              || temporalAccessor instanceof final LocalDateTime ldt
+                  && ldt.isAfter(LocalDateTime.now())
+              || temporalAccessor instanceof final LocalTime lt && lt.isAfter(LocalTime.now())
+              || temporalAccessor instanceof final ZonedDateTime zdt
+                  && zdt.isAfter(ZonedDateTime.now())
+              || temporalAccessor instanceof final OffsetDateTime odt
+                  && odt.isAfter(OffsetDateTime.now())
+              || temporalAccessor instanceof final OffsetTime ot && ot.isAfter(OffsetTime.now())
+              || temporalAccessor instanceof final Year y && y.isAfter(Year.now())
+              || temporalAccessor instanceof final YearMonth ym && ym.isAfter(YearMonth.now()))) {
+        req.addViolation(message, propertyName);
+        return false;
       }
       return true;
     }

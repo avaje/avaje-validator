@@ -24,6 +24,8 @@
   <properties>
     <surefire.useModulePath>false</surefire.useModulePath>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
+    <java.version>17</java.version>
+    <java.release>17</java.release>
   </properties>
 
   <modules>
