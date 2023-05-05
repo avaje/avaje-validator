@@ -28,6 +28,18 @@ public interface ValidationContext {
      */
     String message(String key, Map<String, Object> attributes);
 
+  /**
+   * Return the message object held by a validation adapter
+   */
+  Message message2(String key, Map<String, Object> attributes);
+
+    interface Message {
+
+      String template();
+
+      Map<String, Object> attributes();
+    }
+
     /**
      * Factory for creating a ValidationAdapter for a given type.
      */
