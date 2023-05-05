@@ -130,45 +130,6 @@ final class GenericType {
     params.add(param);
   }
 
-  String asTypeDeclaration() {
-    if (params.size() == 0) {
-      return asTypeBasic();
-    }
-    if (params.size() == 1) {
-      return asTypeContainer();
-    }
-    final StringBuilder sb = new StringBuilder();
-    writeType("Types.newParameterizedType(", sb);
-    return sb.append(")").toString();
-  }
-
-  private String asTypeBasic() {
-    final String topType = topType();
-    final String adapterType = GenericTypeMap.typeOfRaw(topType);
-    if (adapterType != null) {
-      return adapterType;
-    }
-    return Util.shortName(topType) + ".class";
-  }
-
-  private String asTypeContainer() {
-    final GenericType param = params.get(0);
-    final String containerType = topType();
-    switch (containerType) {
-      case "java.util.List":
-        return "Types.listOf(" + Util.shortName(param.topType()) + ".class)";
-      case "java.util.Set":
-        return "Types.setOf(" + Util.shortName(param.topType()) + ".class)";
-      case "java.util.stream.Stream":
-        return "Types.streamOf(" + Util.shortName(param.topType()) + ".class)";
-      default:
-        throw new IllegalArgumentException(
-            "Unsupported Container Type "
-                + containerType
-                + ", only java.util List/Set/Stream allowed");
-    }
-  }
-
   String firstParamType() {
     return params.isEmpty() ? "java.lang.Object" : params.get(0).topType();
   }

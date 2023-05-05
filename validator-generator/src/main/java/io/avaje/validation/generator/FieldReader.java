@@ -22,17 +22,16 @@ final class FieldReader {
 
   private MethodReader getter;
   private boolean genericTypeParameter;
-  private int genericTypeParamPosition;
   private final boolean optionalValidation;
   private final Map<GenericType, String> annotations;
+  private final Element element;
 
   FieldReader(Element element, List<String> genericTypeParams) {
     this.genericTypeParams = genericTypeParams;
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
-
-    if (element instanceof ExecutableElement) {
-      final var executableElement = (ExecutableElement) element;
+    this.element = element;
+    if (element instanceof final ExecutableElement executableElement) {
       this.rawType = Util.trimAnnotations(executableElement.getReturnType().toString());
 
     } else {
@@ -53,11 +52,9 @@ final class FieldReader {
 
   private String initAdapterShortType(String shortType) {
     String typeWrapped = "ValidationAdapter<" + PrimitiveUtil.wrap(shortType) + ">";
-    for (int i = 0; i < genericTypeParams.size(); i++) {
-      final String typeParam = genericTypeParams.get(i);
+    for (final String typeParam : genericTypeParams) {
       if (typeWrapped.contains("<" + typeParam + ">")) {
         genericTypeParameter = true;
-        genericTypeParamPosition = i;
         typeWrapped = typeWrapped.replace("<" + typeParam + ">", "<Object>");
       }
     }
@@ -100,7 +97,9 @@ final class FieldReader {
   }
 
   void addImports(Set<String> importTypes) {
-
+    if (PatternPrism.isPresent(element)) {
+      importTypes.add("static io.avaje.validation.adapter.RegexFlag.*");
+    }
     genericType.addImports(importTypes);
     annotations.keySet().forEach(t -> t.addImports(importTypes));
   }
@@ -132,19 +131,6 @@ final class FieldReader {
 
   void writeField(Append writer) {
     writer.append("  private final %s %s;", adapterShortType, adapterFieldName).eol();
-  }
-
-  String asTypeDeclaration() {
-    final String asType = genericType.asTypeDeclaration().replace("? extends ", "");
-    if (genericTypeParameter) {
-      return genericTypeReplacement(asType, "param" + genericTypeParamPosition);
-    }
-    return asType;
-  }
-
-  private String genericTypeReplacement(String asType, String replaceWith) {
-    final String typeParam = genericTypeParams.get(genericTypeParamPosition);
-    return asType.replace(typeParam + ".class", replaceWith);
   }
 
   private void writeGetValue(Append writer, String suffix) {
@@ -187,14 +173,14 @@ final class FieldReader {
 
   public void writeConstructor(Append writer) {
 
-    writer.append("    this.%s = ", adapterFieldName);
+    writer.append("    this.%s = ", adapterFieldName).eol();
 
     boolean first = true;
     for (final var a : annotations.entrySet()) {
 
       if (first) {
         writer.append(
-            "ctx.<%s>adapter(%s.class,%s)",
+            "        ctx.<%s>adapter(%s.class, %s)",
             PrimitiveUtil.wrap(genericType.shortType()), a.getKey().shortName(), a.getValue());
         first = false;
         continue;
@@ -202,10 +188,10 @@ final class FieldReader {
       writer
           .eol()
           .append(
-              "                                     .andThen(ctx.adapter(%s.class,%s))",
+              "            .andThen(ctx.adapter(%s.class,%s))",
               a.getKey().shortName(), a.getValue());
     }
-    final var topType = PrimitiveUtil.wrap(genericType.topType());
+    final var topType = genericType.topType();
     if (isBasicType(topType)) {
 
       writer.append(";").eol();
@@ -222,9 +208,7 @@ final class FieldReader {
 
       writer
           .eol()
-          .append(
-              "                                     .list(ctx, %s.class)",
-              Util.shortName(genericType.firstParamType()));
+          .append("           .list(ctx, %s.class)", Util.shortName(genericType.firstParamType()));
     } else if ("java.util.Map".equals(genericType.topType())) {
       if (isBasicType(genericType.secondParamType())) {
 
@@ -234,9 +218,7 @@ final class FieldReader {
 
       writer
           .eol()
-          .append(
-              "                                     .map(ctx, %s.class)",
-              Util.shortName(genericType.secondParamType()));
+          .append("           .map(ctx, %s.class)", Util.shortName(genericType.secondParamType()));
     } else if (genericType.topType().contains("[]")) {
       if (isBasicType(topType)) {
 
@@ -247,14 +229,13 @@ final class FieldReader {
       writer
           .eol()
           .append(
-              "                                     .array(ctx, %s.class)",
+              "           .array(ctx, %s.class)",
               Util.shortName(genericType.topType().replace("[]", "")));
     } else {
       writer
           .eol()
           .append(
-              "                                     .andThen(ctx.adapter(%s.class))",
-              Util.shortName(genericType.topType()));
+              "           .andThen(ctx.adapter(%s.class))", Util.shortName(genericType.topType()));
     }
     writer.append(";").eol();
   }
