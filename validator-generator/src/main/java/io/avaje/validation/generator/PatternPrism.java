@@ -6,7 +6,8 @@ import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public interface PatternPrism {
+public sealed interface PatternPrism
+    permits AvajePatternPrism, JakartaPatternPrism, JavaxPatternPrism {
 
   /** @return the regular expression to match */
   String regexp();
