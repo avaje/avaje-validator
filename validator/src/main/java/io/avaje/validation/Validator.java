@@ -21,7 +21,6 @@ public interface Validator {
     return DefaultBootstrap.builder();
   }
 
-
   /** Build the Validator instance adding ValidationAdapter, Factory or AdapterBuilder. */
   interface Builder {
 

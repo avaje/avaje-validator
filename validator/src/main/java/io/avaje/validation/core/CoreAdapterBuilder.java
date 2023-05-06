@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.core.adapters.BasicAdapters;
+import io.avaje.validation.core.adapters.NumberAdapters;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
 final class CoreAdapterBuilder {
@@ -27,6 +29,7 @@ final class CoreAdapterBuilder {
     this.factories.addAll(userFactories);
     this.annotationFactories.addAll(userAnnotationFactories);
     this.annotationFactories.add(BasicAdapters.FACTORY);
+    this.annotationFactories.add(NumberAdapters.FACTORY);
     interpolator = context.interpolator();
   }
 

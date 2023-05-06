@@ -4,9 +4,9 @@ import java.lang.annotation.*;
 
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(IsTrue.List.class)
-public @interface IsTrue {
-    String message() default "{avaje.validation.constraints.IsTrue.message}";
+@Repeatable(AssertFalse.List.class)
+public @interface AssertFalse {
+    String message() default "{avaje.validation.constraints.AssertFalse.message}";
 
     Class<?>[] groups() default {};
 
@@ -14,6 +14,6 @@ public @interface IsTrue {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface List {
-        IsTrue[] value();
+        AssertFalse[] value();
     }
 }

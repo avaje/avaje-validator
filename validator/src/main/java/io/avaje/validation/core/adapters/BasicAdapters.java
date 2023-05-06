@@ -1,4 +1,4 @@
-package io.avaje.validation.core;
+package io.avaje.validation.core.adapters;
 
 import java.lang.reflect.Array;
 import java.time.Instant;
@@ -23,12 +23,13 @@ import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
 
-final class BasicAdapters {
+public final class BasicAdapters {
   private BasicAdapters() {}
 
-  static final ValidationContext.AnnotationFactory FACTORY =
+  public static final ValidationContext.AnnotationFactory FACTORY =
       (annotationType, context, attributes) ->
           switch (annotationType.getSimpleName()) {
+            case "Null" -> new NullAdapter(context.message("Null", attributes));
             case "NotNull" -> new NotNullAdapter(context.message("NotNull", attributes));
             case "AssertTrue" -> new AssertTrueAdapter(context.message("AssertTrue", attributes));
             case "AssertFalse" -> new AssertFalseAdapter(
@@ -84,10 +85,7 @@ final class BasicAdapters {
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
       if (value == null) {
-        if (min != -1) {
-          req.addViolation("CollectionNull", propertyName);
-        }
-        return false;
+        return true;
       }
 
       if (value instanceof final CharSequence sequence) {
@@ -272,6 +270,24 @@ final class BasicAdapters {
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
       if (value == null) {
+        req.addViolation(message, propertyName);
+        return false;
+      }
+      return true;
+    }
+  }
+
+  private static final class NullAdapter implements ValidationAdapter<Object> {
+
+    private final String message;
+
+    public NullAdapter(String message) {
+      this.message = message;
+    }
+
+    @Override
+    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+      if (value != null) {
         req.addViolation(message, propertyName);
         return false;
       }
