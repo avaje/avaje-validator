@@ -1,5 +1,4 @@
 module io.avaje.validation {
-
   exports io.avaje.validation;
   exports io.avaje.validation.adapter;
   exports io.avaje.validation.spi;
@@ -13,5 +12,4 @@ module io.avaje.validation {
   uses io.avaje.validation.adapter.ValidatorComponent;
   uses io.avaje.validation.adapter.ValidationContext.AdapterFactory;
   uses io.avaje.validation.adapter.ValidationContext.AnnotationFactory;
-
 }

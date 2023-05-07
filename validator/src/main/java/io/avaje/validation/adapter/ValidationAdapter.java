@@ -48,6 +48,10 @@ public interface ValidationAdapter<T> {
   }
 
   private boolean validateAll(Collection<T> value, ValidationRequest req, String propertyName) {
+
+    if (value == null) {
+      return true;
+    }
     if (propertyName != null) {
       req.pushPath(propertyName);
     }
@@ -63,6 +67,10 @@ public interface ValidationAdapter<T> {
   }
 
   private boolean validateArray(T[] value, ValidationRequest req, String propertyName) {
+
+    if (value == null) {
+      return true;
+    }
     if (propertyName != null) {
       req.pushPath(propertyName);
     }

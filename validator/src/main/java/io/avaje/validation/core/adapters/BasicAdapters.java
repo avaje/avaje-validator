@@ -1,4 +1,4 @@
-package io.avaje.validation.core;
+package io.avaje.validation.core.adapters;
 
 import java.lang.reflect.Array;
 import java.time.Instant;
@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -23,17 +24,20 @@ import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
 
-final class BasicAdapters {
+public final class BasicAdapters {
   private BasicAdapters() {}
 
-  static final ValidationContext.AnnotationFactory FACTORY =
+  public static final ValidationContext.AnnotationFactory FACTORY =
       (annotationType, context, attributes) ->
           switch (annotationType.getSimpleName()) {
+            case "Null" -> new NullAdapter(context.message("Null", attributes));
             case "NotNull" -> new NotNullAdapter(context.message("NotNull", attributes));
+            case "NonNull" -> new NotNullAdapter(context.message("NonNull", attributes));
             case "AssertTrue" -> new AssertTrueAdapter(context.message("AssertTrue", attributes));
             case "AssertFalse" -> new AssertFalseAdapter(
                 context.message("AssertFalse", attributes));
             case "NotBlank" -> new NotBlankAdapter(context.message("NotBlank", attributes));
+            case "NotEmpty" -> new NotEmptyAdapter(context.message("NotEmpty", attributes));
             case "Past", "PastOrPresent" -> new PastAdapter(context.message("Past", attributes));
             case "Future", "FutureOrPresent" -> new FutureAdapter(
                 context.message("Future", attributes));
@@ -48,11 +52,13 @@ final class BasicAdapters {
     private final String message;
     private final Predicate<String> pattern;
 
+    @SuppressWarnings("unchecked")
     public PatternAdapter(String message, Map<String, Object> attributes) {
       this.message = message;
       int flags = 0;
 
-      for (final var flag : (List<RegexFlag>) attributes.get("flags")) {
+      for (final var flag :
+          Optional.ofNullable((List<RegexFlag>) attributes.get("flags")).orElseGet(List::of)) {
         flags |= flag.getValue();
       }
       this.pattern =
@@ -77,17 +83,14 @@ final class BasicAdapters {
 
     public SizeAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
-      this.min = (int) attributes.get("min");
-      this.max = (int) attributes.get("max");
+      this.min = Optional.ofNullable((Integer) attributes.get("min")).orElse(0);
+      this.max = Optional.ofNullable((Integer) attributes.get("max")).orElse(Integer.MAX_VALUE);
     }
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
       if (value == null) {
-        if (min != -1) {
-          req.addViolation("CollectionNull", propertyName);
-        }
-        return false;
+        return true;
       }
 
       if (value instanceof final CharSequence sequence) {
@@ -225,6 +228,40 @@ final class BasicAdapters {
     }
   }
 
+  private static final class NotEmptyAdapter implements ValidationAdapter<Object> {
+
+    private final String message;
+
+    public NotEmptyAdapter(String message) {
+      this.message = message;
+    }
+
+    @Override
+    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+      if (value == null
+          || value instanceof final Collection<?> col && col.isEmpty()
+          || value instanceof final Map<?, ?> map && map.isEmpty()) {
+        req.addViolation(message, propertyName);
+        return false;
+      } else if (value instanceof final CharSequence sequence) {
+        final var len = sequence.length();
+        if (len == 0) {
+          req.addViolation(message, propertyName);
+          return false;
+        }
+      } else if (value.getClass().isArray()) {
+
+        final var len = Array.getLength(value);
+        if (len == 0) {
+          req.addViolation(message, propertyName);
+          return false;
+        }
+      }
+
+      return true;
+    }
+  }
+
   private static final class AssertTrueAdapter implements ValidationAdapter<Boolean> {
 
     private final String message;
@@ -272,6 +309,24 @@ final class BasicAdapters {
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
       if (value == null) {
+        req.addViolation(message, propertyName);
+        return false;
+      }
+      return true;
+    }
+  }
+
+  private static final class NullAdapter implements ValidationAdapter<Object> {
+
+    private final String message;
+
+    public NullAdapter(String message) {
+      this.message = message;
+    }
+
+    @Override
+    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+      if (value != null) {
         req.addViolation(message, propertyName);
         return false;
       }
