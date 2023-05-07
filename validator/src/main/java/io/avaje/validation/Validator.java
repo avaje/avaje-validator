@@ -7,11 +7,26 @@ import io.avaje.validation.spi.Bootstrap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.ServiceLoader;
 
 public interface Validator {
 
+  /**
+   * Validate the object using the default locale.
+   */
   void validate(Object any) throws ConstraintViolationException;
+
+  /**
+   * Validate the object with a given locale.
+   *
+   * <p>If the locale is not one of the supported locales then the
+   * default locale will be used.
+   *
+   * <p>This is expected to be used when the Validator is configured
+   * to support multiple locales.
+   */
+  void validate(Object any, Locale locale) throws ConstraintViolationException;
 
   static Builder builder() {
     final Iterator<Bootstrap> bootstrapService = ServiceLoader.load(Bootstrap.class).iterator();

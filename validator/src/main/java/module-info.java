@@ -2,6 +2,9 @@ module io.avaje.validation {
   exports io.avaje.validation;
   exports io.avaje.validation.adapter;
   exports io.avaje.validation.spi;
+  exports io.avaje.validation.core;
+
+  requires io.avaje.lang;
 
   uses io.avaje.validation.spi.Bootstrap;
   uses io.avaje.validation.Validator.GeneratedComponent;

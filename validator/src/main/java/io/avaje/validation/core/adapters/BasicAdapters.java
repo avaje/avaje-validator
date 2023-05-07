@@ -43,7 +43,7 @@ public final class BasicAdapters {
                 context.message("Future", attributes));
             case "Pattern" -> new PatternAdapter(
                 context.message("Pattern", attributes), attributes);
-            case "Size" -> new SizeAdapter(context.message("Size", attributes), attributes);
+            case "Size" -> new SizeAdapter(context.message2("{avaje.Size.message}", attributes), attributes);
             default -> null;
           };
 
@@ -77,11 +77,11 @@ public final class BasicAdapters {
 
   private static final class SizeAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final int min;
     private final int max;
 
-    public SizeAdapter(String message, Map<String, Object> attributes) {
+    public SizeAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.min = Optional.ofNullable((Integer) attributes.get("min")).orElse(0);
       this.max = Optional.ofNullable((Integer) attributes.get("max")).orElse(Integer.MAX_VALUE);
