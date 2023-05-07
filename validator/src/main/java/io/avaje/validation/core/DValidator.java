@@ -7,15 +7,14 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.avaje.lang.Nullable;
 import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationRequest;
 import io.avaje.validation.adapter.ValidatorComponent;
 
 /** Default implementation of Validator. */
@@ -24,11 +23,18 @@ final class DValidator implements Validator, ValidationContext {
   private final CoreAdapterBuilder builder;
   private final Map<Type, DValidationType<?>> typeCache = new ConcurrentHashMap<>();
   private final MessageInterpolator interpolator;
+  private final LocaleResolver localeResolver;
+  private final DTemplateLookup templateLookup;
 
   DValidator(
-      List<AdapterFactory> factories,
-      List<AnnotationFactory> annotationFactories,
-      MessageInterpolator interpolator) {
+    List<AdapterFactory> factories,
+    List<AnnotationFactory> annotationFactories,
+    MessageInterpolator interpolator, LocaleResolver localeResolver) {
+    this.localeResolver = localeResolver;
+
+    var defaultResourceBundle = new DResourceBundleManager("io.avaje.validation.Messages", localeResolver);
+    this.templateLookup = new DTemplateLookup(defaultResourceBundle);
+
     this.interpolator = interpolator;
     this.builder = new CoreAdapterBuilder(this, factories, annotationFactories);
   }
@@ -38,10 +44,15 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void validate(Object any) {
+    validate(any, null);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public void validate(Object any, @Nullable Locale locale) {
     final var type = (ValidationType<Object>) type(any.getClass());
-    type.validate(any);
+    type.validate(any, locale);
   }
 
   private <T> ValidationType<T> type(Class<T> cls) {
@@ -50,7 +61,7 @@ final class DValidator implements Validator, ValidationContext {
 
   @SuppressWarnings("unchecked")
   private <T> ValidationType<T> typeWithCache(Type type) {
-    return (ValidationType<T>)typeCache.computeIfAbsent(type, _type -> new DValidationType<>(adapter(_type)));
+    return (ValidationType<T>)typeCache.computeIfAbsent(type, _type -> new DValidationType<>(this, adapter(_type)));
   }
 
   @Override
@@ -61,6 +72,18 @@ final class DValidator implements Validator, ValidationContext {
       msg = key+"-todo-lookupDefaultMessage";
     }
     return msg;
+  }
+
+  @Override
+  public Message message2(String defaultKey, Map<String, Object> attributes) {
+    String keyOrTemplate = (String)attributes.get("message");
+    if (keyOrTemplate == null) {
+      // lookup default message for the given key
+      keyOrTemplate = defaultKey;
+    }
+    // if configured to support only 1 Locale then we can do the lookup and message translation once and early
+    // otherwise we defer as the final message is locale specific
+    return new DMessage(keyOrTemplate, attributes);
   }
 
   @Override
@@ -87,6 +110,28 @@ final class DValidator implements Validator, ValidationContext {
       return result;
     }
     return builder.build(type, cacheKey);
+  }
+
+  ValidationRequest request(@Nullable Locale locale) {
+    return new DRequest(this, locale);
+  }
+
+
+  String interpolate(Message msg, Locale requestLocale) {
+    // resolve the locale to use to produce the message
+    Locale locale = localeResolver.resolve(requestLocale);
+    // lookup in resource bundles using resolved locale and template
+    String template = templateLookup.lookup(msg.template(), locale);
+    // translate the template using msg attributes
+    Map<String, Object> attributes = msg.attributes();
+    Set<Map.Entry<String, Object>> entries = attributes.entrySet();
+    String result = template;
+    for (Map.Entry<String, Object> entry : entries) {
+      // needs work here to improve functionality, support local specific value formatting eg Duration Max
+      result = result.replace('{' + entry.getKey() + '}', String.valueOf(entry.getValue()));
+    }
+    // return the message
+    return result;
   }
 
   /** Implementation of Validator.Builder. */
@@ -142,11 +187,13 @@ final class DValidator implements Validator, ValidationContext {
     public DValidator build() {
       registerComponents();
 
+      //todo: sort out LocaleResolver initialisation, just hard coded EN and DE for now ...
+      LocaleResolver localeResolver = new DLocaleResolver(Locale.ENGLISH, Locale.GERMAN);
       final var interpolator =
           ServiceLoader.load(MessageInterpolator.class)
               .findFirst()
               .orElseGet(NoopMessageInterpolator::new);
-      return new DValidator(factories, afactories, interpolator);
+      return new DValidator(factories, afactories, interpolator, localeResolver);
     }
 
     private static <T> AnnotationFactory newAnnotationAdapterFactory(Type type, ValidationAdapter<T> adapter) {

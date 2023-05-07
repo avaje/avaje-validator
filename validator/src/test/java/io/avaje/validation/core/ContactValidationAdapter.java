@@ -5,6 +5,7 @@ import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.Collections;
 import java.util.Map;
@@ -16,12 +17,9 @@ public final class ContactValidationAdapter implements ValidationAdapter<Contact
   private final ValidationAdapter<Address> addressValidator;
 
   public ContactValidationAdapter(ValidationContext ctx) {
-    this.firstNameAdapter =
-        ctx
-            .<String>adapter(NotNull.class, Map.of("message", "null"))
-            .andThen(ctx.adapter(NotBlank.class, Map.of("message", "empty")));
-
-    this.lastNameAdapter = ctx.adapter(NotNull.class, Collections.emptyMap());
+    this.firstNameAdapter = ctx.adapter(NotBlank.class, Map.of("message", "empty"));
+    this.lastNameAdapter = ctx.<String>adapter(NotNull.class, Collections.emptyMap())
+      .andThen(ctx.adapter(Size.class, Map.of("max", 5, "min", 0)));
     this.addressValidator = ctx.adapter(Address.class);
   }
 
