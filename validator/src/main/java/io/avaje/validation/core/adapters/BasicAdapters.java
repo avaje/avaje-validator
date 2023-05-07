@@ -30,12 +30,14 @@ public final class BasicAdapters {
   public static final ValidationContext.AnnotationFactory FACTORY =
       (annotationType, context, attributes) ->
           switch (annotationType.getSimpleName()) {
+            case "Email" -> new EmailAdapter(context.message("Email", attributes), attributes);
             case "Null" -> new NullAdapter(context.message("Null", attributes));
             case "NotNull" -> new NotNullAdapter(context.message("NotNull", attributes));
             case "NonNull" -> new NotNullAdapter(context.message("NonNull", attributes));
-            case "AssertTrue" -> new AssertTrueAdapter(context.message("AssertTrue", attributes));
-            case "AssertFalse" -> new AssertFalseAdapter(
-                context.message("AssertFalse", attributes));
+            case "AssertTrue" -> new AssertBooleanAdapter(
+                context.message("AssertTrue", attributes), false);
+            case "AssertFalse" -> new AssertBooleanAdapter(
+                context.message("AssertFalse", attributes), true);
             case "NotBlank" -> new NotBlankAdapter(context.message("NotBlank", attributes));
             case "NotEmpty" -> new NotEmptyAdapter(context.message("NotEmpty", attributes));
             case "Past", "PastOrPresent" -> new PastAdapter(context.message("Past", attributes));
@@ -210,7 +212,7 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class NotBlankAdapter implements ValidationAdapter<String> {
+  private static final class NotBlankAdapter implements ValidationAdapter<CharSequence> {
 
     private final String message;
 
@@ -219,10 +221,23 @@ public final class BasicAdapters {
     }
 
     @Override
-    public boolean validate(String str, ValidationRequest req, String propertyName) {
-      if (str == null || str.isBlank()) {
+    public boolean validate(CharSequence cs, ValidationRequest req, String propertyName) {
+      if (cs == null || isBlank(cs)) {
         req.addViolation(message, propertyName);
         return false;
+      }
+      return true;
+    }
+
+    private static boolean isBlank(final CharSequence cs) {
+      final int strLen = cs.length();
+      if (strLen == 0) {
+        return true;
+      }
+      for (int i = 0; i < strLen; i++) {
+        if (!Character.isWhitespace(cs.charAt(i))) {
+          return false;
+        }
       }
       return true;
     }
@@ -262,35 +277,20 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class AssertTrueAdapter implements ValidationAdapter<Boolean> {
+  // AssertFalse/AssertTrue
+  private static final class AssertBooleanAdapter implements ValidationAdapter<Boolean> {
 
     private final String message;
+    private final Boolean assertBool;
 
-    public AssertTrueAdapter(String message) {
+    public AssertBooleanAdapter(String message, Boolean assertBool) {
       this.message = message;
+      this.assertBool = assertBool;
     }
 
     @Override
     public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
-      if (Boolean.FALSE.equals(type)) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      return true;
-    }
-  }
-
-  private static final class AssertFalseAdapter implements ValidationAdapter<Boolean> {
-
-    private final String message;
-
-    public AssertFalseAdapter(String message) {
-      this.message = message;
-    }
-
-    @Override
-    public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
-      if (Boolean.TRUE.equals(type)) {
+      if (assertBool.equals(type)) {
         req.addViolation(message, propertyName);
         return false;
       }

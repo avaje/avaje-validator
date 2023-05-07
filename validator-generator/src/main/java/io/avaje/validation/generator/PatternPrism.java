@@ -6,8 +6,33 @@ import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public sealed interface PatternPrism
-    permits AvajePatternPrism, JakartaPatternPrism, JavaxPatternPrism {
+import io.avaje.prism.GeneratePrism;
+
+@GeneratePrism(
+    value = io.avaje.validation.constraints.Pattern.class,
+    name = "AvajePatternPrism",
+    superInterfaces = PatternPrism.class)
+@GeneratePrism(
+    value = jakarta.validation.constraints.Pattern.class,
+    name = "JakartaPatternPrism",
+    superInterfaces = PatternPrism.class)
+@GeneratePrism(
+    value = javax.validation.constraints.Pattern.class,
+    name = "JavaxPatternPrism",
+    superInterfaces = PatternPrism.class)
+@GeneratePrism(
+    value = io.avaje.validation.constraints.Email.class,
+    name = "AvajeEmailPrism",
+    superInterfaces = PatternPrism.class)
+@GeneratePrism(
+    value = jakarta.validation.constraints.Email.class,
+    name = "JakartaEmailPrism",
+    superInterfaces = PatternPrism.class)
+@GeneratePrism(
+    value = javax.validation.constraints.Email.class,
+    name = "JavaxEmailPrism",
+    superInterfaces = PatternPrism.class)
+public interface PatternPrism {
 
   /** @return the regular expression to match */
   String regexp();
@@ -23,12 +48,18 @@ public sealed interface PatternPrism
     return Optional.<PatternPrism>empty()
         .or(() -> AvajePatternPrism.getOptional(e))
         .or(() -> JakartaPatternPrism.getOptional(e))
-        .or(() -> JavaxPatternPrism.getOptional(e));
+        .or(() -> JavaxPatternPrism.getOptional(e))
+        .or(() -> AvajeEmailPrism.getOptional(e))
+        .or(() -> JakartaEmailPrism.getOptional(e))
+        .or(() -> JavaxEmailPrism.getOptional(e));
   }
 
   static boolean isPresent(Element e) {
     return AvajePatternPrism.isPresent(e)
         || JakartaPatternPrism.isPresent(e)
-        || JavaxPatternPrism.isPresent(e);
+        || JavaxPatternPrism.isPresent(e)
+        || AvajeEmailPrism.isPresent(e)
+        || JavaxEmailPrism.isPresent(e)
+        || JakartaEmailPrism.isPresent(e);
   }
 }

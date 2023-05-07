@@ -9,7 +9,7 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import io.avaje.validation.constraints.Pattern.List;
+import io.avaje.validation.constraints.Email.List;
 
 /**
  * The annotated {@code CharSequence} must match the specified regular expression. The regular
@@ -21,30 +21,32 @@ import io.avaje.validation.constraints.Pattern.List;
 @Retention(RUNTIME)
 @Repeatable(List.class)
 @Documented
-public @interface Pattern {
+public @interface Email {
 
-  /** @return the regular expression to match */
-  String regexp();
-
-  /** @return array of {@code Flag}s considered when resolving the regular expression */
-  Flag[] flags() default {};
-
-  /** @return the error message template */
-  String message() default "{avaje.validation.constraints.Pattern.message}";
-
-  /** @return the groups the constraint belongs to */
   Class<?>[] groups() default {};
 
   /**
-   * Defines several {@link Pattern} annotations on the same element.
+   * @return an additional regular expression the annotated element must match. The default is any
+   *     string ('.*')
+   */
+  String regexp() default ".*";
+
+  /**
+   * @return used in combination with {@link #regexp()} in order to specify a regular expression
+   *     option
+   */
+  Flag[] flags() default {};
+
+  /**
+   * Defines several {@link Email} annotations on the same element.
    *
-   * @see Pattern
+   * @see Email
    */
   @Target({METHOD, FIELD})
   @Retention(RUNTIME)
   @Documented
   @interface List {
 
-    Pattern[] value();
+    Email[] value();
   }
 }
