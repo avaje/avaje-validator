@@ -6,7 +6,7 @@ import javax.validation.constraints.Negative;
 import javax.validation.constraints.NotEmpty;
 
 import io.avaje.lang.Nullable;
-import io.avaje.validation.constraints.Flag;
+import io.avaje.validation.constraints.RegexFlag;
 import io.avaje.validation.constraints.Pattern;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -41,7 +41,7 @@ public class TestClass {
 
   @Pattern(
       regexp = "ded",
-      flags = {Flag.CANON_EQ, Flag.CASE_INSENSITIVE})
+      flags = {RegexFlag.CANON_EQ, RegexFlag.CASE_INSENSITIVE})
   public String getS() {
     return s;
   }

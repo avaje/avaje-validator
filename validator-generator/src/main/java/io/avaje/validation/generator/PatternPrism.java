@@ -37,7 +37,7 @@ public interface PatternPrism {
   /** @return the regular expression to match */
   String regexp();
 
-  /** @return array of {@code Flag}s considered when resolving the regular expression */
+  /** @return array of {@code RegexFlag}s considered when resolving the regular expression */
   List<String> flags();
 
   /** @return the error message template */

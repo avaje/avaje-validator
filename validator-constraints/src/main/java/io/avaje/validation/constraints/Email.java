@@ -37,7 +37,7 @@ public @interface Email {
    * @return used in combination with {@link #regexp()} in order to specify a regular expression
    *     option
    */
-  Flag[] flags() default {};
+  RegexFlag[] flags() default {};
 
   /**
    * Defines several {@link Email} annotations on the same element.

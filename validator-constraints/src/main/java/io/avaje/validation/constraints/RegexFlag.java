@@ -1,6 +1,6 @@
 package io.avaje.validation.constraints;
 /** Possible Regexp flags. */
-public enum Flag {
+public enum RegexFlag {
 
   /**
    * Enables Unix lines mode.
@@ -54,7 +54,7 @@ public enum Flag {
   // JDK flag value
   private final int value;
 
-  Flag(int value) {
+  RegexFlag(int value) {
     this.value = value;
   }
 

@@ -26,8 +26,8 @@ public @interface Pattern {
   /** @return the regular expression to match */
   String regexp();
 
-  /** @return array of {@code Flag}s considered when resolving the regular expression */
-  Flag[] flags() default {};
+  /** @return array of {@code RegexFlag}s considered when resolving the regular expression */
+  RegexFlag[] flags() default {};
 
   /** @return the error message template */
   String message() default "{avaje.validation.constraints.Pattern.message}";
