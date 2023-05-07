@@ -6,8 +6,8 @@ import javax.validation.constraints.Negative;
 import javax.validation.constraints.NotEmpty;
 
 import io.avaje.lang.Nullable;
+import io.avaje.validation.constraints.Flag;
 import io.avaje.validation.constraints.Pattern;
-import io.avaje.validation.constraints.Pattern.Flag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

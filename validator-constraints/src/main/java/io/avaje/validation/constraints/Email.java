@@ -23,6 +23,8 @@ import io.avaje.validation.constraints.Email.List;
 @Documented
 public @interface Email {
 
+  String message() default "{avaje.validation.constraints.Email.message}";
+
   Class<?>[] groups() default {};
 
   /**
