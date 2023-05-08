@@ -65,7 +65,7 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
     Predicate<Instant> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
 
-    return predicate.test(Instant.now());
+    return predicate.negate().test(Instant.now());
   }
 
   private boolean compare(LocalDate instant) {
@@ -81,7 +81,7 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
     Predicate<LocalDateTime> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
 
-    return predicate.test(LocalDateTime.now());
+    return predicate.negate().test(LocalDateTime.now());
   }
 
   private boolean compare(LocalTime instant) {
@@ -89,7 +89,7 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
     Predicate<LocalTime> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
 
-    return predicate.test(LocalTime.now());
+    return predicate.negate().test(LocalTime.now());
   }
 
   private boolean compare(ZonedDateTime instant) {
@@ -97,7 +97,7 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
     Predicate<ZonedDateTime> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
 
-    return predicate.test(ZonedDateTime.now());
+    return predicate.negate().test(ZonedDateTime.now());
   }
 
   private boolean compare(OffsetDateTime instant) {
@@ -129,6 +129,6 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
     Predicate<YearMonth> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
 
-    return predicate.test(YearMonth.now());
+    return predicate.negate().test(YearMonth.now());
   }
 }
