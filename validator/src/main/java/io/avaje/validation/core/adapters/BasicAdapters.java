@@ -1,18 +1,7 @@
 package io.avaje.validation.core.adapters;
 
 import java.lang.reflect.Array;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZonedDateTime;
-import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,12 +29,17 @@ public final class BasicAdapters {
                 context.message("AssertFalse", attributes), true);
             case "NotBlank" -> new NotBlankAdapter(context.message("NotBlank", attributes));
             case "NotEmpty" -> new NotEmptyAdapter(context.message("NotEmpty", attributes));
-            case "Past", "PastOrPresent" -> new PastAdapter(context.message("Past", attributes));
-            case "Future", "FutureOrPresent" -> new FutureAdapter(
-                context.message("Future", attributes));
+            case "Past" -> new FuturePastAdapter(context.message("Past", attributes), true, false);
+            case "PastOrPresent" -> new FuturePastAdapter(
+                context.message("PastOrPresent", attributes), true, true);
+            case "Future" -> new FuturePastAdapter(
+                context.message("Future", attributes), false, false);
+            case "FutureOrPresent" -> new FuturePastAdapter(
+                context.message("FutureOrPresent", attributes), false, true);
             case "Pattern" -> new PatternAdapter(
                 context.message("Pattern", attributes), attributes);
-            case "Size" -> new SizeAdapter(context.message2("{avaje.Size.message}", attributes), attributes);
+            case "Size" -> new SizeAdapter(
+                context.message2("{avaje.Size.message}", attributes), attributes);
             default -> null;
           };
 
@@ -128,86 +122,6 @@ public final class BasicAdapters {
         }
       }
 
-      return true;
-    }
-  }
-
-  private static final class FutureAdapter implements ValidationAdapter<Object> {
-
-    private final String message;
-
-    public FutureAdapter(String message) {
-      this.message = message;
-    }
-
-    @Override
-    public boolean validate(Object obj, ValidationRequest req, String propertyName) {
-
-      if (obj == null) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      if (obj instanceof final Date date) {
-        if (date.before(Date.from(Instant.now()))) {
-          req.addViolation(message, propertyName);
-          return false;
-        }
-      } else if (obj instanceof final TemporalAccessor temporalAccessor
-          && (temporalAccessor instanceof final Instant ins && ins.isBefore(Instant.now())
-              || temporalAccessor instanceof final LocalDate ld && ld.isBefore(LocalDate.now())
-              || temporalAccessor instanceof final LocalDateTime ldt
-                  && ldt.isBefore(LocalDateTime.now())
-              || temporalAccessor instanceof final LocalTime lt && lt.isBefore(LocalTime.now())
-              || temporalAccessor instanceof final ZonedDateTime zdt
-                  && zdt.isBefore(ZonedDateTime.now())
-              || temporalAccessor instanceof final OffsetDateTime odt
-                  && odt.isBefore(OffsetDateTime.now())
-              || temporalAccessor instanceof final OffsetTime ot && ot.isBefore(OffsetTime.now())
-              || temporalAccessor instanceof final Year y && y.isBefore(Year.now())
-              || temporalAccessor instanceof final YearMonth ym && ym.isBefore(YearMonth.now()))) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      return true;
-    }
-  }
-
-  private static final class PastAdapter implements ValidationAdapter<Object> {
-
-    private final String message;
-
-    public PastAdapter(String message) {
-      this.message = message;
-    }
-
-    @Override
-    public boolean validate(Object obj, ValidationRequest req, String propertyName) {
-
-      if (obj == null) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      if (obj instanceof final Date date) {
-        if (date.after(Date.from(Instant.now()))) {
-          req.addViolation(message, propertyName);
-          return false;
-        }
-      } else if (obj instanceof final TemporalAccessor temporalAccessor
-          && (temporalAccessor instanceof final Instant ins && ins.isAfter(Instant.now())
-              || temporalAccessor instanceof final LocalDate ld && ld.isAfter(LocalDate.now())
-              || temporalAccessor instanceof final LocalDateTime ldt
-                  && ldt.isAfter(LocalDateTime.now())
-              || temporalAccessor instanceof final LocalTime lt && lt.isAfter(LocalTime.now())
-              || temporalAccessor instanceof final ZonedDateTime zdt
-                  && zdt.isAfter(ZonedDateTime.now())
-              || temporalAccessor instanceof final OffsetDateTime odt
-                  && odt.isAfter(OffsetDateTime.now())
-              || temporalAccessor instanceof final OffsetTime ot && ot.isAfter(OffsetTime.now())
-              || temporalAccessor instanceof final Year y && y.isAfter(Year.now())
-              || temporalAccessor instanceof final YearMonth ym && ym.isAfter(YearMonth.now()))) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
       return true;
     }
   }
