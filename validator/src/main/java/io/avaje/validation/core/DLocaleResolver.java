@@ -1,11 +1,11 @@
 package io.avaje.validation.core;
 
-import io.avaje.lang.Nullable;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
+import io.avaje.lang.Nullable;
 
 final class DLocaleResolver implements LocaleResolver {
 

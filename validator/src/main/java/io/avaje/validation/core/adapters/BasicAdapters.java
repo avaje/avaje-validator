@@ -39,7 +39,7 @@ public final class BasicAdapters {
             case "Pattern" -> new PatternAdapter(
                 context.message("Pattern", attributes), attributes);
             case "Size" -> new SizeAdapter(
-                context.message2("{avaje.Size.message}", attributes), attributes);
+                context.adapterMessage("{avaje.Size.message}", attributes), attributes);
             default -> null;
           };
 

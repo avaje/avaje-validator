@@ -75,7 +75,7 @@ final class CoreAdapterBuilder {
         return result;
       }
     }
-    // unknown annotation have noop
+    // unknown annotation haves noop
     return NoopAnnotationValidator.INSTANCE;
   }
 }

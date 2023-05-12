@@ -31,7 +31,7 @@ public interface ValidationContext {
   /**
    * Return the message object held by a validation adapter
    */
-  Message message2(String key, Map<String, Object> attributes);
+  Message adapterMessage(String key, Map<String, Object> attributes);
 
     interface Message {
 
