@@ -89,4 +89,20 @@ class AllSortsDefaultMessageTest extends BaseAllSortsTest {
     assertThat(constraint.message()).isEqualTo("muss falsch sein");
   }
 
+  @Test
+  void null_EN() {
+    var bean = new AllSortsBean();
+    bean.myNull = "Invalid";
+    ConstraintViolation constraint = one(bean, Locale.ENGLISH);
+    assertThat(constraint.message()).isEqualTo("must be null");
+  }
+
+  @Test
+  void null_DE() {
+    var bean = new AllSortsBean();
+    bean.myNull = "Invalid";
+    ConstraintViolation constraint = one(bean, Locale.GERMAN);
+    assertThat(constraint.message()).isEqualTo("muss null sein");
+  }
+
 }

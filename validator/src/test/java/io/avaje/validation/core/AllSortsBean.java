@@ -21,4 +21,7 @@ public class AllSortsBean {
 
   @AssertFalse
   boolean myAssertFalse = false;
+
+  @Null
+  String myNull = null;
 }

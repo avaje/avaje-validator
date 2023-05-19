@@ -16,6 +16,7 @@ public final class AllSortsBeanValidationAdapter implements ValidationAdapter<Al
   private final ValidationAdapter<String> myEmail;
   private final ValidationAdapter<Boolean> myAssertTrue;
   private final ValidationAdapter<Boolean> myAssertFalse;
+  private final ValidationAdapter<String> myNull;
 
   public AllSortsBeanValidationAdapter(ValidationContext ctx) {
     this.myNotNull = ctx.<String>adapter(NotNull.class, Collections.emptyMap());;
@@ -24,6 +25,7 @@ public final class AllSortsBeanValidationAdapter implements ValidationAdapter<Al
     this.myEmail = ctx.<String>adapter(Email.class, Collections.emptyMap());;
     this.myAssertTrue = ctx.adapter(AssertTrue.class, Collections.emptyMap());;
     this.myAssertFalse = ctx.adapter(AssertFalse.class, Collections.emptyMap());;
+    this.myNull = ctx.adapter(Null.class, Collections.emptyMap());;
   }
 
   @Override
@@ -37,6 +39,7 @@ public final class AllSortsBeanValidationAdapter implements ValidationAdapter<Al
     myEmail.validate(pojo.myEmail, request, "myEmail");
     myAssertTrue.validate(pojo.myAssertTrue, request, "myAssertTrue");
     myAssertFalse.validate(pojo.myAssertFalse, request, "myAssertFalse");
+    myNull.validate(pojo.myNull, request, "myNull");
 
     if (propertyName != null) {
       request.popPath();

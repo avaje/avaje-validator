@@ -19,7 +19,7 @@ public final class BasicAdapters {
   public static final ValidationContext.AnnotationFactory FACTORY = (annotationType, context, attributes) ->
     switch (annotationType.getSimpleName()) {
       case "Email" -> new EmailAdapter(context.message("Email", attributes), attributes);
-      case "Null" -> new NullAdapter(context.message("Null", attributes));
+      case "Null" -> new NullAdapter(context.message2("{avaje.Null.message}", attributes));
       case "NotNull", "NonNull" -> new NotNullAdapter(context.message2("{avaje.NotNull.message}", attributes));
       case "AssertTrue" -> new AssertBooleanAdapter(context.message2("{avaje.AssertTrue.message}", attributes), false);
       case "AssertFalse" -> new AssertBooleanAdapter(context.message2("{avaje.AssertFalse.message}", attributes), true);
@@ -223,9 +223,9 @@ public final class BasicAdapters {
 
   private static final class NullAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final ValidationContext.Message message;
 
-    public NullAdapter(String message) {
+    public NullAdapter(ValidationContext.Message message) {
       this.message = message;
     }
 
