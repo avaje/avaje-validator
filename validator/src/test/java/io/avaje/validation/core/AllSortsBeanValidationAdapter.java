@@ -17,15 +17,17 @@ public final class AllSortsBeanValidationAdapter implements ValidationAdapter<Al
   private final ValidationAdapter<Boolean> myAssertTrue;
   private final ValidationAdapter<Boolean> myAssertFalse;
   private final ValidationAdapter<String> myNull;
+  private final ValidationAdapter<String> myPattern;
 
   public AllSortsBeanValidationAdapter(ValidationContext ctx) {
-    this.myNotNull = ctx.<String>adapter(NotNull.class, Collections.emptyMap());;
-    this.myNotBlank = ctx.<String>adapter(NotBlank.class, Collections.emptyMap());;
-    this.myNotEmpty = ctx.<String>adapter(NotEmpty.class, Collections.emptyMap());;
-    this.myEmail = ctx.<String>adapter(Email.class, Collections.emptyMap());;
-    this.myAssertTrue = ctx.adapter(AssertTrue.class, Collections.emptyMap());;
-    this.myAssertFalse = ctx.adapter(AssertFalse.class, Collections.emptyMap());;
-    this.myNull = ctx.adapter(Null.class, Collections.emptyMap());;
+    this.myNotNull = ctx.adapter(NotNull.class, Collections.emptyMap());
+    this.myNotBlank = ctx.adapter(NotBlank.class, Collections.emptyMap());
+    this.myNotEmpty = ctx.adapter(NotEmpty.class, Collections.emptyMap());
+    this.myEmail = ctx.adapter(Email.class, Collections.emptyMap());
+    this.myAssertTrue = ctx.adapter(AssertTrue.class, Collections.emptyMap());
+    this.myAssertFalse = ctx.adapter(AssertFalse.class, Collections.emptyMap());
+    this.myNull = ctx.adapter(Null.class, Collections.emptyMap());
+    this.myPattern = ctx.adapter(Pattern.class, Map.of("regexp", "[0-9]"));
   }
 
   @Override
@@ -40,6 +42,7 @@ public final class AllSortsBeanValidationAdapter implements ValidationAdapter<Al
     myAssertTrue.validate(pojo.myAssertTrue, request, "myAssertTrue");
     myAssertFalse.validate(pojo.myAssertFalse, request, "myAssertFalse");
     myNull.validate(pojo.myNull, request, "myNull");
+    myPattern.validate(pojo.myPattern, request, "myPattern");
 
     if (propertyName != null) {
       request.popPath();

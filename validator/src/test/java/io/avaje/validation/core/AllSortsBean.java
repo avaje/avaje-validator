@@ -24,4 +24,7 @@ public class AllSortsBean {
 
   @Null
   String myNull = null;
+
+  @Pattern(regexp = "[0-9]")
+  String myPattern = "1234";
 }

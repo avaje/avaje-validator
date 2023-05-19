@@ -29,27 +29,25 @@ public final class BasicAdapters {
       case "PastOrPresent" -> new FuturePastAdapter(context.message("PastOrPresent", attributes), true, true);
       case "Future" -> new FuturePastAdapter(context.message("Future", attributes), false, false);
       case "FutureOrPresent" -> new FuturePastAdapter(context.message("FutureOrPresent", attributes), false, true);
-      case "Pattern" -> new PatternAdapter(context.message("Pattern", attributes), attributes);
+      case "Pattern" -> new PatternAdapter(context.message2("{avaje.Pattern.message}", attributes), attributes);
       case "Size" -> new SizeAdapter(context.message2("{avaje.Size.message}", attributes), attributes);
       default -> null;
     };
 
   private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final Predicate<String> pattern;
 
     @SuppressWarnings("unchecked")
-    public PatternAdapter(String message, Map<String, Object> attributes) {
+    public PatternAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       int flags = 0;
 
-      for (final var flag :
-          Optional.ofNullable((List<RegexFlag>) attributes.get("flags")).orElseGet(List::of)) {
+      for (final var flag : Optional.ofNullable((List<RegexFlag>) attributes.get("flags")).orElseGet(List::of)) {
         flags |= flag.getValue();
       }
-      this.pattern =
-          Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
+      this.pattern = Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
     }
 
     @Override
