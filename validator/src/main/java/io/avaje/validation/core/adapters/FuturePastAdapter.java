@@ -14,15 +14,16 @@ import java.util.Date;
 import java.util.function.Predicate;
 
 import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext.Message;
 import io.avaje.validation.adapter.ValidationRequest;
 
 final class FuturePastAdapter implements ValidationAdapter<Object> {
 
-  private final String message;
+  private final Message message;
   private final boolean past;
   private final boolean includePresent;
 
-  public FuturePastAdapter(String message, boolean past, boolean includePresent) {
+  public FuturePastAdapter(Message message, boolean past, boolean includePresent) {
     this.message = message;
     this.past = past;
     this.includePresent = includePresent;

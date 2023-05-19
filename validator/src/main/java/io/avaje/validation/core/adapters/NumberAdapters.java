@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationContext.Message;
 import io.avaje.validation.adapter.ValidationRequest;
 
 public final class NumberAdapters {
@@ -17,30 +18,30 @@ public final class NumberAdapters {
   public static final ValidationContext.AnnotationFactory FACTORY =
       (annotationType, context, attributes) ->
           switch (annotationType.getSimpleName()) {
-            case "Digits" -> new DigitsAdapter(context.message("Digits", attributes), attributes);
-            case "Positive" -> new PositiveAdapter(context.message("Positive", attributes));
+            case "Digits" -> new DigitsAdapter(context.message2("{avaje.Digits.message}", attributes), attributes);
+            case "Positive" -> new PositiveAdapter(context.message2("{avaje.Positive.message}", attributes));
             case "PositiveOrZero" -> new PositiveAdapter(
-                context.message("PositiveOrZero", attributes), true);
-            case "Negative" -> new NegativeAdapter(context.message("Negative", attributes));
+                context.message2("{avaje.PositiveOrZero.message}.message}", attributes), true);
+            case "Negative" -> new NegativeAdapter(context.message2("{avaje.Negative.message}.message}", attributes));
             case "NegativeOrZero" -> new NegativeAdapter(
-                context.message("NegativeOrZero", attributes), true);
-            case "Max" -> new MaxAdapter(context.message("Max", attributes), attributes);
-            case "Min" -> new MinAdapter(context.message("Min", attributes), attributes);
+                context.message2("{avaje.NegativeOrZero.message}.message}", attributes), true);
+            case "Max" -> new MaxAdapter(context.message2("{avaje.Max.message}", attributes), attributes);
+            case "Min" -> new MinAdapter(context.message2("{avaje.Min.message}", attributes), attributes);
             case "DecimalMax" -> new DecimalMaxAdapter(
-                context.message("DecimalMax", attributes), attributes);
+                context.message2("{avaje.DecimalMax.message}", attributes), attributes);
             case "DecimalMin" -> new DecimalMinAdapter(
-                context.message("DecimalMin", attributes), attributes);
+                context.message2("{avaje.DecimalMin.message}", attributes), attributes);
 
             default -> null;
           };
 
   private static final class DecimalMaxAdapter implements ValidationAdapter<Number> {
 
-    private final String message;
+    private final Message message;
     private final BigDecimal value;
     private final boolean inclusive;
 
-    public DecimalMaxAdapter(String message, Map<String, Object> attributes) {
+    public DecimalMaxAdapter(Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = new BigDecimal((String) attributes.get("value"));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
@@ -67,11 +68,11 @@ public final class NumberAdapters {
 
   private static final class DecimalMinAdapter implements ValidationAdapter<Number> {
 
-    private final String message;
+    private final Message message;
     private final BigDecimal value;
     private final boolean inclusive;
 
-    public DecimalMinAdapter(String message, Map<String, Object> attributes) {
+    public DecimalMinAdapter(Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = new BigDecimal((String) attributes.get("value"));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
@@ -98,10 +99,10 @@ public final class NumberAdapters {
 
   private static final class MaxAdapter implements ValidationAdapter<Number> {
 
-    private final String message;
+    private final Message message;
     private final long value;
 
-    public MaxAdapter(String message, Map<String, Object> attributes) {
+    public MaxAdapter(Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = (long) attributes.get("value");
     }
@@ -125,10 +126,10 @@ public final class NumberAdapters {
 
   private static final class MinAdapter implements ValidationAdapter<Number> {
 
-    private final String message;
+    private final Message message;
     private final long value;
 
-    public MinAdapter(String message, Map<String, Object> attributes) {
+    public MinAdapter(Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = (long) attributes.get("value");
     }
@@ -152,11 +153,11 @@ public final class NumberAdapters {
 
   private static final class DigitsAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final Message message;
     private final int integer;
     private final int fraction;
 
-    public DigitsAdapter(String message, Map<String, Object> attributes) {
+    public DigitsAdapter(Message message, Map<String, Object> attributes) {
       this.message = message;
       this.integer = (int) attributes.get("integer");
       this.fraction = (int) attributes.get("fraction");
@@ -191,15 +192,15 @@ public final class NumberAdapters {
 
   private static final class PositiveAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final Message message;
     private final boolean inclusive;
 
-    public PositiveAdapter(String message) {
+    public PositiveAdapter(Message message) {
       this.message = message;
       this.inclusive = false;
     }
 
-    public PositiveAdapter(String message, boolean inclusive) {
+    public PositiveAdapter(Message message, boolean inclusive) {
       this.message = message;
       this.inclusive = inclusive;
     }
@@ -225,15 +226,15 @@ public final class NumberAdapters {
 
   private static final class NegativeAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final Message message;
     private final boolean inclusive;
 
-    public NegativeAdapter(String message, boolean inclusive) {
+    public NegativeAdapter(Message message, boolean inclusive) {
       this.message = message;
       this.inclusive = inclusive;
     }
 
-    public NegativeAdapter(String message) {
+    public NegativeAdapter(Message message) {
       this.message = message;
       this.inclusive = false;
     }

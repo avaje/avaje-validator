@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import io.avaje.validation.adapter.RegexFlag;
 import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext.Message;
 import io.avaje.validation.adapter.ValidationRequest;
 
 /* most of this was written by
@@ -40,11 +41,11 @@ final class EmailAdapter implements ValidationAdapter<CharSequence> {
               + ")*",
           CASE_INSENSITIVE);
 
-  private final String message;
+  private final Message message;
   private final Predicate<String> pattern;
 
   @SuppressWarnings("unchecked")
-  public EmailAdapter(String message, Map<String, Object> attributes) {
+  public EmailAdapter(Message message, Map<String, Object> attributes) {
     this.message = message;
     int flags = 0;
     final var regex = (String) attributes.get("regexp");

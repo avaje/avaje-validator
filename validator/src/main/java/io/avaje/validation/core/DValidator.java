@@ -80,7 +80,7 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  public Message adapterMessage(String defaultKey, Map<String, Object> attributes) {
+  public Message message2(String defaultKey, Map<String, Object> attributes) {
     String keyOrTemplate = (String) attributes.get("message");
     if (keyOrTemplate == null) {
       // lookup default message for the given key
