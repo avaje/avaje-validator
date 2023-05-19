@@ -21,8 +21,8 @@ public final class BasicAdapters {
       case "Email" -> new EmailAdapter(context.message("Email", attributes), attributes);
       case "Null" -> new NullAdapter(context.message("Null", attributes));
       case "NotNull", "NonNull" -> new NotNullAdapter(context.message2("{avaje.NotNull.message}", attributes));
-      case "AssertTrue" -> new AssertBooleanAdapter(context.message("AssertTrue", attributes), false);
-      case "AssertFalse" -> new AssertBooleanAdapter(context.message("AssertFalse", attributes), true);
+      case "AssertTrue" -> new AssertBooleanAdapter(context.message2("{avaje.AssertTrue.message}", attributes), false);
+      case "AssertFalse" -> new AssertBooleanAdapter(context.message2("{avaje.AssertFalse.message}", attributes), true);
       case "NotBlank" -> new NotBlankAdapter(context.message2("{avaje.NotBlank.message}", attributes));
       case "NotEmpty" -> new NotEmptyAdapter(context.message2("{avaje.NotEmpty.message}", attributes));
       case "Past" -> new FuturePastAdapter(context.message("Past", attributes), true, false);
@@ -185,10 +185,10 @@ public final class BasicAdapters {
   // AssertFalse/AssertTrue
   private static final class AssertBooleanAdapter implements ValidationAdapter<Boolean> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final Boolean assertBool;
 
-    public AssertBooleanAdapter(String message, Boolean assertBool) {
+    public AssertBooleanAdapter(ValidationContext.Message message, Boolean assertBool) {
       this.message = message;
       this.assertBool = assertBool;
     }

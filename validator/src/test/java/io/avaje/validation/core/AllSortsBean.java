@@ -1,9 +1,6 @@
 package io.avaje.validation.core;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 public class AllSortsBean {
 
@@ -18,4 +15,10 @@ public class AllSortsBean {
 
   @Email
   String myEmail = "valid@foo.com";
+
+  @AssertTrue
+  boolean myAssertTrue = true;
+
+  @AssertFalse
+  boolean myAssertFalse = false;
 }
