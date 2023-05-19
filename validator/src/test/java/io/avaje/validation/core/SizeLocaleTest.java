@@ -10,13 +10,7 @@ import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SizeLocaleTest {
-
-  private final Validator validator =
-    Validator.builder()
-      .add(Address.class, AddressValidationAdapter::new)
-      .add(Contact.class, ContactValidationAdapter::new)
-      .build();
+class SizeLocaleTest extends BasicTest {
 
   @Test
   void testSize_DefaultLocale() {
@@ -32,14 +26,4 @@ class SizeLocaleTest {
     assertThat(constraint.message()).isEqualTo("Größe muss zwischen 0 und 5 sein");
   }
 
-  private ConstraintViolation one(Object pojo, Locale locale) {
-    try {
-      validator.validate(pojo, locale);
-      throw new IllegalStateException("don't get here");
-    } catch (ConstraintViolationException e) {
-      var violations = new ArrayList<>(e.violations());
-      assertThat(violations).hasSize(1);
-      return violations.get(0);
-    }
-  }
 }
