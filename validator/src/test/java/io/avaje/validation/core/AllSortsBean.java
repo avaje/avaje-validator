@@ -26,5 +26,5 @@ public class AllSortsBean {
   String myNull = null;
 
   @Pattern(regexp = "[0-9]")
-  String myPattern = "1234";
+  String myPattern = "1";
 }
