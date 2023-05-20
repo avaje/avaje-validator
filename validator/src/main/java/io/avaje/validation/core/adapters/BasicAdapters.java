@@ -16,49 +16,38 @@ import io.avaje.validation.adapter.ValidationRequest;
 public final class BasicAdapters {
   private BasicAdapters() {}
 
-  public static final ValidationContext.AnnotationFactory FACTORY =
-      (annotationType, context, attributes) ->
-          switch (annotationType.getSimpleName()) {
-            case "Email" -> new EmailAdapter(context.message("Email", attributes), attributes);
-            case "Null" -> new NullAdapter(context.message("Null", attributes));
-            case "NotNull" -> new NotNullAdapter(context.message("NotNull", attributes));
-            case "NonNull" -> new NotNullAdapter(context.message("NonNull", attributes));
-            case "AssertTrue" -> new AssertBooleanAdapter(
-                context.message("AssertTrue", attributes), false);
-            case "AssertFalse" -> new AssertBooleanAdapter(
-                context.message("AssertFalse", attributes), true);
-            case "NotBlank" -> new NotBlankAdapter(context.message("NotBlank", attributes));
-            case "NotEmpty" -> new NotEmptyAdapter(context.message("NotEmpty", attributes));
-            case "Past" -> new FuturePastAdapter(context.message("Past", attributes), true, false);
-            case "PastOrPresent" -> new FuturePastAdapter(
-                context.message("PastOrPresent", attributes), true, true);
-            case "Future" -> new FuturePastAdapter(
-                context.message("Future", attributes), false, false);
-            case "FutureOrPresent" -> new FuturePastAdapter(
-                context.message("FutureOrPresent", attributes), false, true);
-            case "Pattern" -> new PatternAdapter(
-                context.message("Pattern", attributes), attributes);
-            case "Size" -> new SizeAdapter(
-                context.message2("{avaje.Size.message}", attributes), attributes);
-            default -> null;
-          };
+  public static final ValidationContext.AnnotationFactory FACTORY = (annotationType, context, attributes) ->
+    switch (annotationType.getSimpleName()) {
+      case "Email" -> new EmailAdapter(context.message("Email", attributes), attributes);
+      case "Null" -> new NullAdapter(context.message2("{avaje.Null.message}", attributes));
+      case "NotNull", "NonNull" -> new NotNullAdapter(context.message2("{avaje.NotNull.message}", attributes));
+      case "AssertTrue" -> new AssertBooleanAdapter(context.message2("{avaje.AssertTrue.message}", attributes), false);
+      case "AssertFalse" -> new AssertBooleanAdapter(context.message2("{avaje.AssertFalse.message}", attributes), true);
+      case "NotBlank" -> new NotBlankAdapter(context.message2("{avaje.NotBlank.message}", attributes));
+      case "NotEmpty" -> new NotEmptyAdapter(context.message2("{avaje.NotEmpty.message}", attributes));
+      case "Past" -> new FuturePastAdapter(context.message("Past", attributes), true, false);
+      case "PastOrPresent" -> new FuturePastAdapter(context.message("PastOrPresent", attributes), true, true);
+      case "Future" -> new FuturePastAdapter(context.message("Future", attributes), false, false);
+      case "FutureOrPresent" -> new FuturePastAdapter(context.message("FutureOrPresent", attributes), false, true);
+      case "Pattern" -> new PatternAdapter(context.message2("{avaje.Pattern.message}", attributes), attributes);
+      case "Size" -> new SizeAdapter(context.message2("{avaje.Size.message}", attributes), attributes);
+      default -> null;
+    };
 
   private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final Predicate<String> pattern;
 
     @SuppressWarnings("unchecked")
-    public PatternAdapter(String message, Map<String, Object> attributes) {
+    public PatternAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       int flags = 0;
 
-      for (final var flag :
-          Optional.ofNullable((List<RegexFlag>) attributes.get("flags")).orElseGet(List::of)) {
+      for (final var flag : Optional.ofNullable((List<RegexFlag>) attributes.get("flags")).orElseGet(List::of)) {
         flags |= flag.getValue();
       }
-      this.pattern =
-          Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
+      this.pattern = Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
     }
 
     @Override
@@ -128,9 +117,9 @@ public final class BasicAdapters {
 
   private static final class NotBlankAdapter implements ValidationAdapter<CharSequence> {
 
-    private final String message;
+    private final ValidationContext.Message message;
 
-    public NotBlankAdapter(String message) {
+    public NotBlankAdapter(ValidationContext.Message message) {
       this.message = message;
     }
 
@@ -159,9 +148,9 @@ public final class BasicAdapters {
 
   private static final class NotEmptyAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final ValidationContext.Message message;
 
-    public NotEmptyAdapter(String message) {
+    public NotEmptyAdapter(ValidationContext.Message message) {
       this.message = message;
     }
 
@@ -194,10 +183,10 @@ public final class BasicAdapters {
   // AssertFalse/AssertTrue
   private static final class AssertBooleanAdapter implements ValidationAdapter<Boolean> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final Boolean assertBool;
 
-    public AssertBooleanAdapter(String message, Boolean assertBool) {
+    public AssertBooleanAdapter(ValidationContext.Message message, Boolean assertBool) {
       this.message = message;
       this.assertBool = assertBool;
     }
@@ -214,9 +203,9 @@ public final class BasicAdapters {
 
   private static final class NotNullAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final ValidationContext.Message message;
 
-    public NotNullAdapter(String message) {
+    public NotNullAdapter(ValidationContext.Message message) {
       this.message = message;
     }
 
@@ -232,9 +221,9 @@ public final class BasicAdapters {
 
   private static final class NullAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final ValidationContext.Message message;
 
-    public NullAdapter(String message) {
+    public NullAdapter(ValidationContext.Message message) {
       this.message = message;
     }
 

@@ -91,7 +91,7 @@ class ValidatorTest {
       var first = asList.get(0);
       assertThat(first.path()).isEqualTo("");
       assertThat(first.propertyName()).isEqualTo("lastName");
-      assertThat(first.message()).isEqualTo("NotNull-todo-lookupDefaultMessage");
+      assertThat(first.message()).isEqualTo("must not be null");
     }
   }
 
@@ -111,7 +111,7 @@ class ValidatorTest {
       var first = asList.get(0);
       assertThat(first.path()).isEqualTo("");
       assertThat(first.propertyName()).isEqualTo("billingAddress");
-      assertThat(first.message()).isEqualTo("NotNull-todo-lookupDefaultMessage");
+      assertThat(first.message()).isEqualTo("must not be null");
     }
   }
 
