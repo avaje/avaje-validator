@@ -48,10 +48,16 @@ final class EmailAdapter implements ValidationAdapter<CharSequence> {
   public EmailAdapter(Message message, Map<String, Object> attributes) {
     this.message = message;
     int flags = 0;
-    final var regex = (String) attributes.get("regexp");
+    var regex = (String) attributes.get("regexp");
+    if (regex == null) {
+      regex = ".*";
+    }
 
-    for (final var flag : (List<RegexFlag>) attributes.get("flags")) {
-      flags |= flag.getValue();
+    List<RegexFlag> flags1 = (List<RegexFlag>) attributes.get("flags");
+    if (flags1 != null) {
+      for (final var flag : flags1) {
+        flags |= flag.getValue();
+      }
     }
     this.pattern = Pattern.compile(regex, flags).asMatchPredicate().negate();
   }

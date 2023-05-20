@@ -62,12 +62,10 @@ public final class BasicAdapters {
       this.message = message;
       int flags = 0;
 
-      for (final var flag :
-          Optional.ofNullable((List<RegexFlag>) attributes.get("flags")).orElseGet(List::of)) {
+      for (final var flag : Optional.ofNullable((List<RegexFlag>) attributes.get("flags")).orElseGet(List::of)) {
         flags |= flag.getValue();
       }
-      this.pattern =
-          Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
+      this.pattern = Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
     }
 
     @Override
