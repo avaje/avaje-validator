@@ -1,8 +1,8 @@
 package example.avaje;
 
+import io.avaje.validation.constraints.NotBlank;
+import io.avaje.validation.constraints.Size;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 @Valid
 public class ACustomer {

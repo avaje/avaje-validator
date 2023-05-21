@@ -7,7 +7,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.avaje.lang.Nullable;
@@ -32,7 +37,7 @@ final class DValidator implements Validator, ValidationContext {
     MessageInterpolator interpolator, LocaleResolver localeResolver) {
     this.localeResolver = localeResolver;
 
-    var defaultResourceBundle = new DResourceBundleManager("io.avaje.validation.Messages", localeResolver);
+    final var defaultResourceBundle = new DResourceBundleManager("io.avaje.validation.Messages", localeResolver);
     this.templateLookup = new DTemplateLookup(defaultResourceBundle);
 
     this.interpolator = interpolator;
@@ -75,12 +80,21 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
+  public Message message2(Map<String, Object> attributes) {
+    final String keyOrTemplate = (String)attributes.get("message");
+
+    // if configured to support only 1 Locale then we can do the lookup and message translation once and early
+    // otherwise we defer as the final message is locale specific
+    return new DMessage(keyOrTemplate, attributes);
+  }
+
+  @Override
   public Message message2(String defaultKey, Map<String, Object> attributes) {
     String keyOrTemplate = (String)attributes.get("message");
     if (keyOrTemplate == null) {
-      // lookup default message for the given key
-      keyOrTemplate = defaultKey;
-    }
+        // lookup default message for the given key
+        keyOrTemplate = defaultKey;
+      }
     // if configured to support only 1 Locale then we can do the lookup and message translation once and early
     // otherwise we defer as the final message is locale specific
     return new DMessage(keyOrTemplate, attributes);
@@ -119,14 +133,14 @@ final class DValidator implements Validator, ValidationContext {
 
   String interpolate(Message msg, Locale requestLocale) {
     // resolve the locale to use to produce the message
-    Locale locale = localeResolver.resolve(requestLocale);
+    final Locale locale = localeResolver.resolve(requestLocale);
     // lookup in resource bundles using resolved locale and template
-    String template = templateLookup.lookup(msg.template(), locale);
+    final String template = templateLookup.lookup(msg.template(), locale);
     // translate the template using msg attributes
-    Map<String, Object> attributes = msg.attributes();
-    Set<Map.Entry<String, Object>> entries = attributes.entrySet();
+    final Map<String, Object> attributes = msg.attributes();
+    final Set<Map.Entry<String, Object>> entries = attributes.entrySet();
     String result = template;
-    for (Map.Entry<String, Object> entry : entries) {
+    for (final Map.Entry<String, Object> entry : entries) {
       // needs work here to improve functionality, support local specific value formatting eg Duration Max
       result = result.replace('{' + entry.getKey() + '}', String.valueOf(entry.getValue()));
     }
@@ -188,7 +202,7 @@ final class DValidator implements Validator, ValidationContext {
       registerComponents();
 
       //todo: sort out LocaleResolver initialisation, just hard coded EN and DE for now ...
-      LocaleResolver localeResolver = new DLocaleResolver(Locale.ENGLISH, Locale.GERMAN);
+      final LocaleResolver localeResolver = new DLocaleResolver(Locale.ENGLISH, Locale.GERMAN);
       final var interpolator =
           ServiceLoader.load(MessageInterpolator.class)
               .findFirst()
