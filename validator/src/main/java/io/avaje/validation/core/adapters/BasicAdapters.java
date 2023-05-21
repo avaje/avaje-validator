@@ -1,10 +1,7 @@
 package io.avaje.validation.core.adapters;
 
 import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -30,9 +27,17 @@ public final class BasicAdapters {
       case "Future" -> new FuturePastAdapter(context.message("Future", attributes), false, false);
       case "FutureOrPresent" -> new FuturePastAdapter(context.message("FutureOrPresent", attributes), false, true);
       case "Pattern" -> new PatternAdapter(context.message2("{avaje.Pattern.message}", attributes), attributes);
-      case "Size" -> new SizeAdapter(context.message2("{avaje.Size.message}", attributes), attributes);
+      case "Size" -> createSize(context, attributes);
       default -> null;
     };
+
+  private static ValidationAdapter<?> createSize(ValidationContext context, Map<String, Object> attributes) {
+    if (!attributes.containsKey("min")) {
+      attributes = new LinkedHashMap<>(attributes);
+      attributes.put("min", 0);
+    }
+    return new SizeAdapter(context.message2("{avaje.Size.message}", attributes), attributes);
+  }
 
   private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
 
