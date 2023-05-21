@@ -46,6 +46,18 @@ class ACustomerMessageTest {
   }
 
   @Test
+  void sizeMinMax() {
+    var violation = one(new ACustomer("valid", "Other", "TooLarge"));
+    assertThat(violation.message()).isEqualTo("size must be between 2 and 4");
+  }
+
+  @Test
+  void sizeMinMaxDE() {
+    var violation = one(new ACustomer("valid", "Other", "TooLarge"), Locale.GERMAN);
+    assertThat(violation.message()).isEqualTo("Größe muss zwischen 2 und 4 sein");
+  }
+
+  @Test
   void sizeMaxCustomMessage() {
     var violation = one(new ACustomer("Valid", "OtherTooLargeForThis"));
     assertThat(violation.message()).isEqualTo("My custom error message with max 7");
