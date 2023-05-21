@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(AssertTrue.List.class)
 public @interface AssertTrue {
-    String message() default "{avaje.validation.constraints.AssertTrue.message}";
+    String message() default "{avaje.AssertTrue.message}";
 
     Class<?>[] groups() default {};
 

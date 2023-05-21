@@ -17,7 +17,7 @@ import io.avaje.validation.constraints.Positive.List;
 @Documented
 public @interface Positive {
 
-  String message() default "{avaje.validation.constraints.Positive.message}";
+  String message() default "{avaje.Positive.message}";
 
   Class<?>[] groups() default {};
 

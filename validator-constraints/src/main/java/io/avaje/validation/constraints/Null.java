@@ -17,7 +17,7 @@ import io.avaje.validation.constraints.Null.List;
 @Repeatable(List.class)
 public @interface Null {
 
-  String message() default "{avaje.validation.constraints.Null.message}";
+  String message() default "{avaje.Null.message}";
 
   Class<?>[] groups() default {};
 

@@ -17,7 +17,7 @@ import io.avaje.validation.constraints.NotEmpty.List;
 @Repeatable(List.class)
 public @interface NotEmpty {
 
-  String message() default "{avaje.validation.constraints.NotEmpty.message}";
+  String message() default "{avaje.NotEmpty.message}";
 
   Class<?>[] groups() default {};
 

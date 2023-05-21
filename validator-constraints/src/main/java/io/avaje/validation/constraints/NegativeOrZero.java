@@ -17,7 +17,7 @@ import io.avaje.validation.constraints.NegativeOrZero.List;
 @Documented
 public @interface NegativeOrZero {
 
-  String message() default "{avaje.validation.constraints.NegativeOrZero.message}";
+  String message() default "{avaje.NegativeOrZero.message}";
 
   Class<?>[] groups() default {};
 

@@ -19,18 +19,18 @@ public final class BasicAdapters {
   public static final ValidationContext.AnnotationFactory FACTORY = (annotationType, context, attributes) ->
     switch (annotationType.getSimpleName()) {
         case "Email" -> new EmailAdapter(context.message("Email", attributes), attributes);
-        case "Null" -> new NullAdapter(context.message2("{avaje.validation.constraints.Null.message}", attributes));
-        case "NotNull", "NonNull" -> new NotNullAdapter(context.message2("{avaje.validation.constraints.NotNull.message}", attributes));
-        case "AssertTrue" -> new AssertBooleanAdapter(context.message2("{avaje.validation.constraints.AssertTrue.message}", attributes), false);
-        case "AssertFalse" -> new AssertBooleanAdapter(context.message2("{avaje.validation.constraints.AssertFalse.message}", attributes), true);
-        case "NotBlank" -> new NotBlankAdapter(context.message2("{avaje.validation.constraints.NotBlank.message}", attributes));
-        case "NotEmpty" -> new NotEmptyAdapter(context.message2("{avaje.validation.constraints.NotEmpty.message}", attributes));
+        case "Null" -> new NullAdapter(context.message2("{avaje.Null.message}", attributes));
+        case "NotNull", "NonNull" -> new NotNullAdapter(context.message2("{avaje.NotNull.message}", attributes));
+        case "AssertTrue" -> new AssertBooleanAdapter(context.message2("{avaje.AssertTrue.message}", attributes), false);
+        case "AssertFalse" -> new AssertBooleanAdapter(context.message2("{avaje.AssertFalse.message}", attributes), true);
+        case "NotBlank" -> new NotBlankAdapter(context.message2("{avaje.NotBlank.message}", attributes));
+        case "NotEmpty" -> new NotEmptyAdapter(context.message2("{avaje.NotEmpty.message}", attributes));
         case "Past" -> new FuturePastAdapter(context.message("Past", attributes), true, false);
         case "PastOrPresent" -> new FuturePastAdapter(context.message("PastOrPresent", attributes), true, true);
         case "Future" -> new FuturePastAdapter(context.message("Future", attributes), false, false);
         case "FutureOrPresent" -> new FuturePastAdapter(context.message("FutureOrPresent", attributes), false, true);
-        case "Pattern" -> new PatternAdapter(context.message2("{avaje.validation.constraints.Pattern.message}", attributes), attributes);
-        case "Size" -> new SizeAdapter(context.message2("{avaje.validation.constraints.Size.message}", attributes), attributes);
+        case "Pattern" -> new PatternAdapter(context.message2("{avaje.Pattern.message}", attributes), attributes);
+        case "Size" -> new SizeAdapter(context.message2("{avaje.Size.message}", attributes), attributes);
         default -> null;
       };
 

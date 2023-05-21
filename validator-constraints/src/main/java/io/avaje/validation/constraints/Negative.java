@@ -17,7 +17,7 @@ import io.avaje.validation.constraints.Negative.List;
 @Documented
 public @interface Negative {
 
-  String message() default "{avaje.validation.constraints.Negative.message}";
+  String message() default "{avaje.Negative.message}";
 
   Class<?>[] groups() default {};
 

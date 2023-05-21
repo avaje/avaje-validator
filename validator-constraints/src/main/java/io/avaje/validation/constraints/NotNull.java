@@ -17,7 +17,7 @@ import io.avaje.validation.constraints.NotNull.List;
 @Repeatable(List.class)
 public @interface NotNull {
 
-  String message() default "{avaje.validation.constraints.NotNull.message}";
+  String message() default "{avaje.NotNull.message}";
 
   Class<?>[] groups() default {};
 

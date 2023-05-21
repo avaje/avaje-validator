@@ -41,7 +41,7 @@ import io.avaje.validation.constraints.DecimalMin.List;
 @Repeatable(List.class)
 public @interface DecimalMin {
 
-  String message() default "{avaje.validation.constraints.DecimalMin.message}";
+  String message() default "{avaje.DecimalMin.message}";
 
   Class<?>[] groups() default {};
 
