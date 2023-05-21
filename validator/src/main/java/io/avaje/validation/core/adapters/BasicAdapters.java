@@ -1,7 +1,10 @@
 package io.avaje.validation.core.adapters;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -15,29 +18,21 @@ public final class BasicAdapters {
 
   public static final ValidationContext.AnnotationFactory FACTORY = (annotationType, context, attributes) ->
     switch (annotationType.getSimpleName()) {
-      case "Email" -> new EmailAdapter(context.message("Email", attributes), attributes);
-      case "Null" -> new NullAdapter(context.message2("{avaje.Null.message}", attributes));
-      case "NotNull", "NonNull" -> new NotNullAdapter(context.message2("{avaje.NotNull.message}", attributes));
-      case "AssertTrue" -> new AssertBooleanAdapter(context.message2("{avaje.AssertTrue.message}", attributes), false);
-      case "AssertFalse" -> new AssertBooleanAdapter(context.message2("{avaje.AssertFalse.message}", attributes), true);
-      case "NotBlank" -> new NotBlankAdapter(context.message2("{avaje.NotBlank.message}", attributes));
-      case "NotEmpty" -> new NotEmptyAdapter(context.message2("{avaje.NotEmpty.message}", attributes));
-      case "Past" -> new FuturePastAdapter(context.message("Past", attributes), true, false);
-      case "PastOrPresent" -> new FuturePastAdapter(context.message("PastOrPresent", attributes), true, true);
-      case "Future" -> new FuturePastAdapter(context.message("Future", attributes), false, false);
-      case "FutureOrPresent" -> new FuturePastAdapter(context.message("FutureOrPresent", attributes), false, true);
-      case "Pattern" -> new PatternAdapter(context.message2("{avaje.Pattern.message}", attributes), attributes);
-      case "Size" -> createSize(context, attributes);
-      default -> null;
-    };
-
-  private static ValidationAdapter<?> createSize(ValidationContext context, Map<String, Object> attributes) {
-    if (!attributes.containsKey("min")) {
-      attributes = new LinkedHashMap<>(attributes);
-      attributes.put("min", 0);
-    }
-    return new SizeAdapter(context.message2("{avaje.Size.message}", attributes), attributes);
-  }
+        case "Email" -> new EmailAdapter(context.message("Email", attributes), attributes);
+        case "Null" -> new NullAdapter(context.message2("{avaje.validation.constraints.Null.message}", attributes));
+        case "NotNull", "NonNull" -> new NotNullAdapter(context.message2("{avaje.validation.constraints.NotNull.message}", attributes));
+        case "AssertTrue" -> new AssertBooleanAdapter(context.message2("{avaje.validation.constraints.AssertTrue.message}", attributes), false);
+        case "AssertFalse" -> new AssertBooleanAdapter(context.message2("{avaje.validation.constraints.AssertFalse.message}", attributes), true);
+        case "NotBlank" -> new NotBlankAdapter(context.message2("{avaje.validation.constraints.NotBlank.message}", attributes));
+        case "NotEmpty" -> new NotEmptyAdapter(context.message2("{avaje.validation.constraints.NotEmpty.message}", attributes));
+        case "Past" -> new FuturePastAdapter(context.message("Past", attributes), true, false);
+        case "PastOrPresent" -> new FuturePastAdapter(context.message("PastOrPresent", attributes), true, true);
+        case "Future" -> new FuturePastAdapter(context.message("Future", attributes), false, false);
+        case "FutureOrPresent" -> new FuturePastAdapter(context.message("FutureOrPresent", attributes), false, true);
+        case "Pattern" -> new PatternAdapter(context.message2("{avaje.validation.constraints.Pattern.message}", attributes), attributes);
+        case "Size" -> new SizeAdapter(context.message2("{avaje.validation.constraints.Size.message}", attributes), attributes);
+        default -> null;
+      };
 
   private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
 
@@ -49,7 +44,7 @@ public final class BasicAdapters {
       this.message = message;
       int flags = 0;
 
-      for (final var flag : Optional.ofNullable((List<RegexFlag>) attributes.get("flags")).orElseGet(List::of)) {
+      for (final var flag : (List<RegexFlag>) attributes.get("flags")) {
         flags |= flag.getValue();
       }
       this.pattern = Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
@@ -73,8 +68,8 @@ public final class BasicAdapters {
 
     public SizeAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
-      this.min = Optional.ofNullable((Integer) attributes.get("min")).orElse(0);
-      this.max = Optional.ofNullable((Integer) attributes.get("max")).orElse(Integer.MAX_VALUE);
+      this.min = (int) attributes.get("min");
+      this.max = (int) attributes.get("max");
     }
 
     @Override

@@ -3,10 +3,13 @@ package io.avaje.validation.generator;
 import static java.util.stream.Collectors.joining;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.util.ElementFilter;
 
 final class AnnotationUtil {
   private AnnotationUtil() {}
@@ -20,12 +23,22 @@ final class AnnotationUtil {
       patternOp.ifPresent(p -> pattern(sb, p));
       return sb.toString();
     }
-    for (final var entry : annotationMirror.getElementValues().entrySet()) {
+
+    for (final ExecutableElement member :
+        ElementFilter.methodsIn(
+            annotationMirror.getAnnotationType().asElement().getEnclosedElements())) {
+
+      final var value =
+          Optional.<AnnotationValue>ofNullable(annotationMirror.getElementValues().get(member))
+              .orElseGet(member::getDefaultValue);
+      if (value == null) {
+        continue;
+      }
       if (!first) {
         sb.append(", ");
       }
-      sb.append("\"" + entry.getKey().getSimpleName() + "\"").append(",");
-      writeVal(sb, entry.getValue());
+      sb.append("\"" + member.getSimpleName() + "\"").append(",");
+      writeVal(sb, value);
       first = false;
     }
     sb.append(")");
@@ -65,8 +78,7 @@ final class AnnotationUtil {
       }
       sb.append(")");
       // Handle enum values
-    } else if (value instanceof VariableElement) {
-      final var element = (VariableElement) value;
+    } else if (value instanceof final VariableElement element) {
       sb.append(element.asType().toString() + "." + element.toString());
       // handle annotation values
     } else if (value instanceof AnnotationMirror) {
