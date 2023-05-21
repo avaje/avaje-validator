@@ -13,13 +13,21 @@ public class ACustomer {
     @NotBlank @Size(max = 7, message = "My custom error message with max {max}")
     final String other;
 
-    public ACustomer(String name, String other) {
-        this.name = name;
-        this.other = other;
+    @Size(min = 2, max = 4)
+    final String minMax;
+
+    public ACustomer(String name, String other, String minMax) {
+      this.name = name;
+      this.other = other;
+      this.minMax = minMax;
     }
+
+    public ACustomer(String name, String other) {
+      this(name, other, "val");
+    }
+
     public ACustomer(String name) {
-        this.name = name;
-        this.other = "valid";
+      this(name, "valid");
     }
 
     public String getName() {
@@ -28,5 +36,9 @@ public class ACustomer {
 
     public String getOther() {
         return other;
+    }
+
+    public String minMax() {
+      return minMax;
     }
 }
