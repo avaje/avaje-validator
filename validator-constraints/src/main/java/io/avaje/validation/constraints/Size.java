@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Size.List.class)
 public @interface Size {
-    String message() default "{avaje.validation.constraints.Size.message}";
+    String message() default "{avaje.Size.message}";
 
     Class<?>[] groups() default {};
 

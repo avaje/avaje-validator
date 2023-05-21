@@ -17,7 +17,7 @@ import io.avaje.validation.constraints.Future.List;
 @Repeatable(List.class)
 public @interface Future {
 
-  String message() default "{avaje.validation.constraints.Future.message}";
+  String message() default "{avaje.Future.message}";
 
   Class<?>[] groups() default {};
 

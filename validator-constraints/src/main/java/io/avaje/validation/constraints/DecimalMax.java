@@ -15,7 +15,7 @@ import io.avaje.validation.constraints.DecimalMax.List;
 @Repeatable(List.class)
 public @interface DecimalMax {
 
-  String message() default "{avaje.validation.constraints.DecimalMax.message}";
+  String message() default "{avaje.DecimalMax.message}";
 
   Class<?>[] groups() default {};
 

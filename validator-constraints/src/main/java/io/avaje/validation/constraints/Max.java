@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Max.List.class)
 public @interface Max {
-    String message() default "{avaje.validation.constraints.Max.message}";
+    String message() default "{avaje.Max.message}";
 
     Class<?>[] groups() default {};
 

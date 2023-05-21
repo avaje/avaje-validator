@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Min.List.class)
 public @interface Min {
-    String message() default "{avaje.validation.constraints.Min.message}";
+    String message() default "{avaje.Min.message}";
 
     Class<?>[] groups() default {};
 

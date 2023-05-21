@@ -30,7 +30,7 @@ public @interface Pattern {
   RegexFlag[] flags() default {};
 
   /** @return the error message template */
-  String message() default "{avaje.validation.constraints.Pattern.message}";
+  String message() default "{avaje.Pattern.message}";
 
   /** @return the groups the constraint belongs to */
   Class<?>[] groups() default {};

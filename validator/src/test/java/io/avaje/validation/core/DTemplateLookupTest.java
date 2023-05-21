@@ -18,7 +18,7 @@ class DTemplateLookupTest {
 
   @Test
   void lookupKnownKey() {
-    final String key = "{avaje.validation.constraints.AssertTrue.message}";
+    final String key = "{avaje.AssertTrue.message}";
     assertThat(lookup.lookup(key, Locale.ENGLISH)).isEqualTo("must be true");
     assertThat(lookup.lookup(key, Locale.GERMAN)).isEqualTo("muss wahr sein");
   }

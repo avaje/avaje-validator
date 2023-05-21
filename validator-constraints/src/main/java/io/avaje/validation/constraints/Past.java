@@ -17,7 +17,7 @@ import io.avaje.validation.constraints.Past.List;
 @Repeatable(List.class)
 public @interface Past {
 
-  String message() default "{avaje.validation.constraints.Past.message}";
+  String message() default "{avaje.Past.message}";
 
   Class<?>[] groups() default {};
 

@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Digits.List.class)
 public @interface Digits {
-    String message() default "{avaje.validation.constraints.Digits.message}";
+    String message() default "{avaje.Digits.message}";
 
     Class<?>[] groups() default {};
 
