@@ -4,7 +4,6 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -44,7 +43,7 @@ public final class BasicAdapters {
       this.message = message;
       int flags = 0;
 
-      for (final var flag : Optional.ofNullable((List<RegexFlag>) attributes.get("flags")).orElseGet(List::of)) {
+      for (final var flag : (List<RegexFlag>) attributes.get("flags")) {
         flags |= flag.getValue();
       }
       this.pattern = Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
@@ -68,8 +67,8 @@ public final class BasicAdapters {
 
     public SizeAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
-      this.min = Optional.ofNullable((Integer) attributes.get("min")).orElse(0);
-      this.max = Optional.ofNullable((Integer) attributes.get("max")).orElse(Integer.MAX_VALUE);
+      this.min = (int) attributes.get("min");
+      this.max = (int) attributes.get("max");
     }
 
     @Override
