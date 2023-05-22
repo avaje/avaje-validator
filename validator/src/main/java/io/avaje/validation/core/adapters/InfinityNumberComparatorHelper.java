@@ -5,15 +5,15 @@ import java.util.OptionalInt;
 /**
  * @author Marko Bekhta
  */
-public final class InfinityNumberComparatorHelper {
+final class InfinityNumberComparatorHelper {
 
-  public static final OptionalInt LESS_THAN = OptionalInt.of(-1);
-  public static final OptionalInt FINITE_VALUE = OptionalInt.empty();
-  public static final OptionalInt GREATER_THAN = OptionalInt.of(1);
+  static final OptionalInt LESS_THAN = OptionalInt.of(-1);
+  static final OptionalInt FINITE_VALUE = OptionalInt.empty();
+  static final OptionalInt GREATER_THAN = OptionalInt.of(1);
 
   private InfinityNumberComparatorHelper() {}
 
-  public static OptionalInt infinityCheck(Double number, OptionalInt treatNanAs) {
+  static OptionalInt infinityCheck(Double number, OptionalInt treatNanAs) {
     OptionalInt result = FINITE_VALUE;
     if (number == Double.NEGATIVE_INFINITY) {
       result = LESS_THAN;
@@ -25,7 +25,7 @@ public final class InfinityNumberComparatorHelper {
     return result;
   }
 
-  public static OptionalInt infinityCheck(Float number, OptionalInt treatNanAs) {
+  static OptionalInt infinityCheck(Float number, OptionalInt treatNanAs) {
     OptionalInt result = FINITE_VALUE;
     if (number == Float.NEGATIVE_INFINITY) {
       result = LESS_THAN;

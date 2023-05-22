@@ -39,7 +39,7 @@ public final class BasicAdapters {
     private final Predicate<String> pattern;
 
     @SuppressWarnings("unchecked")
-    public PatternAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+    PatternAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       int flags = 0;
 
@@ -68,7 +68,7 @@ public final class BasicAdapters {
     private final int min;
     private final int max;
 
-    public SizeAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+    SizeAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.min = (int) attributes.get("min");
       this.max = (int) attributes.get("max");
@@ -121,7 +121,7 @@ public final class BasicAdapters {
 
     private final ValidationContext.Message message;
 
-    public NotBlankAdapter(ValidationContext.Message message) {
+    NotBlankAdapter(ValidationContext.Message message) {
       this.message = message;
     }
 
@@ -152,7 +152,7 @@ public final class BasicAdapters {
 
     private final ValidationContext.Message message;
 
-    public NotEmptyAdapter(ValidationContext.Message message) {
+    NotEmptyAdapter(ValidationContext.Message message) {
       this.message = message;
     }
 
@@ -170,7 +170,6 @@ public final class BasicAdapters {
           return false;
         }
       } else if (value.getClass().isArray()) {
-
         final var len = Array.getLength(value);
         if (len == 0) {
           req.addViolation(message, propertyName);
@@ -182,13 +181,12 @@ public final class BasicAdapters {
     }
   }
 
-  // AssertFalse/AssertTrue
   private static final class AssertBooleanAdapter implements ValidationAdapter<Boolean> {
 
     private final ValidationContext.Message message;
     private final Boolean assertBool;
 
-    public AssertBooleanAdapter(ValidationContext.Message message, Boolean assertBool) {
+    AssertBooleanAdapter(ValidationContext.Message message, Boolean assertBool) {
       this.message = message;
       this.assertBool = assertBool;
     }
@@ -207,7 +205,7 @@ public final class BasicAdapters {
 
     private final ValidationContext.Message message;
 
-    public NotNullAdapter(ValidationContext.Message message) {
+    NotNullAdapter(ValidationContext.Message message) {
       this.message = message;
     }
 
@@ -225,7 +223,7 @@ public final class BasicAdapters {
 
     private final ValidationContext.Message message;
 
-    public NullAdapter(ValidationContext.Message message) {
+    NullAdapter(ValidationContext.Message message) {
       this.message = message;
     }
 

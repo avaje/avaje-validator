@@ -26,26 +26,26 @@ final class EmailAdapter implements ValidationAdapter<CharSequence> {
       "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")";
   /** Regular expression for the local part of an email address (everything before '@') */
   private static final Pattern LOCAL_PART_PATTERN =
-      Pattern.compile(
-          "(?:"
-              + LOCAL_PART_ATOM
-              + "+|\""
-              + LOCAL_PART_INSIDE_QUOTES_ATOM
-              + "+\")"
-              + "(?:\\."
-              + "(?:"
-              + LOCAL_PART_ATOM
-              + "+|\""
-              + LOCAL_PART_INSIDE_QUOTES_ATOM
-              + "+\")"
-              + ")*",
-          CASE_INSENSITIVE);
+    Pattern.compile(
+      "(?:"
+        + LOCAL_PART_ATOM
+        + "+|\""
+        + LOCAL_PART_INSIDE_QUOTES_ATOM
+        + "+\")"
+        + "(?:\\."
+        + "(?:"
+        + LOCAL_PART_ATOM
+        + "+|\""
+        + LOCAL_PART_INSIDE_QUOTES_ATOM
+        + "+\")"
+        + ")*",
+      CASE_INSENSITIVE);
 
   private final ValidationContext.Message message;
   private final Predicate<String> pattern;
 
   @SuppressWarnings("unchecked")
-  public EmailAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+  EmailAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
     this.message = message;
     int flags = 0;
     var regex = (String) attributes.get("regexp");
