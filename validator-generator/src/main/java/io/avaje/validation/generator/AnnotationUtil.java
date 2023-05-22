@@ -24,6 +24,7 @@ final class AnnotationUtil {
 
     final var jakartaDecimal = new JakartaDecimal();
     handlers.put("jakarta.validation.constraints.DecimalMax", jakartaDecimal);
+    handlers.put("jakarta.validation.constraints.DecimalMin", jakartaDecimal);
   }
 
   private AnnotationUtil() {}
@@ -209,7 +210,7 @@ final class AnnotationUtil {
       final boolean inclusive = (inclusiveValue == null || "true".equals(inclusiveValue.toString()));
       String messageKey = super.messageKey(defaultValue);
       if (!inclusive) {
-        messageKey = messageKey.replace("DecimalMax.message", "DecimalMax.exclusive.message");
+        messageKey = messageKey.replace(".message", ".exclusive.message");
       }
       return messageKey;
     }
