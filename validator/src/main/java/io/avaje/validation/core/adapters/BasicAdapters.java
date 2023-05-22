@@ -19,12 +19,12 @@ public final class BasicAdapters {
   public static final ValidationContext.AnnotationFactory FACTORY = (annotationType, context, attributes) ->
     switch (annotationType.getSimpleName()) {
         case "Email" -> new EmailAdapter(context.message("Email", attributes), attributes);
-        case "Null" -> new NullAdapter(context.message2("{avaje.Null.message}", attributes));
-        case "NotNull", "NonNull" -> new NotNullAdapter(context.message2("{avaje.NotNull.message}", attributes));
-        case "AssertTrue" -> new AssertBooleanAdapter(context.message2("{avaje.AssertTrue.message}", attributes), false);
-        case "AssertFalse" -> new AssertBooleanAdapter(context.message2("{avaje.AssertFalse.message}", attributes), true);
+        case "Null" -> new NullAdapter(context.message2(attributes));
+        case "NotNull", "NonNull" -> new NotNullAdapter(context.message2(attributes));
+        case "AssertTrue" -> new AssertBooleanAdapter(context.message2(attributes), false);
+        case "AssertFalse" -> new AssertBooleanAdapter(context.message2(attributes), true);
         case "NotBlank" -> new NotBlankAdapter(context.message2(attributes));
-        case "NotEmpty" -> new NotEmptyAdapter(context.message2("{avaje.NotEmpty.message}", attributes));
+        case "NotEmpty" -> new NotEmptyAdapter(context.message2(attributes));
         case "Past" -> new FuturePastAdapter(context.message("Past", attributes), true, false);
         case "PastOrPresent" -> new FuturePastAdapter(context.message("PastOrPresent", attributes), true, true);
         case "Future" -> new FuturePastAdapter(context.message("Future", attributes), false, false);

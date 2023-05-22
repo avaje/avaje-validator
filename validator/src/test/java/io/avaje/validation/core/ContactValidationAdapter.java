@@ -18,7 +18,7 @@ public final class ContactValidationAdapter implements ValidationAdapter<Contact
 
   public ContactValidationAdapter(ValidationContext ctx) {
     this.firstNameAdapter = ctx.adapter(NotBlank.class, Map.of("message", "empty"));
-    this.lastNameAdapter = ctx.<String>adapter(NotNull.class, Collections.emptyMap())
+    this.lastNameAdapter = ctx.<String>adapter(NotNull.class, Map.of("message","{avaje.NotNull.message}"))
       .andThen(ctx.adapter(Size.class, Map.of("max", 5, "min", 0)));
     this.addressValidator = ctx.adapter(Address.class);
   }

@@ -30,7 +30,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
 
     this.nameAdapter =
         ctx
-            .<String>adapter(NotNull.class, Map.of("message", "null"))
+            .<String>adapter(NotNull.class, Map.of("message","{avaje.NotNull.message}"))
             .andThen(ctx.adapter(NotBlank.class, Map.of("message", "empty")));
 
     this.activeDateAdapter =
@@ -44,7 +44,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
     this.shippingAddressValidator = ctx.adapter(Address.class);
 
     // Option A: billingAddressValidator combines NotNull + addressValidator
-    this.billingAddressValidator = ctx.<Address>adapter(NotNull.class, Collections.emptyMap())
+    this.billingAddressValidator = ctx.<Address>adapter(NotNull.class, Map.of("message","{avaje.NotNull.message}"))
             .andThen(ctx.adapter(Address.class));
 
     // Option B: billingAddressValidator only does NotNull ...
