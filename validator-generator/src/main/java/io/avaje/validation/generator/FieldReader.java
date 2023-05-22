@@ -248,6 +248,12 @@ final class FieldReader {
   }
 
   private boolean isBasicType(final String topType) {
-    return BASIC_TYPES.contains(topType) || GenericTypeMap.typeOfRaw(topType) != null;
+    return BASIC_TYPES.contains(topType)
+      || isJavaTime(topType)
+      || GenericTypeMap.typeOfRaw(topType) != null;
+  }
+
+  private boolean isJavaTime(String topType) {
+    return topType.startsWith("java.time.");
   }
 }
