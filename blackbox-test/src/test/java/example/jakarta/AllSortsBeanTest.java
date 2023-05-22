@@ -10,7 +10,7 @@ import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AllSortsDefaultMessageTest {
+class AllSortsBeanTest {
 
   final Validator validator = Validator.builder().build();
 
@@ -120,21 +120,5 @@ class AllSortsDefaultMessageTest {
     ConstraintViolation constraint = one(bean, Locale.GERMAN);
     assertThat(constraint.message()).isEqualTo("muss null sein");
   }
-
-//  @Test
-//  void pattern_EN() {
-//    var bean = new AllSortsBean();
-//    bean.myPattern = "Invalid";
-//    ConstraintViolation constraint = one(bean, Locale.ENGLISH);
-//    assertThat(constraint.message()).isEqualTo("must match \"[0-9]\"");
-//  }
-//
-//  @Test
-//  void pattern_DE() {
-//    var bean = new AllSortsBean();
-//    bean.myPattern = "Invalid";
-//    ConstraintViolation constraint = one(bean, Locale.GERMAN);
-//    assertThat(constraint.message()).isEqualTo("muss mit \"[0-9]\" übereinstimmen");
-//  }
 
 }
