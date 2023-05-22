@@ -29,7 +29,7 @@ public final class BasicAdapters {
         case "PastOrPresent" -> new FuturePastAdapter(context.message("PastOrPresent", attributes), true, true);
         case "Future" -> new FuturePastAdapter(context.message("Future", attributes), false, false);
         case "FutureOrPresent" -> new FuturePastAdapter(context.message("FutureOrPresent", attributes), false, true);
-        case "Pattern" -> new PatternAdapter(context.message2("{avaje.Pattern.message}", attributes), attributes);
+        case "Pattern" -> new PatternAdapter(context.message2(attributes), attributes);
         case "Size" -> new SizeAdapter(context.message2(attributes), attributes);
         default -> null;
       };
