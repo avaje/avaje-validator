@@ -3,11 +3,16 @@ package example.avaje;
 import io.avaje.validation.ValidPojo;
 import io.avaje.validation.constraints.*;
 
+import java.math.BigDecimal;
+
 @ValidPojo
 public class ANums {
 
   @Digits(integer = 5, fraction = 3)
   public String digits = "1234.12";
+
+  @Digits(integer = 4, fraction = 2)
+  public BigDecimal digitsDecimal;
 
   @Positive
   public int positive = 3;

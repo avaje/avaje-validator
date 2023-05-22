@@ -1,10 +1,12 @@
 package example.jakarta;
 
+import example.avaje.ANums;
 import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -34,6 +36,22 @@ class JNumsTest {
     bean.digits = "12345678";
     var violation = one(bean, Locale.GERMAN);
     assertThat(violation.message()).isEqualTo("numerischer Wert außerhalb des gültigen Bereichs (<5 digits>.<3 digits> erwartet)");
+  }
+
+  @Test
+  void digitsDecimal() {
+    var bean = new ANums();
+    bean.digitsDecimal = new BigDecimal("12345678");
+    var violation = one(bean);
+    assertThat(violation.message()).isEqualTo("numeric value out of bounds (<4 digits>.<2 digits> expected)");
+  }
+
+  @Test
+  void digitsDecimalDE() {
+    var bean = new ANums();
+    bean.digitsDecimal = new BigDecimal("12345678");
+    var violation = one(bean, Locale.GERMAN);
+    assertThat(violation.message()).isEqualTo("numerischer Wert außerhalb des gültigen Bereichs (<4 digits>.<2 digits> erwartet)");
   }
 
   @Test
