@@ -44,15 +44,18 @@ public final class BasicAdapters {
       this.message = message;
       int flags = 0;
 
-      for (final var flag : (List<RegexFlag>) attributes.get("flags")) {
-        flags |= flag.getValue();
+      List<RegexFlag> flags1 = (List<RegexFlag>) attributes.get("flags");
+      if (flags1 != null) {
+        for (final var flag : flags1) {
+          flags |= flag.getValue();
+        }
       }
       this.pattern = Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
     }
 
     @Override
     public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
-      if (value == null || pattern.test(propertyName)) {
+      if (value == null || pattern.test(value.toString())) {
         req.addViolation(message, propertyName);
         return false;
       }

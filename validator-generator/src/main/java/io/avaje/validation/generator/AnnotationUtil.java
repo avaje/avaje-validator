@@ -15,7 +15,7 @@ final class AnnotationUtil {
   static final Map<String, Handler> handlers = new HashMap<>();
   static {
     final var pattern = new PatternHandler();
-    handlers.put("avaje.Pattern", pattern);
+    handlers.put("io.avaje.Pattern", pattern);
     handlers.put("jakarta.validation.constraints.Pattern", pattern);
 
     final var jakartaHandler = new JakartaHandler();
@@ -82,6 +82,12 @@ final class AnnotationUtil {
       }
     }
   }
+
+  /** Convert default Jakarta message keys to avaje keys */
+  private static String avajeKey(String messageKey) {
+    return messageKey.replace("{jakarta.validation.constraints.", "{avaje.");
+  }
+
   static class PatternHandler extends BaseHandler {
 
     @Override
@@ -99,7 +105,7 @@ final class AnnotationUtil {
         sb.append("\"regexp\",\"").append(prism.regexp()).append("\"");
       }
       if (prism.message() != null) {
-        sb.append(", \"message\",\"").append(prism.message()).append("\"");
+        sb.append(", \"message\",\"").append(avajeKey(prism.message())).append("\"");
       }
       if (!prism.flags().isEmpty()) {
         sb.append(", \"flags\",List.of(").append(String.join(", ", prism.flags())).append(")");
@@ -201,7 +207,7 @@ final class AnnotationUtil {
     }
 
     String messageKey(AnnotationValue defaultValue) {
-      return defaultValue.toString().replace("{jakarta.validation.constraints.", "{avaje.");
+      return avajeKey(defaultValue.toString());
     }
   }
 
