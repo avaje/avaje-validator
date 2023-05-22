@@ -23,6 +23,8 @@ final class AnnotationUtil {
     handlers.put("jakarta.validation.constraints.Size", jakartaHandler);
 
     final var jakartaDecimal = new JakartaDecimal();
+    handlers.put("io.avaje.validation.constraints.DecimalMax", jakartaDecimal);
+    handlers.put("io.avaje.validation.constraints.DecimalMin", jakartaDecimal);
     handlers.put("jakarta.validation.constraints.DecimalMax", jakartaDecimal);
     handlers.put("jakarta.validation.constraints.DecimalMin", jakartaDecimal);
   }
