@@ -2,7 +2,6 @@ package example.jakarta;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.Digits;
 
 import java.math.BigDecimal;
 
@@ -15,13 +14,24 @@ public class JMyNumbers {
   @DecimalMax(value = "9.30", inclusive = false)
   final BigDecimal priceInc;
 
-  @Digits(integer = 5, fraction = 3)
-  final String someDigits;
+  @DecimalMax("9.50")
+  final double dprice;
 
-  public JMyNumbers(BigDecimal price, BigDecimal priceInc, String someDigits) {
+  @DecimalMax(value = "8.30", inclusive = false)
+  final double dpriceInc;
+
+  public JMyNumbers(BigDecimal price, BigDecimal priceInc) {
     this.price = price;
     this.priceInc = priceInc;
-    this.someDigits = someDigits;
+    this.dprice = 1d;
+    this.dpriceInc = 1d;
+  }
+
+  public JMyNumbers(double dprice, double dpriceInc) {
+    this.price = BigDecimal.ONE;
+    this.priceInc = BigDecimal.ONE;
+    this.dprice = dprice;
+    this.dpriceInc = dpriceInc;
   }
 
   public BigDecimal price() {
@@ -32,7 +42,11 @@ public class JMyNumbers {
     return priceInc;
   }
 
-  public String someDigits() {
-    return someDigits;
+  public double dprice() {
+    return dprice;
+  }
+
+  public double dpriceInc() {
+    return dpriceInc;
   }
 }

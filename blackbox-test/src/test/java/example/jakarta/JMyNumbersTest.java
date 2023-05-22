@@ -19,32 +19,62 @@ class JMyNumbersTest {
 
   @Test
   void valid() {
-    var bean = new JMyNumbers(ONE, ONE, "12345.123");
+    var bean = new JMyNumbers(ONE, ONE);
+    validator.validate(bean);
+  }
+
+  @Test
+  void validDouble() {
+    var bean = new JMyNumbers(1d, 1d);
     validator.validate(bean);
   }
 
   @Test
   void decimalMax() {
-    var violation = one(new JMyNumbers(new BigDecimal("11"), ONE, "12345.123"));
+    var violation = one(new JMyNumbers(new BigDecimal("11"), ONE));
     assertThat(violation.message()).isEqualTo("must be less than or equal to 10.50");
   }
 
   @Test
   void decimalMaxDE() {
-    var violation = one(new JMyNumbers(new BigDecimal("11"), ONE, "12345.123"), Locale.GERMAN);
+    var violation = one(new JMyNumbers(new BigDecimal("11"), ONE), Locale.GERMAN);
     assertThat(violation.message()).isEqualTo("muss kleiner oder gleich 10.50 sein");
   }
 
   @Test
   void decimalMaxExclusive() {
-    var violation = one(new JMyNumbers(ONE, new BigDecimal("11"), "12345.123"));
+    var violation = one(new JMyNumbers(ONE, new BigDecimal("11")));
     assertThat(violation.message()).isEqualTo("must be less than 9.30");
   }
 
   @Test
   void decimalMaxExclusiveDE() {
-    var violation = one(new JMyNumbers(ONE, new BigDecimal("11"), "12345.123"), Locale.GERMAN);
+    var violation = one(new JMyNumbers(ONE, new BigDecimal("11")), Locale.GERMAN);
     assertThat(violation.message()).isEqualTo("muss kleiner 9.30 sein");
+  }
+
+  @Test
+  void doubleDecimalMax() {
+    var violation = one(new JMyNumbers(11d, 1d));
+    assertThat(violation.message()).isEqualTo("must be less than or equal to 9.50");
+  }
+
+  @Test
+  void doubleDecimalMaxDE() {
+    var violation = one(new JMyNumbers(11d, 1d), Locale.GERMAN);
+    assertThat(violation.message()).isEqualTo("muss kleiner oder gleich 9.50 sein");
+  }
+
+  @Test
+  void doubleDecimalMaxExclusive() {
+    var violation = one(new JMyNumbers(1d, 11d));
+    assertThat(violation.message()).isEqualTo("must be less than 8.30");
+  }
+
+  @Test
+  void doubleDecimalMaxExclusiveDE() {
+    var violation = one(new JMyNumbers(1d, 11d), Locale.GERMAN);
+    assertThat(violation.message()).isEqualTo("muss kleiner 8.30 sein");
   }
 
   ConstraintViolation one(Object any) {

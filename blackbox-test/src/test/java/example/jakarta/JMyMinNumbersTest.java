@@ -26,6 +26,12 @@ class JMyMinNumbersTest {
   }
 
   @Test
+  void validDouble() {
+    var bean = new JMyMinNumbers(20d, 20d);
+    validator.validate(bean);
+  }
+
+  @Test
   void decimalMin() {
     var violation = one(new JMyMinNumbers(ONE, valid));
     assertThat(violation.message()).isEqualTo("must be greater than or equal to 10.50");
@@ -47,6 +53,30 @@ class JMyMinNumbersTest {
   void decimalMaxExclusiveDE() {
     var violation = one(new JMyMinNumbers(valid, ONE), Locale.GERMAN);
     assertThat(violation.message()).isEqualTo("muss größer 9.30 sein");
+  }
+
+  @Test
+  void doubleDecimalMin() {
+    var violation = one(new JMyMinNumbers(1d, 20d));
+    assertThat(violation.message()).isEqualTo("must be greater than or equal to 9.50");
+  }
+
+  @Test
+  void doubleDecimalMinDE() {
+    var violation = one(new JMyMinNumbers(1d, 20d), Locale.GERMAN);
+    assertThat(violation.message()).isEqualTo("muss größer oder gleich 9.50 sein");
+  }
+
+  @Test
+  void doubleDecimalMinExclusive() {
+    var violation = one(new JMyMinNumbers(20d, 1d));
+    assertThat(violation.message()).isEqualTo("must be greater than 8.30");
+  }
+
+  @Test
+  void doubleDecimalMaxExclusiveDE() {
+    var violation = one(new JMyMinNumbers(20d, 1d), Locale.GERMAN);
+    assertThat(violation.message()).isEqualTo("muss größer 8.30 sein");
   }
 
   ConstraintViolation one(Object any) {
