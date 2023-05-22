@@ -22,14 +22,12 @@ public @interface Past {
   Class<?>[] groups() default {};
 
   /**
-   * Defines several {@code @NotEmpty} constraints on the same element.
-   *
-   * @see Past
+   * Defines several {@code @Past} constraints on the same element.
    */
   @Target({METHOD, FIELD})
   @Retention(RUNTIME)
   @Documented
-  public @interface List {
+  @interface List {
     Past[] value();
   }
 }

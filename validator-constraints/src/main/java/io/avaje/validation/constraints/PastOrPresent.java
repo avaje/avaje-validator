@@ -12,20 +12,17 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
-@Repeatable(Future.List.class)
-public @interface Future {
+@Repeatable(PastOrPresent.List.class)
+public @interface PastOrPresent {
 
-  String message() default "{avaje.Future.message}";
+  String message() default "{avaje.PastOrPresent.message}";
 
   Class<?>[] groups() default {};
 
-  /**
-   * Defines several {@code @Future} constraints on the same element.
-   */
   @Target({METHOD, FIELD})
   @Retention(RUNTIME)
   @Documented
   @interface List {
-    Future[] value();
+    PastOrPresent[] value();
   }
 }
