@@ -70,31 +70,9 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  public String message(String key, Map<String, Object> attributes) {
-    String msg = (String)attributes.get("message");
-    if (msg == null) {
-      // lookup default message for the given key
-      msg = key+"-todo-lookupDefaultMessage";
-    }
-    return msg;
-  }
-
-  @Override
-  public Message message2(Map<String, Object> attributes) {
+  public Message message(Map<String, Object> attributes) {
     final String keyOrTemplate = (String)attributes.get("message");
 
-    // if configured to support only 1 Locale then we can do the lookup and message translation once and early
-    // otherwise we defer as the final message is locale specific
-    return new DMessage(keyOrTemplate, attributes);
-  }
-
-  @Override
-  public Message message2(String defaultKey, Map<String, Object> attributes) {
-    String keyOrTemplate = (String)attributes.get("message");
-    if (keyOrTemplate == null) {
-        // lookup default message for the given key
-        keyOrTemplate = defaultKey;
-      }
     // if configured to support only 1 Locale then we can do the lookup and message translation once and early
     // otherwise we defer as the final message is locale specific
     return new DMessage(keyOrTemplate, attributes);

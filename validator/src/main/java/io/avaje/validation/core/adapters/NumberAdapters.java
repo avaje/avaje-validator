@@ -17,19 +17,19 @@ public final class NumberAdapters {
   public static final ValidationContext.AnnotationFactory FACTORY =
       (annotationType, context, attributes) ->
           switch (annotationType.getSimpleName()) {
-            case "Digits" -> new DigitsAdapter(context.message2(attributes), attributes);
-            case "Positive" -> new PositiveAdapter(context.message2(attributes));
+            case "Digits" -> new DigitsAdapter(context.message(attributes), attributes);
+            case "Positive" -> new PositiveAdapter(context.message(attributes));
             case "PositiveOrZero" -> new PositiveAdapter(
-                context.message2(attributes), true);
-            case "Negative" -> new NegativeAdapter(context.message2(attributes));
+                context.message(attributes), true);
+            case "Negative" -> new NegativeAdapter(context.message(attributes));
             case "NegativeOrZero" -> new NegativeAdapter(
-                context.message2(attributes), true);
-            case "Max" -> new MaxAdapter(context.message2(attributes), attributes);
-            case "Min" -> new MinAdapter(context.message2(attributes), attributes);
+                context.message(attributes), true);
+            case "Max" -> new MaxAdapter(context.message(attributes), attributes);
+            case "Min" -> new MinAdapter(context.message(attributes), attributes);
             case "DecimalMax" -> new DecimalMaxAdapter(
-                context.message2(attributes), attributes);
+                context.message(attributes), attributes);
             case "DecimalMin" -> new DecimalMinAdapter(
-                context.message2(attributes), attributes);
+                context.message(attributes), attributes);
 
             default -> null;
           };
