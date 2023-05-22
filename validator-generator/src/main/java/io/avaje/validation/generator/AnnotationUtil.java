@@ -19,10 +19,22 @@ final class AnnotationUtil {
     handlers.put("jakarta.validation.constraints.Pattern", pattern);
 
     final var jakartaHandler = new JakartaHandler();
+    handlers.put("io.avaje.validation.constraints.AssertFalse", jakartaHandler);
+    handlers.put("jakarta.validation.constraints.AssertFalse", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.AssertTrue", jakartaHandler);
+    handlers.put("jakarta.validation.constraints.AssertTrue", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.Null", jakartaHandler);
+    handlers.put("jakarta.validation.constraints.Null", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.NotNull", jakartaHandler);
+    handlers.put("jakarta.validation.constraints.NotNull", jakartaHandler);
     handlers.put("io.avaje.validation.constraints.NotBlank", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.Size", jakartaHandler);
     handlers.put("jakarta.validation.constraints.NotBlank", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.NotEmpty", jakartaHandler);
+    handlers.put("jakarta.validation.constraints.NotEmpty", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.Size", jakartaHandler);
     handlers.put("jakarta.validation.constraints.Size", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.Email", jakartaHandler);
+    handlers.put("jakarta.validation.constraints.Email", jakartaHandler);
 
     final var jakartaDecimal = new JakartaDecimal();
     handlers.put("io.avaje.validation.constraints.DecimalMax", jakartaDecimal);
