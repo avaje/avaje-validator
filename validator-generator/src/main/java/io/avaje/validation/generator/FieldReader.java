@@ -43,7 +43,7 @@ final class FieldReader {
             .collect(
                 toMap(
                     a -> GenericType.parse(a.getAnnotationType().toString()),
-                    AnnotationUtil::getAnnotationAttributMap));
+                    AnnotationUtil::annotationAttributeMap));
     final String shortType = genericType.shortType();
     adapterShortType = initAdapterShortType(shortType);
     adapterFieldName = initShortName();
