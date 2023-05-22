@@ -10,7 +10,7 @@ public @interface Digits {
 
     Class<?>[] groups() default {};
 
-    int value();
+    int integer();
 
     int fraction() default 0;
 

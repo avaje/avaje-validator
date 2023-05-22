@@ -15,47 +15,23 @@ final class AnnotationUtil {
   static final Map<String, Handler> handlers = new HashMap<>();
   static {
     final var pattern = new PatternHandler();
-    handlers.put("io.avaje.Pattern", pattern);
+    handlers.put("io.avaje.constraints.Pattern", pattern);
     handlers.put("jakarta.validation.constraints.Pattern", pattern);
 
-    final var jakartaHandler = new JakartaHandler();
-    handlers.put("io.avaje.validation.constraints.AssertFalse", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.AssertFalse", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.AssertTrue", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.AssertTrue", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.Null", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.Null", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.NotNull", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.NotNull", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.NotBlank", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.NotBlank", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.NotEmpty", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.NotEmpty", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.Size", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.Size", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.Email", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.Email", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.Past", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.Past", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.PastOrPresent", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.PastOrPresent", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.Future", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.Future", jakartaHandler);
-    handlers.put("io.avaje.validation.constraints.FutureOrPresent", jakartaHandler);
-    handlers.put("jakarta.validation.constraints.FutureOrPresent", jakartaHandler);
+    final var decimalHandler = new DecimalHandler();
+    handlers.put("io.avaje.validation.constraints.DecimalMax", decimalHandler);
+    handlers.put("io.avaje.validation.constraints.DecimalMin", decimalHandler);
+    handlers.put("jakarta.validation.constraints.DecimalMax", decimalHandler);
+    handlers.put("jakarta.validation.constraints.DecimalMin", decimalHandler);
 
-    final String[] keys = {"Digits", "Positive", "PositiveOrZero", "Negative", "NegativeOrZero", "Max", "Min"};
+    final var commonHandler = new CommonHandler();
+    final String[] keys = {"AssertFalse", "AssertTrue", "Null", "NotNull", "NotBlank", "NotEmpty",
+      "Size", "Email", "Past", "PastOrPresent", "Future", "FutureOrPresent",
+      "Digits", "Positive", "PositiveOrZero", "Negative", "NegativeOrZero", "Max", "Min"};
     for (String key : keys) {
-      handlers.put("io.avaje.validation.constraints." + key, jakartaHandler);
-      handlers.put("jakarta.validation.constraints." + key, jakartaHandler);
+      handlers.put("io.avaje.validation.constraints." + key, commonHandler);
+      handlers.put("jakarta.validation.constraints." + key, commonHandler);
     }
-
-
-    final var jakartaDecimal = new JakartaDecimal();
-    handlers.put("io.avaje.validation.constraints.DecimalMax", jakartaDecimal);
-    handlers.put("io.avaje.validation.constraints.DecimalMin", jakartaDecimal);
-    handlers.put("jakarta.validation.constraints.DecimalMax", jakartaDecimal);
-    handlers.put("jakarta.validation.constraints.DecimalMin", jakartaDecimal);
   }
 
   private AnnotationUtil() {}
@@ -190,20 +166,20 @@ final class AnnotationUtil {
     }
   }
 
-  static class JakartaHandler extends StandardHandler {
+  static class CommonHandler extends StandardHandler {
 
     /** Prototype factory only */
-    JakartaHandler() {
+    CommonHandler() {
       super();
     }
 
-    JakartaHandler(AnnotationMirror annotationMirror, Element element) {
+    CommonHandler(AnnotationMirror annotationMirror, Element element) {
       super(annotationMirror, element);
     }
 
     @Override
     public String attributes(AnnotationMirror annotationMirror, Element element) {
-      return new JakartaHandler(annotationMirror, element).writeAttributes();
+      return new CommonHandler(annotationMirror, element).writeAttributes();
     }
 
     @Override
@@ -226,19 +202,19 @@ final class AnnotationUtil {
     }
   }
 
-  static class JakartaDecimal extends JakartaHandler {
+  static class DecimalHandler extends CommonHandler {
 
     /** Prototype factory only */
-    JakartaDecimal() {
+    DecimalHandler() {
       super();
     }
 
     @Override
     public String attributes(AnnotationMirror annotationMirror, Element element) {
-      return new JakartaDecimal(annotationMirror, element).writeAttributes();
+      return new DecimalHandler(annotationMirror, element).writeAttributes();
     }
 
-    JakartaDecimal(AnnotationMirror annotationMirror, Element element) {
+    DecimalHandler(AnnotationMirror annotationMirror, Element element) {
       super(annotationMirror, element);
     }
 

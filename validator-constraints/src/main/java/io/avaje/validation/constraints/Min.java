@@ -10,7 +10,7 @@ public @interface Min {
 
     Class<?>[] groups() default {};
 
-    double value();
+    long value();
 
     @Target({ElementType.METHOD, ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
