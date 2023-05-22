@@ -25,10 +25,10 @@ public final class BasicAdapters {
         case "AssertFalse" -> new AssertBooleanAdapter(context.message2(attributes), true);
         case "NotBlank" -> new NotBlankAdapter(context.message2(attributes));
         case "NotEmpty" -> new NotEmptyAdapter(context.message2(attributes));
-        case "Past" -> new FuturePastAdapter(context.message("Past", attributes), true, false);
-        case "PastOrPresent" -> new FuturePastAdapter(context.message("PastOrPresent", attributes), true, true);
-        case "Future" -> new FuturePastAdapter(context.message("Future", attributes), false, false);
-        case "FutureOrPresent" -> new FuturePastAdapter(context.message("FutureOrPresent", attributes), false, true);
+        case "Past" -> new FuturePastAdapter(context.message2(attributes), true, false);
+        case "PastOrPresent" -> new FuturePastAdapter(context.message2(attributes), true, true);
+        case "Future" -> new FuturePastAdapter(context.message2(attributes), false, false);
+        case "FutureOrPresent" -> new FuturePastAdapter(context.message2(attributes), false, true);
         case "Pattern" -> new PatternAdapter(context.message2(attributes), attributes);
         case "Size" -> new SizeAdapter(context.message2(attributes), attributes);
         default -> null;

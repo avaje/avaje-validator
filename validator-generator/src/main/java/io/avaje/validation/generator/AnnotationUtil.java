@@ -35,6 +35,14 @@ final class AnnotationUtil {
     handlers.put("jakarta.validation.constraints.Size", jakartaHandler);
     handlers.put("io.avaje.validation.constraints.Email", jakartaHandler);
     handlers.put("jakarta.validation.constraints.Email", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.Past", jakartaHandler);
+    handlers.put("jakarta.validation.constraints.Past", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.PastOrPresent", jakartaHandler);
+    handlers.put("jakarta.validation.constraints.PastOrPresent", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.Future", jakartaHandler);
+    handlers.put("jakarta.validation.constraints.Future", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.FutureOrPresent", jakartaHandler);
+    handlers.put("jakarta.validation.constraints.FutureOrPresent", jakartaHandler);
 
     final var jakartaDecimal = new JakartaDecimal();
     handlers.put("io.avaje.validation.constraints.DecimalMax", jakartaDecimal);
