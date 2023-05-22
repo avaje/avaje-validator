@@ -19,6 +19,8 @@ final class AnnotationUtil {
     handlers.put("jakarta.validation.constraints.Pattern", pattern);
 
     final var jakartaHandler = new JakartaHandler();
+    handlers.put("io.avaje.validation.constraints.NotBlank", jakartaHandler);
+    handlers.put("io.avaje.validation.constraints.Size", jakartaHandler);
     handlers.put("jakarta.validation.constraints.NotBlank", jakartaHandler);
     handlers.put("jakarta.validation.constraints.Size", jakartaHandler);
 
