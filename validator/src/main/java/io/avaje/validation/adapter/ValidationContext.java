@@ -22,21 +22,9 @@ public interface ValidationContext {
     <T> ValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes);
 
     /**
-     * Return the message to use given the global key and attributes.
-     * @param key Used to lookup the fallback default message format to use
-     * @param attributes Attributes that could contain user defined message to use
-     */
-    String message(String key, Map<String, Object> attributes);
-
-    /**
      * Return the message object held by a validation adapter
      */
     Message message2(Map<String, Object> attributes);
-
-    /**
-     * Return the message object held by a validation adapter
-     */
-    Message message2(String defaultKey, Map<String, Object> attributes);
 
     interface Message {
 
