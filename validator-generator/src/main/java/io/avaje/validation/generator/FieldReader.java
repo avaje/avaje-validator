@@ -2,6 +2,7 @@ package io.avaje.validation.generator;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +12,12 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 final class FieldReader {
+
+  static final Set<String> BASIC_TYPES = new HashSet<>();
+  static {
+    BASIC_TYPES.add("java.lang.String");
+    BASIC_TYPES.add("java.math.BigDecimal");
+  }
 
   private final List<String> genericTypeParams;
   private final boolean publicField;
@@ -241,6 +248,6 @@ final class FieldReader {
   }
 
   private boolean isBasicType(final String topType) {
-    return "java.lang.String".equals(topType) || GenericTypeMap.typeOfRaw(topType) != null;
+    return BASIC_TYPES.contains(topType) || GenericTypeMap.typeOfRaw(topType) != null;
   }
 }
