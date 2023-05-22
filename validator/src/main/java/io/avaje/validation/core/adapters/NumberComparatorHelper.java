@@ -8,7 +8,7 @@ final class NumberComparatorHelper {
 
   private NumberComparatorHelper() {}
 
-  public static int compare(Number number, long value, OptionalInt treatNanAs) {
+  static int compare(Number number, long value, OptionalInt treatNanAs) {
     if (number instanceof final Double d) {
       return compareDouble(d, value, treatNanAs);
     } else if (number instanceof final Float f) {
@@ -24,11 +24,10 @@ final class NumberComparatorHelper {
       final Long numLong = number.longValue();
       return numLong.compareTo(value);
     }
-
     return compare(number.doubleValue(), value, treatNanAs);
   }
 
-  public static int compareDecimal(Number number, BigDecimal value, OptionalInt treatNanAs) {
+  static int compareDecimal(Number number, BigDecimal value, OptionalInt treatNanAs) {
     if (number instanceof final Double d) {
       return compare(d, value, treatNanAs);
     } else if (number instanceof final Float f) {

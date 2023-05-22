@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * @author Marko Bekhta
  * @author Guillaume Smet
  */
-public final class DomainNameUtil {
+final class DomainNameUtil {
 
   /**
    * This is the maximum length of a domain name. But be aware that each label (parts separated by a
@@ -54,7 +54,7 @@ public final class DomainNameUtil {
    * @param domain domain to check for validity
    * @return {@code true} if the provided string is a valid domain, {@code false} otherwise
    */
-  public static boolean isValidEmailDomainAddress(String domain) {
+  static boolean isValidEmailDomainAddress(String domain) {
     return isValidDomainAddress(domain, EMAIL_DOMAIN_PATTERN);
   }
 
@@ -64,7 +64,7 @@ public final class DomainNameUtil {
    * @param domain the domain to check for validity
    * @return {@code true} if the provided string is a valid domain, {@code false} otherwise
    */
-  public static boolean isValidDomainAddress(String domain) {
+  static boolean isValidDomainAddress(String domain) {
     return isValidDomainAddress(domain, DOMAIN_PATTERN);
   }
 

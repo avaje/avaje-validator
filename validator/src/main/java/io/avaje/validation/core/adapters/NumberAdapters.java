@@ -12,27 +12,23 @@ import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
 
 public final class NumberAdapters {
-  private NumberAdapters() {}
+  private NumberAdapters() {
+  }
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-      (annotationType, context, attributes) ->
-          switch (annotationType.getSimpleName()) {
-            case "Digits" -> new DigitsAdapter(context.message(attributes), attributes);
-            case "Positive" -> new PositiveAdapter(context.message(attributes));
-            case "PositiveOrZero" -> new PositiveAdapter(
-                context.message(attributes), true);
-            case "Negative" -> new NegativeAdapter(context.message(attributes));
-            case "NegativeOrZero" -> new NegativeAdapter(
-                context.message(attributes), true);
-            case "Max" -> new MaxAdapter(context.message(attributes), attributes);
-            case "Min" -> new MinAdapter(context.message(attributes), attributes);
-            case "DecimalMax" -> new DecimalMaxAdapter(
-                context.message(attributes), attributes);
-            case "DecimalMin" -> new DecimalMinAdapter(
-                context.message(attributes), attributes);
-
-            default -> null;
-          };
+    (annotationType, context, attributes) ->
+      switch (annotationType.getSimpleName()) {
+        case "Digits" -> new DigitsAdapter(context.message(attributes), attributes);
+        case "Positive" -> new PositiveAdapter(context.message(attributes));
+        case "PositiveOrZero" -> new PositiveAdapter(context.message(attributes), true);
+        case "Negative" -> new NegativeAdapter(context.message(attributes));
+        case "NegativeOrZero" -> new NegativeAdapter(context.message(attributes), true);
+        case "Max" -> new MaxAdapter(context.message(attributes), attributes);
+        case "Min" -> new MinAdapter(context.message(attributes), attributes);
+        case "DecimalMax" -> new DecimalMaxAdapter(context.message(attributes), attributes);
+        case "DecimalMin" -> new DecimalMinAdapter(context.message(attributes), attributes);
+        default -> null;
+      };
 
   private static final class DecimalMaxAdapter implements ValidationAdapter<Number> {
 
@@ -40,7 +36,7 @@ public final class NumberAdapters {
     private final BigDecimal value;
     private final boolean inclusive;
 
-    public DecimalMaxAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+    DecimalMaxAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = new BigDecimal((String) attributes.get("value"));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
@@ -48,19 +44,16 @@ public final class NumberAdapters {
 
     @Override
     public boolean validate(Number number, ValidationRequest req, String propertyName) {
-
       // null values are valid
       if (number == null) {
         return true;
       }
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
-
       if (inclusive ? comparisonResult > 0 : comparisonResult >= 0) {
         req.addViolation(message, propertyName);
         return false;
       }
-
       return true;
     }
   }
@@ -71,7 +64,7 @@ public final class NumberAdapters {
     private final BigDecimal value;
     private final boolean inclusive;
 
-    public DecimalMinAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+    DecimalMinAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = new BigDecimal((String) attributes.get("value"));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
@@ -79,19 +72,16 @@ public final class NumberAdapters {
 
     @Override
     public boolean validate(Number number, ValidationRequest req, String propertyName) {
-
       // null values are valid
       if (number == null) {
         return true;
       }
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
-
       if (inclusive ? comparisonResult < 0 : comparisonResult <= 0) {
         req.addViolation(message, propertyName);
         return false;
       }
-
       return true;
     }
   }
@@ -101,14 +91,13 @@ public final class NumberAdapters {
     private final ValidationContext.Message message;
     private final long value;
 
-    public MaxAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+    MaxAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = (long) attributes.get("value");
     }
 
     @Override
     public boolean validate(Number number, ValidationRequest req, String propertyName) {
-
       // null values are valid
       if (number == null) {
         return true;
@@ -118,7 +107,6 @@ public final class NumberAdapters {
         req.addViolation(message, propertyName);
         return false;
       }
-
       return true;
     }
   }
@@ -128,14 +116,13 @@ public final class NumberAdapters {
     private final ValidationContext.Message message;
     private final long value;
 
-    public MinAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+    MinAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = (long) attributes.get("value");
     }
 
     @Override
     public boolean validate(Number number, ValidationRequest req, String propertyName) {
-
       // null values are valid
       if (number == null) {
         return true;
@@ -145,7 +132,6 @@ public final class NumberAdapters {
         req.addViolation(message, propertyName);
         return false;
       }
-
       return true;
     }
   }
@@ -156,7 +142,7 @@ public final class NumberAdapters {
     private final int integer;
     private final int fraction;
 
-    public DigitsAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+    DigitsAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.integer = (int) attributes.get("integer");
       this.fraction = (int) attributes.get("fraction");
@@ -164,7 +150,6 @@ public final class NumberAdapters {
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-
       // null values are valid
       if (value == null) {
         return true;
@@ -178,8 +163,7 @@ public final class NumberAdapters {
       }
 
       final int integerPartLength = bigNum.precision() - bigNum.scale();
-      final int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-
+      final int fractionPartLength = Math.max(bigNum.scale(), 0);
       if (integer < integerPartLength || fraction < fractionPartLength) {
         req.addViolation(message, propertyName);
         return false;
@@ -194,26 +178,24 @@ public final class NumberAdapters {
     private final ValidationContext.Message message;
     private final boolean inclusive;
 
-    public PositiveAdapter(ValidationContext.Message message) {
+    PositiveAdapter(ValidationContext.Message message) {
       this.message = message;
       this.inclusive = false;
     }
 
-    public PositiveAdapter(ValidationContext.Message message, boolean inclusive) {
+    PositiveAdapter(ValidationContext.Message message, boolean inclusive) {
       this.message = message;
       this.inclusive = inclusive;
     }
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-
       // null values are valid
       if (value == null) {
         return true;
       }
 
       final int sign = NumberSignHelper.signum(value, LESS_THAN);
-
       if (inclusive ? sign < 0 : sign <= 0) {
         req.addViolation(message, propertyName);
         return false;
@@ -228,26 +210,24 @@ public final class NumberAdapters {
     private final ValidationContext.Message message;
     private final boolean inclusive;
 
-    public NegativeAdapter(ValidationContext.Message message, boolean inclusive) {
+    NegativeAdapter(ValidationContext.Message message, boolean inclusive) {
       this.message = message;
       this.inclusive = inclusive;
     }
 
-    public NegativeAdapter(ValidationContext.Message message) {
+    NegativeAdapter(ValidationContext.Message message) {
       this.message = message;
       this.inclusive = false;
     }
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-
       // null values are valid
       if (value == null) {
         return true;
       }
 
       final int sign = NumberSignHelper.signum(value, GREATER_THAN);
-
       if (inclusive ? sign > 0 : sign >= 0) {
         req.addViolation(message, propertyName);
         return false;

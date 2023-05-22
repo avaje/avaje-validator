@@ -6,7 +6,6 @@ import java.util.*;
 
 final class DResourceBundleManager {
 
-
   private final Map<Locale, ResourceBundle> map = new HashMap<>();
 
   DResourceBundleManager(String name, LocaleResolver localeResolver) {

@@ -14,7 +14,6 @@ public interface ValidationAdapter<T> {
   }
 
   default ValidationAdapter<T> list(ValidationContext ctx, Class<?> clazz) {
-
     final var after = ctx.<Object>adapter(clazz);
     return (value, req, propertyName) -> {
       if (validate(value, req, propertyName)) {
@@ -25,7 +24,6 @@ public interface ValidationAdapter<T> {
   }
 
   default ValidationAdapter<T> map(ValidationContext ctx, Class<?> clazz) {
-
     final var after = ctx.<Object>adapter(clazz);
     return (value, req, propertyName) -> {
       if (validate(value, req, propertyName)) {
@@ -37,7 +35,6 @@ public interface ValidationAdapter<T> {
   }
 
   default ValidationAdapter<T> array(ValidationContext ctx, Class<?> clazz) {
-
     final var after = ctx.<Object>adapter(clazz);
     return (value, req, propertyName) -> {
       if (validate(value, req, propertyName)) {
@@ -48,7 +45,6 @@ public interface ValidationAdapter<T> {
   }
 
   private boolean validateAll(Collection<T> value, ValidationRequest req, String propertyName) {
-
     if (value == null) {
       return true;
     }
@@ -67,7 +63,6 @@ public interface ValidationAdapter<T> {
   }
 
   private boolean validateArray(T[] value, ValidationRequest req, String propertyName) {
-
     if (value == null) {
       return true;
     }

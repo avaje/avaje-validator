@@ -31,7 +31,6 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
 
   @Override
   public boolean validate(Object obj, ValidationRequest req, String propertyName) {
-
     if (obj == null) {
       req.addViolation(message, propertyName);
       return false;
@@ -54,82 +53,62 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
   }
 
   private boolean compare(Date date) {
-
     Predicate<Date> predicate = past ? date::before : date::after;
     predicate = includePresent ? predicate.or(date::equals) : predicate;
-
     return predicate.negate().test(Date.from(Instant.now()));
   }
 
   private boolean compare(Instant instant) {
-
     Predicate<Instant> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-
     return predicate.negate().test(Instant.now());
   }
 
   private boolean compare(LocalDate instant) {
-
     Predicate<LocalDate> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-
     return predicate.negate().test(LocalDate.now());
   }
 
   private boolean compare(LocalDateTime instant) {
-
     Predicate<LocalDateTime> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-
     return predicate.negate().test(LocalDateTime.now());
   }
 
   private boolean compare(LocalTime instant) {
-
     Predicate<LocalTime> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-
     return predicate.negate().test(LocalTime.now());
   }
 
   private boolean compare(ZonedDateTime instant) {
-
     Predicate<ZonedDateTime> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-
     return predicate.negate().test(ZonedDateTime.now());
   }
 
   private boolean compare(OffsetDateTime instant) {
-
     Predicate<OffsetDateTime> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-
     return predicate.test(OffsetDateTime.now());
   }
 
   private boolean compare(OffsetTime instant) {
-
     Predicate<OffsetTime> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-
     return predicate.test(OffsetTime.now());
   }
 
   private boolean compare(Year instant) {
-
     Predicate<Year> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-
     return predicate.test(Year.now());
   }
 
   private boolean compare(YearMonth instant) {
-
     Predicate<YearMonth> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-
     return predicate.negate().test(YearMonth.now());
   }
 }

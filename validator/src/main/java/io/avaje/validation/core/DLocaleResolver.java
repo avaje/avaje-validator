@@ -12,7 +12,7 @@ final class DLocaleResolver implements LocaleResolver {
   private final Locale defaultLocale;
   private final Set<Locale> otherLocales = new HashSet<>();
 
-  public DLocaleResolver(Locale defaultLocale, Locale... others) {
+  DLocaleResolver(Locale defaultLocale, Locale... others) {
     this.defaultLocale = defaultLocale;
     Collections.addAll(otherLocales, others);
   }

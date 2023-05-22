@@ -44,7 +44,7 @@ final class DValidator implements Validator, ValidationContext {
     this.builder = new CoreAdapterBuilder(this, factories, annotationFactories);
   }
 
-  public MessageInterpolator interpolator() {
+  MessageInterpolator interpolator() {
     return this.interpolator;
   }
 

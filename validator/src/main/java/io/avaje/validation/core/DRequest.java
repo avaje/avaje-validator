@@ -32,12 +32,6 @@ final class DRequest implements ValidationRequest {
     return joiner.toString();
   }
 
-
-  @Override
-  public void addViolation(String msg, String propertyName) {
-    violations.add(new ConstraintViolation(currentPath(), propertyName, msg));
-  }
-
   @Override
   public void addViolation(ValidationContext.Message msg, String propertyName) {
     String message = validator.interpolate(msg, locale);

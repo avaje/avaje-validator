@@ -55,7 +55,7 @@ public enum RegexFlag {
   // JDK flag value
   private final int value;
 
-  private RegexFlag(int value) {
+  RegexFlag(int value) {
     this.value = value;
   }
 
