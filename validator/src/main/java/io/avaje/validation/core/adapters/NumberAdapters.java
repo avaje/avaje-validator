@@ -17,15 +17,15 @@ public final class NumberAdapters {
   public static final ValidationContext.AnnotationFactory FACTORY =
       (annotationType, context, attributes) ->
           switch (annotationType.getSimpleName()) {
-            case "Digits" -> new DigitsAdapter(context.message("Digits", attributes), attributes);
-            case "Positive" -> new PositiveAdapter(context.message("Positive", attributes));
+            case "Digits" -> new DigitsAdapter(context.message2(attributes), attributes);
+            case "Positive" -> new PositiveAdapter(context.message2(attributes));
             case "PositiveOrZero" -> new PositiveAdapter(
-                context.message("PositiveOrZero", attributes), true);
-            case "Negative" -> new NegativeAdapter(context.message("Negative", attributes));
+                context.message2(attributes), true);
+            case "Negative" -> new NegativeAdapter(context.message2(attributes));
             case "NegativeOrZero" -> new NegativeAdapter(
-                context.message("NegativeOrZero", attributes), true);
-            case "Max" -> new MaxAdapter(context.message("Max", attributes), attributes);
-            case "Min" -> new MinAdapter(context.message("Min", attributes), attributes);
+                context.message2(attributes), true);
+            case "Max" -> new MaxAdapter(context.message2(attributes), attributes);
+            case "Min" -> new MinAdapter(context.message2(attributes), attributes);
             case "DecimalMax" -> new DecimalMaxAdapter(
                 context.message2(attributes), attributes);
             case "DecimalMin" -> new DecimalMinAdapter(
@@ -98,10 +98,10 @@ public final class NumberAdapters {
 
   private static final class MaxAdapter implements ValidationAdapter<Number> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final long value;
 
-    public MaxAdapter(String message, Map<String, Object> attributes) {
+    public MaxAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = (long) attributes.get("value");
     }
@@ -114,7 +114,7 @@ public final class NumberAdapters {
         return true;
       }
 
-      if (NumberComparatorHelper.compare(number, value, GREATER_THAN) < 0) {
+      if (NumberComparatorHelper.compare(number, value, GREATER_THAN) > 0) {
         req.addViolation(message, propertyName);
         return false;
       }
@@ -125,10 +125,10 @@ public final class NumberAdapters {
 
   private static final class MinAdapter implements ValidationAdapter<Number> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final long value;
 
-    public MinAdapter(String message, Map<String, Object> attributes) {
+    public MinAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = (long) attributes.get("value");
     }
@@ -141,7 +141,7 @@ public final class NumberAdapters {
         return true;
       }
 
-      if (NumberComparatorHelper.compare(number, value, LESS_THAN) > 0) {
+      if (NumberComparatorHelper.compare(number, value, LESS_THAN) < 0) {
         req.addViolation(message, propertyName);
         return false;
       }
@@ -152,11 +152,11 @@ public final class NumberAdapters {
 
   private static final class DigitsAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final int integer;
     private final int fraction;
 
-    public DigitsAdapter(String message, Map<String, Object> attributes) {
+    public DigitsAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.integer = (int) attributes.get("integer");
       this.fraction = (int) attributes.get("fraction");
@@ -191,15 +191,15 @@ public final class NumberAdapters {
 
   private static final class PositiveAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final boolean inclusive;
 
-    public PositiveAdapter(String message) {
+    public PositiveAdapter(ValidationContext.Message message) {
       this.message = message;
       this.inclusive = false;
     }
 
-    public PositiveAdapter(String message, boolean inclusive) {
+    public PositiveAdapter(ValidationContext.Message message, boolean inclusive) {
       this.message = message;
       this.inclusive = inclusive;
     }
@@ -225,15 +225,15 @@ public final class NumberAdapters {
 
   private static final class NegativeAdapter implements ValidationAdapter<Object> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final boolean inclusive;
 
-    public NegativeAdapter(String message, boolean inclusive) {
+    public NegativeAdapter(ValidationContext.Message message, boolean inclusive) {
       this.message = message;
       this.inclusive = inclusive;
     }
 
-    public NegativeAdapter(String message) {
+    public NegativeAdapter(ValidationContext.Message message) {
       this.message = message;
       this.inclusive = false;
     }
