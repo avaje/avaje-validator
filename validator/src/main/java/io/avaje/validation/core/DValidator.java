@@ -70,7 +70,7 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  public Message message2(Map<String, Object> attributes) {
+  public Message message(Map<String, Object> attributes) {
     final String keyOrTemplate = (String)attributes.get("message");
 
     // if configured to support only 1 Locale then we can do the lookup and message translation once and early

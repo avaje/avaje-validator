@@ -4,7 +4,6 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -18,19 +17,19 @@ public final class BasicAdapters {
 
   public static final ValidationContext.AnnotationFactory FACTORY = (annotationType, context, attributes) ->
     switch (annotationType.getSimpleName()) {
-        case "Email" -> new EmailAdapter(context.message2(attributes), attributes);
-        case "Null" -> new NullAdapter(context.message2(attributes));
-        case "NotNull", "NonNull" -> new NotNullAdapter(context.message2(attributes));
-        case "AssertTrue" -> new AssertBooleanAdapter(context.message2(attributes), false);
-        case "AssertFalse" -> new AssertBooleanAdapter(context.message2(attributes), true);
-        case "NotBlank" -> new NotBlankAdapter(context.message2(attributes));
-        case "NotEmpty" -> new NotEmptyAdapter(context.message2(attributes));
-        case "Past" -> new FuturePastAdapter(context.message2(attributes), true, false);
-        case "PastOrPresent" -> new FuturePastAdapter(context.message2(attributes), true, true);
-        case "Future" -> new FuturePastAdapter(context.message2(attributes), false, false);
-        case "FutureOrPresent" -> new FuturePastAdapter(context.message2(attributes), false, true);
-        case "Pattern" -> new PatternAdapter(context.message2(attributes), attributes);
-        case "Size" -> new SizeAdapter(context.message2(attributes), attributes);
+        case "Email" -> new EmailAdapter(context.message(attributes), attributes);
+        case "Null" -> new NullAdapter(context.message(attributes));
+        case "NotNull", "NonNull" -> new NotNullAdapter(context.message(attributes));
+        case "AssertTrue" -> new AssertBooleanAdapter(context.message(attributes), false);
+        case "AssertFalse" -> new AssertBooleanAdapter(context.message(attributes), true);
+        case "NotBlank" -> new NotBlankAdapter(context.message(attributes));
+        case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes));
+        case "Past" -> new FuturePastAdapter(context.message(attributes), true, false);
+        case "PastOrPresent" -> new FuturePastAdapter(context.message(attributes), true, true);
+        case "Future" -> new FuturePastAdapter(context.message(attributes), false, false);
+        case "FutureOrPresent" -> new FuturePastAdapter(context.message(attributes), false, true);
+        case "Pattern" -> new PatternAdapter(context.message(attributes), attributes);
+        case "Size" -> new SizeAdapter(context.message(attributes), attributes);
         default -> null;
       };
 
