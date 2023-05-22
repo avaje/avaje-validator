@@ -18,7 +18,7 @@ public final class BasicAdapters {
 
   public static final ValidationContext.AnnotationFactory FACTORY = (annotationType, context, attributes) ->
     switch (annotationType.getSimpleName()) {
-        case "Email" -> new EmailAdapter(context.message("Email", attributes), attributes);
+        case "Email" -> new EmailAdapter(context.message2(attributes), attributes);
         case "Null" -> new NullAdapter(context.message2(attributes));
         case "NotNull", "NonNull" -> new NotNullAdapter(context.message2(attributes));
         case "AssertTrue" -> new AssertBooleanAdapter(context.message2(attributes), false);
