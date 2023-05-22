@@ -18,9 +18,13 @@ final class AnnotationUtil {
     handlers.put("avaje.Pattern", pattern);
     handlers.put("jakarta.validation.constraints.Pattern", pattern);
 
-    Handler jakartaHandler = new JakartaHandler();
+    final var jakartaHandler = new JakartaHandler();
     handlers.put("jakarta.validation.constraints.NotBlank", jakartaHandler);
     handlers.put("jakarta.validation.constraints.Size", jakartaHandler);
+
+    final var jakartaDecimal = new JakartaDecimal();
+    handlers.put("jakarta.validation.constraints.DecimalMax", jakartaDecimal);
+    handlers.put("jakarta.validation.constraints.DecimalMin", jakartaDecimal);
   }
 
   private AnnotationUtil() {}
@@ -90,12 +94,26 @@ final class AnnotationUtil {
 
   static class StandardHandler extends BaseHandler {
 
-    @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element) {
-      return new StandardHandler().writeAttributes(annotationMirror, element);
+    protected final AnnotationMirror annotationMirror;
+    protected final Element element;
+
+    /** Prototype factory */
+    StandardHandler() {
+      this.annotationMirror = null;
+      this.element = null;
     }
 
-    String writeAttributes(AnnotationMirror annotationMirror, Element element) {
+    StandardHandler(AnnotationMirror annotationMirror, Element element) {
+      this.annotationMirror = annotationMirror;
+      this.element = element;
+    }
+
+    @Override
+    public String attributes(AnnotationMirror annotationMirror, Element element) {
+      return new StandardHandler(annotationMirror, element).writeAttributes();
+    }
+
+    String writeAttributes() {
       for (final ExecutableElement member : ElementFilter.methodsIn(element.getEnclosedElements())) {
         final AnnotationValue value = annotationMirror.getElementValues().get(member);
         final AnnotationValue defaultValue = member.getDefaultValue();
@@ -124,13 +142,31 @@ final class AnnotationUtil {
       first = false;
       sb.append("\"").append(name).append("\",");
     }
+
+    AnnotationValue memberValue(String nameMatch) {
+      for (final ExecutableElement member : ElementFilter.methodsIn(element.getEnclosedElements())) {
+        if (nameMatch.equals(member.getSimpleName().toString())) {
+          return annotationMirror.getElementValues().get(member);
+        }
+      }
+      return null;
+    }
   }
 
   static class JakartaHandler extends StandardHandler {
 
+    /** Prototype factory only */
+    JakartaHandler() {
+      super();
+    }
+
+    JakartaHandler(AnnotationMirror annotationMirror, Element element) {
+      super(annotationMirror, element);
+    }
+
     @Override
     public String attributes(AnnotationMirror annotationMirror, Element element) {
-      return new JakartaHandler().writeAttributes(annotationMirror, element);
+      return new JakartaHandler(annotationMirror, element).writeAttributes();
     }
 
     @Override
@@ -138,15 +174,45 @@ final class AnnotationUtil {
       final String name = simpleName.toString();
       if (value == null) {
         if ("message".equals(name)) {
-          final String msgKey = defaultValue.toString().replace("{jakarta.validation.constraints.", "{avaje.");
           writeAttributeKey("message");
-          sb.append(msgKey);
+          sb.append(messageKey(defaultValue));
         } else if (!name.equals("payload") && !name.equals("groups")) {
           super.writeAttribute(simpleName, null, defaultValue);
         }
       } else {
         super.writeAttribute(simpleName, value, defaultValue);
       }
+    }
+
+    String messageKey(AnnotationValue defaultValue) {
+      return defaultValue.toString().replace("{jakarta.validation.constraints.", "{avaje.");
+    }
+  }
+
+  static class JakartaDecimal extends JakartaHandler {
+
+    /** Prototype factory only */
+    JakartaDecimal() {
+      super();
+    }
+
+    @Override
+    public String attributes(AnnotationMirror annotationMirror, Element element) {
+      return new JakartaDecimal(annotationMirror, element).writeAttributes();
+    }
+
+    JakartaDecimal(AnnotationMirror annotationMirror, Element element) {
+      super(annotationMirror, element);
+    }
+
+    String messageKey(AnnotationValue defaultValue) {
+      final AnnotationValue inclusiveValue = memberValue("inclusive");
+      final boolean inclusive = (inclusiveValue == null || "true".equals(inclusiveValue.toString()));
+      String messageKey = super.messageKey(defaultValue);
+      if (!inclusive) {
+        messageKey = messageKey.replace(".message", ".exclusive.message");
+      }
+      return messageKey;
     }
   }
 

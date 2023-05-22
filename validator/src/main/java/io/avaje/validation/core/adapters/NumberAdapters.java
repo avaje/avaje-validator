@@ -27,20 +27,20 @@ public final class NumberAdapters {
             case "Max" -> new MaxAdapter(context.message("Max", attributes), attributes);
             case "Min" -> new MinAdapter(context.message("Min", attributes), attributes);
             case "DecimalMax" -> new DecimalMaxAdapter(
-                context.message("DecimalMax", attributes), attributes);
+                context.message2(attributes), attributes);
             case "DecimalMin" -> new DecimalMinAdapter(
-                context.message("DecimalMin", attributes), attributes);
+                context.message2(attributes), attributes);
 
             default -> null;
           };
 
   private static final class DecimalMaxAdapter implements ValidationAdapter<Number> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final BigDecimal value;
     private final boolean inclusive;
 
-    public DecimalMaxAdapter(String message, Map<String, Object> attributes) {
+    public DecimalMaxAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = new BigDecimal((String) attributes.get("value"));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
@@ -56,7 +56,7 @@ public final class NumberAdapters {
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
 
-      if (inclusive ? comparisonResult <= 0 : comparisonResult < 0) {
+      if (inclusive ? comparisonResult > 0 : comparisonResult >= 0) {
         req.addViolation(message, propertyName);
         return false;
       }
@@ -67,11 +67,11 @@ public final class NumberAdapters {
 
   private static final class DecimalMinAdapter implements ValidationAdapter<Number> {
 
-    private final String message;
+    private final ValidationContext.Message message;
     private final BigDecimal value;
     private final boolean inclusive;
 
-    public DecimalMinAdapter(String message, Map<String, Object> attributes) {
+    public DecimalMinAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
       this.value = new BigDecimal((String) attributes.get("value"));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
@@ -87,7 +87,7 @@ public final class NumberAdapters {
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
 
-      if (inclusive ? comparisonResult >= 0 : comparisonResult > 0) {
+      if (inclusive ? comparisonResult < 0 : comparisonResult <= 0) {
         req.addViolation(message, propertyName);
         return false;
       }
