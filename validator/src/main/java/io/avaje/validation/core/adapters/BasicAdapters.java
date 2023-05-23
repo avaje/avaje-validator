@@ -208,7 +208,7 @@ public final class BasicAdapters {
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-      if ((value == null) == shouldBeNull) {
+      if ((value == null) != shouldBeNull) {
         req.addViolation(message, propertyName);
         return false;
       }
