@@ -18,10 +18,10 @@ public final class BasicAdapters {
   public static final ValidationContext.AnnotationFactory FACTORY = (annotationType, context, attributes) ->
     switch (annotationType.getSimpleName()) {
         case "Email" -> new EmailAdapter(context.message(attributes), attributes);
-        case "Null" -> new NullAdapter(context.message(attributes));
-        case "NotNull", "NonNull" -> new NotNullAdapter(context.message(attributes));
-        case "AssertTrue" -> new AssertBooleanAdapter(context.message(attributes), false);
-        case "AssertFalse" -> new AssertBooleanAdapter(context.message(attributes), true);
+        case "Null" -> new NullableAdapter(context.message(attributes), true);
+        case "NotNull", "NonNull" -> new NullableAdapter(context.message(attributes), false);
+        case "AssertTrue" -> new AssertBooleanAdapter(context.message(attributes), Boolean.FALSE);
+        case "AssertFalse" -> new AssertBooleanAdapter(context.message(attributes), Boolean.TRUE);
         case "NotBlank" -> new NotBlankAdapter(context.message(attributes));
         case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes));
         case "Past" -> new FuturePastAdapter(context.message(attributes), true, false);
@@ -43,7 +43,7 @@ public final class BasicAdapters {
       this.message = message;
       int flags = 0;
 
-      List<RegexFlag> flags1 = (List<RegexFlag>) attributes.get("flags");
+      final List<RegexFlag> flags1 = (List<RegexFlag>) attributes.get("flags");
       if (flags1 != null) {
         for (final var flag : flags1) {
           flags |= flag.getValue();
@@ -159,16 +159,11 @@ public final class BasicAdapters {
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
       if (value == null
+          || value instanceof final CharSequence sequence && sequence.length() == 0
           || value instanceof final Collection<?> col && col.isEmpty()
           || value instanceof final Map<?, ?> map && map.isEmpty()) {
         req.addViolation(message, propertyName);
         return false;
-      } else if (value instanceof final CharSequence sequence) {
-        final var len = sequence.length();
-        if (len == 0) {
-          req.addViolation(message, propertyName);
-          return false;
-        }
       } else if (value.getClass().isArray()) {
         final var len = Array.getLength(value);
         if (len == 0) {
@@ -201,35 +196,19 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class NotNullAdapter implements ValidationAdapter<Object> {
+  private static final class NullableAdapter implements ValidationAdapter<Object> {
 
     private final ValidationContext.Message message;
+    private final boolean shouldBeNull;
 
-    NotNullAdapter(ValidationContext.Message message) {
+    NullableAdapter(ValidationContext.Message message, boolean shouldBeNull) {
       this.message = message;
+      this.shouldBeNull = shouldBeNull;
     }
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-      if (value == null) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      return true;
-    }
-  }
-
-  private static final class NullAdapter implements ValidationAdapter<Object> {
-
-    private final ValidationContext.Message message;
-
-    NullAdapter(ValidationContext.Message message) {
-      this.message = message;
-    }
-
-    @Override
-    public boolean validate(Object value, ValidationRequest req, String propertyName) {
-      if (value != null) {
+      if ((value == null) == shouldBeNull) {
         req.addViolation(message, propertyName);
         return false;
       }
