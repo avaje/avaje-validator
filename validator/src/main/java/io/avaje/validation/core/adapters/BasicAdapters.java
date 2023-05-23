@@ -159,17 +159,13 @@ public final class BasicAdapters {
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
       if (value == null
-          || value instanceof final CharSequence sequence && sequence.length() == 0
           || value instanceof final Collection<?> col && col.isEmpty()
-          || value instanceof final Map<?, ?> map && map.isEmpty()) {
+          || value instanceof final Map<?, ?> map && map.isEmpty()
+          || value instanceof final CharSequence sequence && sequence.length() == 0
+          || value.getClass().isArray() && Array.getLength(value) == 0) {
+
         req.addViolation(message, propertyName);
         return false;
-      } else if (value.getClass().isArray()) {
-        final var len = Array.getLength(value);
-        if (len == 0) {
-          req.addViolation(message, propertyName);
-          return false;
-        }
       }
 
       return true;
