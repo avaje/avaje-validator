@@ -28,7 +28,7 @@ final class AnnotationUtil {
     final String[] keys = {"AssertFalse", "AssertTrue", "Null", "NotNull", "NotBlank", "NotEmpty",
       "Size", "Email", "Past", "PastOrPresent", "Future", "FutureOrPresent",
       "Digits", "Positive", "PositiveOrZero", "Negative", "NegativeOrZero", "Max", "Min"};
-    for (String key : keys) {
+    for (final String key : keys) {
       handlers.put("io.avaje.validation.constraints." + key, commonHandler);
       handlers.put("jakarta.validation.constraints." + key, commonHandler);
     }
@@ -170,7 +170,6 @@ final class AnnotationUtil {
 
     /** Prototype factory only */
     CommonHandler() {
-      super();
     }
 
     CommonHandler(AnnotationMirror annotationMirror, Element element) {
@@ -189,7 +188,7 @@ final class AnnotationUtil {
         if ("message".equals(name)) {
           writeAttributeKey("message");
           sb.append(messageKey(defaultValue));
-        } else if (!name.equals("payload") && !name.equals("groups")) {
+        } else if (!"payload".equals(name) && !"groups".equals(name)) {
           super.writeAttribute(simpleName, null, defaultValue);
         }
       } else {
@@ -206,7 +205,6 @@ final class AnnotationUtil {
 
     /** Prototype factory only */
     DecimalHandler() {
-      super();
     }
 
     @Override
@@ -218,6 +216,7 @@ final class AnnotationUtil {
       super(annotationMirror, element);
     }
 
+    @Override
     String messageKey(AnnotationValue defaultValue) {
       final AnnotationValue inclusiveValue = memberValue("inclusive");
       final boolean inclusive = (inclusiveValue == null || "true".equals(inclusiveValue.toString()));
