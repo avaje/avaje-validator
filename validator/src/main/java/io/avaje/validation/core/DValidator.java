@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.avaje.lang.Nullable;
@@ -108,22 +107,14 @@ final class DValidator implements Validator, ValidationContext {
     return new DRequest(this, locale);
   }
 
-
   String interpolate(Message msg, Locale requestLocale) {
+
     // resolve the locale to use to produce the message
     final Locale locale = localeResolver.resolve(requestLocale);
     // lookup in resource bundles using resolved locale and template
     final String template = templateLookup.lookup(msg.template(), locale);
-    // translate the template using msg attributes
-    final Map<String, Object> attributes = msg.attributes();
-    final Set<Map.Entry<String, Object>> entries = attributes.entrySet();
-    String result = template;
-    for (final Map.Entry<String, Object> entry : entries) {
-      // needs work here to improve functionality, support local specific value formatting eg Duration Max
-      result = result.replace('{' + entry.getKey() + '}', String.valueOf(entry.getValue()));
-    }
-    // return the message
-    return result;
+
+    return interpolator.interpolate(template, msg.attributes());
   }
 
   /** Implementation of Validator.Builder. */
@@ -184,7 +175,7 @@ final class DValidator implements Validator, ValidationContext {
       final var interpolator =
           ServiceLoader.load(MessageInterpolator.class)
               .findFirst()
-              .orElseGet(NoopMessageInterpolator::new);
+              .orElseGet(BasicMessageInterpolator::new);
       return new DValidator(factories, afactories, interpolator, localeResolver);
     }
 
