@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 class AMyEmailTest {
 
-  final Validator validator = Validator.builder().build();
+  final Validator validator = Validator.builder().addLocals(Locale.GERMAN).build();
 
   @Test
   void valid() {

@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AllSortsBeanTest {
 
-  final Validator validator = Validator.builder().build();
+  final Validator validator = Validator.builder().addLocals(Locale.GERMAN).build();
 
   protected ConstraintViolation one(AllSortsBean pojo, Locale locale) {
     try {

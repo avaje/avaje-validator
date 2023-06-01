@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 class JMyNumbersTest {
 
-  final Validator validator = Validator.builder().build();
+  final Validator validator = Validator.builder().addLocals(Locale.GERMAN).build();
 
   @Test
   void valid() {

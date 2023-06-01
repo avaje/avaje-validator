@@ -15,14 +15,15 @@ abstract class BasicTest {
     Validator.builder()
       .add(Address.class, AddressValidationAdapter::new)
       .add(Contact.class, ContactValidationAdapter::new)
+      .addLocals(Locale.GERMAN)
       .build();
 
   protected ConstraintViolation one(Object pojo, Locale locale) {
     try {
       validator.validate(pojo, locale);
       throw new IllegalStateException("don't get here");
-    } catch (ConstraintViolationException e) {
-      var violations = new ArrayList<>(e.violations());
+    } catch (final ConstraintViolationException e) {
+      final var violations = new ArrayList<>(e.violations());
       assertThat(violations).hasSize(1);
       return violations.get(0);
     }

@@ -2,6 +2,7 @@ package io.avaje.validation.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,9 @@ class DTemplateLookupTest {
   private final DTemplateLookup lookup;
 
   DTemplateLookupTest() {
-    final var localeResolver = new DLocaleResolver(Locale.ENGLISH, Locale.GERMAN);
-    final var defaultResourceBundle = new DResourceBundleManager("io.avaje.validation.Messages", localeResolver);
+    final var localeResolver = new DLocaleResolver(Locale.ENGLISH, List.of(Locale.GERMAN));
+    final var defaultResourceBundle =
+        new DResourceBundleManager(List.of(), List.of(), localeResolver);
     this.lookup = new DTemplateLookup(defaultResourceBundle);
   }
 
