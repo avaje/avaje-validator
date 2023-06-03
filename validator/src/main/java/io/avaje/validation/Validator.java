@@ -57,10 +57,10 @@ public interface Validator {
     Builder addResourceBundles(ResourceBundle... bundle);
 
     /** Set Default Locale for this validator, if not set, will use Locale.getDefault() */
-    Builder setDefaultLocal(Locale defaultLocal);
+    Builder setDefaultLocale(Locale defaultLocale);
 
     /** Adds an additional Locales for this validator */
-    Builder addLocals(Locale... locals);
+    Builder addLocales(Locale... locales);
 
     /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
     Builder add(Type type, AdapterBuilder builder);

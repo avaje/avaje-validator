@@ -183,13 +183,13 @@ final class DValidator implements Validator, ValidationContext {
     }
 
     @Override
-    public Builder setDefaultLocal(Locale defaultLocal) {
+    public Builder setDefaultLocale(Locale defaultLocal) {
       this.defaultLocal = defaultLocal;
       return this;
     }
 
     @Override
-    public Builder addLocals(Locale... locals) {
+    public Builder addLocales(Locale... locals) {
 
       Collections.addAll(otherLocals, locals);
       return this;

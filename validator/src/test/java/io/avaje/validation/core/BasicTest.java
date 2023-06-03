@@ -15,7 +15,7 @@ abstract class BasicTest {
     Validator.builder()
       .add(Address.class, AddressValidationAdapter::new)
       .add(Contact.class, ContactValidationAdapter::new)
-      .addLocals(Locale.GERMAN)
+      .addLocales(Locale.GERMAN)
       .build();
 
   protected ConstraintViolation one(Object pojo, Locale locale) {
