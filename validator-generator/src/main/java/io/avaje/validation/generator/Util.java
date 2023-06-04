@@ -1,5 +1,7 @@
 package io.avaje.validation.generator;
 
+import static io.avaje.validation.generator.ProcessingContext.element;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
@@ -23,7 +25,7 @@ final class Util {
   }
 
   static boolean validImportType(String type) {
-    return type.indexOf('.') > 0;
+    return type.indexOf('.') > 0 && !type.startsWith("java.lang");
   }
 
   static String packageOf(String cls) {
@@ -121,19 +123,43 @@ final class Util {
    * "JsonAdapter" suffix.
    */
   static String baseTypeOfAdapter(String adapterFullName) {
-    final int posLast = adapterFullName.lastIndexOf('.');
-    final int posPrior = adapterFullName.lastIndexOf('.', posLast - 1);
-    final int nameEnd = adapterFullName.length() - 17; // "ValidationAdapter".length();
-    if (posPrior == -1) {
-      return adapterFullName.substring(posLast + 1, nameEnd);
-    }
+    return element(adapterFullName).getInterfaces().stream()
+        .filter(t -> t.toString().contains("io.avaje.validation.adapter.ValidationAdapter"))
+        .findFirst()
+        .map(Object::toString)
+        .map(GenericType::parse)
+        .map(GenericType::firstParamType)
+        .map(Util::extractTypeWithNest)
+        .orElseThrow(
+            () ->
+                new IllegalStateException(
+                    "Adapter: "
+                        + adapterFullName
+                        + " does not directly implement ValidationAdapter"));
+  }
 
-    final String className =
-        adapterFullName.substring(0, posPrior) + adapterFullName.substring(posLast, nameEnd);
-    final int $index = className.indexOf("$");
-    if ($index != -1) {
-      return className.substring(0, $index);
+  static String extractTypeWithNest(String fullType) {
+    final int p = fullType.lastIndexOf('.');
+    if (p == -1 || fullType.startsWith("java")) {
+      return fullType;
+    } else {
+      final StringBuilder result = new StringBuilder();
+      var foundClass = false;
+      var firstClass = true;
+      for (final String part : fullType.split("\\.")) {
+
+        if (Character.isUpperCase(part.charAt(0))) {
+          foundClass = true;
+        }
+        result.append(foundClass && !firstClass ? "$" : ".").append(part);
+        if (foundClass) {
+          firstClass = false;
+        }
+      }
+      if (result.charAt(0) == '.') {
+        result.deleteCharAt(0);
+      }
+      return result.toString();
     }
-    return className;
   }
 }

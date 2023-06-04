@@ -34,15 +34,17 @@ class ValidatorProcessorTest {
           .sorted(Comparator.reverseOrder())
           .map(Path::toFile)
           .forEach(File::delete);
-      Paths.get("io.avaje.validation.Validator$GeneratedComponent").toAbsolutePath().toFile().delete();
+      Paths.get("io.avaje.validation.Validator$GeneratedComponent")
+          .toAbsolutePath()
+          .toFile()
+          .delete();
     } catch (final Exception e) {
     }
   }
 
-  @Disabled
   @Test
   void testGeneration() throws Exception {
-    final String source = Paths.get("src").toAbsolutePath().toString();
+    final String source = Paths.get("src/test/java/io/avaje/validation/generator/models/valid").toAbsolutePath().toString();
 
     final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     final StandardJavaFileManager manager = compiler.getStandardFileManager(null, null, null);

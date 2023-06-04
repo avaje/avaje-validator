@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import io.avaje.validation.adapter.ValidationContext.Message;
+
 public interface ValidationContext {
 
   /**
@@ -22,9 +24,12 @@ public interface ValidationContext {
   <T> ValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes);
 
   /**
-   * Return the message object held by a validation adapter
+   * Create a message object using the annotation attribute "message";
    */
   Message message(Map<String, Object> attributes);
+
+  /** Create a message object using the given string and annotation attributes */
+  Message message(String message, Map<String, Object> attributes);
 
   interface Message {
 

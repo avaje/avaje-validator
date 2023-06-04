@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.avaje.lang.Nullable;
 import io.avaje.validation.Validator;
+import io.avaje.validation.Validator.AnnotationAdapterBuilder;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
@@ -70,11 +71,17 @@ final class DValidator implements Validator, ValidationContext {
 
   @Override
   public Message message(Map<String, Object> attributes) {
-    final String keyOrTemplate = (String)attributes.get("message");
+    final String keyOrTemplate = (String) attributes.get("message");
 
     // if configured to support only 1 Locale then we can do the lookup and message translation once and early
     // otherwise we defer as the final message is locale specific
     return new DMessage(keyOrTemplate, attributes);
+  }
+
+  @Override
+  public Message message(String message, Map<String, Object> attributes) {
+
+    return new DMessage(message, attributes);
   }
 
   @Override
@@ -129,6 +136,11 @@ final class DValidator implements Validator, ValidationContext {
     }
 
     @Override
+    public Builder add(Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
+      return add(newAdapterFactory(type, builder));
+    }
+
+    @Override
     public <T> Builder add(Type type, ValidationAdapter<T> adapter) {
       return add(newAdapterFactory(type, adapter));
     }
@@ -146,7 +158,7 @@ final class DValidator implements Validator, ValidationContext {
     }
 
     @Override
-    public <T> Builder add(Class<Annotation> type, ValidationAdapter<T> adapter) {
+    public <T> Builder add(Class<? extends Annotation> type, ValidationAdapter<T> adapter) {
       return add(newAnnotationAdapterFactory(type, adapter));
     }
 
@@ -196,6 +208,12 @@ final class DValidator implements Validator, ValidationContext {
       requireNonNull(builder);
       return (targetType, ctx) -> simpleMatch(type, targetType) ? builder.build(ctx) : null;
     }
+
+    private static AnnotationFactory newAdapterFactory(Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
+        requireNonNull(type);
+        requireNonNull(builder);
+        return (targetType, ctx, attributes) -> simpleMatch(type, targetType) ? builder.build(ctx, attributes) : null;
+      }
   }
 
   private static boolean simpleMatch(Type type, Type targetType) {

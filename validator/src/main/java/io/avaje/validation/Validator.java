@@ -8,23 +8,20 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 public interface Validator {
 
-  /**
-   * Validate the object using the default locale.
-   */
+  /** Validate the object using the default locale. */
   void validate(Object any) throws ConstraintViolationException;
 
   /**
    * Validate the object with a given locale.
    *
-   * <p>If the locale is not one of the supported locales then the
-   * default locale will be used.
+   * <p>If the locale is not one of the supported locales then the default locale will be used.
    *
-   * <p>This is expected to be used when the Validator is configured
-   * to support multiple locales.
+   * <p>This is expected to be used when the Validator is configured to support multiple locales.
    */
   void validate(Object any, Locale locale) throws ConstraintViolationException;
 
@@ -43,10 +40,13 @@ public interface Validator {
     <T> Builder add(Type type, ValidationAdapter<T> adapter);
 
     /** Add a AnnotationValidationAdapter to use for the given type. */
-    <T> Builder add(Class<Annotation> type, ValidationAdapter<T> adapter);
+    <T> Builder add(Class<? extends Annotation> type, ValidationAdapter<T> adapter);
 
     /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
     Builder add(Type type, AdapterBuilder builder);
+
+    /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
+    Builder add(Class<? extends Annotation> type, AnnotationAdapterBuilder builder);
 
     /** Add a Component which can provide multiple ValidationAdapters and or configuration. */
     Builder add(ValidatorComponent component);
@@ -69,6 +69,14 @@ public interface Validator {
 
     /** Create a ValidationAdapter given the Validator instance. */
     ValidationAdapter<?> build(ValidationContext ctx);
+  }
+
+  /** Function to build a ValidationAdapter that needs Validator. */
+  @FunctionalInterface
+  interface AnnotationAdapterBuilder {
+
+    /** Create a ValidationAdapter given the Validator instance. */
+    ValidationAdapter<?> build(ValidationContext ctx, Map<String, Object> attributes);
   }
 
   /** Components register ValidationAdapters Validator.Builder */

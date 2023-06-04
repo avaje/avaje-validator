@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 
@@ -62,15 +63,37 @@ final class SimpleComponentWriter {
     }
     for (final String adapterFullName : metaData.all()) {
       final String adapterShortName = Util.shortName(adapterFullName);
-      final String typeName = typeShortName(adapterShortName);
+      final String typeName =
+          adapterFullName
+              .transform(Util::baseTypeOfAdapter)
+              .transform(Util::shortName)
+              .transform(this::typeShortName);
       writer.append("    builder.add(%s.class, %s::new);", typeName, adapterShortName).eol();
     }
+
+    for (final var adapter : metaData.allAnnotationAdapters()) {
+      final var typeShortName =
+          adapter
+              .getQualifiedName()
+              .toString()
+              .transform(Util::shortType)
+              .transform(this::typeShortName);
+
+      final var target =
+          AnnotationValidatorPrism.getInstanceOn(adapter)
+              .value()
+              .toString()
+              .transform(Util::shortType)
+              .transform(this::typeShortName);
+
+      writer.append("    builder.add(%s.class, %s::new);", target, typeShortName).eol();
+    }
+
     writer.append("  }").eol().eol();
   }
 
   private String typeShortName(String adapterShortName) {
-    final String typeName = adapterShortName.substring(0, adapterShortName.length() - 17);
-    return typeName.replace("$", ".");
+    return adapterShortName.replace("$", ".");
   }
 
   private void writeClassEnd() {
@@ -82,9 +105,18 @@ final class SimpleComponentWriter {
     final String shortName = Util.shortName(fullName);
     writer.append("@Generated").eol();
     final List<String> factories = metaData.allFactories();
+    final List<String> annotationFactories =
+        metaData.allAnnotationAdapters().stream()
+            .map(s -> s.getQualifiedName().toString())
+            .toList();
     if (!factories.isEmpty()) {
       writer.append("@MetaData.Factory({");
-      writeMetaDataEntry(factories);
+      writeMetaDataEntry(annotationFactories);
+      writer.append("})").eol();
+    }
+    if (!annotationFactories.isEmpty()) {
+      writer.append("@MetaData.AnnotationFactory({");
+      writeMetaDataEntry(annotationFactories);
       writer.append("})").eol();
     }
     writer.append("@MetaData({");

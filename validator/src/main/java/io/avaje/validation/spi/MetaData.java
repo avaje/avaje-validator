@@ -27,4 +27,15 @@ public @interface MetaData {
      */
     Class<?>[] value();
   }
+
+  /**
+   * For internal use, holds metadata on generated adapters that also have factories.
+   */
+  @interface AnnotationFactory {
+
+    /**
+     * The custom Annotation ValidationAdapters.
+     */
+    Class<?>[] value();
+  }
 }
