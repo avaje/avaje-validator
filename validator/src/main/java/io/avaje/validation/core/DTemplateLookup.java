@@ -1,9 +1,12 @@
 package io.avaje.validation.core;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 final class DTemplateLookup {
   private final DResourceBundleManager bundleManager;
+  private final Map<String, String> messageCache = new HashMap<>();
 
   DTemplateLookup(DResourceBundleManager defaultBundle) {
     this.bundleManager = defaultBundle;
@@ -15,7 +18,9 @@ final class DTemplateLookup {
     }
     final String key = template.substring(1, template.length() - 1);
 
-    final String msg = bundleManager.message(key, resolvedLocale);
+    final String msg =
+        messageCache.computeIfAbsent(
+            key + resolvedLocale, k -> bundleManager.message(key, resolvedLocale));
     if (msg != null) {
       return msg;
     }
