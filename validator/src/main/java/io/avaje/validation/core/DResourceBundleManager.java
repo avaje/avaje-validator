@@ -16,6 +16,7 @@ final class DResourceBundleManager {
   private final Map<Locale, List<ResourceBundle>> map = new HashMap<>();
   private static final List<ResourceBundle> EMPTY = List.of();
   private static final String DEFAULT_BUNDLE = "io.avaje.validation.Messages";
+  private final Map<String, String> messageCache = new HashMap<>();
 
   DResourceBundleManager(
       List<String> names, List<ResourceBundle> providedBundles, LocaleResolver localeResolver) {
@@ -61,13 +62,16 @@ final class DResourceBundleManager {
   @Nullable
   public String message(String template, Locale resolvedLocale) {
 
-    for (final var bundle : map.getOrDefault(resolvedLocale, EMPTY)) {
+    return messageCache.computeIfAbsent(
+        template + resolvedLocale,
+        k -> {
+          for (final var bundle : map.getOrDefault(resolvedLocale, EMPTY)) {
 
-      if (bundle.containsKey(template)) {
-        return bundle.getString(template);
-      }
-    }
-
-    return null;
+            if (bundle.containsKey(template)) {
+              return bundle.getString(template);
+            }
+          }
+          return null;
+        });
   }
 }
