@@ -249,15 +249,16 @@ final class DValidator implements Validator, ValidationContext {
       return (targetType, ctx) -> simpleMatch(type, targetType) ? builder.build(ctx) : null;
     }
 
-    private static AnnotationFactory newAdapterFactory(Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
-        requireNonNull(type);
-        requireNonNull(builder);
-        return (targetType, ctx, attributes) -> simpleMatch(type, targetType) ? builder.build(ctx, attributes) : null;
-      }
+    private static AnnotationFactory newAdapterFactory(
+        Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
+      requireNonNull(type);
+      requireNonNull(builder);
+      return (targetType, ctx, attributes) ->
+          simpleMatch(type, targetType) ? builder.build(ctx, attributes) : null;
+    }
   }
 
-    private static boolean simpleMatch(Type type, Type targetType) {
-      return Util.typesMatch(type, targetType);
-    }
+  private static boolean simpleMatch(Type type, Type targetType) {
+    return Util.typesMatch(type, targetType);
   }
 }
