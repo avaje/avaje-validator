@@ -22,7 +22,6 @@ import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ValidatorProcessorTest {
@@ -39,10 +38,9 @@ class ValidatorProcessorTest {
     }
   }
 
-  @Disabled
   @Test
   void testGeneration() throws Exception {
-    final String source = Paths.get("src").toAbsolutePath().toString();
+    final String source = Paths.get("src/test/java/io/avaje/validation/generator/models/valid").toAbsolutePath().toString();
 
     final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     final StandardJavaFileManager manager = compiler.getStandardFileManager(null, null, null);

@@ -1,20 +1,20 @@
 package io.avaje.validation.core;
 
-import io.avaje.lang.Nullable;
-
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
+import io.avaje.lang.Nullable;
 
 final class DLocaleResolver implements LocaleResolver {
 
   private final Locale defaultLocale;
   private final Set<Locale> otherLocales = new HashSet<>();
 
-  DLocaleResolver(Locale defaultLocale, Locale... others) {
+  DLocaleResolver(Locale defaultLocale, Collection<Locale> others) {
     this.defaultLocale = defaultLocale;
-    Collections.addAll(otherLocales, others);
+    otherLocales.addAll(others);
   }
 
   @Override

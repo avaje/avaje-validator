@@ -14,12 +14,11 @@ import io.avaje.validation.core.adapters.NumberAdapters;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
 final class CoreAdapterBuilder {
-
+  public static final ValidationAdapter NOOP = (type, req, propertyName) -> true;
   private final DValidator context;
   private final List<ValidationContext.AdapterFactory> factories = new ArrayList<>();
   private final List<ValidationContext.AnnotationFactory> annotationFactories = new ArrayList<>();
   private final Map<Object, ValidationAdapter<?>> adapterCache = new ConcurrentHashMap<>();
-  private final MessageInterpolator interpolator;
 
   CoreAdapterBuilder(
       DValidator context,
@@ -30,7 +29,6 @@ final class CoreAdapterBuilder {
     this.annotationFactories.addAll(userAnnotationFactories);
     this.annotationFactories.add(BasicAdapters.FACTORY);
     this.annotationFactories.add(NumberAdapters.FACTORY);
-    interpolator = context.interpolator();
   }
 
   /** Return the adapter from cache if exists else return null. */
@@ -76,6 +74,6 @@ final class CoreAdapterBuilder {
       }
     }
     // unknown annotations have noop
-    return NoopAnnotationValidator.INSTANCE;
+    return NOOP;
   }
 }

@@ -8,23 +8,20 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 
 public interface Validator {
 
-  /**
-   * Validate the object using the default locale.
-   */
+  /** Validate the object using the default locale. */
   void validate(Object any) throws ConstraintViolationException;
 
   /**
    * Validate the object with a given locale.
    *
-   * <p>If the locale is not one of the supported locales then the
-   * default locale will be used.
+   * <p>If the locale is not one of the supported locales then the default locale will be used.
    *
-   * <p>This is expected to be used when the Validator is configured
-   * to support multiple locales.
+   * <p>This is expected to be used when the Validator is configured to support multiple locales.
    */
   void validate(Object any, Locale locale) throws ConstraintViolationException;
 
@@ -44,6 +41,26 @@ public interface Validator {
 
     /** Add a AnnotationValidationAdapter to use for the given type. */
     <T> Builder add(Class<Annotation> type, ValidationAdapter<T> adapter);
+
+    /**
+     * Lookup ResourceBundles with the given name and for error message interpolation
+     *
+     * @param bundleName the name of the bundleFiles
+     */
+    Builder addResourceBundles(String... bundleName);
+
+    /**
+     * Add ResourceBundle for error message interpolation
+     *
+     * @param bundleName the name of the bundleFiles
+     */
+    Builder addResourceBundles(ResourceBundle... bundle);
+
+    /** Set Default Locale for this validator, if not set, will use Locale.getDefault() */
+    Builder setDefaultLocale(Locale defaultLocale);
+
+    /** Adds an additional Locales for this validator */
+    Builder addLocales(Locale... locales);
 
     /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
     Builder add(Type type, AdapterBuilder builder);
