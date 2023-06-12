@@ -41,6 +41,7 @@ public interface ValidationContext {
   /**
    * Factory for creating a ValidationAdapter for a given type.
    */
+  @FunctionalInterface
   interface AdapterFactory {
 
     /**
@@ -54,6 +55,7 @@ public interface ValidationContext {
   /**
    * Factory for creating a ValidationAdapter for a given annotation.
    */
+  @FunctionalInterface
   interface AnnotationFactory {
 
     /**

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
+@FunctionalInterface
 public interface ValidationAdapter<T> {
 
   /** Return true if validation should recurse */
