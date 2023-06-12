@@ -30,13 +30,13 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
   }
 
   @Override
-  public boolean validate(Object obj, ValidationRequest req, String propertyName) {
-    if (obj == null) {
-      req.addViolation(message, propertyName);
+  public boolean validate(Object value, ValidationRequest req, String propertyName) {
+    if (value == null) {
+      req.addViolation(message, propertyName, value);
       return false;
     }
-    if (obj instanceof final Date date && compare(date)
-        || obj instanceof final TemporalAccessor temporalAccessor
+    if (value instanceof final Date date && compare(date)
+        || value instanceof final TemporalAccessor temporalAccessor
             && (temporalAccessor instanceof final Instant ins && compare(ins)
                 || temporalAccessor instanceof final LocalDate ld && compare(ld)
                 || temporalAccessor instanceof final LocalDateTime ldt && compare(ldt)
@@ -46,7 +46,7 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
                 || temporalAccessor instanceof final OffsetTime ot && compare(ot)
                 || temporalAccessor instanceof final Year y && compare(y)
                 || temporalAccessor instanceof final YearMonth ym && compare(ym))) {
-      req.addViolation(message, propertyName);
+      req.addViolation(message, propertyName, value);
       return false;
     }
     return true;

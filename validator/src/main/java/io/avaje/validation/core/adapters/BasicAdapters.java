@@ -55,7 +55,7 @@ public final class BasicAdapters {
     @Override
     public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
       if (value == null || pattern.test(value.toString())) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, value);
         return false;
       }
       return true;
@@ -83,26 +83,26 @@ public final class BasicAdapters {
       if (value instanceof final CharSequence sequence) {
         final var len = sequence.length();
         if (len > max || len < min) {
-          req.addViolation(message, propertyName);
+          req.addViolation(message, propertyName, value);
           return false;
         }
       } else if (value instanceof final Collection<?> col) {
         final var len = col.size();
         if (len > max || len < min) {
-          req.addViolation(message, propertyName);
+          req.addViolation(message, propertyName, value);
           return len > 0;
         }
       } else if (value instanceof final Map<?, ?> map) {
         final var len = map.size();
         if (len > max || len < min) {
-          req.addViolation(message, propertyName);
+          req.addViolation(message, propertyName, value);
           return len > 0;
         }
       } else if (value.getClass().isArray()) {
 
         final var len = Array.getLength(value);
         if (len > max || len < min) {
-          req.addViolation(message, propertyName);
+          req.addViolation(message, propertyName, value);
           return len > 0;
         }
       }
@@ -122,7 +122,7 @@ public final class BasicAdapters {
     @Override
     public boolean validate(CharSequence cs, ValidationRequest req, String propertyName) {
       if (cs == null || isBlank(cs)) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, cs);
         return false;
       }
       return true;
@@ -153,27 +153,27 @@ public final class BasicAdapters {
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
       if (value == null) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, value);
         return false;
       } else if (value instanceof final Collection<?> col) {
         if (col.isEmpty()) {
-          req.addViolation(message, propertyName);
+          req.addViolation(message, propertyName, value);
           return false;
         }
       } else if (value instanceof final Map<?, ?> map) {
         if (map.isEmpty()) {
-          req.addViolation(message, propertyName);
+          req.addViolation(message, propertyName, value);
           return false;
         }
       } else if (value instanceof final CharSequence sequence) {
         if (sequence.length() == 0) {
-          req.addViolation(message, propertyName);
+          req.addViolation(message, propertyName, value);
           return false;
         }
       } else if (value.getClass().isArray()) {
         final var len = Array.getLength(value);
         if (len == 0) {
-          req.addViolation(message, propertyName);
+          req.addViolation(message, propertyName, value);
           return false;
         }
       }
@@ -193,9 +193,9 @@ public final class BasicAdapters {
     }
 
     @Override
-    public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
-      if (assertBool.equals(type)) {
-        req.addViolation(message, propertyName);
+    public boolean validate(Boolean value, ValidationRequest req, String propertyName) {
+      if (assertBool.equals(value)) {
+        req.addViolation(message, propertyName, value);
         return false;
       }
       return true;
@@ -215,7 +215,7 @@ public final class BasicAdapters {
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
       if ((value == null) != shouldBeNull) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, value);
         return false;
       }
       return true;

@@ -26,20 +26,20 @@ final class EmailAdapter implements ValidationAdapter<CharSequence> {
       "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")";
   /** Regular expression for the local part of an email address (everything before '@') */
   private static final Pattern LOCAL_PART_PATTERN =
-    Pattern.compile(
-      "(?:"
-        + LOCAL_PART_ATOM
-        + "+|\""
-        + LOCAL_PART_INSIDE_QUOTES_ATOM
-        + "+\")"
-        + "(?:\\."
-        + "(?:"
-        + LOCAL_PART_ATOM
-        + "+|\""
-        + LOCAL_PART_INSIDE_QUOTES_ATOM
-        + "+\")"
-        + ")*",
-      CASE_INSENSITIVE);
+      Pattern.compile(
+          "(?:"
+              + LOCAL_PART_ATOM
+              + "+|\""
+              + LOCAL_PART_INSIDE_QUOTES_ATOM
+              + "+\")"
+              + "(?:\\."
+              + "(?:"
+              + LOCAL_PART_ATOM
+              + "+|\""
+              + LOCAL_PART_INSIDE_QUOTES_ATOM
+              + "+\")"
+              + ")*",
+          CASE_INSENSITIVE);
 
   private final ValidationContext.Message message;
   private final Predicate<String> pattern;
@@ -75,7 +75,7 @@ final class EmailAdapter implements ValidationAdapter<CharSequence> {
 
     // need to check if
     if (splitPosition < 0) {
-      req.addViolation(message, propertyName);
+      req.addViolation(message, propertyName, value);
       return false;
     }
 
@@ -86,7 +86,7 @@ final class EmailAdapter implements ValidationAdapter<CharSequence> {
         || !DomainNameUtil.isValidEmailDomainAddress(domainPart)
         || pattern.test(value.toString())) {
 
-      req.addViolation(message, propertyName);
+      req.addViolation(message, propertyName, value);
       return false;
     }
 

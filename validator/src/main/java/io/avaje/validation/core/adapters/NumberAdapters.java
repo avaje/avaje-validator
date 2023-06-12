@@ -51,7 +51,7 @@ public final class NumberAdapters {
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
       if (inclusive ? comparisonResult > 0 : comparisonResult >= 0) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, number);
         return false;
       }
       return true;
@@ -79,7 +79,7 @@ public final class NumberAdapters {
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
       if (inclusive ? comparisonResult < 0 : comparisonResult <= 0) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, number);
         return false;
       }
       return true;
@@ -104,7 +104,7 @@ public final class NumberAdapters {
       }
 
       if (NumberComparatorHelper.compare(number, value, GREATER_THAN) > 0) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, number);
         return false;
       }
       return true;
@@ -129,7 +129,7 @@ public final class NumberAdapters {
       }
 
       if (NumberComparatorHelper.compare(number, value, LESS_THAN) < 0) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, number);
         return false;
       }
       return true;
@@ -165,7 +165,7 @@ public final class NumberAdapters {
       final int integerPartLength = bigNum.precision() - bigNum.scale();
       final int fractionPartLength = Math.max(bigNum.scale(), 0);
       if (integer < integerPartLength || fraction < fractionPartLength) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, value);
         return false;
       }
 
@@ -197,7 +197,7 @@ public final class NumberAdapters {
 
       final int sign = NumberSignHelper.signum(value, LESS_THAN);
       if (inclusive ? sign < 0 : sign <= 0) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, value);
         return false;
       }
 
@@ -229,7 +229,7 @@ public final class NumberAdapters {
 
       final int sign = NumberSignHelper.signum(value, GREATER_THAN);
       if (inclusive ? sign > 0 : sign >= 0) {
-        req.addViolation(message, propertyName);
+        req.addViolation(message, propertyName, value);
         return false;
       }
 

@@ -116,14 +116,14 @@ final class DValidator implements Validator, ValidationContext {
     return new DRequest(this, locale);
   }
 
-  String interpolate(Message msg, Locale requestLocale) {
+  String interpolate(Message msg, Object value, Locale requestLocale) {
 
     // resolve the locale to use to produce the message
     final Locale locale = localeResolver.resolve(requestLocale);
     // lookup in resource bundles using resolved locale and template
     final String template = templateLookup.lookup(msg.template(), locale);
 
-    return interpolator.interpolate(template, msg.attributes());
+    return interpolator.interpolate(template, value, msg.attributes());
   }
 
   /** Implementation of Validator.Builder. */
@@ -241,4 +241,5 @@ final class DValidator implements Validator, ValidationContext {
       return Util.typesMatch(type, targetType);
     }
   }
+
 }

@@ -15,6 +15,7 @@ final class DRequest implements ValidationRequest {
   private final Set<ConstraintViolation> violations = new LinkedHashSet<>();
 
   private final DValidator validator;
+
   @Nullable
   private final Locale locale;
 
@@ -24,7 +25,7 @@ final class DRequest implements ValidationRequest {
   }
 
   private String currentPath() {
-    StringJoiner joiner = new StringJoiner(".");
+    final StringJoiner joiner = new StringJoiner(".");
     final var descendingIterator = pathStack.descendingIterator();
     while (descendingIterator.hasNext()) {
       joiner.add(descendingIterator.next());
@@ -33,8 +34,8 @@ final class DRequest implements ValidationRequest {
   }
 
   @Override
-  public void addViolation(ValidationContext.Message msg, String propertyName) {
-    String message = validator.interpolate(msg, locale);
+  public void addViolation(ValidationContext.Message msg, String propertyName, Object value) {
+    final String message = validator.interpolate(msg, value, locale);
     violations.add(new ConstraintViolation(currentPath(), propertyName, message));
   }
 
