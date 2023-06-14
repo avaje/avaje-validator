@@ -32,7 +32,7 @@ final class DValidator implements Validator, ValidationContext {
   private final MessageInterpolator interpolator;
   private final LocaleResolver localeResolver;
   private final DTemplateLookup templateLookup;
-  private final Map<String, String> messageCache = new HashMap<>();
+  private final Map<String, String> messageCache = new ConcurrentHashMap<>();
 
   DValidator(
       List<AdapterFactory> factories,
