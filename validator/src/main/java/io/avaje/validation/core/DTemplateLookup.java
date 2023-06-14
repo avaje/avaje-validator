@@ -17,10 +17,7 @@ final class DTemplateLookup {
       return template;
     }
     final String key = template.substring(1, template.length() - 1);
-
-    final String msg =
-        messageCache.computeIfAbsent(
-            key + resolvedLocale, k -> bundleManager.message(key, resolvedLocale));
+    final String msg = messageCache.computeIfAbsent(key + resolvedLocale, k -> bundleManager.message(key, resolvedLocale));
     if (msg != null) {
       return msg;
     }

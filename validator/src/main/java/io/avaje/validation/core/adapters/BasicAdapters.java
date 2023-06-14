@@ -99,7 +99,6 @@ public final class BasicAdapters {
           return len > 0;
         }
       } else if (value.getClass().isArray()) {
-
         final var len = Array.getLength(value);
         if (len > max || len < min) {
           req.addViolation(message, propertyName);

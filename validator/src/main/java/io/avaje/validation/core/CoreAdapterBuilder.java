@@ -57,15 +57,13 @@ final class CoreAdapterBuilder {
         return result;
       }
     }
-    throw new IllegalArgumentException(
-        "No ValidationAdapter for " + type + ". Perhaps needs @ValidPojo or @ValidPojo.Import?");
+    throw new IllegalArgumentException("No ValidationAdapter for " + type + ". Perhaps needs @ValidPojo or @ValidPojo.Import?");
   }
 
   /** Build given type and annotations. */
   // TODO understand that lookup chain stuff
   @SuppressWarnings("unchecked")
   <T> ValidationAdapter<T> buildAnnotation(Class<? extends Annotation> cls, Map<String, Object> attributes) {
-
     // Ask each factory to create the validation adapter.
     for (final ValidationContext.AnnotationFactory factory : annotationFactories) {
       final var result = (ValidationAdapter<T>) factory.create(cls, context, attributes);

@@ -41,11 +41,8 @@ final class DValidator implements Validator, ValidationContext {
       MessageInterpolator interpolator,
       LocaleResolver localeResolver) {
     this.localeResolver = localeResolver;
-
-    final var defaultResourceBundle =
-        new DResourceBundleManager(bundleNames, bundles, localeResolver);
+    final var defaultResourceBundle = new DResourceBundleManager(bundleNames, bundles, localeResolver);
     this.templateLookup = new DTemplateLookup(defaultResourceBundle);
-
     this.interpolator = interpolator;
     this.builder = new CoreAdapterBuilder(this, factories, annotationFactories);
   }
@@ -72,23 +69,19 @@ final class DValidator implements Validator, ValidationContext {
 
   @SuppressWarnings("unchecked")
   private <T> ValidationType<T> typeWithCache(Type type) {
-    return (ValidationType<T>)
-        typeCache.computeIfAbsent(type, _type -> new DValidationType<>(this, adapter(_type)));
+    return (ValidationType<T>) typeCache.computeIfAbsent(type, _type -> new DValidationType<>(this, adapter(_type)));
   }
 
   @Override
   public Message message(Map<String, Object> attributes) {
     final String keyOrTemplate = (String) attributes.get("message");
-
     // if configured to support only 1 Locale then we can do the lookup and message translation once
-    // and early
-    // otherwise we defer as the final message is locale specific
+    // and early otherwise we defer as the final message is locale specific
     return new DMessage(keyOrTemplate, attributes);
   }
 
   @Override
   public Message message(String message, Map<String, Object> attributes) {
-
     return new DMessage(message, attributes);
   }
 
@@ -103,8 +96,7 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  public <T> ValidationAdapter<T> adapter(
-      Class<? extends Annotation> cls, Map<String, Object> attributes) {
+  public <T> ValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes) {
     return builder.annotationAdapter(cls, attributes);
   }
 
@@ -124,12 +116,10 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   String interpolate(Message msg, Locale requestLocale) {
-
     // resolve the locale to use to produce the message
     final Locale locale = localeResolver.resolve(requestLocale);
     // lookup in resource bundles using resolved locale and template
     final String template = templateLookup.lookup(msg.template(), locale);
-
     return interpolator.interpolate(template, msg.attributes());
   }
 
@@ -189,7 +179,6 @@ final class DValidator implements Validator, ValidationContext {
 
     @Override
     public Builder addResourceBundles(ResourceBundle... bundle) {
-
       Collections.addAll(bundles, bundle);
       return this;
     }
@@ -202,7 +191,6 @@ final class DValidator implements Validator, ValidationContext {
 
     @Override
     public Builder addLocales(Locale... locals) {
-
       Collections.addAll(otherLocals, locals);
       return this;
     }
@@ -226,12 +214,10 @@ final class DValidator implements Validator, ValidationContext {
           ServiceLoader.load(MessageInterpolator.class)
               .findFirst()
               .orElseGet(BasicMessageInterpolator::new);
-      return new DValidator(
-          factories, afactories, bundleNames, bundles, interpolator, localeResolver);
+      return new DValidator(factories, afactories, bundleNames, bundles, interpolator, localeResolver);
     }
 
-    private static <T> AnnotationFactory newAnnotationAdapterFactory(
-        Type type, ValidationAdapter<T> adapter) {
+    private static <T> AnnotationFactory newAnnotationAdapterFactory(Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);
       return (targetType, context, attributes) -> simpleMatch(type, targetType) ? adapter : null;
@@ -249,12 +235,10 @@ final class DValidator implements Validator, ValidationContext {
       return (targetType, ctx) -> simpleMatch(type, targetType) ? builder.build(ctx) : null;
     }
 
-    private static AnnotationFactory newAdapterFactory(
-        Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
+    private static AnnotationFactory newAdapterFactory(Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
       requireNonNull(type);
       requireNonNull(builder);
-      return (targetType, ctx, attributes) ->
-          simpleMatch(type, targetType) ? builder.build(ctx, attributes) : null;
+      return (targetType, ctx, attributes) -> simpleMatch(type, targetType) ? builder.build(ctx, attributes) : null;
     }
   }
 

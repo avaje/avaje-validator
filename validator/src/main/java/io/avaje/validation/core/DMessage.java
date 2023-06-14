@@ -9,8 +9,6 @@ final class DMessage implements ValidationContext.Message {
   private final String template;
   private final Map<String, Object> attributes;
 
-  // when true ... template includes ${validatedValue} the actual value, must be rendered at runtime
-  boolean includesConstraintValue;
   DMessage(String template, Map<String, Object> attributes) {
     this.template = template;
     this.attributes = attributes;
