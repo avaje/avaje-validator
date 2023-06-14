@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 abstract class BasicTest {
 
-  protected final Validator validator =
+  protected static final Validator validator =
     Validator.builder()
       .add(Address.class, AddressValidationAdapter::new)
       .add(Contact.class, ContactValidationAdapter::new)

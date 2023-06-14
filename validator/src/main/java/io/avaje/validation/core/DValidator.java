@@ -9,6 +9,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.avaje.lang.Nullable;
 import io.avaje.validation.Validator;
-import io.avaje.validation.Validator.AnnotationAdapterBuilder;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
@@ -32,6 +32,7 @@ final class DValidator implements Validator, ValidationContext {
   private final MessageInterpolator interpolator;
   private final LocaleResolver localeResolver;
   private final DTemplateLookup templateLookup;
+  private final Map<String, String> messageCache = new HashMap<>();
 
   DValidator(
       List<AdapterFactory> factories,
@@ -118,9 +119,14 @@ final class DValidator implements Validator, ValidationContext {
   String interpolate(Message msg, Locale requestLocale) {
     // resolve the locale to use to produce the message
     final Locale locale = localeResolver.resolve(requestLocale);
-    // lookup in resource bundles using resolved locale and template
-    final String template = templateLookup.lookup(msg.template(), locale);
-    return interpolator.interpolate(template, msg.attributes());
+
+    return messageCache.computeIfAbsent(
+        msg.lookupkey() + locale,
+        k -> {
+          // lookup in resource bundles using resolved locale and template
+          final String template = templateLookup.lookup(msg.template(), locale);
+          return interpolator.interpolate(template, msg.attributes());
+        });
   }
 
   /** Implementation of Validator.Builder. */
