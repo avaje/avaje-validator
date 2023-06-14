@@ -48,10 +48,9 @@ final class ComponentMetaData {
   String fullName() {
     if (fullName == null) {
       final List<String> types = new ArrayList<>(allTypes);
-
-      for (final var adapter : annotationAdapters)
+      for (final var adapter : annotationAdapters) {
         adapter.getQualifiedName().toString().transform(types::add);
-
+      }
       String topPackage = TopPackage.of(types);
       if (!topPackage.endsWith(".valid")) {
         topPackage += ".valid";
