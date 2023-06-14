@@ -28,7 +28,8 @@ import javax.lang.model.util.ElementFilter;
   ImportPrism.PRISM_TYPE,
   ValidPrism.PRISM_TYPE,
   JavaxValidPrism.PRISM_TYPE,
-  JakartaValidPrism.PRISM_TYPE
+  JakartaValidPrism.PRISM_TYPE,
+  AnnotationValidatorPrism.PRISM_TYPE
 })
 public final class Processor extends AbstractProcessor {
 
@@ -64,6 +65,9 @@ public final class Processor extends AbstractProcessor {
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
     readModule();
 
+    registerCustomAdapters(
+        round.getElementsAnnotatedWith(element(AnnotationValidatorPrism.PRISM_TYPE)));
+
     writeAdapters(round.getElementsAnnotatedWith(element(ValidPojoPrism.PRISM_TYPE)));
 
     Optional.ofNullable(element(ValidPrism.PRISM_TYPE))
@@ -80,6 +84,16 @@ public final class Processor extends AbstractProcessor {
     cascadeTypes();
     writeComponent(round.processingOver());
     return false;
+  }
+
+  private void registerCustomAdapters(Set<? extends Element> elements) {
+
+    for (final var typeElement : ElementFilter.typesIn(elements)) {
+
+      AnnotationValidatorPrism.getInstanceOn(typeElement).value();
+
+      metaData.addAnnotationAdapter(typeElement);
+    }
   }
 
   private void cascadeTypes() {
@@ -129,7 +143,7 @@ public final class Processor extends AbstractProcessor {
         if (mixInImports.contains(importType.toString())) {
           continue;
         }
-        writeAdapterForType((TypeElement) asElement(importType));
+        writeAdapterForType(asElement(importType));
       }
     }
   }
@@ -139,7 +153,7 @@ public final class Processor extends AbstractProcessor {
     try {
       componentWriter.initialise();
     } catch (final IOException e) {
-      logError("Error creating writer for JsonbComponent", e);
+      logError("Error creating writer for ValidationComponent", e);
     }
   }
 

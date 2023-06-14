@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.lang.model.element.TypeElement;
+
 final class ComponentMetaData {
 
   private final List<String> allTypes = new ArrayList<>();
   private final List<String> factoryTypes = new ArrayList<>();
+  private final List<TypeElement> annotationAdapters = new ArrayList<>();
   private String fullName;
 
   @Override
@@ -30,6 +33,10 @@ final class ComponentMetaData {
     allTypes.add(type);
   }
 
+  public void addAnnotationAdapter(TypeElement typeElement) {
+    annotationAdapters.add(typeElement);
+  }
+
   void addFactory(String fullName) {
     factoryTypes.add(fullName);
   }
@@ -40,7 +47,12 @@ final class ComponentMetaData {
 
   String fullName() {
     if (fullName == null) {
-      String topPackage = TopPackage.of(allTypes);
+      final List<String> types = new ArrayList<>(allTypes);
+
+      for (final var adapter : annotationAdapters)
+        adapter.getQualifiedName().toString().transform(types::add);
+
+      String topPackage = TopPackage.of(types);
       if (!topPackage.endsWith(".valid")) {
         topPackage += ".valid";
       }
@@ -61,6 +73,10 @@ final class ComponentMetaData {
     return factoryTypes;
   }
 
+  List<TypeElement> allAnnotationAdapters() {
+    return annotationAdapters;
+  }
+
   /** Return the package imports for the JsonAdapters and related types. */
   Collection<String> allImports() {
     final Set<String> packageImports = new TreeSet<>();
@@ -68,6 +84,18 @@ final class ComponentMetaData {
       packageImports.add(Util.packageOf(adapterFullName) + ".*");
       packageImports.add(Util.baseTypeOfAdapter(adapterFullName));
     }
+
+    for (final var adapter : annotationAdapters) {
+      final var adapterFullName = adapter.getQualifiedName().toString();
+      packageImports.add(Util.packageOf(adapterFullName) + ".*");
+      packageImports.add(Util.baseTypeOfAdapter(adapterFullName));
+
+      AnnotationValidatorPrism.getInstanceOn(adapter)
+          .value()
+          .toString()
+          .transform(packageImports::add);
+    }
+
     return packageImports;
   }
 }

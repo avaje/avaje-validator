@@ -45,6 +45,8 @@ final class ComponentReader {
 
       final MetaDataPrism metaData = MetaDataPrism.getInstance(annotationMirror);
       final FactoryPrism metaDataFactory = FactoryPrism.getInstance(annotationMirror);
+      final AnnotationFactoryPrism metaDataAnnotationFactory =
+          AnnotationFactoryPrism.getInstance(annotationMirror);
 
       if (metaData != null) {
 
@@ -53,6 +55,11 @@ final class ComponentReader {
       } else if (metaDataFactory != null) {
 
         metaDataFactory.value().stream().map(TypeMirror::toString).forEach(componentMetaData::add);
+      } else if (metaDataAnnotationFactory != null) {
+
+        metaDataAnnotationFactory.value().stream()
+            .map(ProcessingContext::asElement)
+            .forEach(componentMetaData::addAnnotationAdapter);
       }
     }
   }

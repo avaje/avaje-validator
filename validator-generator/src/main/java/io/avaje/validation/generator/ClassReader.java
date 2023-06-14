@@ -36,21 +36,6 @@ final class ClassReader implements BeanReader {
     importTypes.add("io.avaje.validation.spi.Generated");
   }
 
-  @SuppressWarnings("unchecked")
-  boolean isRecord(TypeElement beanType) {
-    try {
-      final var recordComponents =
-          (List<? extends Element>)
-              TypeElement.class.getMethod("getRecordComponents").invoke(beanType);
-      return !recordComponents.isEmpty();
-    } catch (IllegalAccessException
-        | InvocationTargetException
-        | NoSuchMethodException
-        | SecurityException e) {
-      return false;
-    }
-  }
-
   @Override
   public int genericTypeParamsCount() {
     return typeReader.genericTypeParamsCount();
