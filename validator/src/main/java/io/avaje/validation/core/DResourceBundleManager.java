@@ -26,15 +26,7 @@ final class DResourceBundleManager {
     }
 
     for (final var bundle : providedBundles) {
-      map.compute(
-          bundle.getLocale(),
-          (local, list) -> {
-            if (list == null) {
-              list = new ArrayList<>();
-            }
-            list.add(bundle);
-            return list;
-          });
+      map.computeIfAbsent(bundle.getLocale(), key -> new ArrayList<>()).add(bundle);
     }
     // since default is added last, it will be the last place messages will be resolved
     addBundle(DEFAULT_BUNDLE, localeResolver.defaultLocale());
@@ -45,15 +37,7 @@ final class DResourceBundleManager {
   }
 
   private void addBundle(final String name, final Locale locale) {
-    map.compute(
-        locale,
-        (local, list) -> {
-          if (list == null) {
-            list = new ArrayList<>();
-          }
-          list.add(getBundle(name, local));
-          return list;
-        });
+    map.computeIfAbsent(locale, key -> new ArrayList<>()).add(getBundle(name, locale));
   }
 
   @Nullable
