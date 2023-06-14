@@ -4,8 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import io.avaje.validation.adapter.ValidationContext.Message;
-
+/**
+ * Context available when validation adapters are being created.
+ */
 public interface ValidationContext {
 
   /**

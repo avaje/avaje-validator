@@ -10,17 +10,21 @@ public class ConstraintViolation {
   private final String propertyName;
   private final String message;
 
+  /**
+   * Create the ConstraintViolation with the given path, property and message.
+   */
   public ConstraintViolation(String path, String propertyName, String message) {
     this.path = path;
     this.propertyName = propertyName;
     this.message = message;
   }
 
-  /** Return the path that this violation occurred for */
+  /** Return the path for this constraint violation */
   public String path() {
     return path;
   }
 
+  /** Return the property name for this constraint violation */
   public String propertyName() {
     return propertyName;
   }
@@ -32,7 +36,6 @@ public class ConstraintViolation {
 
   @Override
   public String toString() {
-
     return message;
   }
 }
