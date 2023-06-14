@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 
@@ -40,7 +41,7 @@ public interface Validator {
     <T> Builder add(Type type, ValidationAdapter<T> adapter);
 
     /** Add a AnnotationValidationAdapter to use for the given type. */
-    <T> Builder add(Class<Annotation> type, ValidationAdapter<T> adapter);
+    <T> Builder add(Class<? extends Annotation> type, ValidationAdapter<T> adapter);
 
     /**
      * Lookup ResourceBundles with the given name and for error message interpolation
@@ -65,6 +66,9 @@ public interface Validator {
     /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
     Builder add(Type type, AdapterBuilder builder);
 
+    /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
+    Builder add(Class<? extends Annotation> type, AnnotationAdapterBuilder builder);
+
     /** Add a Component which can provide multiple ValidationAdapters and or configuration. */
     Builder add(ValidatorComponent component);
 
@@ -86,6 +90,14 @@ public interface Validator {
 
     /** Create a ValidationAdapter given the Validator instance. */
     ValidationAdapter<?> build(ValidationContext ctx);
+  }
+
+  /** Function to build a ValidationAdapter that needs Validator. */
+  @FunctionalInterface
+  interface AnnotationAdapterBuilder {
+
+    /** Create a ValidationAdapter given the Validator instance. */
+    ValidationAdapter<?> build(ValidationContext ctx, Map<String, Object> attributes);
   }
 
   /** Components register ValidationAdapters Validator.Builder */
