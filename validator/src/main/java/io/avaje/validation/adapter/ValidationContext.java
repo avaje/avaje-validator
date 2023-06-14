@@ -37,6 +37,8 @@ public interface ValidationContext {
     String template();
 
     Map<String, Object> attributes();
+
+    String lookupkey();
   }
 
   /**
