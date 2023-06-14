@@ -46,8 +46,7 @@ public final class Util {
     return Util.equals(pattern, candidate);
   }
 
-  static boolean isAnnotationPresent(
-      Set<? extends Annotation> annotations, Class<? extends Annotation> annotationClass) {
+  static boolean isAnnotationPresent(Set<? extends Annotation> annotations, Class<? extends Annotation> annotationClass) {
     if (annotations.isEmpty()) return false; // Save an iterator in the common case.
     for (final Annotation annotation : annotations) {
       if (annotation.annotationType() == annotationClass) return true;
@@ -189,9 +188,10 @@ public final class Util {
 
   static Type resolveTypeVariable(Type context, Class<?> contextRawType, TypeVariable<?> unknown) {
     final Class<?> declaredByRaw = declaringClassOf(unknown);
-
     // We can't reduce this further.
-    if (declaredByRaw == null) return unknown;
+    if (declaredByRaw == null) {
+      return unknown;
+    }
 
     final Type declaredBy = genericSupertype(context, contextRawType, declaredByRaw);
     if (declaredBy instanceof ParameterizedType) {
@@ -281,10 +281,9 @@ public final class Util {
       if (ownerType != null && rawType instanceof Class<?>) {
         final Class<?> enclosingClass = ((Class<?>) rawType).getEnclosingClass();
         if (enclosingClass == null) {
-          throw new IllegalArgumentException(
-              "unexpected owner type for " + rawType + ": " + ownerType);
+          throw new IllegalArgumentException("unexpected owner type for " + rawType + ": " + ownerType);
 
-        } else if (enclosingClass != null) {
+        } else if (enclosingClass != null) { // FIXME: Huh?
           throw new IllegalArgumentException("unexpected owner type for " + rawType + ": null");
         }
       }

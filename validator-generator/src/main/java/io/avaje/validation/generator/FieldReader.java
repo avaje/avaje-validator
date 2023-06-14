@@ -40,7 +40,6 @@ final class FieldReader {
     this.element = element;
     if (element instanceof final ExecutableElement executableElement) {
       this.rawType = Util.trimAnnotations(executableElement.getReturnType().toString());
-
     } else {
       this.rawType = Util.trimAnnotations(element.asType().toString());
     }
@@ -152,17 +151,14 @@ final class FieldReader {
   }
 
   void writeValidate(Append writer) {
-
     writer.append("    var _$%s = ", fieldName);
     writeGetValue(writer, ";");
     writer.eol();
     if (optionalValidation) {
-
       writer.append("    if(_$%s != null) {", fieldName);
     }
     writer.append("    %s.validate(_$%s", adapterFieldName, fieldName);
     writer.append(", request, \"%s\");", fieldName);
-
     if (optionalValidation) {
       writer.append("    }");
     }
@@ -179,70 +175,46 @@ final class FieldReader {
   }
 
   public void writeConstructor(Append writer) {
-
     writer.append("    this.%s = ", adapterFieldName).eol();
 
     boolean first = true;
     for (final var a : annotations.entrySet()) {
-
       if (first) {
-        writer.append(
-            "        ctx.<%s>adapter(%s.class, %s)",
-            PrimitiveUtil.wrap(genericType.shortType()), a.getKey().shortName(), a.getValue());
+        writer.append("        ctx.<%s>adapter(%s.class, %s)", PrimitiveUtil.wrap(genericType.shortType()), a.getKey().shortName(), a.getValue());
         first = false;
         continue;
       }
-      writer
-          .eol()
-          .append(
-              "            .andThen(ctx.adapter(%s.class,%s))",
-              a.getKey().shortName(), a.getValue());
+      writer.eol().append("            .andThen(ctx.adapter(%s.class,%s))", a.getKey().shortName(), a.getValue());
     }
     final var topType = genericType.topType();
     if (isBasicType(topType)) {
-
       writer.append(";").eol();
       return;
     }
 
-    if ("java.util.List".equals(genericType.topType())
-        || "java.util.Set".equals(genericType.topType())) {
+    if ("java.util.List".equals(genericType.topType()) || "java.util.Set".equals(genericType.topType())) {
       if (isBasicType(genericType.firstParamType())) {
-
         writer.append(";").eol();
         return;
       }
+      writer.eol().append("           .list(ctx, %s.class)", Util.shortName(genericType.firstParamType()));
 
-      writer
-          .eol()
-          .append("           .list(ctx, %s.class)", Util.shortName(genericType.firstParamType()));
     } else if ("java.util.Map".equals(genericType.topType())) {
       if (isBasicType(genericType.secondParamType())) {
-
         writer.append(";").eol();
         return;
       }
+      writer.eol().append("           .map(ctx, %s.class)", Util.shortName(genericType.secondParamType()));
 
-      writer
-          .eol()
-          .append("           .map(ctx, %s.class)", Util.shortName(genericType.secondParamType()));
     } else if (genericType.topType().contains("[]")) {
       if (isBasicType(topType)) {
-
         writer.append(";").eol();
         return;
       }
+      writer.eol().append("           .array(ctx, %s.class)", Util.shortName(genericType.topType().replace("[]", "")));
 
-      writer
-          .eol()
-          .append(
-              "           .array(ctx, %s.class)",
-              Util.shortName(genericType.topType().replace("[]", "")));
     } else {
-      writer
-          .eol()
-          .append(
-              "           .andThen(ctx.adapter(%s.class))", Util.shortName(genericType.topType()));
+      writer.eol().append("           .andThen(ctx.adapter(%s.class))", Util.shortName(genericType.topType()));
     }
     writer.append(";").eol();
   }

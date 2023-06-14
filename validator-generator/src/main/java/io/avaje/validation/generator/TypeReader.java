@@ -56,14 +56,12 @@ final class TypeReader {
     }
 
     for (final FieldReader localField : localFields) {
-
       allFields.add(localField);
       allFieldMap.put(localField.fieldName(), localField);
     }
   }
 
   private void readField(Element element, List<FieldReader> localFields) {
-
     if (includeField(element)) {
       localFields.add(new FieldReader(element, genericTypeParams));
     }
@@ -86,7 +84,6 @@ final class TypeReader {
   }
 
   private void readMethod(Element element, TypeElement type, List<FieldReader> localFields) {
-
     final ExecutableElement methodElement = (ExecutableElement) element;
     if (methodElement.getModifiers().contains(Modifier.PUBLIC)) {
       final List<? extends VariableElement> parameters = methodElement.getParameters();
@@ -119,12 +116,7 @@ final class TypeReader {
         && !field.isPublicField()) {
       nonAccessibleField = true;
       if (hasJsonAnnotation) {
-        logError(
-            "Non accessible field "
-                + baseType
-                + " "
-                + field.fieldName()
-                + " with no matching getter?");
+        logError("Non accessible field " + baseType + " " + field.fieldName() + " with no matching getter?");
       } else {
         logDebug("Non accessible field " + baseType + " " + field.fieldName());
       }

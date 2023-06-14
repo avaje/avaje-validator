@@ -14,6 +14,7 @@ public interface ValidationAdapter<T> {
     return validate(value, req, null);
   }
 
+  @SuppressWarnings("unchecked")
   default ValidationAdapter<T> list(ValidationContext ctx, Class<?> clazz) {
     final var after = ctx.<Object>adapter(clazz);
     return (value, req, propertyName) -> {
@@ -24,6 +25,7 @@ public interface ValidationAdapter<T> {
     };
   }
 
+  @SuppressWarnings("unchecked")
   default ValidationAdapter<T> map(ValidationContext ctx, Class<?> clazz) {
     final var after = ctx.<Object>adapter(clazz);
     return (value, req, propertyName) -> {

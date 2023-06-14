@@ -52,15 +52,13 @@ public interface Validator {
 
     /**
      * Add ResourceBundle for error message interpolation
-     *
-     * @param bundleName the name of the bundleFiles
      */
     Builder addResourceBundles(ResourceBundle... bundle);
 
     /** Set Default Locale for this validator, if not set, will use Locale.getDefault() */
     Builder setDefaultLocale(Locale defaultLocale);
 
-    /** Adds an additional Locales for this validator */
+    /** Adds additional Locales for this validator */
     Builder addLocales(Locale... locales);
 
     /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */

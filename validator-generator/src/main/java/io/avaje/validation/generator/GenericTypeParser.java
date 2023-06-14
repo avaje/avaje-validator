@@ -22,7 +22,6 @@ final class GenericTypeParser {
       final char ch = raw.charAt(i);
       processChar(ch);
     }
-
     return stack.peek();
   }
 
