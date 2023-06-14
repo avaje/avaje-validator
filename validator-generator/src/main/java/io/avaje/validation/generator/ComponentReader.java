@@ -42,21 +42,17 @@ final class ComponentReader {
   /** Read the existing JsonAdapters from the MetaData annotation of the generated component. */
   private void readMetaData(TypeElement moduleType) {
     for (final AnnotationMirror annotationMirror : moduleType.getAnnotationMirrors()) {
-
       final MetaDataPrism metaData = MetaDataPrism.getInstance(annotationMirror);
       final FactoryPrism metaDataFactory = FactoryPrism.getInstance(annotationMirror);
-      final AnnotationFactoryPrism metaDataAnnotationFactory =
-          AnnotationFactoryPrism.getInstance(annotationMirror);
+      final AnnotationFactoryPrism metaDataAnnotationFactory = AnnotationFactoryPrism.getInstance(annotationMirror);
 
       if (metaData != null) {
-
         metaData.value().stream().map(TypeMirror::toString).forEach(componentMetaData::add);
 
       } else if (metaDataFactory != null) {
-
         metaDataFactory.value().stream().map(TypeMirror::toString).forEach(componentMetaData::add);
-      } else if (metaDataAnnotationFactory != null) {
 
+      } else if (metaDataAnnotationFactory != null) {
         metaDataAnnotationFactory.value().stream()
             .map(ProcessingContext::asElement)
             .forEach(componentMetaData::addAnnotationAdapter);

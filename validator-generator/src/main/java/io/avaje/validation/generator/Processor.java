@@ -65,9 +65,7 @@ public final class Processor extends AbstractProcessor {
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
     readModule();
 
-    registerCustomAdapters(
-        round.getElementsAnnotatedWith(element(AnnotationValidatorPrism.PRISM_TYPE)));
-
+    registerCustomAdapters(round.getElementsAnnotatedWith(element(AnnotationValidatorPrism.PRISM_TYPE)));
     writeAdapters(round.getElementsAnnotatedWith(element(ValidPojoPrism.PRISM_TYPE)));
 
     Optional.ofNullable(element(ValidPrism.PRISM_TYPE))
@@ -87,11 +85,8 @@ public final class Processor extends AbstractProcessor {
   }
 
   private void registerCustomAdapters(Set<? extends Element> elements) {
-
     for (final var typeElement : ElementFilter.typesIn(elements)) {
-
       AnnotationValidatorPrism.getInstanceOn(typeElement).value();
-
       metaData.addAnnotationAdapter(typeElement);
     }
   }
