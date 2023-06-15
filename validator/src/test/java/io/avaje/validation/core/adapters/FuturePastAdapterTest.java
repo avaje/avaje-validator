@@ -139,7 +139,8 @@ class FuturePastAdapterTest extends BasicTest {
     Object value;
     final var inst = Instant.now();
 
-    // Instant is too precise for a present test
+    // Instant
+    assertPresent(inst);
 
     // date
     value = Date.from(inst);
