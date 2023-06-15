@@ -16,26 +16,26 @@ class EmailTest extends BasicTest {
 
   @interface Email {}
 
-  ValidationAdapter<Object> notBlankAdapter = ctx.adapter(Email.class, Map.of("message", "email"));
+  ValidationAdapter<Object> emailAdapter = ctx.adapter(Email.class, Map.of("message", "email"));
 
   @Test
   void testNull() {
-    assertThat(notBlankAdapter.validate(null, request)).isTrue();
+    assertThat(emailAdapter.validate(null, request)).isTrue();
   }
 
   @Test
   void testValid() {
-    assertThat(notBlankAdapter.validate("someEmail@gmail.com", request)).isTrue();
+    assertThat(emailAdapter.validate("someEmail@gmail.com", request)).isTrue();
   }
 
   @Test
   void testBlank() {
-    assertThat(notBlankAdapter.validate("", request)).isTrue();
-    assertThat(notBlankAdapter.validate("                    ", request)).isFalse();
+    assertThat(emailAdapter.validate("", request)).isTrue();
+    assertThat(emailAdapter.validate("                    ", request)).isFalse();
   }
 
   @Test
   void testInvalid() {
-    assertThat(notBlankAdapter.validate("notAnEmail", request)).isFalse();
+    assertThat(emailAdapter.validate("notAnEmail", request)).isFalse();
   }
 }

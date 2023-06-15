@@ -51,7 +51,11 @@ public final class BasicAdapters {
 
     @Override
     public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
-      if (value == null || pattern.test(value.toString())) {
+      if (value == null) {
+        return true;
+      }
+
+      if (pattern.test(value.toString())) {
         req.addViolation(message, propertyName);
         return false;
       }
