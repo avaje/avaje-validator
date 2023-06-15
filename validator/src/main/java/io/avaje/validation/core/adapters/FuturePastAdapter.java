@@ -91,19 +91,19 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
   private boolean compare(OffsetDateTime instant) {
     Predicate<OffsetDateTime> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.test(OffsetDateTime.now());
+    return predicate.negate().test(OffsetDateTime.now());
   }
 
   private boolean compare(OffsetTime instant) {
     Predicate<OffsetTime> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.test(OffsetTime.now());
+    return predicate.negate().test(OffsetTime.now());
   }
 
   private boolean compare(Year instant) {
     Predicate<Year> predicate = past ? instant::isBefore : instant::isAfter;
     predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.test(Year.now());
+    return predicate.negate().test(Year.now());
   }
 
   private boolean compare(YearMonth instant) {
