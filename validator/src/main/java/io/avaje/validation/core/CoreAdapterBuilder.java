@@ -65,8 +65,6 @@ final class CoreAdapterBuilder {
       }
     }
     throw new IllegalArgumentException("No ValidationAdapter for " + type + ". Perhaps needs @ValidPojo or @ValidPojo.Import?");
-    throw new IllegalArgumentException(
-        "No ValidationAdapter for " + type + ". Perhaps needs @ValidPojo or @ValidPojo.Import?");
   }
 
   /** Build given type and annotations. */
