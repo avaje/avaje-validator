@@ -32,9 +32,9 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
   @Override
   public boolean validate(Object obj, ValidationRequest req, String propertyName) {
     if (obj == null) {
-      req.addViolation(message, propertyName);
-      return false;
+      return true;
     }
+
     if (obj instanceof final Date date && compare(date)
         || obj instanceof final TemporalAccessor temporalAccessor
             && (temporalAccessor instanceof final Instant ins && compare(ins)
