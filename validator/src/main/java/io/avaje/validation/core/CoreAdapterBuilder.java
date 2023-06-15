@@ -27,7 +27,9 @@ final class CoreAdapterBuilder {
   CoreAdapterBuilder(
       DValidator context,
       List<ValidationContext.AdapterFactory> userFactories,
-      List<ValidationContext.AnnotationFactory> userAnnotationFactories, Supplier<Clock> clockSupplier, Duration temporalTolerance) {
+      List<ValidationContext.AnnotationFactory> userAnnotationFactories,
+      Supplier<Clock> clockSupplier,
+      Duration temporalTolerance) {
     this.context = context;
     this.factories.addAll(userFactories);
     this.annotationFactories.addAll(userAnnotationFactories);
@@ -63,6 +65,8 @@ final class CoreAdapterBuilder {
       }
     }
     throw new IllegalArgumentException("No ValidationAdapter for " + type + ". Perhaps needs @ValidPojo or @ValidPojo.Import?");
+    throw new IllegalArgumentException(
+        "No ValidationAdapter for " + type + ". Perhaps needs @ValidPojo or @ValidPojo.Import?");
   }
 
   /** Build given type and annotations. */
