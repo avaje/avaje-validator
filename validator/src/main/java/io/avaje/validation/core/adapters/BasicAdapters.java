@@ -15,23 +15,27 @@ import io.avaje.validation.adapter.ValidationRequest;
 public final class BasicAdapters {
   private BasicAdapters() {}
 
-  public static final ValidationContext.AnnotationFactory FACTORY = (annotationType, context, attributes) ->
-    switch (annotationType.getSimpleName()) {
-        case "Email" -> new EmailAdapter(context.message(attributes), attributes);
-        case "Null" -> new NullableAdapter(context.message(attributes), true);
-        case "NotNull", "NonNull" -> new NullableAdapter(context.message(attributes), false);
-        case "AssertTrue" -> new AssertBooleanAdapter(context.message(attributes), Boolean.FALSE);
-        case "AssertFalse" -> new AssertBooleanAdapter(context.message(attributes), Boolean.TRUE);
-        case "NotBlank" -> new NotBlankAdapter(context.message(attributes));
-        case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes));
-        case "Past" -> new FuturePastAdapter(context.message(attributes), true, false);
-        case "PastOrPresent" -> new FuturePastAdapter(context.message(attributes), true, true);
-        case "Future" -> new FuturePastAdapter(context.message(attributes), false, false);
-        case "FutureOrPresent" -> new FuturePastAdapter(context.message(attributes), false, true);
-        case "Pattern" -> new PatternAdapter(context.message(attributes), attributes);
-        case "Size" -> new SizeAdapter(context.message(attributes), attributes);
-        default -> null;
-      };
+  public static final ValidationContext.AnnotationFactory FACTORY =
+      (annotationType, context, attributes) ->
+          switch (annotationType.getSimpleName()) {
+            case "Email" -> new EmailAdapter(context.message(attributes), attributes);
+            case "Null" -> new NullableAdapter(context.message(attributes), true);
+            case "NotNull", "NonNull" -> new NullableAdapter(context.message(attributes), false);
+            case "AssertTrue" -> new AssertBooleanAdapter(
+                context.message(attributes), Boolean.TRUE);
+            case "AssertFalse" -> new AssertBooleanAdapter(
+                context.message(attributes), Boolean.FALSE);
+            case "NotBlank" -> new NotBlankAdapter(context.message(attributes));
+            case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes));
+            case "Past" -> new FuturePastAdapter(context.message(attributes), true, false);
+            case "PastOrPresent" -> new FuturePastAdapter(context.message(attributes), true, true);
+            case "Future" -> new FuturePastAdapter(context.message(attributes), false, false);
+            case "FutureOrPresent" -> new FuturePastAdapter(
+                context.message(attributes), false, true);
+            case "Pattern" -> new PatternAdapter(context.message(attributes), attributes);
+            case "Size" -> new SizeAdapter(context.message(attributes), attributes);
+            default -> null;
+          };
 
   private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
 
@@ -193,7 +197,11 @@ public final class BasicAdapters {
 
     @Override
     public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
-      if (assertBool.equals(type)) {
+      if (!assertBool.booleanValue() && type == null) {
+        return true;
+      }
+
+      if (!assertBool.equals(type)) {
         req.addViolation(message, propertyName);
         return false;
       }

@@ -3,20 +3,25 @@ package io.avaje.validation.core;
 import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.ValidationContext;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-abstract class BasicTest {
+public abstract class BasicTest {
 
   protected static final Validator validator =
-    Validator.builder()
-      .add(Address.class, AddressValidationAdapter::new)
-      .add(Contact.class, ContactValidationAdapter::new)
-      .addLocales(Locale.GERMAN)
-      .build();
+      Validator.builder()
+          .add(Address.class, AddressValidationAdapter::new)
+          .add(Contact.class, ContactValidationAdapter::new)
+          .addLocales(Locale.GERMAN)
+          .build();
+
+  protected static final ValidationContext ctx = (ValidationContext) validator;
+
+  protected static final DRequest request = new DRequest((DValidator) validator, null);
 
   protected ConstraintViolation one(Object pojo, Locale locale) {
     try {
