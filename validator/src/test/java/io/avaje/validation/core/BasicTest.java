@@ -5,6 +5,7 @@ import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.ValidationContext;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -17,6 +18,7 @@ public abstract class BasicTest {
           .add(Address.class, AddressValidationAdapter::new)
           .add(Contact.class, ContactValidationAdapter::new)
           .addLocales(Locale.GERMAN)
+          .temporalTolerance(Duration.ofSeconds(20))
           .build();
 
   protected static final ValidationContext ctx = (ValidationContext) validator;

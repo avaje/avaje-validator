@@ -1,5 +1,6 @@
 package io.avaje.validation.core.adapters;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,7 +12,7 @@ import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Date;
-import java.util.function.Predicate;
+import java.util.function.Function;
 
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
@@ -22,11 +23,17 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
   private final ValidationContext.Message message;
   private final boolean past;
   private final boolean includePresent;
+  private final Clock referenceClock;
 
-  FuturePastAdapter(ValidationContext.Message message, boolean past, boolean includePresent) {
+  FuturePastAdapter(
+      ValidationContext.Message message,
+      boolean past,
+      boolean includePresent,
+      Clock referenceClock) {
     this.message = message;
     this.past = past;
     this.includePresent = includePresent;
+    this.referenceClock = referenceClock;
   }
 
   @Override
@@ -35,80 +42,36 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
       return true;
     }
 
-    if (obj instanceof final Date date && compare(date)
+    if (obj instanceof final Date date && compare(date.getTime(), Clock::millis)
         || obj instanceof final TemporalAccessor temporalAccessor
-            && (temporalAccessor instanceof final Instant ins && compare(ins)
-                || temporalAccessor instanceof final LocalDate ld && compare(ld)
-                || temporalAccessor instanceof final LocalDateTime ldt && compare(ldt)
-                || temporalAccessor instanceof final LocalTime lt && compare(lt)
-                || temporalAccessor instanceof final ZonedDateTime zdt && compare(zdt)
-                || temporalAccessor instanceof final OffsetDateTime odt && compare(odt)
-                || temporalAccessor instanceof final OffsetTime ot && compare(ot)
-                || temporalAccessor instanceof final Year y && compare(y)
-                || temporalAccessor instanceof final YearMonth ym && compare(ym))) {
+            && (temporalAccessor instanceof final Instant ins && compare(ins, Instant::now)
+                || temporalAccessor instanceof final LocalDate ld && compare(ld, LocalDate::now)
+                || temporalAccessor instanceof final LocalDateTime ldt
+                    && compare(ldt, LocalDateTime::now)
+                || temporalAccessor instanceof final LocalTime lt && compare(lt, LocalTime::now)
+                || temporalAccessor instanceof final ZonedDateTime zdt
+                    && compare(zdt, ZonedDateTime::now)
+                || temporalAccessor instanceof final OffsetDateTime odt
+                    && compare(odt, OffsetDateTime::now)
+                || temporalAccessor instanceof final OffsetTime ot && compare(ot, OffsetTime::now)
+                || temporalAccessor instanceof final Year y && compare(y, Year::now)
+                || temporalAccessor instanceof final YearMonth ym && compare(ym, YearMonth::now))) {
       req.addViolation(message, propertyName);
       return false;
     }
     return true;
   }
 
-  private boolean compare(Date date) {
-    Predicate<Date> predicate = past ? date::before : date::after;
-    predicate = includePresent ? predicate.or(date::equals) : predicate;
-    return predicate.negate().test(Date.from(Instant.now()));
-  }
+  private <T> boolean compare(Comparable<T> instant, Function<Clock, T> nowFunction) {
 
-  private boolean compare(Instant instant) {
-    Predicate<Instant> predicate = past ? instant::isBefore : instant::isAfter;
-    predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.negate().test(Instant.now());
-  }
+    final var now = nowFunction.apply(referenceClock);
 
-  private boolean compare(LocalDate instant) {
-    Predicate<LocalDate> predicate = past ? instant::isBefore : instant::isAfter;
-    predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.negate().test(LocalDate.now());
-  }
+    final var result = instant.compareTo(now);
 
-  private boolean compare(LocalDateTime instant) {
-    Predicate<LocalDateTime> predicate = past ? instant::isBefore : instant::isAfter;
-    predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.negate().test(LocalDateTime.now());
-  }
+    if (includePresent && result == 0) return false;
 
-  private boolean compare(LocalTime instant) {
-    Predicate<LocalTime> predicate = past ? instant::isBefore : instant::isAfter;
-    predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.negate().test(LocalTime.now());
-  }
+    if (result == 0) return true;
 
-  private boolean compare(ZonedDateTime instant) {
-    Predicate<ZonedDateTime> predicate = past ? instant::isBefore : instant::isAfter;
-    predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.negate().test(ZonedDateTime.now());
-  }
-
-  private boolean compare(OffsetDateTime instant) {
-    Predicate<OffsetDateTime> predicate = past ? instant::isBefore : instant::isAfter;
-    predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.negate().test(OffsetDateTime.now());
-  }
-
-  private boolean compare(OffsetTime instant) {
-    Predicate<OffsetTime> predicate = past ? instant::isBefore : instant::isAfter;
-    predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.negate().test(OffsetTime.now());
-  }
-
-  private boolean compare(Year instant) {
-    Predicate<Year> predicate = past ? instant::isBefore : instant::isAfter;
-    predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.negate().test(Year.now());
-  }
-
-  private boolean compare(YearMonth instant) {
-    Predicate<YearMonth> predicate = past ? instant::isBefore : instant::isAfter;
-    predicate = includePresent ? predicate.or(instant::equals) : predicate;
-    return predicate.negate().test(YearMonth.now());
+    return past ? result > 0 : result < 0;
   }
 }

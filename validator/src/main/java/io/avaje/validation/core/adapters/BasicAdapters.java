@@ -21,17 +21,10 @@ public final class BasicAdapters {
             case "Email" -> new EmailAdapter(context.message(attributes), attributes);
             case "Null" -> new NullableAdapter(context.message(attributes), true);
             case "NotNull", "NonNull" -> new NullableAdapter(context.message(attributes), false);
-            case "AssertTrue" -> new AssertBooleanAdapter(
-                context.message(attributes), Boolean.TRUE);
-            case "AssertFalse" -> new AssertBooleanAdapter(
-                context.message(attributes), Boolean.FALSE);
+            case "AssertTrue" -> new AssertBooleanAdapter(context.message(attributes), Boolean.TRUE);
+            case "AssertFalse" -> new AssertBooleanAdapter(context.message(attributes), Boolean.FALSE);
             case "NotBlank" -> new NotBlankAdapter(context.message(attributes));
             case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes));
-            case "Past" -> new FuturePastAdapter(context.message(attributes), true, false);
-            case "PastOrPresent" -> new FuturePastAdapter(context.message(attributes), true, true);
-            case "Future" -> new FuturePastAdapter(context.message(attributes), false, false);
-            case "FutureOrPresent" -> new FuturePastAdapter(
-                context.message(attributes), false, true);
             case "Pattern" -> new PatternAdapter(context.message(attributes), attributes);
             case "Size" -> new SizeAdapter(context.message(attributes), attributes);
             default -> null;

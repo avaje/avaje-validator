@@ -43,7 +43,7 @@ class FuturePastAdapterTest extends BasicTest {
   void testPast() {
 
     Object value;
-    final var inst = Instant.now().minusMillis(1);
+    final var inst = Instant.now().minusMillis(50000);
 
     // Instant
     assertPast(inst);
@@ -137,14 +137,42 @@ class FuturePastAdapterTest extends BasicTest {
   void testPresent() {
 
     Object value;
+    final var inst = Instant.now();
 
-    // Instant/Date/DateTime classes are too precise for present test
+    // Instant
+    assertPresent(inst);
+
+    // date
+    value = Date.from(inst);
+
+    assertPresent(value);
 
     // LocalDate
     value = LocalDate.now();
 
     assertPresent(value);
 
+    // LocalDateTime
+    value = LocalDateTime.now();
+
+    assertPresent(value);
+    // LocalTime
+    value = LocalTime.now();
+
+    assertPresent(value);
+
+    // ZonedDateTime
+    value = ZonedDateTime.now();
+    assertPresent(value);
+
+    // OffsetDateTime
+    value = OffsetDateTime.now();
+
+    assertPresent(value);
+    // OffsetTime
+    value = OffsetTime.now();
+
+    assertPresent(value);
     // Year
     value = Year.now();
 
@@ -171,7 +199,5 @@ class FuturePastAdapterTest extends BasicTest {
   private void assertPresent(Object value) {
     assertThat(pastOrPresentAdapter.validate(value, request)).isTrue();
     assertThat(futureOrPresentAdapter.validate(value, request)).isTrue();
-    assertThat(pastAdapter.validate(value, request)).isFalse();
-    assertThat(futureAdapter.validate(value, request)).isFalse();
-  }
+   }
 }
