@@ -43,12 +43,16 @@ final class DValidator implements Validator, ValidationContext {
       List<ResourceBundle> bundles,
       MessageInterpolator interpolator,
       LocaleResolver localeResolver,
-      Supplier<Clock> clockSupplier,Duration temporalTolerance) {
+      Supplier<Clock> clockSupplier,
+      Duration temporalTolerance) {
     this.localeResolver = localeResolver;
-    final var defaultResourceBundle = new DResourceBundleManager(bundleNames, bundles, localeResolver);
+    final var defaultResourceBundle =
+        new DResourceBundleManager(bundleNames, bundles, localeResolver);
     this.templateLookup = new DTemplateLookup(defaultResourceBundle);
     this.interpolator = interpolator;
-    this.builder = new CoreAdapterBuilder(this, factories, annotationFactories, clockSupplier, temporalTolerance);
+    this.builder =
+        new CoreAdapterBuilder(
+            this, factories, annotationFactories, clockSupplier, temporalTolerance);
   }
 
   MessageInterpolator interpolator() {
@@ -237,7 +241,15 @@ final class DValidator implements Validator, ValidationContext {
           ServiceLoader.load(MessageInterpolator.class)
               .findFirst()
               .orElseGet(BasicMessageInterpolator::new);
-      return new DValidator(factories, afactories, bundleNames, bundles, interpolator, localeResolver, clockSupplier, temporalTolerance);
+      return new DValidator(
+          factories,
+          afactories,
+          bundleNames,
+          bundles,
+          interpolator,
+          localeResolver,
+          clockSupplier,
+          temporalTolerance);
     }
 
     private static <T> AnnotationFactory newAnnotationAdapterFactory(Type type, ValidationAdapter<T> adapter) {
