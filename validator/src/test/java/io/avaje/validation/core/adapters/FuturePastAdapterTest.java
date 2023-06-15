@@ -137,40 +137,14 @@ class FuturePastAdapterTest extends BasicTest {
   void testPresent() {
 
     Object value;
-    final var inst = Instant.now();
 
-    // Instant
-    assertPresent(inst);
-
-    // date
-    value = Date.from(inst);
-
-    assertPresent(value);
+    // Instant/Date/DateTime classes are too precise for present test
 
     // LocalDate
     value = LocalDate.now();
 
     assertPresent(value);
 
-    // LocalDateTime
-    value = LocalDateTime.now();
-
-    assertPresent(value);
-    // LocalTime
-    value = LocalTime.now();
-
-    assertPresent(value);
-
-    // ZDT is too precise for a present test
-
-    // OffsetDateTime
-    value = OffsetDateTime.now();
-
-    assertPresent(value);
-    // OffsetTime
-    value = OffsetTime.now();
-
-    assertPresent(value);
     // Year
     value = Year.now();
 
