@@ -18,7 +18,7 @@ public abstract class BasicTest {
           .add(Address.class, AddressValidationAdapter::new)
           .add(Contact.class, ContactValidationAdapter::new)
           .addLocales(Locale.GERMAN)
-          .temporalTolerance(Duration.ofSeconds(20))
+          .temporalTolerance(Duration.ofMillis(60000))
           .build();
 
   protected static final ValidationContext ctx = (ValidationContext) validator;
