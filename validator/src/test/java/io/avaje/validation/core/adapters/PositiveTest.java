@@ -25,10 +25,25 @@ class PositiveTest extends BasicTest {
   @Test
   void testNull() {
     assertThat(positiveAdapter.validate(null, request)).isTrue();
+    assertThat(positiveOrZeroAdapter.validate(null, request)).isTrue();
+  }
+
+  @Test
+  void testInfinity() {
+    assertThat(positiveAdapter.validate(Float.POSITIVE_INFINITY, request)).isTrue();
+    assertThat(positiveAdapter.validate(Double.POSITIVE_INFINITY, request)).isTrue();
+    assertThat(positiveOrZeroAdapter.validate(Float.POSITIVE_INFINITY, request)).isTrue();
+    assertThat(positiveOrZeroAdapter.validate(Double.POSITIVE_INFINITY, request)).isTrue();
+
+    assertThat(positiveAdapter.validate(Float.NEGATIVE_INFINITY, request)).isFalse();
+    assertThat(positiveAdapter.validate(Double.NEGATIVE_INFINITY, request)).isFalse();
+    assertThat(positiveOrZeroAdapter.validate(Float.NEGATIVE_INFINITY, request)).isFalse();
+    assertThat(positiveOrZeroAdapter.validate(Double.NEGATIVE_INFINITY, request)).isFalse();
   }
 
   @Test
   void testPositive() {
+    assertThat(positiveAdapter.validate("1", request)).isTrue();
     assertThat(positiveAdapter.validate(1, request)).isTrue();
     assertThat(positiveAdapter.validate(1f, request)).isTrue();
     assertThat(positiveAdapter.validate(1D, request)).isTrue();
@@ -38,6 +53,7 @@ class PositiveTest extends BasicTest {
     assertThat(positiveAdapter.validate(BigInteger.ONE, request)).isTrue();
     assertThat(positiveAdapter.validate(BigDecimal.ONE, request)).isTrue();
 
+    assertThat(positiveOrZeroAdapter.validate("1", request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(1, request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(1f, request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(1D, request)).isTrue();
@@ -50,6 +66,8 @@ class PositiveTest extends BasicTest {
 
   @Test
   void testNegative() {
+
+    assertThat(positiveAdapter.validate("-1", request)).isFalse();
     assertThat(positiveAdapter.validate(-1, request)).isFalse();
     assertThat(positiveAdapter.validate(-1f, request)).isFalse();
     assertThat(positiveAdapter.validate(-1D, request)).isFalse();
@@ -59,6 +77,7 @@ class PositiveTest extends BasicTest {
     assertThat(positiveAdapter.validate(BigInteger.valueOf(-1), request)).isFalse();
     assertThat(positiveAdapter.validate(BigDecimal.valueOf(-1), request)).isFalse();
 
+    assertThat(positiveOrZeroAdapter.validate("-1", request)).isFalse();
     assertThat(positiveOrZeroAdapter.validate(-1, request)).isFalse();
     assertThat(positiveOrZeroAdapter.validate(-1f, request)).isFalse();
     assertThat(positiveOrZeroAdapter.validate(-1D, request)).isFalse();
@@ -71,6 +90,7 @@ class PositiveTest extends BasicTest {
 
   @Test
   void testZero() {
+    assertThat(positiveAdapter.validate("0", request)).isFalse();
     assertThat(positiveAdapter.validate(0, request)).isFalse();
     assertThat(positiveAdapter.validate(0f, request)).isFalse();
     assertThat(positiveAdapter.validate(0D, request)).isFalse();
@@ -80,6 +100,7 @@ class PositiveTest extends BasicTest {
     assertThat(positiveAdapter.validate(BigInteger.ZERO, request)).isFalse();
     assertThat(positiveAdapter.validate(BigDecimal.ZERO, request)).isFalse();
 
+    assertThat(positiveOrZeroAdapter.validate("0", request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(0, request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(0f, request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(0D, request)).isTrue();
