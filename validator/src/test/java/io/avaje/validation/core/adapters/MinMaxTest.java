@@ -18,10 +18,10 @@ class MinMaxTest extends BasicTest {
   @interface Max {}
 
   ValidationAdapter<Object> minAdapter =
-      ctx.adapter(Min.class, Map.of("message", "mini", "value", -69));
+      ctx.adapter(Min.class, Map.of("message", "mini", "value", -69L));
 
   ValidationAdapter<Object> maxAdapter =
-      ctx.adapter(Max.class, Map.of("message", "maxwell", "value", 69));
+      ctx.adapter(Max.class, Map.of("message", "maxwell", "value", 69L));
 
   @Test
   void testNull() {

@@ -92,7 +92,7 @@ public final class NumberAdapters {
 
     MaxAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
-      this.value = ((Number) attributes.get("value")).longValue();
+      this.value = (long) attributes.get("value");
     }
 
     @Override
@@ -117,7 +117,7 @@ public final class NumberAdapters {
 
     MinAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
       this.message = message;
-      this.value = ((Number) attributes.get("value")).longValue();
+      this.value = (long) attributes.get("value");
     }
 
     @Override
