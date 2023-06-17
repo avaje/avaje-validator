@@ -45,4 +45,17 @@ class NotEmptyTest extends BasicTest {
     assertThat(notEmptyAdapter.validate(new int[] {}, request)).isFalse();
     assertThat(notEmptyAdapter.validate("", request)).isFalse();
   }
+
+  @Test
+  void testArrays() {
+    assertThat(notEmptyAdapter.validate(new int[] {1}, request)).isTrue();
+    assertThat(notEmptyAdapter.validate(new byte[] {1}, request)).isTrue();
+    assertThat(notEmptyAdapter.validate(new boolean[] {true}, request)).isTrue();
+    assertThat(notEmptyAdapter.validate(new char[] {'d'}, request)).isTrue();
+    assertThat(notEmptyAdapter.validate(new float[] {1}, request)).isTrue();
+    assertThat(notEmptyAdapter.validate(new short[] {1}, request)).isTrue();
+    assertThat(notEmptyAdapter.validate(new double[] {1}, request)).isTrue();
+    assertThat(notEmptyAdapter.validate(new long[] {1}, request)).isTrue();
+    assertThat(notEmptyAdapter.validate(new String[] {""}, request)).isTrue();
+  }
 }

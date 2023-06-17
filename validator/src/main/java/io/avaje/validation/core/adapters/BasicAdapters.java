@@ -1,6 +1,5 @@
 package io.avaje.validation.core.adapters;
 
-import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +99,7 @@ public final class BasicAdapters {
           return len > 0;
         }
       } else if (value.getClass().isArray()) {
-        final var len = Array.getLength(value);
+        final var len = arrayLength(value);
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
           return len > 0;
@@ -171,7 +170,7 @@ public final class BasicAdapters {
           return false;
         }
       } else if (value.getClass().isArray()) {
-        final var len = Array.getLength(value);
+        final var len = arrayLength(value);
         if (len == 0) {
           req.addViolation(message, propertyName);
           return false;
@@ -223,6 +222,29 @@ public final class BasicAdapters {
         return false;
       }
       return true;
+    }
+  }
+
+  private static int arrayLength(Object array) {
+
+    if (array instanceof int[] arr) {
+      return arr.length;
+    } else if (array instanceof boolean[] arr) {
+      return arr.length;
+    } else if (array instanceof byte[] arr) {
+      return arr.length;
+    } else if (array instanceof char[] arr) {
+      return arr.length;
+    } else if (array instanceof short[] arr) {
+      return arr.length;
+    } else if (array instanceof float[] arr) {
+      return arr.length;
+    } else if (array instanceof double[] arr) {
+      return arr.length;
+    } else if (array instanceof long[] arr) {
+      return arr.length;
+    } else {
+      return ((Object[]) array).length;
     }
   }
 }
