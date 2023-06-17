@@ -61,20 +61,20 @@ class FuturePastAdapterTest extends BasicTest {
 
     assertPast(value);
     // LocalTime
-    value = LocalTime.now().minusHours(1);
+    value = LocalTime.now().minusMinutes(1);
 
     assertPast(value);
 
     // ZonedDateTime
-    value = ZonedDateTime.now().minusHours(1);
+    value = ZonedDateTime.now().minusMinutes(1);
 
     assertPast(value);
     // OffsetDateTime
-    value = OffsetDateTime.now().minusHours(1);
+    value = OffsetDateTime.now().minusMinutes(1);
 
     assertPast(value);
     // OffsetTime
-    value = OffsetTime.now().minusHours(1);
+    value = OffsetTime.now().minusMinutes(1);
 
     assertPast(value);
     // Year
