@@ -1,5 +1,6 @@
 package io.avaje.validation;
 
+import io.avaje.lang.Nullable;
 import io.avaje.validation.adapter.*;
 import io.avaje.validation.core.DefaultBootstrap;
 import io.avaje.validation.spi.Bootstrap;
@@ -12,12 +13,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public interface Validator {
 
   /** Validate the object using the default locale. */
-  void validate(Object any) throws ConstraintViolationException;
+  void validate(Object value, @Nullable Class<?>... groups) throws ConstraintViolationException;
 
   /**
    * Validate the object with a given locale.
@@ -26,7 +28,8 @@ public interface Validator {
    *
    * <p>This is expected to be used when the Validator is configured to support multiple locales.
    */
-  void validate(Object any, Locale locale) throws ConstraintViolationException;
+  void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups)
+      throws ConstraintViolationException;
 
   static Builder builder() {
     final var bootstrapService = ServiceLoader.load(Bootstrap.class).iterator();
@@ -52,9 +55,7 @@ public interface Validator {
      */
     Builder addResourceBundles(String... bundleName);
 
-    /**
-     * Add ResourceBundle for error message interpolation
-     */
+    /** Add ResourceBundle for error message interpolation */
     Builder addResourceBundles(ResourceBundle... bundle);
 
     /** Set Default Locale for this validator, if not set, will use Locale.getDefault() */
@@ -63,9 +64,20 @@ public interface Validator {
     /** Adds additional Locales for this validator */
     Builder addLocales(Locale... locales);
 
+    /**
+     * Contract for obtaining the Clock used as the reference for now when validating the @Future
+     * and @Past constraints.
+     */
     Builder clockProvider(Supplier<Clock> clockSupplier);
 
+    /** Define the acceptable margin of error when comparing date/time in temporal constraints. */
     Builder temporalTolerance(Duration temporalTolerance);
+
+    /**
+     * En- or disables the fail fast mode. When fail fast is enabled the validation will stop on the
+     * first constraint violation detected.
+     */
+    Builder failFast(boolean failFast);
 
     /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
     Builder add(Type type, AdapterBuilder builder);
@@ -101,7 +113,8 @@ public interface Validator {
   interface AnnotationAdapterBuilder {
 
     /** Create a ValidationAdapter given the Validator instance. */
-    ValidationAdapter<?> build(ValidationContext ctx, Map<String, Object> attributes);
+    ValidationAdapter<?> build(
+        ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes);
   }
 
   /** Components register ValidationAdapters Validator.Builder */

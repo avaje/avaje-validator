@@ -1,9 +1,14 @@
 package io.avaje.validation.adapter;
 
+import java.util.List;
+
 /**
  * A validation request.
  */
 public interface ValidationRequest {
+
+  /** The groups tied to this ValidationRequest */
+  List<Class<?>> groups();
 
   /**
    * Add a constraint violation for the given property.

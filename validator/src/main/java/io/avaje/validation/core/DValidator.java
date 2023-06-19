@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +36,7 @@ final class DValidator implements Validator, ValidationContext {
   private final LocaleResolver localeResolver;
   private final DTemplateLookup templateLookup;
   private final Map<String, String> messageCache = new ConcurrentHashMap<>();
+  private final boolean failfast;
 
   DValidator(
       List<AdapterFactory> factories,
@@ -44,7 +46,8 @@ final class DValidator implements Validator, ValidationContext {
       MessageInterpolator interpolator,
       LocaleResolver localeResolver,
       Supplier<Clock> clockSupplier,
-      Duration temporalTolerance) {
+      Duration temporalTolerance,
+      boolean failfast) {
     this.localeResolver = localeResolver;
     final var defaultResourceBundle =
         new DResourceBundleManager(bundleNames, bundles, localeResolver);
@@ -53,6 +56,7 @@ final class DValidator implements Validator, ValidationContext {
     this.builder =
         new CoreAdapterBuilder(
             this, factories, annotationFactories, clockSupplier, temporalTolerance);
+    this.failfast = failfast;
   }
 
   MessageInterpolator interpolator() {
@@ -60,15 +64,15 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  public void validate(Object any) {
-    validate(any, null);
+  public void validate(Object any, @Nullable Class<?>... groups) {
+    validate(any, null, groups);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public void validate(Object any, @Nullable Locale locale) {
+  public void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups) {
     final var type = (ValidationType<Object>) type(any.getClass());
-    type.validate(any, locale);
+    type.validate(any, locale, List.of(groups));
   }
 
   private <T> ValidationType<T> type(Class<T> cls) {
@@ -119,8 +123,8 @@ final class DValidator implements Validator, ValidationContext {
     return builder.build(type, cacheKey);
   }
 
-  ValidationRequest request(@Nullable Locale locale) {
-    return new DRequest(this, locale);
+  ValidationRequest request(@Nullable Locale locale, List<Class<?>> groups) {
+    return new DRequest(this, failfast, locale, groups);
   }
 
   String interpolate(Message msg, Locale requestLocale) {
@@ -147,6 +151,7 @@ final class DValidator implements Validator, ValidationContext {
     private Locale defaultLocal = Locale.getDefault();
     private Supplier<Clock> clockSupplier = Clock::systemDefaultZone;
     private Duration temporalTolerance = Duration.ZERO;
+    private boolean failfast;
 
     @Override
     public Builder add(Type type, AdapterBuilder builder) {
@@ -222,6 +227,12 @@ final class DValidator implements Validator, ValidationContext {
       return this;
     }
 
+    @Override
+    public Builder failFast(boolean failfast) {
+      this.failfast = failfast;
+      return this;
+    }
+
     private void registerComponents() {
       // first register all user defined ValidatorComponent
       for (final ValidatorComponent next : ServiceLoader.load(ValidatorComponent.class)) {
@@ -249,13 +260,16 @@ final class DValidator implements Validator, ValidationContext {
           interpolator,
           localeResolver,
           clockSupplier,
-          temporalTolerance);
+          temporalTolerance,
+          failfast);
     }
 
-    private static <T> AnnotationFactory newAnnotationAdapterFactory(Type type, ValidationAdapter<T> adapter) {
+    private static <T> AnnotationFactory newAnnotationAdapterFactory(
+        Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);
-      return (targetType, context, attributes) -> simpleMatch(type, targetType) ? adapter : null;
+      return (targetType, context, groups, attributes) ->
+          simpleMatch(type, targetType) ? adapter : null;
     }
 
     private static <T> AdapterFactory newAdapterFactory(Type type, ValidationAdapter<T> adapter) {
@@ -270,10 +284,12 @@ final class DValidator implements Validator, ValidationContext {
       return (targetType, ctx) -> simpleMatch(type, targetType) ? builder.build(ctx) : null;
     }
 
-    private static AnnotationFactory newAdapterFactory(Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
+    private static AnnotationFactory newAdapterFactory(
+        Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
       requireNonNull(type);
       requireNonNull(builder);
-      return (targetType, ctx, attributes) -> simpleMatch(type, targetType) ? builder.build(ctx, attributes) : null;
+      return (targetType, ctx, groups, attributes) ->
+          simpleMatch(type, targetType) ? builder.build(ctx, groups, attributes) : null;
     }
   }
 

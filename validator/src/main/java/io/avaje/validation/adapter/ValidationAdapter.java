@@ -1,8 +1,12 @@
 package io.avaje.validation.adapter;
 
+import static java.util.stream.Collectors.toUnmodifiableSet;
+
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 @FunctionalInterface
 public interface ValidationAdapter<T> {
@@ -91,5 +95,22 @@ public interface ValidationAdapter<T> {
       }
       return true;
     };
+  }
+
+  /**
+   * Returns true if the validation request groups is empty or matches any of the adapter's
+   * configured groups
+   */
+  default boolean checkGroups(Set<Class<?>> adapterGroups, ValidationRequest request) {
+    final var requestGroups = request.groups();
+
+    if (requestGroups.isEmpty()) return true;
+
+    for (final var group : requestGroups) {
+      if (adapterGroups.contains(group)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 @ValidPojo
 public class Contact {
-    @NotBlank
+    @NotBlank(groups = BasicTest.class)
     public String firstName;
     @Size(max = 5)
     public String lastName;

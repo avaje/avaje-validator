@@ -12,6 +12,7 @@ import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Date;
+import java.util.Set;
 import java.util.function.Function;
 
 import io.avaje.validation.adapter.ValidationAdapter;
@@ -24,13 +25,16 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
   private final boolean past;
   private final boolean includePresent;
   private final Clock referenceClock;
+  private final Set<Class<?>> groups;
 
   FuturePastAdapter(
       ValidationContext.Message message,
+      Set<Class<?>> groups,
       boolean past,
       boolean includePresent,
       Clock referenceClock) {
     this.message = message;
+    this.groups = groups;
     this.past = past;
     this.includePresent = includePresent;
     this.referenceClock = referenceClock;
@@ -38,7 +42,7 @@ final class FuturePastAdapter implements ValidationAdapter<Object> {
 
   @Override
   public boolean validate(Object obj, ValidationRequest req, String propertyName) {
-    if (obj == null) {
+    if (obj == null || !checkGroups(groups, req)) {
       return true;
     }
 

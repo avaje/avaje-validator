@@ -15,16 +15,19 @@ final class DRequest implements ValidationRequest {
   private final Set<ConstraintViolation> violations = new LinkedHashSet<>();
 
   private final DValidator validator;
-  @Nullable
-  private final Locale locale;
+  private final boolean failfast;
+  private final List<Class<?>> groups;
+  @Nullable private final Locale locale;
 
-  DRequest(DValidator validator, @Nullable Locale locale) {
+  DRequest(DValidator validator, boolean failfast, @Nullable Locale locale, List<Class<?>> groups) {
     this.validator = validator;
+    this.failfast = failfast;
     this.locale = locale;
+    this.groups = groups;
   }
 
   private String currentPath() {
-    StringJoiner joiner = new StringJoiner(".");
+    final StringJoiner joiner = new StringJoiner(".");
     final var descendingIterator = pathStack.descendingIterator();
     while (descendingIterator.hasNext()) {
       joiner.add(descendingIterator.next());
@@ -34,8 +37,11 @@ final class DRequest implements ValidationRequest {
 
   @Override
   public void addViolation(ValidationContext.Message msg, String propertyName) {
-    String message = validator.interpolate(msg, locale);
+    final String message = validator.interpolate(msg, locale);
     violations.add(new ConstraintViolation(currentPath(), propertyName, message));
+    if (failfast) {
+      throwWithViolations();
+    }
   }
 
   @Override
@@ -53,5 +59,10 @@ final class DRequest implements ValidationRequest {
     if (!violations.isEmpty()) {
       throw new ConstraintViolationException(violations);
     }
+  }
+
+  @Override
+  public List<Class<?>> groups() {
+    return groups;
   }
 }

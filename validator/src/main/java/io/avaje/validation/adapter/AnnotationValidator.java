@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  *
  *   private final Message message;
  *
- *   public CustomAnnotationAdapter(ValidationContext ctx, Map<String, Object> attributes) {
+ *   public CustomAnnotationAdapter(ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes) {
  *     //create a message object for error interpolation
  *     message = ctx.message("{message.property}");
  *
