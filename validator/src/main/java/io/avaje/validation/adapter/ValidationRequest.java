@@ -1,5 +1,7 @@
 package io.avaje.validation.adapter;
 
+import java.util.List;
+
 /**
  * A validation request.
  */
