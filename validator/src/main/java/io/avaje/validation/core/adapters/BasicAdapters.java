@@ -1,6 +1,5 @@
 package io.avaje.validation.core.adapters;
 
-import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -15,23 +14,20 @@ import io.avaje.validation.adapter.ValidationRequest;
 public final class BasicAdapters {
   private BasicAdapters() {}
 
-  public static final ValidationContext.AnnotationFactory FACTORY = (annotationType, context, attributes) ->
-    switch (annotationType.getSimpleName()) {
-        case "Email" -> new EmailAdapter(context.message(attributes), attributes);
-        case "Null" -> new NullableAdapter(context.message(attributes), true);
-        case "NotNull", "NonNull" -> new NullableAdapter(context.message(attributes), false);
-        case "AssertTrue" -> new AssertBooleanAdapter(context.message(attributes), Boolean.FALSE);
-        case "AssertFalse" -> new AssertBooleanAdapter(context.message(attributes), Boolean.TRUE);
-        case "NotBlank" -> new NotBlankAdapter(context.message(attributes));
-        case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes));
-        case "Past" -> new FuturePastAdapter(context.message(attributes), true, false);
-        case "PastOrPresent" -> new FuturePastAdapter(context.message(attributes), true, true);
-        case "Future" -> new FuturePastAdapter(context.message(attributes), false, false);
-        case "FutureOrPresent" -> new FuturePastAdapter(context.message(attributes), false, true);
-        case "Pattern" -> new PatternAdapter(context.message(attributes), attributes);
-        case "Size" -> new SizeAdapter(context.message(attributes), attributes);
-        default -> null;
-      };
+  public static final ValidationContext.AnnotationFactory FACTORY =
+      (annotationType, context, attributes) ->
+          switch (annotationType.getSimpleName()) {
+            case "Email" -> new EmailAdapter(context.message(attributes), attributes);
+            case "Null" -> new NullableAdapter(context.message(attributes), true);
+            case "NotNull", "NonNull" -> new NullableAdapter(context.message(attributes), false);
+            case "AssertTrue" -> new AssertBooleanAdapter(context.message(attributes), Boolean.TRUE);
+            case "AssertFalse" -> new AssertBooleanAdapter(context.message(attributes), Boolean.FALSE);
+            case "NotBlank" -> new NotBlankAdapter(context.message(attributes));
+            case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes));
+            case "Pattern" -> new PatternAdapter(context.message(attributes), attributes);
+            case "Size" -> new SizeAdapter(context.message(attributes), attributes);
+            default -> null;
+          };
 
   private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
 
@@ -54,7 +50,11 @@ public final class BasicAdapters {
 
     @Override
     public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
-      if (value == null || pattern.test(value.toString())) {
+      if (value == null) {
+        return true;
+      }
+
+      if (pattern.test(value.toString())) {
         req.addViolation(message, propertyName);
         return false;
       }
@@ -99,7 +99,7 @@ public final class BasicAdapters {
           return len > 0;
         }
       } else if (value.getClass().isArray()) {
-        final var len = Array.getLength(value);
+        final var len = arrayLength(value);
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
           return len > 0;
@@ -170,7 +170,7 @@ public final class BasicAdapters {
           return false;
         }
       } else if (value.getClass().isArray()) {
-        final var len = Array.getLength(value);
+        final var len = arrayLength(value);
         if (len == 0) {
           req.addViolation(message, propertyName);
           return false;
@@ -193,7 +193,11 @@ public final class BasicAdapters {
 
     @Override
     public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
-      if (assertBool.equals(type)) {
+      if (!assertBool.booleanValue() && type == null) {
+        return true;
+      }
+
+      if (!assertBool.equals(type)) {
         req.addViolation(message, propertyName);
         return false;
       }
@@ -218,6 +222,29 @@ public final class BasicAdapters {
         return false;
       }
       return true;
+    }
+  }
+
+  private static int arrayLength(Object array) {
+
+    if (array instanceof int[] arr) {
+      return arr.length;
+    } else if (array instanceof boolean[] arr) {
+      return arr.length;
+    } else if (array instanceof byte[] arr) {
+      return arr.length;
+    } else if (array instanceof char[] arr) {
+      return arr.length;
+    } else if (array instanceof short[] arr) {
+      return arr.length;
+    } else if (array instanceof float[] arr) {
+      return arr.length;
+    } else if (array instanceof double[] arr) {
+      return arr.length;
+    } else if (array instanceof long[] arr) {
+      return arr.length;
+    } else {
+      return ((Object[]) array).length;
     }
   }
 }

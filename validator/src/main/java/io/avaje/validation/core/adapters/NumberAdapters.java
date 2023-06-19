@@ -12,23 +12,22 @@ import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
 
 public final class NumberAdapters {
-  private NumberAdapters() {
-  }
+  private NumberAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-    (annotationType, context, attributes) ->
-      switch (annotationType.getSimpleName()) {
-        case "Digits" -> new DigitsAdapter(context.message(attributes), attributes);
-        case "Positive" -> new PositiveAdapter(context.message(attributes));
-        case "PositiveOrZero" -> new PositiveAdapter(context.message(attributes), true);
-        case "Negative" -> new NegativeAdapter(context.message(attributes));
-        case "NegativeOrZero" -> new NegativeAdapter(context.message(attributes), true);
-        case "Max" -> new MaxAdapter(context.message(attributes), attributes);
-        case "Min" -> new MinAdapter(context.message(attributes), attributes);
-        case "DecimalMax" -> new DecimalMaxAdapter(context.message(attributes), attributes);
-        case "DecimalMin" -> new DecimalMinAdapter(context.message(attributes), attributes);
-        default -> null;
-      };
+      (annotationType, context, attributes) ->
+          switch (annotationType.getSimpleName()) {
+            case "Digits" -> new DigitsAdapter(context.message(attributes), attributes);
+            case "Positive" -> new PositiveAdapter(context.message(attributes));
+            case "PositiveOrZero" -> new PositiveAdapter(context.message(attributes), true);
+            case "Negative" -> new NegativeAdapter(context.message(attributes));
+            case "NegativeOrZero" -> new NegativeAdapter(context.message(attributes), true);
+            case "Max" -> new MaxAdapter(context.message(attributes), attributes);
+            case "Min" -> new MinAdapter(context.message(attributes), attributes);
+            case "DecimalMax" -> new DecimalMaxAdapter(context.message(attributes), attributes);
+            case "DecimalMin" -> new DecimalMinAdapter(context.message(attributes), attributes);
+            default -> null;
+          };
 
   private static final class DecimalMaxAdapter implements ValidationAdapter<Number> {
 

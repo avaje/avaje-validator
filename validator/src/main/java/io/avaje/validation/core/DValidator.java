@@ -7,15 +7,17 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.time.Clock;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import io.avaje.lang.Nullable;
 import io.avaje.validation.Validator;
@@ -40,12 +42,17 @@ final class DValidator implements Validator, ValidationContext {
       List<String> bundleNames,
       List<ResourceBundle> bundles,
       MessageInterpolator interpolator,
-      LocaleResolver localeResolver) {
+      LocaleResolver localeResolver,
+      Supplier<Clock> clockSupplier,
+      Duration temporalTolerance) {
     this.localeResolver = localeResolver;
-    final var defaultResourceBundle = new DResourceBundleManager(bundleNames, bundles, localeResolver);
+    final var defaultResourceBundle =
+        new DResourceBundleManager(bundleNames, bundles, localeResolver);
     this.templateLookup = new DTemplateLookup(defaultResourceBundle);
     this.interpolator = interpolator;
-    this.builder = new CoreAdapterBuilder(this, factories, annotationFactories);
+    this.builder =
+        new CoreAdapterBuilder(
+            this, factories, annotationFactories, clockSupplier, temporalTolerance);
   }
 
   MessageInterpolator interpolator() {
@@ -138,6 +145,8 @@ final class DValidator implements Validator, ValidationContext {
     private final List<ResourceBundle> bundles = new ArrayList<>();
     private final List<Locale> otherLocals = new ArrayList<>();
     private Locale defaultLocal = Locale.getDefault();
+    private Supplier<Clock> clockSupplier = Clock::systemDefaultZone;
+    private Duration temporalTolerance = Duration.ZERO;
 
     @Override
     public Builder add(Type type, AdapterBuilder builder) {
@@ -201,6 +210,18 @@ final class DValidator implements Validator, ValidationContext {
       return this;
     }
 
+    @Override
+    public Builder clockProvider(Supplier<Clock> clockSupplier) {
+      this.clockSupplier = clockSupplier;
+      return this;
+    }
+
+    @Override
+    public Builder temporalTolerance(Duration temporalTolerance) {
+      this.temporalTolerance = temporalTolerance;
+      return this;
+    }
+
     private void registerComponents() {
       // first register all user defined ValidatorComponent
       for (final ValidatorComponent next : ServiceLoader.load(ValidatorComponent.class)) {
@@ -220,7 +241,15 @@ final class DValidator implements Validator, ValidationContext {
           ServiceLoader.load(MessageInterpolator.class)
               .findFirst()
               .orElseGet(BasicMessageInterpolator::new);
-      return new DValidator(factories, afactories, bundleNames, bundles, interpolator, localeResolver);
+      return new DValidator(
+          factories,
+          afactories,
+          bundleNames,
+          bundles,
+          interpolator,
+          localeResolver,
+          clockSupplier,
+          temporalTolerance);
     }
 
     private static <T> AnnotationFactory newAnnotationAdapterFactory(Type type, ValidationAdapter<T> adapter) {

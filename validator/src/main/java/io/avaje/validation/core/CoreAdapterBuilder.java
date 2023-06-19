@@ -2,14 +2,18 @@ package io.avaje.validation.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.time.Clock;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.core.adapters.BasicAdapters;
+import io.avaje.validation.core.adapters.FuturePastAdapterFactory;
 import io.avaje.validation.core.adapters.NumberAdapters;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
@@ -23,12 +27,15 @@ final class CoreAdapterBuilder {
   CoreAdapterBuilder(
       DValidator context,
       List<ValidationContext.AdapterFactory> userFactories,
-      List<ValidationContext.AnnotationFactory> userAnnotationFactories) {
+      List<ValidationContext.AnnotationFactory> userAnnotationFactories,
+      Supplier<Clock> clockSupplier,
+      Duration temporalTolerance) {
     this.context = context;
     this.factories.addAll(userFactories);
     this.annotationFactories.addAll(userAnnotationFactories);
     this.annotationFactories.add(BasicAdapters.FACTORY);
     this.annotationFactories.add(NumberAdapters.FACTORY);
+    this.annotationFactories.add(new FuturePastAdapterFactory(clockSupplier, temporalTolerance));
   }
 
   /** Return the adapter from cache if exists else return null. */
@@ -52,7 +59,7 @@ final class CoreAdapterBuilder {
   <T> ValidationAdapter<T> build(Type type, Object cacheKey) {
     // Ask each factory to create the validation adapter.
     for (final ValidationContext.AdapterFactory factory : factories) {
-      final ValidationAdapter<T> result = (ValidationAdapter<T>) factory.create(type, context);
+      final var result = (ValidationAdapter<T>) factory.create(type, context);
       if (result != null) {
         return result;
       }

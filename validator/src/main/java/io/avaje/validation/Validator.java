@@ -6,11 +6,13 @@ import io.avaje.validation.spi.Bootstrap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Iterator;
+import java.time.Clock;
+import java.time.Duration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
 public interface Validator {
 
@@ -27,7 +29,7 @@ public interface Validator {
   void validate(Object any, Locale locale) throws ConstraintViolationException;
 
   static Builder builder() {
-    final Iterator<Bootstrap> bootstrapService = ServiceLoader.load(Bootstrap.class).iterator();
+    final var bootstrapService = ServiceLoader.load(Bootstrap.class).iterator();
     if (bootstrapService.hasNext()) {
       return bootstrapService.next().builder();
     }
@@ -60,6 +62,10 @@ public interface Validator {
 
     /** Adds additional Locales for this validator */
     Builder addLocales(Locale... locales);
+
+    Builder clockProvider(Supplier<Clock> clockSupplier);
+
+    Builder temporalTolerance(Duration temporalTolerance);
 
     /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
     Builder add(Type type, AdapterBuilder builder);
