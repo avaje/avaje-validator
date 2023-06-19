@@ -1,6 +1,7 @@
 package io.avaje.validation.generator.models.valid;
 
 import java.util.Map;
+import java.util.Set;
 
 import io.avaje.lang.Nullable;
 import io.avaje.validation.adapter.AnnotationValidator;
@@ -11,7 +12,7 @@ import io.avaje.validation.adapter.ValidationRequest;
 @AnnotationValidator(Nullable.class)
 public final class CustomAnnotationAdapter implements ValidationAdapter<Object> {
 
-  public CustomAnnotationAdapter(ValidationContext ctx, Map<String, Object> attributes) {}
+  public CustomAnnotationAdapter(ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes) {}
 
   @Override
   public boolean validate(Object value, ValidationRequest req, String propertyName) {
