@@ -15,12 +15,13 @@ final class DRequest implements ValidationRequest {
   private final Set<ConstraintViolation> violations = new LinkedHashSet<>();
 
   private final DValidator validator;
+  private final boolean failfast;
+  private final List<Class<?>> groups;
   @Nullable private final Locale locale;
 
-  private final List<Class<?>> groups;
-
-  DRequest(DValidator validator, @Nullable Locale locale, List<Class<?>> groups) {
+  DRequest(DValidator validator, boolean failfast, @Nullable Locale locale, List<Class<?>> groups) {
     this.validator = validator;
+    this.failfast = failfast;
     this.locale = locale;
     this.groups = groups;
   }
@@ -38,6 +39,9 @@ final class DRequest implements ValidationRequest {
   public void addViolation(ValidationContext.Message msg, String propertyName) {
     final String message = validator.interpolate(msg, locale);
     violations.add(new ConstraintViolation(currentPath(), propertyName, message));
+    if (failfast) {
+      throwWithViolations();
+    }
   }
 
   @Override

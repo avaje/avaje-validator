@@ -24,9 +24,11 @@ public abstract class BasicTest {
 
   protected static final ValidationContext ctx = (ValidationContext) validator;
 
-  protected static final DRequest request = new DRequest((DValidator) validator, null, List.of());
+  protected static final DRequest request =
+      new DRequest((DValidator) validator, false, null, List.of());
 
-  protected static final DRequest groupRequest = new DRequest((DValidator) validator, null, List.of(BasicTest.class));
+  protected static final DRequest groupRequest =
+      new DRequest((DValidator) validator, false, null, List.of(BasicTest.class));
 
   protected ConstraintViolation one(Object pojo, Locale locale, Class<?>... groups) {
     try {
