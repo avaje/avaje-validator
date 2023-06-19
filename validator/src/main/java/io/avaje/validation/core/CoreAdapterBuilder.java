@@ -1,5 +1,7 @@
 package io.avaje.validation.core;
 
+import static java.util.stream.Collectors.toUnmodifiableSet;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.time.Clock;
@@ -7,6 +9,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -73,12 +76,18 @@ final class CoreAdapterBuilder {
   <T> ValidationAdapter<T> buildAnnotation(Class<? extends Annotation> cls, Map<String, Object> attributes) {
     // Ask each factory to create the validation adapter.
     for (final ValidationContext.AnnotationFactory factory : annotationFactories) {
-      final var result = (ValidationAdapter<T>) factory.create(cls, context, attributes);
+      final var result = (ValidationAdapter<T>) factory.create(cls, context, extractGroups(attributes), attributes);
       if (result != null) {
         return result;
       }
     }
     // unknown annotations have noop
     return NOOP;
+  }
+
+  static Set<Class<?>> extractGroups(Map<String, Object> attributes) {
+    @SuppressWarnings("unchecked")
+    final var annotationsGroups = (List<Class<?>>) attributes.getOrDefault("groups", List.of());
+    return annotationsGroups.stream().collect(toUnmodifiableSet());
   }
 }

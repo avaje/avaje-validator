@@ -3,6 +3,7 @@ package io.avaje.validation.adapter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Context available when validation adapters are being created.
@@ -67,6 +68,6 @@ public interface ValidationContext {
      * <p>Returning null means that the adapter could be created by another factory.
      */
     ValidationAdapter<?> create(
-      Class<? extends Annotation> annotationType, ValidationContext ctx, Map<String, Object> attributes);
+      Class<? extends Annotation> annotationType, ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes);
   }
 }

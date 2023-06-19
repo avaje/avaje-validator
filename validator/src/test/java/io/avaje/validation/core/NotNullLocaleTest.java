@@ -1,11 +1,13 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.ConstraintViolation;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Locale;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+
+import io.avaje.validation.ConstraintViolation;
 
 class NotNullLocaleTest extends BasicTest {
 
@@ -14,6 +16,12 @@ class NotNullLocaleTest extends BasicTest {
     final var contact = new Contact("ok", null);
     final ConstraintViolation constraint = one(contact, Locale.ENGLISH);
     assertThat(constraint.message()).isEqualTo("must not be null");
+  }
+
+  @Test
+  void testSize_groups() {
+    final var contact = new Contact("ok", null);
+    assertThatThrownBy(()->one(contact, Locale.ENGLISH,BasicTest.class)).isExactlyInstanceOf(IllegalStateException.class);
   }
 
   @Test

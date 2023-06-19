@@ -4,6 +4,7 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -43,17 +44,19 @@ final class EmailAdapter implements ValidationAdapter<CharSequence> {
 
   private final ValidationContext.Message message;
   private final Predicate<String> pattern;
+  private final Set<Class<?>> groups;
 
   @SuppressWarnings("unchecked")
-  EmailAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+  EmailAdapter(ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
     this.message = message;
+    this.groups = groups;
     int flags = 0;
     var regex = (String) attributes.get("regexp");
     if (regex == null) {
       regex = ".*";
     }
 
-    List<RegexFlag> flags1 = (List<RegexFlag>) attributes.get("flags");
+    final List<RegexFlag> flags1 = (List<RegexFlag>) attributes.get("flags");
     if (flags1 != null) {
       for (final var flag : flags1) {
         flags |= flag.getValue();
@@ -64,7 +67,7 @@ final class EmailAdapter implements ValidationAdapter<CharSequence> {
 
   @Override
   public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
-    if (value == null || value.length() == 0) {
+    if (!checkGroups(groups, req) || value == null || value.length() == 0) {
       return true;
     }
 

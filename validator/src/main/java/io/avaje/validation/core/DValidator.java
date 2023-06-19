@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -60,15 +61,15 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  public void validate(Object any) {
-    validate(any, null);
+  public void validate(Object any, @Nullable Class<?>... groups) {
+    validate(any, null, groups);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public void validate(Object any, @Nullable Locale locale) {
+  public void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups) {
     final var type = (ValidationType<Object>) type(any.getClass());
-    type.validate(any, locale);
+    type.validate(any, locale, List.of(groups));
   }
 
   private <T> ValidationType<T> type(Class<T> cls) {
@@ -119,8 +120,8 @@ final class DValidator implements Validator, ValidationContext {
     return builder.build(type, cacheKey);
   }
 
-  ValidationRequest request(@Nullable Locale locale) {
-    return new DRequest(this, locale);
+  ValidationRequest request(@Nullable Locale locale, List<Class<?>> groups) {
+    return new DRequest(this, locale,groups);
   }
 
   String interpolate(Message msg, Locale requestLocale) {
@@ -255,7 +256,7 @@ final class DValidator implements Validator, ValidationContext {
     private static <T> AnnotationFactory newAnnotationAdapterFactory(Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);
-      return (targetType, context, attributes) -> simpleMatch(type, targetType) ? adapter : null;
+      return (targetType, context, groups, attributes) -> simpleMatch(type, targetType) ? adapter : null;
     }
 
     private static <T> AdapterFactory newAdapterFactory(Type type, ValidationAdapter<T> adapter) {
@@ -273,7 +274,7 @@ final class DValidator implements Validator, ValidationContext {
     private static AnnotationFactory newAdapterFactory(Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
       requireNonNull(type);
       requireNonNull(builder);
-      return (targetType, ctx, attributes) -> simpleMatch(type, targetType) ? builder.build(ctx, attributes) : null;
+      return (targetType, ctx, groups, attributes) -> simpleMatch(type, targetType) ? builder.build(ctx, groups, attributes) : null;
     }
   }
 

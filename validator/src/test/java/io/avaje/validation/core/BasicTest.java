@@ -7,6 +7,7 @@ import io.avaje.validation.adapter.ValidationContext;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,11 +24,13 @@ public abstract class BasicTest {
 
   protected static final ValidationContext ctx = (ValidationContext) validator;
 
-  protected static final DRequest request = new DRequest((DValidator) validator, null);
+  protected static final DRequest request = new DRequest((DValidator) validator, null, List.of());
 
-  protected ConstraintViolation one(Object pojo, Locale locale) {
+  protected static final DRequest groupRequest = new DRequest((DValidator) validator, null, List.of(BasicTest.class));
+
+  protected ConstraintViolation one(Object pojo, Locale locale, Class<?>... groups) {
     try {
-      validator.validate(pojo, locale);
+      validator.validate(pojo, locale, groups);
       throw new IllegalStateException("don't get here");
     } catch (final ConstraintViolationException e) {
       final var violations = new ArrayList<>(e.violations());

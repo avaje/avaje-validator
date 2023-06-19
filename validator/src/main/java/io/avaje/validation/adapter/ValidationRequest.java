@@ -5,6 +5,9 @@ package io.avaje.validation.adapter;
  */
 public interface ValidationRequest {
 
+  /** The groups tied to this ValidationRequest */
+  List<Class<?>> groups();
+
   /**
    * Add a constraint violation for the given property.
    *

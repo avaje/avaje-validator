@@ -1,5 +1,6 @@
 package io.avaje.validation.core;
 
+import java.util.List;
 import java.util.Locale;
 
 import io.avaje.validation.adapter.ValidationAdapter;
@@ -15,8 +16,8 @@ final class DValidationType<T> implements ValidationType<T> {
   }
 
   @Override
-  public void validate(T object, Locale locale) {
-    final var req = validator.request(locale);
+  public void validate(T object, Locale locale, List<Class<?>> groups) {
+    final var req = validator.request(locale, groups);
     adapter.validate(object, req);
     req.throwWithViolations();
   }

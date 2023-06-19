@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import io.avaje.validation.adapter.ValidationAdapter;
@@ -12,12 +13,11 @@ import io.avaje.validation.adapter.ValidationContext.AnnotationFactory;
 
 public final class FuturePastAdapterFactory implements AnnotationFactory {
 
-  private Clock pastClock;
-
-  private Clock futureClock;
-
   private final Supplier<Clock> clockSupplier;
   private final Duration tolerance;
+
+  private Clock pastClock;
+  private Clock futureClock;
 
   public FuturePastAdapterFactory(Supplier<Clock> clockSupplier, Duration tolerance) {
     this.clockSupplier = clockSupplier;
@@ -28,15 +28,17 @@ public final class FuturePastAdapterFactory implements AnnotationFactory {
   public ValidationAdapter<?> create(
       Class<? extends Annotation> annotationType,
       ValidationContext context,
+      Set<Class<?>> groups,
       Map<String, Object> attributes) {
     return switch (annotationType.getSimpleName()) {
-      case "Past" -> new FuturePastAdapter(context.message(attributes), true, false, pastClock());
+      case "Past" -> new FuturePastAdapter(
+          context.message(attributes), groups, true, false, pastClock());
       case "PastOrPresent" -> new FuturePastAdapter(
-          context.message(attributes), true, true, pastClock());
+          context.message(attributes), groups, true, true, pastClock());
       case "Future" -> new FuturePastAdapter(
-          context.message(attributes), false, false, futureClock());
+          context.message(attributes), groups, false, false, futureClock());
       case "FutureOrPresent" -> new FuturePastAdapter(
-          context.message(attributes), false, true, futureClock());
+          context.message(attributes), groups, false, true, futureClock());
       default -> null;
     };
   }

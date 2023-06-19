@@ -1,5 +1,6 @@
 package io.avaje.validation;
 
+import io.avaje.lang.Nullable;
 import io.avaje.validation.adapter.*;
 import io.avaje.validation.core.DefaultBootstrap;
 import io.avaje.validation.spi.Bootstrap;
@@ -12,12 +13,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public interface Validator {
 
   /** Validate the object using the default locale. */
-  void validate(Object any) throws ConstraintViolationException;
+  void validate(Object value, @Nullable Class<?>... groups) throws ConstraintViolationException;
 
   /**
    * Validate the object with a given locale.
@@ -26,7 +28,7 @@ public interface Validator {
    *
    * <p>This is expected to be used when the Validator is configured to support multiple locales.
    */
-  void validate(Object any, Locale locale) throws ConstraintViolationException;
+  void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups) throws ConstraintViolationException;
 
   static Builder builder() {
     final var bootstrapService = ServiceLoader.load(Bootstrap.class).iterator();
@@ -101,7 +103,7 @@ public interface Validator {
   interface AnnotationAdapterBuilder {
 
     /** Create a ValidationAdapter given the Validator instance. */
-    ValidationAdapter<?> build(ValidationContext ctx, Map<String, Object> attributes);
+    ValidationAdapter<?> build(ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes);
   }
 
   /** Components register ValidationAdapters Validator.Builder */

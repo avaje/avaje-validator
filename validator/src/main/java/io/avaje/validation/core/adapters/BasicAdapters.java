@@ -3,6 +3,7 @@ package io.avaje.validation.core.adapters;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -15,28 +16,34 @@ public final class BasicAdapters {
   private BasicAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-      (annotationType, context, attributes) ->
+      (annotationType, context, groups, attributes) ->
           switch (annotationType.getSimpleName()) {
-            case "Email" -> new EmailAdapter(context.message(attributes), attributes);
-            case "Null" -> new NullableAdapter(context.message(attributes), true);
-            case "NotNull", "NonNull" -> new NullableAdapter(context.message(attributes), false);
-            case "AssertTrue" -> new AssertBooleanAdapter(context.message(attributes), Boolean.TRUE);
-            case "AssertFalse" -> new AssertBooleanAdapter(context.message(attributes), Boolean.FALSE);
-            case "NotBlank" -> new NotBlankAdapter(context.message(attributes));
-            case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes));
-            case "Pattern" -> new PatternAdapter(context.message(attributes), attributes);
-            case "Size" -> new SizeAdapter(context.message(attributes), attributes);
+            case "Email" -> new EmailAdapter(context.message(attributes), groups, attributes);
+            case "Null" -> new NullableAdapter(context.message(attributes), groups, true);
+            case "NotNull", "NonNull" -> new NullableAdapter(
+                context.message(attributes), groups, false);
+            case "AssertTrue" -> new AssertBooleanAdapter(
+                context.message(attributes), groups, Boolean.TRUE);
+            case "AssertFalse" -> new AssertBooleanAdapter(
+                context.message(attributes), groups, Boolean.FALSE);
+            case "NotBlank" -> new NotBlankAdapter(context.message(attributes), groups);
+            case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes), groups);
+            case "Pattern" -> new PatternAdapter(context.message(attributes), groups, attributes);
+            case "Size" -> new SizeAdapter(context.message(attributes), groups, attributes);
             default -> null;
           };
 
   private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
 
     private final ValidationContext.Message message;
+    private final Set<Class<?>> groups;
     private final Predicate<String> pattern;
 
     @SuppressWarnings("unchecked")
-    PatternAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+    PatternAdapter(
+        ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
       this.message = message;
+      this.groups = groups;
       int flags = 0;
 
       final List<RegexFlag> flags1 = (List<RegexFlag>) attributes.get("flags");
@@ -50,7 +57,7 @@ public final class BasicAdapters {
 
     @Override
     public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
-      if (value == null) {
+      if (!checkGroups(groups, req) || value == null) {
         return true;
       }
 
@@ -65,18 +72,21 @@ public final class BasicAdapters {
   private static final class SizeAdapter implements ValidationAdapter<Object> {
 
     private final ValidationContext.Message message;
+    private final Set<Class<?>> groups;
     private final int min;
     private final int max;
 
-    SizeAdapter(ValidationContext.Message message, Map<String, Object> attributes) {
+    SizeAdapter(
+        ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
       this.message = message;
+      this.groups = groups;
       this.min = (int) attributes.get("min");
       this.max = (int) attributes.get("max");
     }
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-      if (value == null) {
+      if (!checkGroups(groups, req) || value == null) {
         return true;
       }
 
@@ -113,14 +123,16 @@ public final class BasicAdapters {
   private static final class NotBlankAdapter implements ValidationAdapter<CharSequence> {
 
     private final ValidationContext.Message message;
+    private final Set<Class<?>> groups;
 
-    NotBlankAdapter(ValidationContext.Message message) {
+    NotBlankAdapter(ValidationContext.Message message, Set<Class<?>> groups) {
       this.message = message;
+      this.groups = groups;
     }
 
     @Override
     public boolean validate(CharSequence cs, ValidationRequest req, String propertyName) {
-      if (cs == null || isBlank(cs)) {
+      if (checkGroups(groups, req) && (cs == null || isBlank(cs))) {
         req.addViolation(message, propertyName);
         return false;
       }
@@ -144,14 +156,18 @@ public final class BasicAdapters {
   private static final class NotEmptyAdapter implements ValidationAdapter<Object> {
 
     private final ValidationContext.Message message;
+    private final Set<Class<?>> groups;
 
-    NotEmptyAdapter(ValidationContext.Message message) {
+    NotEmptyAdapter(ValidationContext.Message message, Set<Class<?>> groups) {
       this.message = message;
+      this.groups = groups;
     }
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-      if (value == null) {
+      if (!checkGroups(groups, req)) {
+        return true;
+      } else if (value == null) {
         req.addViolation(message, propertyName);
         return false;
       } else if (value instanceof final Collection<?> col) {
@@ -185,15 +201,18 @@ public final class BasicAdapters {
 
     private final ValidationContext.Message message;
     private final Boolean assertBool;
+    private final Set<Class<?>> groups;
 
-    AssertBooleanAdapter(ValidationContext.Message message, Boolean assertBool) {
+    AssertBooleanAdapter(
+        ValidationContext.Message message, Set<Class<?>> groups, Boolean assertBool) {
       this.message = message;
+      this.groups = groups;
       this.assertBool = assertBool;
     }
 
     @Override
     public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
-      if (!assertBool.booleanValue() && type == null) {
+      if (!checkGroups(groups, req) || !assertBool.booleanValue() && type == null) {
         return true;
       }
 
@@ -209,15 +228,17 @@ public final class BasicAdapters {
 
     private final ValidationContext.Message message;
     private final boolean shouldBeNull;
+    private final Set<Class<?>> groups;
 
-    NullableAdapter(ValidationContext.Message message, boolean shouldBeNull) {
+    NullableAdapter(ValidationContext.Message message, Set<Class<?>> groups, boolean shouldBeNull) {
       this.message = message;
+      this.groups = groups;
       this.shouldBeNull = shouldBeNull;
     }
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-      if ((value == null) != shouldBeNull) {
+      if (checkGroups(groups, req) && (value == null) != shouldBeNull) {
         req.addViolation(message, propertyName);
         return false;
       }
