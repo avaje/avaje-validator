@@ -7,9 +7,11 @@ import static io.avaje.validation.generator.ProcessingContext.logError;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.lang.model.element.Element;
@@ -31,6 +33,7 @@ final class TypeReader {
   private final Map<String, MethodReader> maybeGetterMethods = new LinkedHashMap<>();
   private final TypeElement baseType;
   private final boolean hasJsonAnnotation;
+  private final Set<String> seenFields = new HashSet<>();
   private boolean nonAccessibleField;
   private final List<String> genericTypeParams;
 
@@ -63,6 +66,7 @@ final class TypeReader {
 
   private void readField(Element element, List<FieldReader> localFields) {
     if (includeField(element)) {
+      seenFields.add(element.toString());
       localFields.add(new FieldReader(element, genericTypeParams));
     }
   }
@@ -96,7 +100,9 @@ final class TypeReader {
         allGetterMethods.put(methodKey.toLowerCase(), methodReader);
       }
       // for reading methods
-      if (includeField(element) && methodElement.getParameters().isEmpty()) {
+      if (includeField(element)
+          && methodElement.getParameters().isEmpty()
+          && seenFields.add(element.getSimpleName().toString())) {
         final var reader = new FieldReader(element, genericTypeParams);
         localFields.add(reader);
         reader.getterMethod(new MethodReader(methodElement, type));
@@ -198,6 +204,6 @@ final class TypeReader {
   }
 
   private TypeElement superOf(TypeElement element) {
-    return (TypeElement) asElement(element.getSuperclass());
+    return asElement(element.getSuperclass());
   }
 }
