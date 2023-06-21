@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.VariableElement;
 
 final class FieldReader {
 
@@ -32,18 +33,21 @@ final class FieldReader {
   private final boolean optionalValidation;
   private final Map<GenericType, String> annotations;
   private final Element element;
+  private final List<List<String>> typeUseAnnotations;
 
   FieldReader(Element element, List<String> genericTypeParams) {
     this.genericTypeParams = genericTypeParams;
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
     this.element = element;
+    this.typeUseAnnotations = Util.typeUse(element.asType().toString());
     if (element instanceof final ExecutableElement executableElement) {
       this.rawType = Util.trimAnnotations(executableElement.getReturnType().toString());
     } else {
       this.rawType = Util.trimAnnotations(element.asType().toString());
     }
     genericType = GenericType.parse(rawType);
+
     this.annotations =
         element.getAnnotationMirrors().stream()
             .collect(

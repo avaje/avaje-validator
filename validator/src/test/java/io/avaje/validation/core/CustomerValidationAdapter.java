@@ -38,9 +38,10 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
 
     this.contactsValidator =
         ctx.<List<Contact>>adapter(
-            Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2)).list(ctx, Contact.class);
+                Size.class, Map.of("message", "not sized correctly", "min", 0, "max", 2))
+            .list(ctx.adapter(Contact.class));
 
-    //this.addressValidator = ctx.adapter(Address.class);
+    // this.addressValidator = ctx.adapter(Address.class);
     this.shippingAddressValidator = ctx.adapter(Address.class);
 
     // Option A: billingAddressValidator combines NotNull + addressValidator

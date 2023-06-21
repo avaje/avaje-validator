@@ -1,14 +1,33 @@
 package io.avaje.validation.generator;
 
-import java.util.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toMap;
 
-import javax.lang.model.element.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
 
 final class AnnotationUtil {
 
   interface Handler {
     String attributes(AnnotationMirror annotationMirror, Element element);
+
+    String attributes(Map<String, Object> attributeMap, TypeElement element);
+
   }
 
   static final Handler defaultHandler = new StandardHandler();
@@ -42,7 +61,49 @@ final class AnnotationUtil {
     return Objects.requireNonNullElse(handler, defaultHandler).attributes(annotationMirror, element);
   }
 
-  static abstract class BaseHandler implements Handler {
+  static String annotationAttributeMap(String annotationStr) {
+	  final  String result;
+    final var start = annotationStr.indexOf('(');
+  final  String attributes;
+    if (start == -1) {result = annotationStr;attributes="";}
+    else {result = annotationStr.substring(0, start);
+    attributes= annotationStr.substring(start,annotationStr.lastIndexOf(')'));}
+   final var element= ProcessingContext.element(result);
+    final Map<String, Object> attributeMap= Arrays.stream(splitString(attributes))
+    		.map(s -> s.split("="))
+    		.collect(toMap(a->a[0], a->a[1]));
+
+   ElementFilter.methodsIn(element.getEnclosedElements())
+   .forEach(e->{
+	   attributeMap.compute(e.getSimpleName().toString(), (k,v)->{
+
+		   if(v== null) return e.getDefaultValue().getValue();
+
+		   if(v instanceof String s) {
+			  var returnType= e.getReturnType();
+			  if( returnType instanceof ArrayType at) {
+				 Util.stripBrackets(s).;
+			  }
+		   }
+		   return null;
+
+	   });
+
+   });
+
+
+    final Handler handler = handlers.get(result);
+
+    return Objects.requireNonNullElse(handler, defaultHandler)
+        .attributes(attributeMap, ProcessingContext.element(result));
+  }
+
+  public static String[] splitString(String input) {
+      final Pattern pattern = Pattern.compile(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+      return pattern.split(input);
+  }
+
+  abstract static class BaseHandler implements Handler {
     final StringBuilder sb = new StringBuilder("Map.of(");
     boolean first = true;
 
@@ -72,7 +133,29 @@ final class AnnotationUtil {
         sb.append(annotationValue);
       }
     }
+    @SuppressWarnings("unchecked")
+    final void writeVal(final StringBuilder sb, final String value) {
+      // handle array values
+      if (value.) {
+        sb.append("List.of(");
+        boolean first = true;
+
+        for (final AnnotationValue listValue : (List<AnnotationValue>) value) {
+          if (!first) {
+            sb.append(", ");
+          }
+          writeVal(sb, listValue);
+          first = false;
+        }
+        sb.append(")");
+        // Handle enum values
+      } else {
+        sb.append(value);
+      }
+    }
   }
+
+
 
   /** Convert default Jakarta message keys to avaje keys */
   private static String avajeKey(String messageKey) {
@@ -92,17 +175,52 @@ final class AnnotationUtil {
       return sb.toString();
     }
     private static void pattern(StringBuilder sb, PatternPrism prism) {
-      if (prism.regexp() != null) {
-        sb.append("\"regexp\",\"").append(prism.regexp()).append("\"");
-      }
+
+      sb.append("\"regexp\",\"").append(prism.regexp()).append("\"");
+
       if (prism.message() != null) {
         sb.append(", \"message\",\"").append(avajeKey(prism.message())).append("\"");
       }
       if (!prism.flags().isEmpty()) {
-        sb.append(", \"flags\",List.of(").append(String.join(", ", prism.flags())).append(")");
-      }
+          sb.append(", \"flags\",List.of(").append(String.join(", ", prism.flags())).append(")");
+        }
+      if (!prism.groups().isEmpty()) {
+          sb.append(", \"groups\",List.of(").append(String.join(", ", prism.groups()+".class")).append(")");
+        }
       sb.append(")");
     }
+
+    @Override
+    public String attributes(Map<String, Object> result, TypeElement e) {
+
+      sb.append("\"regexp\",\"").append(result.get("regexp")).append("\"");
+      final var message = result.get("message");
+      if (message != null) {
+        sb.append(", \"message\",\"").append(avajeKey((String) message)).append("\"");
+      }
+
+      var flags =(String) result.get("flags");
+
+      if (flags != null) {
+        flags = Util.stripBrackets( flags);
+        flags = Arrays.stream(flags.split(",")).map(Util::shortName).collect(joining(", "));
+
+        sb.append(", \"flags\",List.of(").append(flags).append(")");
+      }
+
+      String groups = (String) result.get("groups");
+      if (groups != null) {
+
+        groups = Util.stripBrackets(groups);
+
+        sb.append(", \"groups\",List.of(").append(groups).append(")");
+      }
+
+      sb.append(")");
+      return sb.toString();
+    }
+
+
   }
 
   static class StandardHandler extends BaseHandler {
@@ -163,6 +281,22 @@ final class AnnotationUtil {
         }
       }
       return null;
+    }
+
+    @Override
+    public String attributes(Map<String, String> attributeMap, TypeElement element) {
+
+        for (final ExecutableElement member : ElementFilter.methodsIn(element.getEnclosedElements())) {
+            final AnnotationValue value = annotationMirror.getElementValues().get(member);
+            final AnnotationValue defaultValue = member.getDefaultValue();
+            if (value == null && defaultValue == null) {
+              continue;
+            }
+            writeAttribute(member.getSimpleName(), value, defaultValue);
+          }
+          sb.append(")");
+
+      return sb.toString();
     }
   }
 
