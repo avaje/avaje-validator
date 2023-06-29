@@ -14,5 +14,9 @@ public record Ship(
                 @NotEmpty(groups = Ship.class) @NotBlank String,
                 @NotBlank(groups = Ship.class) @ValidPojo CrewMate>
             crew,
-    @NotEmpty(message = "tasks,=(testing wierd chars) ")
-        List<@NotEmpty(groups = List.class) @NotBlank(groups = Ship.class) String> tasks) {}
+    @NotEmpty(message = "tasks,=(testing wierd chars&rparen; ")
+        List<
+                @NotEmpty(groups = List.class)
+                @NotBlank(groups = Ship.class, message = "tasks,=(testing wierd chars&rparen; ")
+                String>
+            tasks) {}

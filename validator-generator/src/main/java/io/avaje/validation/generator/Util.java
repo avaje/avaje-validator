@@ -15,7 +15,7 @@ final class Util {
   // cuts out all annotations
   private static final Pattern trimPattern =
       Pattern.compile(
-          "@([A-Za-z]+(\\.[A-Za-z]+)+)\\([^)]*\\),|@([A-Za-z]+(\\.[A-Za-z]+)+)\\([^)]*\\)|@([A-Za-z0-9]+(\\.[A-Za-z0-9]+)+)",
+          "@([a-z]+(\\.[a-z]+)+)\\([^)]*\\),|@([a-z]+(\\.[a-z]+)+)\\([^)]*\\)|@([a-z0-9]+(\\.[a-z0-9]+)+)",
           Pattern.CASE_INSENSITIVE);
   static final Pattern mapSplitString = Pattern.compile("\\s[A-Za-z0-9]+,|,");
 
@@ -77,8 +77,12 @@ final class Util {
   }
 
   static String trimAnnotations(String type) {
+    final var result = String.join("", trimPattern.split(type)).replace(" ", "");
 
-    return String.join("", trimPattern.split(type)).replace(" ", "");
+    if (result.contains(")"))
+      throw new IllegalArgumentException(
+          "Right Parenthesis \")\" in TYPE_USE Annotation string arguments must be escaped with &rparen;");
+    return result;
   }
 
   static List<List<String>> typeUse(String type) {

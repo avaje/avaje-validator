@@ -16,7 +16,7 @@ final class Append {
 
   Append append(String content) {
     try {
-      writer.append(content);
+      writer.append(content.replace("&rparen;", ")"));
       return this;
     } catch (final IOException e) {
       throw new RuntimeException(e);
