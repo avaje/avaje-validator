@@ -1,6 +1,8 @@
 package io.avaje.validation.constraints;
 
-import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE_USE;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

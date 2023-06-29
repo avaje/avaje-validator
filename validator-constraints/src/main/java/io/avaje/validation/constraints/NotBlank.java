@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 import io.avaje.validation.constraints.NotBlank.List;
 
 @Documented
-@Target({METHOD, FIELD,TYPE_USE})
+@Target({METHOD, FIELD, TYPE_USE})
 @Retention(RUNTIME)
 @Repeatable(List.class)
 public @interface NotBlank {
