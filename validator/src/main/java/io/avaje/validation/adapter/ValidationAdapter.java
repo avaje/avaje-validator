@@ -13,34 +13,21 @@ public interface ValidationAdapter<T> {
     return validate(value, req, null);
   }
 
-  default ValidationAdapter<T> list(ValidationAdapter<?> adapter) {
-    final var coll = new CollectionValidationAdapter(adapter);
-    return (value, req, propertyName) -> {
-      if (validate(value, req, propertyName)) {
-        return coll.validate(value, req);
-      }
-      return true;
-    };
+  default AbstractMultiAdapter<T> list() {
+
+    return new CollectionValidationAdapter<>(this);
   }
 
-  default ValidationAdapter<T> map(ValidationAdapter<?> adapter) {
-    final var coll = new MapValidationAdapter(adapter, false);
-    return (value, req, propertyName) -> {
-      if (validate(value, req, propertyName)) {
-        return coll.validate(value, req);
-      }
-      return true;
-    };
+  default AbstractMultiAdapter<T> mapKeys() {
+    return new MapValidationAdapter<>(this, true);
   }
 
-  default ValidationAdapter<T> array(ValidationAdapter<?> adapter) {
-    final var coll = new ArrayValidationAdapter(adapter);
-    return (value, req, propertyName) -> {
-      if (validate(value, req, propertyName)) {
-        return coll.validate(value, req);
-      }
-      return true;
-    };
+  default AbstractMultiAdapter<T> mapValues() {
+    return new MapValidationAdapter<>(this, false);
+  }
+
+  default AbstractMultiAdapter<T> array() {
+    return new ArrayValidationAdapter<>(this);
   }
 
   default ValidationAdapter<T> andThen(ValidationAdapter<? super T> after) {

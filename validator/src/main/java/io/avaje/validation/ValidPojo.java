@@ -10,7 +10,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  * Marks a type for validation.
  */
 @Retention(CLASS)
-@Target({TYPE, FIELD})
+@Target({TYPE,TYPE_USE, FIELD})
 public @interface ValidPojo {
 
   /**

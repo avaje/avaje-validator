@@ -109,6 +109,7 @@ final class Util {
       }
     } else {
       list.add(extractTypeUseAnnotations(str));
+      list.add(List.of());
     }
 
     return list;

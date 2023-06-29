@@ -2,12 +2,13 @@ package io.avaje.validation.adapter;
 
 import java.util.Collection;
 
-abstract class AbstractMultiAdapter implements ValidationAdapter<Object> {
+public abstract class AbstractMultiAdapter<T> implements ValidationAdapter<T> {
 
-  private final ValidationAdapter<Object> adapters;
+  protected final ValidationAdapter<T> starterAdapter;
+  private ValidationAdapter<Object> adapters;
 
-  protected AbstractMultiAdapter(ValidationAdapter<?> adapters) {
-    this.adapters = (ValidationAdapter<Object>) adapters;
+  protected AbstractMultiAdapter(ValidationAdapter<T> starterAdapter) {
+    this.starterAdapter = starterAdapter;
   }
 
   protected boolean validateAll(
@@ -45,5 +46,13 @@ abstract class AbstractMultiAdapter implements ValidationAdapter<Object> {
       req.popPath();
     }
     return true;
+  }
+
+  public AbstractMultiAdapter<T> andThenMulti(ValidationAdapter<?> adapter) {
+    this.adapters =
+        this.adapters != null
+            ? adapters.andThen((ValidationAdapter<Object>) adapter)
+            : (ValidationAdapter<Object>) adapter;
+    return this;
   }
 }

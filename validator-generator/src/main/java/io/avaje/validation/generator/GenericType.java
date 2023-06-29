@@ -111,7 +111,10 @@ final class GenericType {
   }
 
   private String trimExtends() {
-    final String type = topType();
+    String type = topType();
+    final var index = type.indexOf("(");
+    type = index == -1 ? type : type.substring(0, index);
+
     if (type != null && type.startsWith("? extends ")) {
       return type.substring(10);
     }
