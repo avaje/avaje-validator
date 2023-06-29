@@ -77,7 +77,7 @@ final class Util {
   }
 
   static String trimAnnotations(String type) {
-    final var result = String.join("", trimPattern.split(type)).replace(" ", "");
+    final var result = String.join("", trimPattern.split(type)).replace(" ", "").replace(".,", ".");
 
     if (result.contains(")"))
       throw new IllegalArgumentException(
@@ -90,7 +90,7 @@ final class Util {
     final var list = new ArrayList<List<String>>(2);
     final int pos = type.indexOf('<');
     if (pos == -1 || type.indexOf('@') == -1) {
-      return List.of();
+      return List.of(List.of(),List.of());
     }
     final var trimmed = trimAnnotations(type);
     final var str = type.substring(pos + 1, type.lastIndexOf('>'));

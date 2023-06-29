@@ -146,7 +146,7 @@ final class AnnotationUtil {
       case "double" -> Double.parseDouble(s);
       case "float" -> Float.parseFloat(s);
       case "int" -> Integer.parseInt(s);
-      case "java.lang.String" -> "\"" + s + "\"";
+      case "java.lang.String" -> s.startsWith("\"") && s.endsWith("\"") ? s : "\"" + s + "\"";
       default -> s;
     };
   }

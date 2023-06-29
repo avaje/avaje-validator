@@ -123,6 +123,12 @@ final class DValidator implements Validator, ValidationContext {
     return builder.build(type, cacheKey);
   }
 
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> ValidationAdapter<T> noop() {
+    return CoreAdapterBuilder.NOOP;
+  }
+
   ValidationRequest request(@Nullable Locale locale, List<Class<?>> groups) {
     return new DRequest(this, failfast, locale, groups);
   }
@@ -296,4 +302,5 @@ final class DValidator implements Validator, ValidationContext {
   private static boolean simpleMatch(Type type, Type targetType) {
     return Util.typesMatch(type, targetType);
   }
+
 }
