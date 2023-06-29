@@ -10,6 +10,9 @@ import io.avaje.validation.constraints.NotEmpty;
 @ValidPojo
 public record Ship(
     @NotEmpty(message = "sus ")
-        Map<@NotEmpty(groups = Ship.class) @NotBlank String, @NotBlank(groups = Ship.class) CrewMate> crew,
-    @NotEmpty(message = "sus ")
-        List<@NotEmpty(groups = Ship.class) @NotBlank(groups = Ship.class) String> tasks) {}
+        Map<
+                @NotEmpty(groups = Ship.class) @NotBlank String,
+                @NotBlank(groups = Ship.class) @ValidPojo CrewMate>
+            crew,
+    @NotEmpty(message = "tasks,=(testing wierd chars) ")
+        List<@NotEmpty(groups = List.class) @NotBlank(groups = Ship.class) String> tasks) {}
