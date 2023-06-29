@@ -22,7 +22,7 @@ final class GenericType {
 
   /** Create for top level type. */
   GenericType(String raw) {
-    this.raw = raw;
+    this.raw = raw.transform(s -> s.startsWith(",") ? s.substring(1) : s);
   }
 
   /** Create for parameter type. */
