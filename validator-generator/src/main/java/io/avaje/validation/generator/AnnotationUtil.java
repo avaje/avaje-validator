@@ -16,6 +16,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.util.ElementFilter;
@@ -96,7 +97,17 @@ final class AnnotationUtil {
             .map(s -> splitString(s, "="))
             .filter(a -> a.length == 2)
             .collect(toMap(a -> a[0], a -> a[1]));
+    convertTypeUse(element, attributeMap);
 
+    final Handler handler = handlers.get(result);
+
+    return Objects.requireNonNullElse(handler, defaultHandler).attributes(attributeMap);
+  }
+
+  private static void convertTypeUse(
+      final TypeElement element, final Map<String, Object> attributeMap) {
+    // convert attribute map values into proper types
+    // and add default values if needed
     ElementFilter.methodsIn(element.getEnclosedElements())
         .forEach(
             e -> {
@@ -110,9 +121,10 @@ final class AnnotationUtil {
                       if (defaultVal instanceof final List l) {
 
                         v = l.isEmpty() ? "{ }" : l;
-                      } else
+                      } else {
                         return switchType(
                             returnType.toString(), e.getDefaultValue().getValue().toString());
+                      }
                     }
                     if (v instanceof final String s) {
                       if (returnType instanceof final ArrayType at) {
@@ -120,7 +132,7 @@ final class AnnotationUtil {
 
                         v =
                             Arrays.stream(splitString(Util.stripBrackets(s), ","))
-                            .filter(not(String::isBlank))
+                                .filter(not(String::isBlank))
                                 .map(ae -> switchType(type, ae))
                                 .toList();
 
@@ -132,10 +144,6 @@ final class AnnotationUtil {
                     return v;
                   });
             });
-
-    final Handler handler = handlers.get(result);
-
-    return Objects.requireNonNullElse(handler, defaultHandler).attributes(attributeMap);
   }
 
   private static Object switchType(final String type, String s) {
@@ -274,7 +282,7 @@ final class AnnotationUtil {
       final var result = sb.toString();
       sb.setLength(0);
       sb.append("Map.of(");
-      first=true;
+      first = true;
       return result;
     }
   }
@@ -354,7 +362,7 @@ final class AnnotationUtil {
       final var result = sb.toString();
       sb.setLength(0);
       sb.append("Map.of(");
-      first=true;
+      first = true;
       return result;
     }
   }
