@@ -225,28 +225,34 @@ final class FieldReader {
     if (!typeUse1.isEmpty()
         && ("java.util.List".equals(genericType.topType())
             || "java.util.Set".equals(genericType.topType()))) {
-      writer.eol().append("           .list()").eol();
+      writer.eol().append("           .list()");
       final var t = genericType.firstParamType();
       writeTypeUse(writer, t, typeUse1);
 
     } else if ((!typeUse1.isEmpty() || !typeUse2.isEmpty())
         && "java.util.Map".equals(genericType.topType())) {
 
-      writer.eol().append("           .mapKeys()").eol();
+      writer.eol().append("           .mapKeys()");
       writeTypeUse(writer, genericType.firstParamType(), typeUse1);
 
-      writer.eol().append("           .mapValues()").eol();
-      writeTypeUse(writer, genericType.secondParamType(), typeUse2);
+      writer.eol().append("           .mapValues()");
+      writeTypeUse(writer, genericType.secondParamType(), typeUse2, false);
 
     } else if (genericType.topType().contains("[]") && hasValid) {
 
-      writer.eol().append("           .array()").eol();
+      writer.eol().append("           .array()");
       writeTypeUse(writer, genericType.firstParamType(), typeUse1);
     }
-    writer.append(";").eol();
+    writer.append(";").eol().eol();
   }
 
-  private void writeTypeUse(Append writer, String t, Map<GenericType, Object> typeUseMap) {
+  private void writeTypeUse(
+      Append writer, String firstParamType, Map<GenericType, Object> typeUse12) {
+    writeTypeUse(writer, firstParamType, typeUse12, true);
+  }
+
+  private void writeTypeUse(
+      Append writer, String t, Map<GenericType, Object> typeUseMap, boolean keys) {
 
     for (final var a : typeUseMap.entrySet()) {
 
@@ -255,17 +261,19 @@ final class FieldReader {
       }
       final var k = a.getKey().shortName();
       final var v = a.getValue();
-      writer.eol().append("            .andThenMulti(ctx.adapter(%s.class,%s))", k, v);
+      writer.eol().append("           .andThenMulti(ctx.adapter(%s.class,%s))", k, v);
     }
 
     if (!isBasicType(t)
         && typeUseMap.keySet().stream()
             .map(GenericType::topType)
             .anyMatch(Constants.VALID_ANNOTATIONS::contains)) {
+
       writer
+          .eol()
           .append(
               "           .andThenMulti(ctx.adapter(%s.class))",
-              Util.shortName(genericType.firstParamType()))
+              Util.shortName(keys ? genericType.firstParamType() : genericType.secondParamType()))
           .eol();
     }
   }
