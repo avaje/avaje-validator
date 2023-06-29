@@ -1,11 +1,9 @@
 package io.avaje.validation.generator;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 final class ClassReader implements BeanReader {

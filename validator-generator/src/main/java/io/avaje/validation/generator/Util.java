@@ -3,7 +3,6 @@ package io.avaje.validation.generator;
 import static io.avaje.validation.generator.ProcessingContext.element;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
