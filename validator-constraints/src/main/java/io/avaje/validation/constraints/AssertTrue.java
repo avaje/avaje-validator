@@ -11,18 +11,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.avaje.validation.Constraint;
+
+@Constraint
 @Target({METHOD, FIELD, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(AssertTrue.List.class)
 public @interface AssertTrue {
-    String message() default "{avaje.AssertTrue.message}";
+  String message() default "{avaje.AssertTrue.message}";
 
-    Class<?>[] groups() default {};
+  Class<?>[] groups() default {};
 
-    @Target({ElementType.METHOD, ElementType.FIELD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @interface List {
-        AssertTrue[] value();
-    }
+  @Target({ElementType.METHOD, ElementType.FIELD})
+  @Retention(RetentionPolicy.RUNTIME)
+  @Documented
+  @interface List {
+    AssertTrue[] value();
+  }
 }

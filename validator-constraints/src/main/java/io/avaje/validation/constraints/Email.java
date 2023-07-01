@@ -10,6 +10,7 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import io.avaje.validation.Constraint;
 import io.avaje.validation.constraints.Email.List;
 
 /**
@@ -18,6 +19,7 @@ import io.avaje.validation.constraints.Email.List;
  *
  * <p>Accepts {@code CharSequence}. {@code null} elements are considered valid.
  */
+@Constraint
 @Target({METHOD, FIELD, TYPE_USE})
 @Retention(RUNTIME)
 @Repeatable(List.class)

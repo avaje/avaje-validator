@@ -14,6 +14,7 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import io.avaje.validation.Constraint;
 import io.avaje.validation.constraints.DecimalMin.List;
 
 /**
@@ -36,6 +37,7 @@ import io.avaje.validation.constraints.DecimalMin.List;
  *
  * @author Emmanuel Bernard
  */
+@Constraint
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 @Repeatable(List.class)

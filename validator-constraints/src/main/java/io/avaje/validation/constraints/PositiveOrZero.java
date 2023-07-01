@@ -10,8 +10,10 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import io.avaje.validation.Constraint;
 import io.avaje.validation.constraints.PositiveOrZero.List;
 
+@Constraint
 @Target({METHOD, FIELD, TYPE_USE})
 @Retention(RUNTIME)
 @Repeatable(List.class)
