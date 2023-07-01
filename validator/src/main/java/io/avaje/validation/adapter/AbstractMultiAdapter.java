@@ -11,6 +11,14 @@ public abstract class AbstractMultiAdapter<T> implements ValidationAdapter<T> {
     this.starterAdapter = starterAdapter;
   }
 
+  public AbstractMultiAdapter<T> andThenMulti(ValidationAdapter<?> adapter) {
+    this.adapters =
+        this.adapters != null
+            ? adapters.andThen((ValidationAdapter<Object>) adapter)
+            : (ValidationAdapter<Object>) adapter;
+    return this;
+  }
+
   protected boolean validateAll(
       Collection<Object> value, ValidationRequest req, String propertyName) {
     if (value == null) {
@@ -46,13 +54,5 @@ public abstract class AbstractMultiAdapter<T> implements ValidationAdapter<T> {
       req.popPath();
     }
     return true;
-  }
-
-  public AbstractMultiAdapter<T> andThenMulti(ValidationAdapter<?> adapter) {
-    this.adapters =
-        this.adapters != null
-            ? adapters.andThen((ValidationAdapter<Object>) adapter)
-            : (ValidationAdapter<Object>) adapter;
-    return this;
   }
 }

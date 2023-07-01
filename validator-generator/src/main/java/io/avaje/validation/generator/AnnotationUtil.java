@@ -108,42 +108,40 @@ final class AnnotationUtil {
       final TypeElement element, final Map<String, Object> attributeMap) {
     // convert attribute map values into proper types
     // and add default values if needed
-    ElementFilter.methodsIn(element.getEnclosedElements())
-        .forEach(
-            e -> {
-              final var returnType = e.getReturnType();
-              attributeMap.compute(
-                  e.getSimpleName().toString(),
-                  (k, v) -> {
-                    if (v == null) {
-                      final var defaultVal = e.getDefaultValue().getValue();
+    for (final var e : ElementFilter.methodsIn(element.getEnclosedElements())) {
 
-                      if (defaultVal instanceof final List l) {
+      final var returnType = e.getReturnType();
+      attributeMap.compute(
+          e.getSimpleName().toString(),
+          (k, v) -> {
+            if (v == null) {
+              final var defaultVal = e.getDefaultValue().getValue();
 
-                        v = l.isEmpty() ? "{ }" : l;
-                      } else {
-                        return switchType(
-                            returnType.toString(), e.getDefaultValue().getValue().toString());
-                      }
-                    }
-                    if (v instanceof final String s) {
-                      if (returnType instanceof final ArrayType at) {
-                        final var type = at.getComponentType().toString();
+              if (defaultVal instanceof final List l) {
 
-                        v =
-                            Arrays.stream(splitString(Util.stripBrackets(s), ","))
-                                .filter(not(String::isBlank))
-                                .map(ae -> switchType(type, ae))
-                                .toList();
+                v = l.isEmpty() ? "{ }" : l;
+              } else {
+                return switchType(returnType.toString(), e.getDefaultValue().getValue().toString());
+              }
+            }
+            if (v instanceof final String s) {
+              if (returnType instanceof final ArrayType at) {
+                final var type = at.getComponentType().toString();
 
-                      } else {
+                v =
+                    Arrays.stream(splitString(Util.stripBrackets(s), ","))
+                        .filter(not(String::isBlank))
+                        .map(ae -> switchType(type, ae))
+                        .toList();
 
-                        v = switchType(returnType.toString(), s);
-                      }
-                    }
-                    return v;
-                  });
-            });
+              } else {
+
+                v = switchType(returnType.toString(), s);
+              }
+            }
+            return v;
+          });
+    }
   }
 
   private static Object switchType(final String type, String s) {

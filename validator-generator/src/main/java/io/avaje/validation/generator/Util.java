@@ -53,8 +53,6 @@ final class Util {
     return fullType.substring(p + 1);
   }
 
-
-
   static String shortType(String fullType) {
     final int p = fullType.lastIndexOf('.');
     if (p == -1) {
