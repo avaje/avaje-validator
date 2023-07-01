@@ -1,10 +1,5 @@
 package io.avaje.validation.adapter;
 
-import static java.util.stream.Collectors.toUnmodifiableSet;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -18,73 +13,21 @@ public interface ValidationAdapter<T> {
     return validate(value, req, null);
   }
 
-  @SuppressWarnings("unchecked")
-  default ValidationAdapter<T> list(ValidationContext ctx, Class<?> clazz) {
-    final var after = ctx.<Object>adapter(clazz);
-    return (value, req, propertyName) -> {
-      if (validate(value, req, propertyName)) {
-        return after.validateAll((Collection<Object>) value, req, propertyName);
-      }
-      return true;
-    };
+  default AbstractMultiAdapter<T> list() {
+
+    return new CollectionValidationAdapter<>(this);
   }
 
-  @SuppressWarnings("unchecked")
-  default ValidationAdapter<T> map(ValidationContext ctx, Class<?> clazz) {
-    final var after = ctx.<Object>adapter(clazz);
-    return (value, req, propertyName) -> {
-      if (validate(value, req, propertyName)) {
-        final var map = (Map<?, Object>) value;
-        return after.validateAll(map.values(), req, propertyName);
-      }
-      return true;
-    };
+  default AbstractMultiAdapter<T> mapKeys() {
+    return new MapValidationAdapter<>(this, true);
   }
 
-  default ValidationAdapter<T> array(ValidationContext ctx, Class<?> clazz) {
-    final var after = ctx.<Object>adapter(clazz);
-    return (value, req, propertyName) -> {
-      if (validate(value, req, propertyName)) {
-        return after.validateArray((Object[]) value, req, propertyName);
-      }
-      return true;
-    };
+  default AbstractMultiAdapter<T> mapValues() {
+    return new MapValidationAdapter<>(this, false);
   }
 
-  private boolean validateAll(Collection<T> value, ValidationRequest req, String propertyName) {
-    if (value == null) {
-      return true;
-    }
-    if (propertyName != null) {
-      req.pushPath(propertyName);
-    }
-    int index = -1;
-    for (final var element : value) {
-      index++;
-      validate(element, req, String.valueOf(index));
-    }
-    if (propertyName != null) {
-      req.popPath();
-    }
-    return true;
-  }
-
-  private boolean validateArray(T[] value, ValidationRequest req, String propertyName) {
-    if (value == null) {
-      return true;
-    }
-    if (propertyName != null) {
-      req.pushPath(propertyName);
-    }
-    int index = -1;
-    for (final T element : value) {
-      index++;
-      validate(element, req, String.valueOf(index));
-    }
-    if (propertyName != null) {
-      req.popPath();
-    }
-    return true;
+  default AbstractMultiAdapter<T> array() {
+    return new ArrayValidationAdapter<>(this);
   }
 
   default ValidationAdapter<T> andThen(ValidationAdapter<? super T> after) {

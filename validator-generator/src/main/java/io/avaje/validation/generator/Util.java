@@ -2,10 +2,22 @@ package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.ProcessingContext.element;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
 final class Util {
+  // cuts out all annotations
+  private static final Pattern trimPattern =
+      Pattern.compile(
+          "@([a-z]+(\\.[a-z]+)+)\\([^)]*\\),|@([a-z]+(\\.[a-z]+)+)\\([^)]*\\)|@([a-z0-9]+(\\.[a-z0-9]+)+)",
+          Pattern.CASE_INSENSITIVE);
+  static final Pattern mapSplitString = Pattern.compile("\\s[A-Za-z0-9]+,|,");
+
   private Util() {}
 
   static boolean isValid(Element e) {
@@ -62,12 +74,102 @@ final class Util {
   }
 
   static String trimAnnotations(String type) {
-    final int pos = type.indexOf("@");
-    if (pos == -1) {
-      return type;
-    }
-    return type.substring(0, pos) + type.substring(type.lastIndexOf(' ') + 1);
+    final var result = String.join("", trimPattern.split(type)).replace(" ", "").replace(".,", ".");
+
+    if (result.contains(")"))
+      throw new IllegalArgumentException(
+          "Right Parenthesis \")\" in TYPE_USE Annotation string arguments must be escaped with &rparen;");
+    return result;
   }
+
+  static List<List<String>> typeUse(String type) {
+
+    final var list = new ArrayList<List<String>>(2);
+    final int pos = type.indexOf('<');
+    if (pos == -1 || type.indexOf('@') == -1) {
+      return List.of(List.of(),List.of());
+    }
+    final var trimmed = trimAnnotations(type);
+    final var str = type.substring(pos + 1, type.lastIndexOf('>'));
+
+    if (trimmed.startsWith("java.util.Map")) {
+
+      final var mapArgs = splitStringWithRegex(str);
+      final var first = mapArgs[0];
+      final var second = mapArgs[1];
+      if (first.indexOf('@') == -1) {
+        list.add(List.of());
+      } else {
+        list.add(extractTypeUseAnnotations(first));
+      }
+
+      if (second.indexOf('@') == -1) {
+        list.add(List.of());
+      } else {
+        list.add(extractTypeUseAnnotations(second));
+      }
+    } else {
+      list.add(extractTypeUseAnnotations(str));
+      list.add(List.of());
+    }
+
+    return list;
+  }
+
+  private static List<String> extractTypeUseAnnotations(final String str) {
+
+    final var list = new ArrayList<String>();
+    final var matcher = trimPattern.matcher(str);
+    while (matcher.find()) {
+
+      var str2 = matcher.group().substring(1);
+
+      if (str2.endsWith(",")) {
+        str2 = str2.substring(0, str2.length() - 1);
+      }
+      list.add(str2);
+    }
+    return list;
+  }
+
+  private static String[] splitStringWithRegex(String input) {
+    final Matcher matcher = mapSplitString.matcher(input);
+
+    int startIndex = 0;
+    final List<String> result = new ArrayList<>();
+
+    while (matcher.find()) {
+      final int matchStart = matcher.start();
+      final int matchEnd = matcher.end();
+      if (!withinQuotes(input, matchStart)
+          && !input.substring(startIndex, matchEnd - 1).endsWith(")")) {
+        result.add(input.substring(startIndex, matchEnd - 1).trim());
+        startIndex = matchEnd;
+        break;
+      }
+    }
+
+    result.add(input.substring(startIndex).trim());
+
+    return result.toArray(new String[0]);
+  }
+
+  private static boolean withinQuotes(String input, int index) {
+    int quoteCount = 0;
+
+    for (int i = 0; i < index; i++) {
+      if (input.charAt(i) == '"') {
+        quoteCount++;
+      }
+    }
+
+    return quoteCount % 2 != 0;
+  }
+
+  static String stripBrackets(String fullType) {
+    return fullType.substring(1, fullType.length() - 1);
+  }
+
   /** Return the common parent package. */
   static String commonParent(String currentTop, String aPackage) {
     if (aPackage == null) return currentTop;

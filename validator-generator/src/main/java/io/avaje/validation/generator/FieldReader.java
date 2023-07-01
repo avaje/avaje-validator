@@ -14,6 +14,7 @@ import javax.lang.model.element.Modifier;
 final class FieldReader {
 
   static final Set<String> BASIC_TYPES = new HashSet<>();
+
   static {
     BASIC_TYPES.add("java.lang.String");
     BASIC_TYPES.add("java.math.BigDecimal");
@@ -32,18 +33,38 @@ final class FieldReader {
   private final boolean optionalValidation;
   private final Map<GenericType, String> annotations;
   private final Element element;
+  private final Map<GenericType, Object> typeUse1;
+  private final Map<GenericType, Object> typeUse2;
+  private final boolean hasValid;
 
   FieldReader(Element element, List<String> genericTypeParams) {
     this.genericTypeParams = genericTypeParams;
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
     this.element = element;
+    this.hasValid = ValidPrismType.isPresent(element);
     if (element instanceof final ExecutableElement executableElement) {
       this.rawType = Util.trimAnnotations(executableElement.getReturnType().toString());
+      final var typeUse = Util.typeUse(executableElement.getReturnType().toString());
+      typeUse1 =
+          typeUse.get(0).stream()
+              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
+      typeUse2 =
+          typeUse.get(1).stream()
+              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
+
     } else {
       this.rawType = Util.trimAnnotations(element.asType().toString());
+      final var typeUse = Util.typeUse(element.asType().toString());
+      typeUse1 =
+          typeUse.get(0).stream()
+              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
+      typeUse2 =
+          typeUse.get(1).stream()
+              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
     }
     genericType = GenericType.parse(rawType);
+
     this.annotations =
         element.getAnnotationMirrors().stream()
             .collect(
@@ -108,6 +129,8 @@ final class FieldReader {
     }
     genericType.addImports(importTypes);
     annotations.keySet().forEach(t -> t.addImports(importTypes));
+    typeUse1.keySet().forEach(t -> t.addImports(importTypes));
+    typeUse2.keySet().forEach(t -> t.addImports(importTypes));
   }
 
   void cascadeTypes(Set<String> types) {
@@ -180,11 +203,17 @@ final class FieldReader {
     boolean first = true;
     for (final var a : annotations.entrySet()) {
       if (first) {
-        writer.append("        ctx.<%s>adapter(%s.class, %s)", PrimitiveUtil.wrap(genericType.shortType()), a.getKey().shortName(), a.getValue());
+        writer.append(
+            "        ctx.<%s>adapter(%s.class, %s)",
+            PrimitiveUtil.wrap(genericType.shortType()), a.getKey().shortName(), a.getValue());
         first = false;
         continue;
       }
-      writer.eol().append("            .andThen(ctx.adapter(%s.class,%s))", a.getKey().shortName(), a.getValue());
+      writer
+          .eol()
+          .append(
+              "            .andThen(ctx.adapter(%s.class,%s))",
+              a.getKey().shortName(), a.getValue());
     }
     final var topType = genericType.topType();
     if (isBasicType(topType)) {
@@ -192,37 +221,75 @@ final class FieldReader {
       return;
     }
 
-    if ("java.util.List".equals(genericType.topType()) || "java.util.Set".equals(genericType.topType())) {
-      if (isBasicType(genericType.firstParamType())) {
-        writer.append(";").eol();
-        return;
-      }
-      writer.eol().append("           .list(ctx, %s.class)", Util.shortName(genericType.firstParamType()));
-
-    } else if ("java.util.Map".equals(genericType.topType())) {
-      if (isBasicType(genericType.secondParamType())) {
-        writer.append(";").eol();
-        return;
-      }
-      writer.eol().append("           .map(ctx, %s.class)", Util.shortName(genericType.secondParamType()));
-
-    } else if (genericType.topType().contains("[]")) {
-      if (isBasicType(topType)) {
-        writer.append(";").eol();
-        return;
-      }
-      writer.eol().append("           .array(ctx, %s.class)", Util.shortName(genericType.topType().replace("[]", "")));
-
-    } else {
-      writer.eol().append("           .andThen(ctx.adapter(%s.class))", Util.shortName(genericType.topType()));
+    if (annotations.isEmpty()) {
+      writer.append("        ctx.<%s>noop()", PrimitiveUtil.wrap(genericType.shortType()));
     }
-    writer.append(";").eol();
+
+    if (!typeUse1.isEmpty()
+        && ("java.util.List".equals(genericType.topType())
+            || "java.util.Set".equals(genericType.topType()))) {
+      writer.eol().append("            .list()");
+      final var t = genericType.firstParamType();
+      writeTypeUse(writer, t, typeUse1);
+
+    } else if ((!typeUse1.isEmpty() || !typeUse2.isEmpty())
+        && "java.util.Map".equals(genericType.topType())) {
+
+      writer.eol().append("            .mapKeys()");
+      writeTypeUse(writer, genericType.firstParamType(), typeUse1);
+
+      writer.eol().append("            .mapValues()");
+      writeTypeUse(writer, genericType.secondParamType(), typeUse2, false);
+
+    } else if (genericType.topType().contains("[]") && hasValid) {
+
+      writer.eol().append("            .array()");
+      writeTypeUse(writer, genericType.firstParamType(), typeUse1);
+    } else if (hasValid) {
+      writer
+          .eol()
+          .append(
+              "            .andThen(ctx.adapter(%s.class))", Util.shortName(genericType.topType()));
+    }
+    writer.append(";").eol().eol();
+  }
+
+  private void writeTypeUse(
+      Append writer, String firstParamType, Map<GenericType, Object> typeUse12) {
+    writeTypeUse(writer, firstParamType, typeUse12, true);
+  }
+
+  private void writeTypeUse(
+      Append writer, String t, Map<GenericType, Object> typeUseMap, boolean keys) {
+
+    for (final var a : typeUseMap.entrySet()) {
+
+      if (Constants.VALID_ANNOTATIONS.contains(a.getKey().topType())) {
+        continue;
+      }
+      final var k = a.getKey().shortName();
+      final var v = a.getValue();
+      writer.eol().append("            .andThenMulti(ctx.adapter(%s.class,%s))", k, v);
+    }
+
+    if (!isBasicType(t)
+        && typeUseMap.keySet().stream()
+            .map(GenericType::topType)
+            .anyMatch(Constants.VALID_ANNOTATIONS::contains)) {
+
+      writer
+          .eol()
+          .append(
+              "           .andThenMulti(ctx.adapter(%s.class))",
+              Util.shortName(keys ? genericType.firstParamType() : genericType.secondParamType()))
+          .eol();
+    }
   }
 
   private boolean isBasicType(final String topType) {
     return BASIC_TYPES.contains(topType)
-      || isJavaTime(topType)
-      || GenericTypeMap.typeOfRaw(topType) != null;
+        || isJavaTime(topType)
+        || GenericTypeMap.typeOfRaw(topType) != null;
   }
 
   private boolean isJavaTime(String topType) {

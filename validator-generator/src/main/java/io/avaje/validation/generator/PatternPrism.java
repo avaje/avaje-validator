@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeMirror;
 
 import io.avaje.prism.GeneratePrism;
 
@@ -42,6 +43,10 @@ public interface PatternPrism {
 
   /** @return the error message template */
   String message();
+
+
+  /** @return the error message template */
+  List<TypeMirror> groups();
 
   static Optional<PatternPrism> isInstance(AnnotationMirror e) {
 
