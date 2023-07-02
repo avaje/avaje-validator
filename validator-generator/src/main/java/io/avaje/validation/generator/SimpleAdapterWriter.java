@@ -4,12 +4,8 @@ import static io.avaje.validation.generator.ProcessingContext.createWriter;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Map;
-import java.util.Set;
 
 import javax.tools.JavaFileObject;
-
-import io.avaje.validation.adapter.AnnotationValidator;
 
 final class SimpleAdapterWriter {
 
