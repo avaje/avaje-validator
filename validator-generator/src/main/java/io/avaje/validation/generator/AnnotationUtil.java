@@ -272,7 +272,7 @@ final class AnnotationUtil {
 
         groups = Util.stripBrackets(groups);
 
-        sb.append(", \"groups\",List.of(").append(groups).append(")");
+        sb.append(", \"groups\",Set.of(").append(groups).append(")");
       }
 
       sb.append(")");

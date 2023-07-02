@@ -135,7 +135,7 @@ final class ContraintReader implements BeanReader {
       writer
           .eol()
           .append(
-              "            .andThen(ctx.adapter(%s.class, message, groups, %s))",
+              "            .andThen(ctx.adapter(%s.class, groups, message, %s))",
               a.getKey().shortName(), a.getValue());
     }
     writer.append(";").eol();

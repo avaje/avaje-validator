@@ -16,7 +16,8 @@ final class Append {
 
   Append append(String content) {
     try {
-      writer.append(content.replace("&rparen;", ")".replace("groups,List.of", "groups,Set.of")));
+      writer.append(
+          content.replace("&rparen;", ")").replace("\"groups\",List.of(", "\"groups\",Set.of("));
       return this;
     } catch (final IOException e) {
       throw new RuntimeException(e);

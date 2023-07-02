@@ -1,6 +1,6 @@
 package io.avaje.validation.generator.models.valid;
 
-import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
@@ -8,14 +8,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import io.avaje.validation.Constraint;
+import io.avaje.validation.constraints.NotEmpty;
 import io.avaje.validation.constraints.NotNull;
 
-@Target({FIELD})
+@Target({TYPE, ANNOTATION_TYPE})
 @Retention(SOURCE)
 @Constraint
-@Combining2(message = "sus")
-@NotNull
-public @interface Combining {
+@NotEmpty
+public @interface Combining2 {
 
   String message();
 
