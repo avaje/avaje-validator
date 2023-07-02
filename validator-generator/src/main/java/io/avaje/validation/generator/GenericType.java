@@ -22,7 +22,7 @@ final class GenericType {
 
   /** Create for top level type. */
   GenericType(String raw) {
-    this.raw = raw;
+    this.raw = raw.transform(s -> s.startsWith(",") ? s.substring(1) : s);
   }
 
   /** Create for parameter type. */
@@ -111,7 +111,10 @@ final class GenericType {
   }
 
   private String trimExtends() {
-    final String type = topType();
+    String type = topType();
+    final var index = type.indexOf("(");
+    type = index == -1 ? type : type.substring(0, index);
+
     if (type != null && type.startsWith("? extends ")) {
       return type.substring(10);
     }

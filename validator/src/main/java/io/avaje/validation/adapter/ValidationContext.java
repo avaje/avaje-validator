@@ -26,6 +26,11 @@ public interface ValidationContext {
   <T> ValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes);
 
   /**
+   * Return A no-op adapter
+   */
+  <T> ValidationAdapter<T> noop();
+
+  /**
    * Create a message object using the annotation attribute "message";
    */
   Message message(Map<String, Object> attributes);

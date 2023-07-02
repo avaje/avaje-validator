@@ -2,6 +2,7 @@ package io.avaje.validation.constraints;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
@@ -17,7 +18,7 @@ import io.avaje.validation.constraints.Email.List;
  *
  * <p>Accepts {@code CharSequence}. {@code null} elements are considered valid.
  */
-@Target({METHOD, FIELD})
+@Target({METHOD, FIELD, TYPE_USE})
 @Retention(RUNTIME)
 @Repeatable(List.class)
 @Documented
@@ -28,15 +29,12 @@ public @interface Email {
   Class<?>[] groups() default {};
 
   /**
-   * @return an additional regular expression the annotated element must match. The default is any
-   *     string ('.*')
+   * An additional regular expression the annotated element must match. The default is any string
+   * ('.*')
    */
   String regexp() default ".*";
 
-  /**
-   * @return used in combination with {@link #regexp()} in order to specify a regular expression
-   *     option
-   */
+  /** Used in combination with {@link #regexp()} in order to specify a regular expression option */
   RegexFlag[] flags() default {};
 
   /**

@@ -2,6 +2,7 @@ package io.avaje.validation.constraints;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
@@ -17,22 +18,22 @@ import io.avaje.validation.constraints.Pattern.List;
  *
  * <p>Accepts {@code CharSequence}. {@code null} elements are considered valid.
  */
-@Target({METHOD, FIELD})
+@Target({METHOD, FIELD, TYPE_USE})
 @Retention(RUNTIME)
 @Repeatable(List.class)
 @Documented
 public @interface Pattern {
 
-  /** @return the regular expression to match */
+  /** the regular expression to match */
   String regexp();
 
-  /** @return array of {@code RegexFlag}s considered when resolving the regular expression */
+  /** array of {@code RegexFlag}s considered when resolving the regular expression */
   RegexFlag[] flags() default {};
 
-  /** @return the error message template */
+  /** the error message template */
   String message() default "{avaje.Pattern.message}";
 
-  /** @return the groups the constraint belongs to */
+  /** the groups the constraint belongs to */
   Class<?>[] groups() default {};
 
   /**

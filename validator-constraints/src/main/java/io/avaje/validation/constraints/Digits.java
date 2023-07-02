@@ -1,8 +1,17 @@
 package io.avaje.validation.constraints;
 
-import java.lang.annotation.*;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE_USE;
 
-@Target({ElementType.METHOD, ElementType.FIELD})
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({METHOD, FIELD, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Digits.List.class)
 public @interface Digits {
