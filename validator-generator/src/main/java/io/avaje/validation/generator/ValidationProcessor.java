@@ -32,7 +32,7 @@ import javax.lang.model.util.ElementFilter;
   AnnotationValidatorPrism.PRISM_TYPE,
   ConstraintPrism.PRISM_TYPE
 })
-public final class Processor extends AbstractProcessor {
+public final class ValidationProcessor extends AbstractProcessor {
 
   private final ComponentMetaData metaData = new ComponentMetaData();
   private final List<BeanReader> allReaders = new ArrayList<>();

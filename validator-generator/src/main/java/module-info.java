@@ -8,5 +8,5 @@ module io.avaje.validation.generator {
   requires static java.validation;
   requires static jakarta.validation;
 
-  provides javax.annotation.processing.Processor with io.avaje.validation.generator.Processor;
+  provides javax.annotation.processing.Processor with io.avaje.validation.generator.ValidationProcessor;
 }
