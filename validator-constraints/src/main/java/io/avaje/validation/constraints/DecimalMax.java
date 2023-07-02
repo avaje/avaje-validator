@@ -10,7 +10,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import io.avaje.validation.Constraint;
 import io.avaje.validation.constraints.DecimalMax.List;
 
 @Constraint

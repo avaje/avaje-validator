@@ -68,10 +68,11 @@ public final class ValidationProcessor extends AbstractProcessor {
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
 
     readModule();
-    writeContraintAdapters(
-        round.getElementsAnnotatedWith(element(AvajeConstraintPrism.PRISM_TYPE)));
 
     // Optional because these annotations are not guaranteed to exist
+    Optional.ofNullable(element(AvajeConstraintPrism.PRISM_TYPE))
+        .map(round::getElementsAnnotatedWith)
+        .ifPresent(this::writeContraintAdapters);
     Optional.ofNullable(element(JavaxConstraintPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeContraintAdapters);

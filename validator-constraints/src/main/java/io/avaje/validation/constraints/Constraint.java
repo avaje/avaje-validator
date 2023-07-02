@@ -1,4 +1,4 @@
-package io.avaje.validation;
+package io.avaje.validation.constraints;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.CLASS;

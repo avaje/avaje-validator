@@ -7,7 +7,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import io.avaje.validation.Constraint;
+import io.avaje.validation.constraints.Constraint;
 import io.avaje.validation.constraints.NotEmpty;
 import io.avaje.validation.constraints.NotNull;
 

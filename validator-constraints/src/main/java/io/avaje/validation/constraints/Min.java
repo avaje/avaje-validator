@@ -12,8 +12,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.avaje.validation.Constraint;
-
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)

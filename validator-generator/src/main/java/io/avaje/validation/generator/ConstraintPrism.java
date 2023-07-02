@@ -5,7 +5,7 @@ import javax.lang.model.element.Element;
 import io.avaje.prism.GeneratePrism;
 
 @GeneratePrism(
-    value = io.avaje.validation.Constraint.class,
+    value = io.avaje.validation.constraints.Constraint.class,
     name = "AvajeConstraintPrism",
     superInterfaces = ConstraintPrism.class)
 @GeneratePrism(
