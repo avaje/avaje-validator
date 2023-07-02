@@ -149,8 +149,8 @@ final class ContraintReader implements BeanReader {
             """
   @Override
   public boolean validate(Object value, ValidationRequest req, String propertyName) {
-
-    return adapter.validate(value, req);
+    adapter.validate(value, req);
+    return true;
   }
 """)
         .eol();
