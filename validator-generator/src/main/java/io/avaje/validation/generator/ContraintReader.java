@@ -82,7 +82,7 @@ final class ContraintReader implements BeanReader {
   }
 
   @Override
-  public boolean hasJsonAnnotation() {
+  public boolean hasValidationAnnotation() {
     return false;
   }
 

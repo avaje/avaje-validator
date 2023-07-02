@@ -36,7 +36,7 @@ interface BeanReader {
     return false;
   }
 
-  default boolean hasJsonAnnotation() {
+  default boolean hasValidationAnnotation() {
     return false;
   }
 

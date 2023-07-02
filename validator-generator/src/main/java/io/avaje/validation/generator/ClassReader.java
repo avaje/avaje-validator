@@ -64,7 +64,7 @@ final class ClassReader implements BeanReader {
   }
 
   @Override
-  public boolean hasJsonAnnotation() {
+  public boolean hasValidationAnnotation() {
     return Util.isValid(beanType);
   }
 
