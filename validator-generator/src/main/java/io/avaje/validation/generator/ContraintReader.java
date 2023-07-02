@@ -58,7 +58,7 @@ final class ContraintReader implements BeanReader {
 
   @Override
   public String contraintTarget() {
-    return type;
+    return Util.shortName(type);
   }
 
   @Override
@@ -123,12 +123,12 @@ final class ContraintReader implements BeanReader {
         """
     final var message = ctx.<Object>message(attributes).template();
     this.adapter =
-        ctx.adapter(""");
+""");
 
     boolean first = true;
     for (final var a : annotations.entrySet()) {
       if (first) {
-        writer.append("%s.class, groups, message, %s)", a.getKey().shortName(), a.getValue());
+        writer.append("        ctx.adapter(%s.class, groups, message, %s)", a.getKey().shortName(), a.getValue());
         first = false;
         continue;
       }
@@ -150,8 +150,9 @@ final class ContraintReader implements BeanReader {
   @Override
   public boolean validate(Object value, ValidationRequest req, String propertyName) {
 
-  return adapter.validate(value, req);
-  }""")
+    return adapter.validate(value, req);
+  }
+""")
         .eol();
   }
 }
