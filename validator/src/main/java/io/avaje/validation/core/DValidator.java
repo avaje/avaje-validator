@@ -12,11 +12,13 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -109,7 +111,18 @@ final class DValidator implements Validator, ValidationContext {
 
   @Override
   public <T> ValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes) {
-    return builder.annotationAdapter(cls, attributes);
+    return builder.annotationAdapter(cls, attributes, null);
+  }
+
+  @Override
+  public <T> ValidationAdapter<T> adapter(
+      Class<? extends Annotation> cls,
+      Set<Class<?>> groups,
+      String message,
+      Map<String, Object> attributes) {
+    attributes = new HashMap<>(attributes);
+    attributes.put("message", message);
+    return builder.annotationAdapter(cls, Map.copyOf(attributes), groups);
   }
 
   @Override

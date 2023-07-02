@@ -26,6 +26,16 @@ public interface ValidationContext {
   <T> ValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes);
 
   /**
+   * Return the adapter for the given annotation with attributes. Used for adapters that combine
+   * multiple annotation adapters
+   */
+  <T> ValidationAdapter<T> adapter(
+      Class<? extends Annotation> cls,
+      Set<Class<?>> groups,
+      String message,
+      Map<String, Object> attributes);
+
+  /**
    * Return A no-op adapter
    */
   <T> ValidationAdapter<T> noop();

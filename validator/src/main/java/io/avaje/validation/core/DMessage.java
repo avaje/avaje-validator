@@ -8,7 +8,7 @@ final record DMessage(String template, Map<String, Object> attributes, int dedup
     implements ValidationContext.Message {
 
   // templates can be the same across multiple adapters
-  // these numbers ensures no cache collision
+  // these numbers ensure no cache collision
   private static int messageCounter = 0;
 
   DMessage(String template, Map<String, Object> attributes) {

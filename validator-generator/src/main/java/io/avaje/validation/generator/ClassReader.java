@@ -24,8 +24,8 @@ final class ClassReader implements BeanReader {
     typeReader.process();
     this.nonAccessibleField = typeReader.nonAccessibleField();
     this.allFields = typeReader.allFields();
-    importTypes.add("");
     importTypes.add("java.util.List");
+    importTypes.add("java.util.Set");
     importTypes.add("java.util.Map");
 
     importTypes.add("io.avaje.validation.adapter.ValidationAdapter");

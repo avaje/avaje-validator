@@ -39,4 +39,8 @@ interface BeanReader {
   default boolean hasJsonAnnotation() {
     return false;
   }
+
+  default String contraintTarget() {
+    return "";
+  }
 }
