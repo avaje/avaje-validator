@@ -1,5 +1,6 @@
 package io.avaje.validation.constraints;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE_USE;
@@ -14,7 +15,7 @@ import io.avaje.validation.Constraint;
 
 @Constraint
 @Documented
-@Target({METHOD, FIELD, TYPE_USE})
+@Target({METHOD, FIELD, ANNOTATION_TYPE, TYPE_USE})
 @Retention(RUNTIME)
 @Repeatable(PastOrPresent.List.class)
 public @interface PastOrPresent {

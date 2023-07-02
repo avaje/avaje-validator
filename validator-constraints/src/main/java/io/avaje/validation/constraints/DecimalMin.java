@@ -6,8 +6,10 @@
  */
 package io.avaje.validation.constraints;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Repeatable;
@@ -38,7 +40,7 @@ import io.avaje.validation.constraints.DecimalMin.List;
  * @author Emmanuel Bernard
  */
 @Constraint
-@Target({METHOD, FIELD})
+@Target({METHOD, FIELD, ANNOTATION_TYPE, TYPE_USE})
 @Retention(RUNTIME)
 @Repeatable(List.class)
 public @interface DecimalMin {
