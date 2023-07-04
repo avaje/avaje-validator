@@ -22,6 +22,7 @@ public record ValidParamAnnotation(
     // it seems we cannot directly retrieve mirrors from var elements
     final var annotations =
         noGeneric.transform(s -> Util.typeUse(s, false)).get(0).stream()
+            .filter(not(String::isBlank))
             .filter(not(Constants.VALID_ANNOTATIONS::contains))
             .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
 
@@ -29,9 +30,11 @@ public record ValidParamAnnotation(
     final var typeUse = Util.typeUse(asString, true);
     final var typeUse1 =
         typeUse.get(0).stream()
+            .filter(not(String::isBlank))
             .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
     final var typeUse2 =
         typeUse.get(1).stream()
+            .filter(not(String::isBlank))
             .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
 
     final boolean hasValid = Constants.VALID_ANNOTATIONS.stream().anyMatch(noGeneric::contains);

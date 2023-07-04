@@ -1,5 +1,6 @@
 package io.avaje.validation.generator;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.HashSet;
@@ -50,12 +51,14 @@ final class FieldReader {
 
     } else {
       this.rawType = Util.trimAnnotations(element.asType().toString());
-      final var typeUse = Util.typeUse(element.asType().toString(),true);
+      final var typeUse = Util.typeUse(element.asType().toString(), true);
       typeUse1 =
           typeUse.get(0).stream()
+              .filter(not(String::isBlank))
               .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
       typeUse2 =
           typeUse.get(1).stream()
+              .filter(not(String::isBlank))
               .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
     }
     genericType = GenericType.parse(rawType);
