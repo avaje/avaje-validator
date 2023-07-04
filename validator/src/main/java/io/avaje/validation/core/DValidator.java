@@ -142,7 +142,8 @@ final class DValidator implements Validator, ValidationContext {
     return CoreAdapterBuilder.NOOP;
   }
 
-  ValidationRequest request(@Nullable Locale locale, List<Class<?>> groups) {
+  @Override
+  public ValidationRequest request(@Nullable Locale locale, List<Class<?>> groups) {
     return new DRequest(this, failfast, locale, groups);
   }
 

@@ -1,11 +1,11 @@
 package example.avaje;
 
-import io.avaje.validation.ValidPojo;
+import io.avaje.validation.Valid;
 import io.avaje.validation.constraints.DecimalMax;
 
 import java.math.BigDecimal;
 
-@ValidPojo
+@Valid
 public class AMyNumbers {
 
   @DecimalMax("10.50")

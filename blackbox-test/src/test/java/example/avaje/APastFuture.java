@@ -1,11 +1,11 @@
 package example.avaje;
 
-import io.avaje.validation.ValidPojo;
+import io.avaje.validation.Valid;
 import io.avaje.validation.constraints.*;
 
 import java.time.LocalDate;
 
-@ValidPojo
+@Valid
 public class APastFuture {
 
   @Past

@@ -43,7 +43,10 @@ class ValidatorProcessorTest {
 
   @Test
   void testGeneration() throws Exception {
-    final String source = Paths.get("src/test/java/io/avaje/validation/generator/models/valid").toAbsolutePath().toString();
+    final String source =
+        Paths.get("src/test/java/io/avaje/validation/generator/models/valid")
+            .toAbsolutePath()
+            .toString();
 
     final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     final StandardJavaFileManager manager = compiler.getStandardFileManager(null, null, null);

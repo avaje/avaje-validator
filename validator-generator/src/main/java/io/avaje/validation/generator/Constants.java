@@ -8,10 +8,11 @@ final class Constants {
       "META-INF/services/io.avaje.validation.Validator$GeneratedComponent";
   public static final String VALID_SPI = "io.avaje.validation.spi.*";
   public static final String VALIDATOR = "io.avaje.validation.Validator";
+  public static final String COMPONENT = "io.avaje.inject.Component";
   public static final Set<String> VALID_ANNOTATIONS =
       Set.of(
-          ValidPojoPrism.PRISM_TYPE,
-          ValidPrism.PRISM_TYPE,
+          AvajeValidPrism.PRISM_TYPE,
+          HttpValidPrism.PRISM_TYPE,
           JavaxValidPrism.PRISM_TYPE,
           JakartaValidPrism.PRISM_TYPE);
 }

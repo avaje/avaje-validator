@@ -1,13 +1,11 @@
 package example.avaje.nested;
 
 import io.avaje.lang.Nullable;
-import io.avaje.validation.ValidPojo;
-import io.avaje.validation.constraints.NotNull;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-@ValidPojo
+@Valid
 public class AContactWithNullable {
 
   @NotBlank

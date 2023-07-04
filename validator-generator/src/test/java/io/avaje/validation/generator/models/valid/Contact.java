@@ -1,8 +1,8 @@
 package io.avaje.validation.generator.models.valid;
 
-import io.avaje.validation.ValidPojo;
+import io.avaje.validation.Valid;
 
-@ValidPojo
+@Valid
 public class Contact {
     public String firstName;
     public String lastName;

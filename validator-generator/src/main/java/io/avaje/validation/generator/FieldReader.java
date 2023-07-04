@@ -13,12 +13,7 @@ import javax.lang.model.element.Modifier;
 
 final class FieldReader {
 
-  static final Set<String> BASIC_TYPES = new HashSet<>();
-
-  static {
-    BASIC_TYPES.add("java.lang.String");
-    BASIC_TYPES.add("java.math.BigDecimal");
-  }
+  static final Set<String> BASIC_TYPES = Set.of("java.lang.String", "java.math.BigDecimal");
 
   private final List<String> genericTypeParams;
   private final boolean publicField;
@@ -33,8 +28,8 @@ final class FieldReader {
   private final boolean optionalValidation;
   private final Map<GenericType, String> annotations;
   private final Element element;
-  private final Map<GenericType, Object> typeUse1;
-  private final Map<GenericType, Object> typeUse2;
+  private final Map<GenericType, String> typeUse1;
+  private final Map<GenericType, String> typeUse2;
   private final boolean hasValid;
 
   FieldReader(Element element, List<String> genericTypeParams) {
@@ -42,10 +37,10 @@ final class FieldReader {
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
     this.element = element;
-    this.hasValid = ValidPrismType.isPresent(element);
+    this.hasValid = ValidPrism.isPresent(element);
     if (element instanceof final ExecutableElement executableElement) {
       this.rawType = Util.trimAnnotations(executableElement.getReturnType().toString());
-      final var typeUse = Util.typeUse(executableElement.getReturnType().toString());
+      final var typeUse = Util.typeUse(executableElement.getReturnType().toString(),true);
       typeUse1 =
           typeUse.get(0).stream()
               .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
@@ -55,7 +50,7 @@ final class FieldReader {
 
     } else {
       this.rawType = Util.trimAnnotations(element.asType().toString());
-      final var typeUse = Util.typeUse(element.asType().toString());
+      final var typeUse = Util.typeUse(element.asType().toString(),true);
       typeUse1 =
           typeUse.get(0).stream()
               .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
@@ -216,7 +211,7 @@ final class FieldReader {
               a.getKey().shortName(), a.getValue());
     }
     final var topType = genericType.topType();
-    if (isBasicType(topType)) {
+    if (Util.isBasicType(topType)) {
       writer.append(";").eol();
       return;
     }
@@ -255,12 +250,12 @@ final class FieldReader {
   }
 
   private void writeTypeUse(
-      Append writer, String firstParamType, Map<GenericType, Object> typeUse12) {
+      Append writer, String firstParamType, Map<GenericType, String> typeUse12) {
     writeTypeUse(writer, firstParamType, typeUse12, true);
   }
 
   private void writeTypeUse(
-      Append writer, String t, Map<GenericType, Object> typeUseMap, boolean keys) {
+      Append writer, String t, Map<GenericType, String> typeUseMap, boolean keys) {
 
     for (final var a : typeUseMap.entrySet()) {
 
@@ -272,7 +267,7 @@ final class FieldReader {
       writer.eol().append("            .andThenMulti(ctx.adapter(%s.class,%s))", k, v);
     }
 
-    if (!isBasicType(t)
+    if (!Util.isBasicType(t)
         && typeUseMap.keySet().stream()
             .map(GenericType::topType)
             .anyMatch(Constants.VALID_ANNOTATIONS::contains)) {
@@ -284,15 +279,5 @@ final class FieldReader {
               Util.shortName(keys ? genericType.firstParamType() : genericType.secondParamType()))
           .eol();
     }
-  }
-
-  private boolean isBasicType(final String topType) {
-    return BASIC_TYPES.contains(topType)
-        || isJavaTime(topType)
-        || GenericTypeMap.typeOfRaw(topType) != null;
-  }
-
-  private boolean isJavaTime(String topType) {
-    return topType.startsWith("java.time.");
   }
 }

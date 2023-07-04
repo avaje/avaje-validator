@@ -19,20 +19,22 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 @SupportedAnnotationTypes({
-  ValidPojoPrism.PRISM_TYPE,
+  AvajeValidPrism.PRISM_TYPE,
   ImportPrism.PRISM_TYPE,
-  ValidPrism.PRISM_TYPE,
+  HttpValidPrism.PRISM_TYPE,
   JavaxValidPrism.PRISM_TYPE,
   JakartaValidPrism.PRISM_TYPE,
   AnnotationValidatorPrism.PRISM_TYPE,
   AvajeConstraintPrism.PRISM_TYPE,
   JakartaConstraintPrism.PRISM_TYPE,
-  JavaxConstraintPrism.PRISM_TYPE
+  JavaxConstraintPrism.PRISM_TYPE,
+  ValidateParamsPrism.PRISM_TYPE
 })
 public final class ValidationProcessor extends AbstractProcessor {
 
@@ -73,6 +75,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     Optional.ofNullable(element(AvajeConstraintPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeContraintAdapters);
+
     Optional.ofNullable(element(JavaxConstraintPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeContraintAdapters);
@@ -83,9 +86,9 @@ public final class ValidationProcessor extends AbstractProcessor {
     registerCustomAdapters(
         round.getElementsAnnotatedWith(element(AnnotationValidatorPrism.PRISM_TYPE)));
 
-    writeAdapters(round.getElementsAnnotatedWith(element(ValidPojoPrism.PRISM_TYPE)));
+    writeAdapters(round.getElementsAnnotatedWith(element(AvajeValidPrism.PRISM_TYPE)));
 
-    Optional.ofNullable(element(ValidPrism.PRISM_TYPE))
+    Optional.ofNullable(element(HttpValidPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeAdapters);
     Optional.ofNullable(element(JavaxValidPrism.PRISM_TYPE))
@@ -94,8 +97,15 @@ public final class ValidationProcessor extends AbstractProcessor {
     Optional.ofNullable(element(JakartaValidPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeAdapters);
+
+    Optional.ofNullable(element(ValidateParamsPrism.PRISM_TYPE))
+        .map(round::getElementsAnnotatedWith)
+        .map(ElementFilter::methodsIn)
+        .ifPresent(this::writeParamProviderForMethod);
+
     writeAdaptersForImported(round.getElementsAnnotatedWith(element(ImportPrism.PRISM_TYPE)));
     cascadeTypes();
+    initialiseComponent();
     writeComponent(round.processingOver());
     return false;
   }
@@ -113,7 +123,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private void cascadeTypesInner() {
-    final ArrayList<BeanReader> copy = new ArrayList<>(allReaders);
+    final List<BeanReader> copy = new ArrayList<>(allReaders);
     allReaders.clear();
 
     final Set<String> extraTypes = new TreeSet<>();
@@ -145,7 +155,7 @@ public final class ValidationProcessor extends AbstractProcessor {
         || sourceTypes.contains(type);
   }
 
-  /** Elements that have a {@code @ValidPojo.Import} annotation. */
+  /** Elements that have a {@code @Valid.Import} annotation. */
   private void writeAdaptersForImported(Set<? extends Element> importedElements) {
     for (final var importedElement : ElementFilter.typesIn(importedElements)) {
       for (final TypeMirror importType : ImportPrism.getInstanceOn(importedElement).value()) {
@@ -169,7 +179,6 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private void writeComponent(boolean processingOver) {
     if (processingOver) {
-      initialiseComponent();
       try {
         componentWriter.write();
         componentWriter.writeMetaInf();
@@ -228,6 +237,21 @@ public final class ValidationProcessor extends AbstractProcessor {
       beanWriter.write();
       allReaders.add(beanReader);
       sourceTypes.add(typeElement.getSimpleName().toString());
+    } catch (final IOException e) {
+      logError("Error writing ValidationAdapter for %s %s", beanReader, e);
+    }
+  }
+
+  private void writeParamProviderForMethod(Set<ExecutableElement> typeElement) {
+    typeElement.forEach(this::writeParamProvider);
+  }
+
+  private void writeParamProvider(ExecutableElement typeElement) {
+    final ValidParamReader beanReader = new ValidParamReader(typeElement);
+    try {
+      final var beanWriter = new SimpleParamBeanWriter(beanReader);
+
+      beanWriter.write();
     } catch (final IOException e) {
       logError("Error writing ValidationAdapter for %s %s", beanReader, e);
     }
