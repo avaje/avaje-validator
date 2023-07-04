@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java_version }}
-          distribution: "corretto"
+          distribution: "zulu"
       - name: Maven cache
         uses: actions/cache@v3
         env:
