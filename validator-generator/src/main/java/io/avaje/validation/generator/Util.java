@@ -269,6 +269,10 @@ final class Util {
    * "JsonAdapter" suffix.
    */
   static String baseTypeOfAdapter(String adapterFullName) {
+
+    System.err.println(adapterFullName);
+    System.err.println(element(adapterFullName));
+
     return element(adapterFullName).getInterfaces().stream()
         .filter(t -> t.toString().contains("io.avaje.validation.adapter.ValidationAdapter"))
         .findFirst()

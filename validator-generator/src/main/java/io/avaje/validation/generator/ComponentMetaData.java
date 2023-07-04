@@ -81,7 +81,6 @@ final class ComponentMetaData {
     final Set<String> packageImports = new TreeSet<>();
     for (final String adapterFullName : allTypes) {
       packageImports.add(Util.packageOf(adapterFullName) + ".*");
-      System.err.println(adapterFullName );
       packageImports.add(Util.baseTypeOfAdapter(adapterFullName));
     }
 
