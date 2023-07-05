@@ -242,8 +242,19 @@ public final class ValidationProcessor extends AbstractProcessor {
     }
   }
 
-  private void writeParamProviderForMethod(Set<ExecutableElement> typeElement) {
-    typeElement.forEach(this::writeParamProvider);
+  private void writeParamProviderForMethod(Set<ExecutableElement> elements) {
+    if (element(ComponentPrism.PRISM_TYPE) == null) {
+      throw new IllegalStateException("ValidateParams can only be used with Avaje Inject Beans");
+    }
+    for (final ExecutableElement executableElement : elements) {
+
+      if (executableElement.getEnclosingElement().getAnnotationMirrors().stream()
+          .map(m -> m.getAnnotationType().toString())
+          .noneMatch(s -> s.contains("Singleton") || s.contains("Component"))) {
+        throw new IllegalStateException("ValidateParams can only be used with Avaje Inject Beans");
+      }
+      writeParamProvider(executableElement);
+    }
   }
 
   private void writeParamProvider(ExecutableElement typeElement) {
