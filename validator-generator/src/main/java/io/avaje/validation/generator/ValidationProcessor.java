@@ -105,9 +105,6 @@ public final class ValidationProcessor extends AbstractProcessor {
 
     writeAdaptersForImported(round.getElementsAnnotatedWith(element(ImportPrism.PRISM_TYPE)));
     cascadeTypes();
-    initialiseComponent();
-    System.err.println(element("example.avaje.typeuse.valid.ShipValidationAdapter"));
-
     writeComponent(round.processingOver());
     return false;
   }
@@ -182,6 +179,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private void writeComponent(boolean processingOver) {
     if (processingOver) {
       try {
+        initialiseComponent();
         componentWriter.write();
         componentWriter.writeMetaInf();
       } catch (final IOException e) {
