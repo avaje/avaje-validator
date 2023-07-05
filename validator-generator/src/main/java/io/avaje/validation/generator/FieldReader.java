@@ -278,9 +278,8 @@ final class FieldReader {
       writer
           .eol()
           .append(
-              "           .andThenMulti(ctx.adapter(%s.class))",
-              Util.shortName(keys ? genericType.firstParamType() : genericType.secondParamType()))
-          .eol();
+              "            .andThenMulti(ctx.adapter(%s.class))",
+              Util.shortName(keys ? genericType.firstParamType() : genericType.secondParamType()));
     }
   }
 }
