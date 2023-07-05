@@ -22,17 +22,17 @@ public class ParamInterceptor implements MethodInterceptor {
 
   @Override
   public void invoke(Invocation invocation) throws Throwable {
-    var i = 0;
+
     final var args = invocation.arguments();
+    final var req = ctx.request(locale, List.of());
+    var i = 0;
     for (final var adapter : validationAdapters) {
       final Object object = args[i];
-      final var req = ctx.request(locale, List.of());
       adapter.validate(object, req);
-      req.throwWithViolations();
-
-      i++;
+      ++i;
     }
 
+    req.throwWithViolations();
     invocation.arguments();
   }
 }
