@@ -33,4 +33,4 @@ jobs:
         env:
           JAVA_VERSION: ${{ matrix.java_version }}
         run:
-          mvn clean package || cat blackbox-test/target/generated-sources/annotations/example/avaje/typeuse/valid/ShipValidationAdapter.java
+          mvn clean compile || cat blackbox-test/target/generated-sources/annotations/example/avaje/typeuse/valid/ShipValidationAdapter.java
