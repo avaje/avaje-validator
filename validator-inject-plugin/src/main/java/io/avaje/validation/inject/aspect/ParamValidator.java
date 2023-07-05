@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import io.avaje.inject.aop.AspectProvider;
@@ -28,6 +29,13 @@ public class ParamValidator implements AspectProvider<ValidateParams> {
   @Override
   public MethodInterceptor interceptor(Method method, ValidateParams aspectAnnotation) {
 
-    return new ParamInterceptor(paramAdapters.get(method), ctx);
+    final var localeStr = aspectAnnotation.locale();
+    final Locale locale;
+    if (localeStr.isBlank()) {
+      locale = null;
+    } else {
+      locale = Locale.forLanguageTag(localeStr);
+    }
+    return new ParamInterceptor(locale, ctx, paramAdapters.get(method));
   }
 }
