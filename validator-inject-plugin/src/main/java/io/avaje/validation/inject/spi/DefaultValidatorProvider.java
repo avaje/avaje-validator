@@ -1,5 +1,7 @@
 package io.avaje.validation.inject.spi;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -39,7 +41,18 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
               .flatMap(s -> Arrays.stream(s.split(",")))
               .map(Locale::forLanguageTag)
               .forEach(validator::addLocales);
-
+          props
+              .get("validation.temporal.value")
+              .map(Long::valueOf)
+              .ifPresent(
+                  l -> {
+                    final var unit =
+                        props
+                            .get("validation.temporal.chronoUnit")
+                            .map(ChronoUnit::valueOf)
+                            .orElse(ChronoUnit.MILLIS);
+                    validator.temporalTolerance(Duration.of(l, unit));
+                  });
           return validator.build();
         });
   }
