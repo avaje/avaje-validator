@@ -41,6 +41,7 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
               .flatMap(s -> Arrays.stream(s.split(",")))
               .map(Locale::forLanguageTag)
               .forEach(validator::addLocales);
+
           props
               .get("validation.temporal.value")
               .map(Long::valueOf)
