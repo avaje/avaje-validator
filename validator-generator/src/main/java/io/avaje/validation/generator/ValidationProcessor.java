@@ -96,6 +96,7 @@ public final class ValidationProcessor extends AbstractProcessor {
         .ifPresent(this::writeAdapters);
     writeAdaptersForImported(round.getElementsAnnotatedWith(element(ImportPrism.PRISM_TYPE)));
     cascadeTypes();
+    initialiseComponent();
     writeComponent(round.processingOver());
     return false;
   }
@@ -169,7 +170,6 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private void writeComponent(boolean processingOver) {
     if (processingOver) {
-      initialiseComponent();
       try {
         componentWriter.write();
         componentWriter.writeMetaInf();
