@@ -1,8 +1,8 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.ValidPojo;
+import io.avaje.validation.Valid;
 
-@ValidPojo
+@Valid
 public class Address {
 
     public String line1;

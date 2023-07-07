@@ -2,8 +2,12 @@ package io.avaje.validation.adapter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import io.avaje.lang.Nullable;
 
 /**
  * Context available when validation adapters are being created.
@@ -48,6 +52,8 @@ public interface ValidationContext {
   /** Create a message object using the given string and annotation attributes */
   Message message(String message, Map<String, Object> attributes);
 
+  ValidationRequest request(@Nullable Locale locale, List<Class<?>> groups);
+
   interface Message {
 
     String template();
@@ -85,4 +91,5 @@ public interface ValidationContext {
     ValidationAdapter<?> create(
       Class<? extends Annotation> annotationType, ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes);
   }
+
 }

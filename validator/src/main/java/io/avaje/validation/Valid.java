@@ -11,7 +11,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  */
 @Retention(CLASS)
 @Target({TYPE,TYPE_USE, FIELD})
-public @interface ValidPojo {
+public @interface Valid {
 
   /**
    */
@@ -20,7 +20,7 @@ public @interface ValidPojo {
   @interface Import {
 
     /**
-     * Specify types to generate ValidPojo Adapters for.
+     * Specify types to generate Valid Adapters for.
      */
     Class<?>[] value();
   }

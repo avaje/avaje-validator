@@ -1,28 +1,18 @@
 package io.avaje.validation.generator;
 
-import static java.util.stream.Collectors.toMap;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 final class FieldReader {
 
-  static final Set<String> BASIC_TYPES = new HashSet<>();
-
-  static {
-    BASIC_TYPES.add("java.lang.String");
-    BASIC_TYPES.add("java.math.BigDecimal");
-  }
+  static final Set<String> BASIC_TYPES = Set.of("java.lang.String", "java.math.BigDecimal");
 
   private final List<String> genericTypeParams;
   private final boolean publicField;
-  private final String rawType;
   private final GenericType genericType;
   private final String adapterFieldName;
   private final String adapterShortType;
@@ -31,46 +21,16 @@ final class FieldReader {
   private MethodReader getter;
   private boolean genericTypeParameter;
   private final boolean optionalValidation;
-  private final Map<GenericType, String> annotations;
   private final Element element;
-  private final Map<GenericType, Object> typeUse1;
-  private final Map<GenericType, Object> typeUse2;
-  private final boolean hasValid;
+  private final ElementAnnotationContainer elementAnnotations;
 
   FieldReader(Element element, List<String> genericTypeParams) {
     this.genericTypeParams = genericTypeParams;
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
     this.element = element;
-    this.hasValid = ValidPrismType.isPresent(element);
-    if (element instanceof final ExecutableElement executableElement) {
-      this.rawType = Util.trimAnnotations(executableElement.getReturnType().toString());
-      final var typeUse = Util.typeUse(executableElement.getReturnType().toString());
-      typeUse1 =
-          typeUse.get(0).stream()
-              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
-      typeUse2 =
-          typeUse.get(1).stream()
-              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
-
-    } else {
-      this.rawType = Util.trimAnnotations(element.asType().toString());
-      final var typeUse = Util.typeUse(element.asType().toString());
-      typeUse1 =
-          typeUse.get(0).stream()
-              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
-      typeUse2 =
-          typeUse.get(1).stream()
-              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
-    }
-    genericType = GenericType.parse(rawType);
-
-    this.annotations =
-        element.getAnnotationMirrors().stream()
-            .collect(
-                toMap(
-                    a -> GenericType.parse(a.getAnnotationType().toString()),
-                    AnnotationUtil::annotationAttributeMap));
+    this.elementAnnotations = ElementAnnotationContainer.create(element);
+    this.genericType = elementAnnotations.genericType();
     final String shortType = genericType.shortType();
     adapterShortType = initAdapterShortType(shortType);
     adapterFieldName = initShortName();
@@ -128,9 +88,7 @@ final class FieldReader {
       importTypes.add("static io.avaje.validation.adapter.RegexFlag.*");
     }
     genericType.addImports(importTypes);
-    annotations.keySet().forEach(t -> t.addImports(importTypes));
-    typeUse1.keySet().forEach(t -> t.addImports(importTypes));
-    typeUse2.keySet().forEach(t -> t.addImports(importTypes));
+    elementAnnotations.addImports(importTypes);
   }
 
   void cascadeTypes(Set<String> types) {
@@ -201,6 +159,10 @@ final class FieldReader {
     writer.append("    this.%s = ", adapterFieldName).eol();
 
     boolean first = true;
+    final var annotations = elementAnnotations.annotations();
+    final var typeUse1 = elementAnnotations.typeUse1();
+    final var typeUse2 = elementAnnotations.typeUse2();
+    final var hasValid = elementAnnotations.hasValid();
     for (final var a : annotations.entrySet()) {
       if (first) {
         writer.append(
@@ -216,7 +178,7 @@ final class FieldReader {
               a.getKey().shortName(), a.getValue());
     }
     final var topType = genericType.topType();
-    if (isBasicType(topType)) {
+    if (Util.isBasicType(topType)) {
       writer.append(";").eol();
       return;
     }
@@ -255,12 +217,12 @@ final class FieldReader {
   }
 
   private void writeTypeUse(
-      Append writer, String firstParamType, Map<GenericType, Object> typeUse12) {
+      Append writer, String firstParamType, Map<GenericType, String> typeUse12) {
     writeTypeUse(writer, firstParamType, typeUse12, true);
   }
 
   private void writeTypeUse(
-      Append writer, String t, Map<GenericType, Object> typeUseMap, boolean keys) {
+      Append writer, String t, Map<GenericType, String> typeUseMap, boolean keys) {
 
     for (final var a : typeUseMap.entrySet()) {
 
@@ -272,7 +234,7 @@ final class FieldReader {
       writer.eol().append("            .andThenMulti(ctx.adapter(%s.class,%s))", k, v);
     }
 
-    if (!isBasicType(t)
+    if (!Util.isBasicType(t)
         && typeUseMap.keySet().stream()
             .map(GenericType::topType)
             .anyMatch(Constants.VALID_ANNOTATIONS::contains)) {
@@ -280,19 +242,8 @@ final class FieldReader {
       writer
           .eol()
           .append(
-              "           .andThenMulti(ctx.adapter(%s.class))",
-              Util.shortName(keys ? genericType.firstParamType() : genericType.secondParamType()))
-          .eol();
+              "            .andThenMulti(ctx.adapter(%s.class))",
+              Util.shortName(keys ? genericType.firstParamType() : genericType.secondParamType()));
     }
-  }
-
-  private boolean isBasicType(final String topType) {
-    return BASIC_TYPES.contains(topType)
-        || isJavaTime(topType)
-        || GenericTypeMap.typeOfRaw(topType) != null;
-  }
-
-  private boolean isJavaTime(String topType) {
-    return topType.startsWith("java.time.");
   }
 }

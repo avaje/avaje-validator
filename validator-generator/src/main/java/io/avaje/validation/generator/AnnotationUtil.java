@@ -81,7 +81,7 @@ final class AnnotationUtil {
   }
 
   static String annotationAttributeMap(String annotationStr) {
-    final String result;
+    String result;
     final var start = annotationStr.indexOf('(');
     final String attributes;
     if (start == -1) {

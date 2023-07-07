@@ -3,7 +3,9 @@ package io.avaje.validation.generator;
 import static io.avaje.validation.generator.ProcessingContext.element;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,17 +13,19 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
 final class Util {
-  // cuts out all annotations
-  private static final Pattern trimPattern =
-      Pattern.compile(
-          "@([a-z]+(\\.[a-z]+)+)\\([^)]*\\),|@([a-z]+(\\.[a-z]+)+)\\([^)]*\\)|@([a-z0-9]+(\\.[a-z0-9]+)+)",
-          Pattern.CASE_INSENSITIVE);
+
+  private static final Pattern WHITE_SPACE_REGEX =
+      Pattern.compile("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+  private static final Pattern COMMA_PATTERN =
+      Pattern.compile(", (?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
+
   static final Pattern mapSplitString = Pattern.compile("\\s[A-Za-z0-9]+,|,");
+  static final Set<String> BASIC_TYPES = Set.of("java.lang.String", "java.math.BigDecimal");
 
   private Util() {}
 
   static boolean isValid(Element e) {
-    return ValidPojoPrism.isPresent(e)
+    return AvajeValidPrism.isPresent(e)
         || JavaxValidPrism.isPresent(e)
         || JakartaValidPrism.isPresent(e);
   }
@@ -37,7 +41,10 @@ final class Util {
   }
 
   static boolean validImportType(String type) {
-    return type.indexOf('.') > 0 && !type.startsWith("java.lang");
+
+    return type.indexOf('.') > 0 && !type.startsWith("java.lang.")
+        || (type.startsWith("java.lang.")
+            && type.replace("java.lang.", "").transform(s -> s.contains(".")));
   }
 
   static String packageOf(String cls) {
@@ -73,24 +80,42 @@ final class Util {
     }
   }
 
-  static String trimAnnotations(String type) {
-    final var result = String.join("", trimPattern.split(type)).replace(" ", "").replace(".,", ".");
+  public static String trimAnnotations(String input) {
 
-    if (result.contains(")"))
-      throw new IllegalArgumentException(
-          "Right Parenthesis \")\" in TYPE_USE Annotation string arguments must be escaped with &rparen;");
-    return result;
+    input = COMMA_PATTERN.matcher(input).replaceAll(",");
+
+    return cutAnnotations(input);
   }
 
-  static List<List<String>> typeUse(String type) {
+  private static String cutAnnotations(String input) {
+    final int pos = input.indexOf("@");
+    if (pos == -1) {
+      return input;
+    }
+
+    final Matcher matcher = WHITE_SPACE_REGEX.matcher(input);
+
+    int currentIndex = 0;
+    if (matcher.find()) {
+      currentIndex = matcher.start();
+    }
+    final var result = input.substring(0, pos) + input.substring(currentIndex + 1);
+
+    return cutAnnotations(result);
+  }
+
+  static List<List<String>> typeUse(String type, boolean genericOnly) {
 
     final var list = new ArrayList<List<String>>(2);
     final int pos = type.indexOf('<');
-    if (pos == -1 || type.indexOf('@') == -1) {
-      return List.of(List.of(),List.of());
+    if (type.indexOf('@') == -1 || genericOnly && pos == -1) {
+      return List.of(List.of(), List.of());
     }
     final var trimmed = trimAnnotations(type);
-    final var str = type.substring(pos + 1, type.lastIndexOf('>'));
+    var str = type;
+    if (pos > 0) {
+      str = type.substring(pos + 1, type.lastIndexOf('>'));
+    }
 
     if (trimmed.startsWith("java.util.Map")) {
 
@@ -116,20 +141,39 @@ final class Util {
     return list;
   }
 
-  private static List<String> extractTypeUseAnnotations(final String str) {
+  private static List<String> extractTypeUseAnnotations(String input) {
 
-    final var list = new ArrayList<String>();
-    final var matcher = trimPattern.matcher(str);
-    while (matcher.find()) {
+    final List<String> list = new ArrayList<>();
+    input = COMMA_PATTERN.matcher(input).replaceAll(",");
+    final var str2 =
+        retrieveAnnotations(input, "")
+            .trim()
+            .transform(s -> s.endsWith(",") ? s.substring(0, s.length() - 1) : s);
 
-      var str2 = matcher.group().substring(1);
+    Arrays.stream(AnnotationUtil.splitString(str2, ",@"))
+        .map(String::trim)
+        .map(s -> s.startsWith("@") ? s.substring(1) : s)
+        .forEach(list::add);
 
-      if (str2.endsWith(",")) {
-        str2 = str2.substring(0, str2.length() - 1);
-      }
-      list.add(str2);
-    }
     return list;
+  }
+
+  private static String retrieveAnnotations(String starter, String input) {
+
+    final int pos = starter.indexOf("@");
+    if (pos == -1) {
+      return input + ",";
+    }
+
+    final Matcher matcher = WHITE_SPACE_REGEX.matcher(starter);
+
+    int currentIndex = 0;
+    if (matcher.find()) {
+      currentIndex = matcher.start();
+    }
+    final var result = starter.substring(pos, currentIndex);
+
+    return retrieveAnnotations(input.replace(result, ""), result);
   }
 
   private static String[] splitStringWithRegex(String input) {
@@ -225,6 +269,7 @@ final class Util {
    * "JsonAdapter" suffix.
    */
   static String baseTypeOfAdapter(String adapterFullName) {
+
     return element(adapterFullName).getInterfaces().stream()
         .filter(t -> t.toString().contains("io.avaje.validation.adapter.ValidationAdapter"))
         .findFirst()
@@ -263,5 +308,11 @@ final class Util {
       }
       return result.toString();
     }
+  }
+
+  static boolean isBasicType(final String topType) {
+    return BASIC_TYPES.contains(topType)
+        || topType.startsWith("java.time.")
+        || GenericTypeMap.typeOfRaw(topType) != null;
   }
 }

@@ -1,9 +1,9 @@
 package example.avaje;
 
-import io.avaje.validation.ValidPojo;
+import io.avaje.validation.Valid;
 import io.avaje.validation.constraints.Email;
 
-@ValidPojo
+@Valid
 public class AMyEmail {
 
   @Email

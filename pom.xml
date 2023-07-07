@@ -32,6 +32,7 @@
     <module>validator</module>
     <module>validator-constraints</module>
     <module>validator-generator</module>
+    <module>validator-inject-plugin</module>
   </modules>
 
   <profiles>

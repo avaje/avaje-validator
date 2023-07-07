@@ -1,9 +1,9 @@
 package example.avaje;
 
-import io.avaje.validation.ValidPojo;
+import io.avaje.validation.Valid;
 import io.avaje.validation.constraints.Pattern;
 
-@ValidPojo
+@Valid
 public class AMyPattern {
 
   @Pattern(regexp = "[0-3]+")
