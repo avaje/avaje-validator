@@ -29,9 +29,12 @@ import javax.lang.model.util.ElementFilter;
   ValidPrism.PRISM_TYPE,
   JavaxValidPrism.PRISM_TYPE,
   JakartaValidPrism.PRISM_TYPE,
-  AnnotationValidatorPrism.PRISM_TYPE
+  AnnotationValidatorPrism.PRISM_TYPE,
+  AvajeConstraintPrism.PRISM_TYPE,
+  JakartaConstraintPrism.PRISM_TYPE,
+  JavaxConstraintPrism.PRISM_TYPE
 })
-public final class Processor extends AbstractProcessor {
+public final class ValidationProcessor extends AbstractProcessor {
 
   private final ComponentMetaData metaData = new ComponentMetaData();
   private final List<BeanReader> allReaders = new ArrayList<>();
@@ -63,9 +66,23 @@ public final class Processor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+
     readModule();
 
-    registerCustomAdapters(round.getElementsAnnotatedWith(element(AnnotationValidatorPrism.PRISM_TYPE)));
+    // Optional because these annotations are not guaranteed to exist
+    Optional.ofNullable(element(AvajeConstraintPrism.PRISM_TYPE))
+        .map(round::getElementsAnnotatedWith)
+        .ifPresent(this::writeContraintAdapters);
+    Optional.ofNullable(element(JavaxConstraintPrism.PRISM_TYPE))
+        .map(round::getElementsAnnotatedWith)
+        .ifPresent(this::writeContraintAdapters);
+    Optional.ofNullable(element(JakartaConstraintPrism.PRISM_TYPE))
+        .map(round::getElementsAnnotatedWith)
+        .ifPresent(this::writeContraintAdapters);
+
+    registerCustomAdapters(
+        round.getElementsAnnotatedWith(element(AnnotationValidatorPrism.PRISM_TYPE)));
+
     writeAdapters(round.getElementsAnnotatedWith(element(ValidPojoPrism.PRISM_TYPE)));
 
     Optional.ofNullable(element(ValidPrism.PRISM_TYPE))
@@ -86,7 +103,6 @@ public final class Processor extends AbstractProcessor {
 
   private void registerCustomAdapters(Set<? extends Element> elements) {
     for (final var typeElement : ElementFilter.typesIn(elements)) {
-      AnnotationValidatorPrism.getInstanceOn(typeElement).value();
       metaData.addAnnotationAdapter(typeElement);
     }
   }
@@ -130,7 +146,7 @@ public final class Processor extends AbstractProcessor {
         || sourceTypes.contains(type);
   }
 
-  /** Elements that have a {@code @Json.Import} annotation. */
+  /** Elements that have a {@code @ValidPojo.Import} annotation. */
   private void writeAdaptersForImported(Set<? extends Element> importedElements) {
     for (final var importedElement : ElementFilter.typesIn(importedElements)) {
       for (final TypeMirror importType : ImportPrism.getInstanceOn(importedElement).value()) {
@@ -167,13 +183,17 @@ public final class Processor extends AbstractProcessor {
 
   /** Read the beans that have changed. */
   private void writeAdapters(Set<? extends Element> beans) {
-    for (final var element : ElementFilter.typesIn(beans)) {
-      if (!(element instanceof TypeElement)) {
-        logError("unexpected type [" + element + "]");
-      } else {
-        writeAdapterForType(element);
-      }
-    }
+    ElementFilter.typesIn(beans).forEach(this::writeAdapterForType);
+  }
+
+  /** Read the beans that have changed. */
+  private void writeContraintAdapters(Set<? extends Element> beans) {
+    ElementFilter.typesIn(beans).stream()
+        .filter(
+            t ->
+                t.getAnnotationMirrors().stream()
+                    .anyMatch(m -> ConstraintPrism.isPresent(m.getAnnotationType().asElement())))
+        .forEach(this::writeAdapterForContraint);
   }
 
   private void writeAdapterForType(TypeElement typeElement) {
@@ -181,22 +201,35 @@ public final class Processor extends AbstractProcessor {
     writeAdapter(typeElement, beanReader);
   }
 
+  private void writeAdapterForContraint(TypeElement typeElement) {
+
+    if (ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
+        .noneMatch(m -> "message".equals(m.getSimpleName().toString()))) {
+      throw new IllegalStateException("Constraint annotations must contain a message method");
+    }
+
+    final ContraintReader beanReader = new ContraintReader(typeElement);
+    writeAdapter(typeElement, beanReader);
+  }
+
   private void writeAdapter(TypeElement typeElement, BeanReader beanReader) {
     beanReader.read();
     if (beanReader.nonAccessibleField()) {
-      if (beanReader.hasJsonAnnotation()) {
-        logError("Error JsonAdapter due to nonAccessibleField for %s ", beanReader);
+      if (beanReader.hasValidationAnnotation()) {
+        logError("Error ValidationAdapter due to nonAccessibleField for %s ", beanReader);
       }
       return;
     }
     try {
       final SimpleAdapterWriter beanWriter = new SimpleAdapterWriter(beanReader);
-      metaData.add(beanWriter.fullName());
+      if (beanReader instanceof ClassReader) {
+        metaData.add(beanWriter.fullName());
+      }
       beanWriter.write();
       allReaders.add(beanReader);
       sourceTypes.add(typeElement.getSimpleName().toString());
     } catch (final IOException e) {
-      logError("Error writing JsonAdapter for %s %s", beanReader, e);
+      logError("Error writing ValidationAdapter for %s %s", beanReader, e);
     }
   }
 }

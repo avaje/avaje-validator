@@ -1,7 +1,9 @@
 package io.avaje.validation.constraints;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -11,7 +13,8 @@ import java.lang.annotation.Target;
 
 import io.avaje.validation.constraints.DecimalMax.List;
 
-@Target({METHOD, FIELD, TYPE_USE})
+@Constraint
+@Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 @Repeatable(List.class)
 public @interface DecimalMax {

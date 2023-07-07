@@ -14,6 +14,7 @@ final class SimpleAdapterWriter {
   private final String adapterPackage;
   private final String adapterFullName;
   private final int genericParamsCount;
+  private final boolean isContraint;
 
   private Append writer;
 
@@ -24,6 +25,7 @@ final class SimpleAdapterWriter {
     this.adapterPackage = adapterName.adapterPackage();
     this.adapterFullName = adapterName.fullName();
     this.genericParamsCount = beanReader.genericTypeParamsCount();
+    this.isContraint = beanReader instanceof ContraintReader;
   }
 
   String fullName() {
@@ -52,6 +54,11 @@ final class SimpleAdapterWriter {
     for (int i = 0; i < genericParamsCount; i++) {
       writer.append(", Type param%d", i);
     }
+
+    if (beanReader instanceof ContraintReader) {
+      writer.append(", Set<Class<?>> groups, Map<String, Object> attributes");
+    }
+
     writer.append(") {", adapterShortName).eol();
     beanReader.writeConstructor(writer);
     writer.append("  }").eol();
@@ -81,6 +88,10 @@ final class SimpleAdapterWriter {
 
   private void writeClassStart() {
     writer.append("@Generated").eol();
+    if (isContraint) {
+      writer.append("@AnnotationValidator(%s.class)", beanReader.contraintTarget()).eol();
+    }
+
     writer.append("public final class %sValidationAdapter implements ValidationAdapter<%s> ", adapterShortName, beanReader.shortName());
     writer.append("{").eol().eol();
   }

@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import io.avaje.lang.Nullable;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.core.adapters.BasicAdapters;
@@ -52,8 +53,9 @@ final class CoreAdapterBuilder {
     return build(type, type);
   }
 
-  <T> ValidationAdapter<T> annotationAdapter(Class<? extends Annotation> cls, Map<String, Object> attributes) {
-    return buildAnnotation(cls, attributes);
+  <T> ValidationAdapter<T> annotationAdapter(
+      Class<? extends Annotation> cls, Map<String, Object> attributes, Set<Class<?>> groups) {
+    return buildAnnotation(cls, attributes,groups);
   }
 
   /** Build given type and annotations. */
@@ -70,24 +72,30 @@ final class CoreAdapterBuilder {
     throw new IllegalArgumentException("No ValidationAdapter for " + type + ". Perhaps needs @ValidPojo or @ValidPojo.Import?");
   }
 
-  /** Build given type and annotations. */
+  /**
+   * Build given type and annotations.
+   *
+   * @param groups
+   */
   // TODO understand that lookup chain stuff
   @SuppressWarnings("unchecked")
-  <T> ValidationAdapter<T> buildAnnotation(Class<? extends Annotation> cls, Map<String, Object> attributes) {
+  <T> ValidationAdapter<T> buildAnnotation(
+      Class<? extends Annotation> cls,
+      Map<String, Object> attributes,
+      @Nullable Set<Class<?>> groups) {
+
+    final var paramGroups =
+        groups != null ? groups : (Set<Class<?>>) attributes.getOrDefault("groups", Set.of());
+
     // Ask each factory to create the validation adapter.
     for (final ValidationContext.AnnotationFactory factory : annotationFactories) {
-      final var result = (ValidationAdapter<T>) factory.create(cls, context, extractGroups(attributes), attributes);
+      final var result =
+          (ValidationAdapter<T>) factory.create(cls, context, paramGroups, attributes);
       if (result != null) {
         return result;
       }
     }
     // unknown annotations have noop
     return NOOP;
-  }
-
-  static Set<Class<?>> extractGroups(Map<String, Object> attributes) {
-    @SuppressWarnings("unchecked")
-    final var annotationsGroups = (List<Class<?>>) attributes.getOrDefault("groups", List.of());
-    return annotationsGroups.stream().collect(toUnmodifiableSet());
   }
 }

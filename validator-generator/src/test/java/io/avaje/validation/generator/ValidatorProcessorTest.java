@@ -58,7 +58,7 @@ class ValidatorProcessorTest {
     final CompilationTask task =
         compiler.getTask(
             new PrintWriter(System.out), null, null, Arrays.asList("--release=17"), null, files);
-    task.setProcessors(Arrays.asList(new Processor()));
+    task.setProcessors(Arrays.asList(new ValidationProcessor()));
 
     assertThat(task.call()).isTrue();
   }
