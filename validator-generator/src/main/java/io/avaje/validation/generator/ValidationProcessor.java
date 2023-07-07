@@ -95,8 +95,8 @@ public final class ValidationProcessor extends AbstractProcessor {
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeAdapters);
     writeAdaptersForImported(round.getElementsAnnotatedWith(element(ImportPrism.PRISM_TYPE)));
-    cascadeTypes();
     initialiseComponent();
+    cascadeTypes();
     writeComponent(round.processingOver());
     return false;
   }
