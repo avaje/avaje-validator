@@ -7,11 +7,15 @@ import io.avaje.inject.aop.InvocationException;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 
-public interface ParamAdapterProvider {
+public interface MethodAdapterProvider {
 
   Method method() throws Exception;
 
   List<ValidationAdapter<Object>> paramAdapters(ValidationContext ctx);
+
+  default ValidationAdapter<Object> returnAdapter(ValidationContext ctx) {
+    return ctx.noop();
+  }
 
   default Method provide() {
     try {

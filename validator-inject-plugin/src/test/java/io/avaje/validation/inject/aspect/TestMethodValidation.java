@@ -20,7 +20,7 @@ class TestMethodValidation {
   static void setUpBeforeClass() throws Exception {
 
     final var val =
-        new ParamValidator(Validator.builder().build(), List.of(new TestParamProvider()));
+        new AOPMethodValidator(Validator.builder().build(), List.of(new TestParamProvider()));
     proxy = new MethodTest$Proxy(val);
   }
 

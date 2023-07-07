@@ -258,7 +258,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private void writeParamProvider(ExecutableElement typeElement) {
-    final ValidParamReader beanReader = new ValidParamReader(typeElement);
+    final ValidMethodReader beanReader = new ValidMethodReader(typeElement);
     try {
       final var beanWriter = new SimpleParamBeanWriter(beanReader);
 

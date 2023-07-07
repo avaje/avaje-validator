@@ -13,8 +13,8 @@ import io.avaje.validation.constraints.NotNull;
 import io.avaje.validation.constraints.Positive;
 
 @Component
-@Component.Import(ParamValidator.class)
-public final class TestParamProvider implements ParamAdapterProvider {
+@Component.Import(AOPMethodValidator.class)
+public final class TestParamProvider implements MethodAdapterProvider {
 
   @Override
   public Method method() throws Exception {

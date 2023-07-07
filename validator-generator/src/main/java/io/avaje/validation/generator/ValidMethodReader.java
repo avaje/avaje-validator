@@ -8,18 +8,17 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
-final class ValidParamReader {
+final class ValidMethodReader {
 
   private final ExecutableElement methodElement;
   private final String type;
   private final Set<String> importTypes = new TreeSet<>();
   private final List<? extends VariableElement> params;
-  private final List<ValidParamAnnotation> paramAnnotations;
+  private final List<ElementAnnotationContainer> paramAnnotations;
 
-  ValidParamReader(ExecutableElement element) {
+  ValidMethodReader(ExecutableElement element) {
     this.methodElement = element;
     this.type = element.getEnclosingElement().toString();
     this.params = element.getParameters();
@@ -28,13 +27,12 @@ final class ValidParamReader {
     importTypes.add(Constants.COMPONENT);
     importTypes.add("java.util.Set");
     importTypes.add("java.util.Map");
-    importTypes.add("io.avaje.validation.inject.aspect.ParamAdapterProvider");
+    importTypes.add("io.avaje.validation.inject.aspect.MethodAdapterProvider");
     importTypes.add("io.avaje.validation.adapter.ValidationAdapter");
     importTypes.add("io.avaje.validation.adapter.ValidationContext");
     importTypes.add("io.avaje.validation.spi.Generated");
     importTypes.add("java.lang.reflect.Method");
-
-    paramAnnotations = params.stream().map(ValidParamAnnotation::create).toList();
+    paramAnnotations = params.stream().map(ElementAnnotationContainer::create).toList();
   }
 
   public String shortName() {
@@ -52,7 +50,7 @@ final class ValidParamReader {
 
   public void writeImports(Append writer, boolean writeAspect) {
     if (writeAspect) {
-      importTypes.add("io.avaje.validation.inject.aspect.ParamValidator");
+      importTypes.add("io.avaje.validation.inject.aspect.AOPMethodValidator");
     }
     for (final String importType : importTypes()) {
       if (Util.validImportType(importType)) {
@@ -105,7 +103,7 @@ final class ValidParamReader {
     writer.append("  }").eol();
   }
 
-  private void writeAdapters(Append writer, final ValidParamAnnotation params) {
+  private void writeAdapters(Append writer, final ElementAnnotationContainer params) {
     final var genericType = params.genericType();
     final var paramAnnotations = params.annotations();
     final var typeUse1 = params.typeUse1();

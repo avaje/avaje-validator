@@ -14,16 +14,15 @@ import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 
 // Imported into scope
-public class ParamValidator implements AspectProvider<ValidateParams> {
+public class AOPMethodValidator implements AspectProvider<ValidateParams> {
 
   final ValidationContext ctx;
-  private final Map<Method, List<ValidationAdapter<Object>>> paramAdapters;
+  private final Map<Method, MethodAdapterProvider> paramAdapters;
 
-  public ParamValidator(Validator validator, List<ParamAdapterProvider> adapterProviders) {
+  public AOPMethodValidator(Validator validator, List<MethodAdapterProvider> adapterProviders) {
     this.ctx = (ValidationContext) validator;
     this.paramAdapters =
-        adapterProviders.stream()
-            .collect(toMap(ParamAdapterProvider::provide, p -> p.paramAdapters(this.ctx)));
+        adapterProviders.stream().collect(toMap(MethodAdapterProvider::provide, p -> p));
   }
 
   @Override

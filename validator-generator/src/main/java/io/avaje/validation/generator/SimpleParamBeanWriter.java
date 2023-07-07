@@ -9,14 +9,14 @@ import javax.tools.JavaFileObject;
 
 final class SimpleParamBeanWriter {
 
-  private final ValidParamReader beanReader;
+  private final ValidMethodReader beanReader;
   private final String adapterShortName;
   private final String adapterPackage;
   private final String adapterFullName;
   private Append writer;
   private static boolean writeAspect = true;
 
-  SimpleParamBeanWriter(ValidParamReader beanReader) {
+  SimpleParamBeanWriter(ValidMethodReader beanReader) {
     this.beanReader = beanReader;
     final var method = beanReader.getBeanType();
 
@@ -64,11 +64,11 @@ final class SimpleParamBeanWriter {
     writer.append("@Generated").eol();
     writer.append("@Component").eol();
     if (writeAspect) {
-      writer.append("@Component.Import(ParamValidator.class)").eol();
+      writer.append("@Component.Import(AOPMethodValidator.class)").eol();
       writeAspect = false;
     }
 
-    writer.append("public final class %s implements ParamAdapterProvider", adapterShortName);
+    writer.append("public final class %s implements MethodAdapterProvider", adapterShortName);
     writer.append("{").eol().eol();
   }
 

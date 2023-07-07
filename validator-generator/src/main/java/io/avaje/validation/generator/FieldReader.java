@@ -1,15 +1,10 @@
 package io.avaje.validation.generator;
 
-import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toMap;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 final class FieldReader {
@@ -18,7 +13,6 @@ final class FieldReader {
 
   private final List<String> genericTypeParams;
   private final boolean publicField;
-  private final String rawType;
   private final GenericType genericType;
   private final String adapterFieldName;
   private final String adapterShortType;
@@ -27,48 +21,16 @@ final class FieldReader {
   private MethodReader getter;
   private boolean genericTypeParameter;
   private final boolean optionalValidation;
-  private final Map<GenericType, String> annotations;
   private final Element element;
-  private final Map<GenericType, String> typeUse1;
-  private final Map<GenericType, String> typeUse2;
-  private final boolean hasValid;
+  private final ElementAnnotationContainer elementAnnotations;
 
   FieldReader(Element element, List<String> genericTypeParams) {
     this.genericTypeParams = genericTypeParams;
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
     this.element = element;
-    this.hasValid = ValidPrism.isPresent(element);
-    if (element instanceof final ExecutableElement executableElement) {
-      this.rawType = Util.trimAnnotations(executableElement.getReturnType().toString());
-      final var typeUse = Util.typeUse(executableElement.getReturnType().toString(),true);
-      typeUse1 =
-          typeUse.get(0).stream()
-              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
-      typeUse2 =
-          typeUse.get(1).stream()
-              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
-
-    } else {
-      this.rawType = Util.trimAnnotations(element.asType().toString());
-      final var typeUse = Util.typeUse(element.asType().toString(), true);
-      typeUse1 =
-          typeUse.get(0).stream()
-              .filter(not(String::isBlank))
-              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
-      typeUse2 =
-          typeUse.get(1).stream()
-              .filter(not(String::isBlank))
-              .collect(toMap(GenericType::parse, AnnotationUtil::annotationAttributeMap));
-    }
-    genericType = GenericType.parse(rawType);
-
-    this.annotations =
-        element.getAnnotationMirrors().stream()
-            .collect(
-                toMap(
-                    a -> GenericType.parse(a.getAnnotationType().toString()),
-                    AnnotationUtil::annotationAttributeMap));
+    this.elementAnnotations = ElementAnnotationContainer.create(element);
+    this.genericType = elementAnnotations.genericType();
     final String shortType = genericType.shortType();
     adapterShortType = initAdapterShortType(shortType);
     adapterFieldName = initShortName();
@@ -126,9 +88,7 @@ final class FieldReader {
       importTypes.add("static io.avaje.validation.adapter.RegexFlag.*");
     }
     genericType.addImports(importTypes);
-    annotations.keySet().forEach(t -> t.addImports(importTypes));
-    typeUse1.keySet().forEach(t -> t.addImports(importTypes));
-    typeUse2.keySet().forEach(t -> t.addImports(importTypes));
+    elementAnnotations.addImports(importTypes);
   }
 
   void cascadeTypes(Set<String> types) {
@@ -199,6 +159,10 @@ final class FieldReader {
     writer.append("    this.%s = ", adapterFieldName).eol();
 
     boolean first = true;
+    final var annotations = elementAnnotations.annotations();
+    final var typeUse1 = elementAnnotations.typeUse1();
+    final var typeUse2 = elementAnnotations.typeUse2();
+    final var hasValid = elementAnnotations.hasValid();
     for (final var a : annotations.entrySet()) {
       if (first) {
         writer.append(
