@@ -1,7 +1,5 @@
 package io.avaje.validation.adapter;
 
-import java.util.Collection;
-
 public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T> {
 
   protected final ValidationAdapter<T> starterAdapter;
@@ -20,7 +18,7 @@ public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T
   }
 
   protected boolean validateAll(
-      Collection<Object> value, ValidationRequest req, String propertyName) {
+      Iterable<Object> value, ValidationRequest req, String propertyName) {
     if (value == null) {
       return true;
     }

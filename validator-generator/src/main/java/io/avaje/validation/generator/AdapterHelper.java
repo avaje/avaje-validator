@@ -1,6 +1,7 @@
 package io.avaje.validation.generator;
 
 import java.util.Map;
+import static io.avaje.validation.generator.ProcessingContext.isAssignable2Interface;
 
 public class AdapterHelper {
 
@@ -31,8 +32,7 @@ public class AdapterHelper {
     }
 
     if (!typeUse1.isEmpty()
-        && ("java.util.List".equals(genericType.topType())
-            || "java.util.Set".equals(genericType.topType()))) {
+        && (isAssignable2Interface(genericType.topType(), "java.lang.Iterable"))) {
       writer.eol().append("%s    .list()", indent);
       final var t = genericType.firstParamType();
       writeTypeUse(writer, indent, t, typeUse1, genericType);

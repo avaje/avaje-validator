@@ -15,7 +15,7 @@ public interface ValidationAdapter<T> {
 
   default AbstractContainerAdapter<T> list() {
 
-    return new CollectionValidationAdapter<>(this);
+    return new IterableValidationAdapter<>(this);
   }
 
   default AbstractContainerAdapter<T> mapKeys() {
