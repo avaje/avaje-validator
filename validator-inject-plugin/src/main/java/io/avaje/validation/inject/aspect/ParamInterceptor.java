@@ -14,14 +14,19 @@ public class ParamInterceptor implements MethodInterceptor {
   private final ValidationAdapter<Object> returnValidationAdapter;
   private final ValidationContext ctx;
   private final Locale locale;
+  private final boolean throwOnParamFailure;
 
   public ParamInterceptor(
-      Locale locale, ValidationContext ctx, MethodAdapterProvider methodAdapterProvider) {
+      Locale locale,
+      ValidationContext ctx,
+      MethodAdapterProvider methodAdapterProvider,
+      boolean throwOnParamFailure) {
 
     this.locale = locale;
     this.ctx = ctx;
     this.paramValidationAdapter = methodAdapterProvider.paramAdapters(ctx);
     this.returnValidationAdapter = methodAdapterProvider.returnAdapter(ctx);
+    this.throwOnParamFailure = throwOnParamFailure;
   }
 
   @Override
@@ -36,7 +41,12 @@ public class ParamInterceptor implements MethodInterceptor {
       ++i;
     }
 
+    if (throwOnParamFailure) {
+      req.throwWithViolations();
+    }
+
     returnValidationAdapter.validate(invocation.invoke(), req);
+
     req.throwWithViolations();
   }
 }

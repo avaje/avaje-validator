@@ -34,6 +34,7 @@ public class AOPMethodValidator implements AspectProvider<ValidateMethod> {
     } else {
       locale = Locale.forLanguageTag(localeStr);
     }
-    return new ParamInterceptor(locale, ctx, paramAdapters.get(method));
+    return new ParamInterceptor(
+        locale, ctx, paramAdapters.get(method), aspectAnnotation.throwOnParamFailure());
   }
 }
