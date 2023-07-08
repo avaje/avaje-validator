@@ -14,7 +14,9 @@ class OptionalValidationAdapter<T> extends AbstractContainerAdapter<T> {
   @Override
   @SuppressWarnings("unchecked")
   public boolean validate(T value, ValidationRequest req, String propertyName) {
-    if (value instanceof final Optional o) {
+    if (value == null) {
+      return true;
+    } else if (value instanceof final Optional o) {
       o.ifPresent(v -> starterAdapter.validate((T) v, req, propertyName));
     } else if (value instanceof final OptionalInt i) {
       i.ifPresent(v -> starterAdapter.validate(((T) (Object) v), req, propertyName));
