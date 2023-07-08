@@ -1,7 +1,7 @@
 package io.avaje.validation.generator;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.Filer;
@@ -55,16 +55,18 @@ final class ProcessingContext {
 
   static boolean isAssignable2Interface(String type, String superType) {
     return type.equals(superType)
-        || superTypes(element(type)).stream().anyMatch(t -> t.toString().equals(superType));
+        || Optional.ofNullable(element(type)).stream()
+        .flatMap(ProcessingContext::superTypes)
+        .anyMatch(superType::equals);
   }
 
-  public static List<TypeElement> superTypes(Element element) {
+  public static Stream<String> superTypes(Element element) {
     final Types types = CTX.get().types;
     return types.directSupertypes(element.asType()).stream()
         .filter(type -> !type.toString().contains("java.lang.Object"))
         .map(superType -> (TypeElement) types.asElement(superType))
-        .flatMap(e -> Stream.concat(superTypes(e).stream(), Stream.of(e)))
-        .toList();
+        .flatMap(e -> Stream.concat(superTypes(e), Stream.of(e)))
+        .map(Object::toString);
   }
 
   /** Log an error message. */
