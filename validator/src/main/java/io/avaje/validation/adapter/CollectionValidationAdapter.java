@@ -2,7 +2,7 @@ package io.avaje.validation.adapter;
 
 import java.util.Collection;
 
-class CollectionValidationAdapter<T> extends AbstractMultiAdapter<T> {
+class CollectionValidationAdapter<T> extends AbstractContainerAdapter<T> {
 
    CollectionValidationAdapter(ValidationAdapter<T> adapters) {
     super(adapters);

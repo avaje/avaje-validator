@@ -3,9 +3,9 @@ package io.avaje.validation.generator.models.valid;
 import java.util.List;
 import java.util.Map;
 
-import io.avaje.validation.Valid;
 import io.avaje.validation.constraints.NotBlank;
 import io.avaje.validation.constraints.NotNull;
+import io.avaje.validation.constraints.Valid;
 
 @Valid
 public record Polus(

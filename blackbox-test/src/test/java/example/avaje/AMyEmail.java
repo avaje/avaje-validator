@@ -1,7 +1,7 @@
 package example.avaje;
 
-import io.avaje.validation.Valid;
 import io.avaje.validation.constraints.Email;
+import io.avaje.validation.constraints.Valid;
 
 @Valid
 public class AMyEmail {

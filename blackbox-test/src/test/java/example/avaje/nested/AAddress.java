@@ -1,6 +1,6 @@
 package example.avaje.nested;
 
-import io.avaje.validation.Valid;
+import io.avaje.validation.constraints.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;

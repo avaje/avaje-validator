@@ -2,7 +2,7 @@ package io.avaje.validation.adapter;
 
 import java.util.Map;
 
-class MapValidationAdapter<T> extends AbstractMultiAdapter<T> {
+class MapValidationAdapter<T> extends AbstractContainerAdapter<T> {
 
   private final boolean keys;
 

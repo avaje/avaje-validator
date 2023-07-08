@@ -26,7 +26,7 @@ import javax.lang.model.util.ElementFilter;
 
 @SupportedAnnotationTypes({
   AvajeValidPrism.PRISM_TYPE,
-  ImportPrism.PRISM_TYPE,
+  ImportValidPojoPrism.PRISM_TYPE,
   HttpValidPrism.PRISM_TYPE,
   JavaxValidPrism.PRISM_TYPE,
   JakartaValidPrism.PRISM_TYPE,
@@ -86,8 +86,9 @@ public final class ValidationProcessor extends AbstractProcessor {
     registerCustomAdapters(
         round.getElementsAnnotatedWith(element(AnnotationValidatorPrism.PRISM_TYPE)));
 
-    writeAdapters(round.getElementsAnnotatedWith(element(AvajeValidPrism.PRISM_TYPE)));
-
+    Optional.ofNullable(element(AvajeValidPrism.PRISM_TYPE))
+        .map(round::getElementsAnnotatedWith)
+        .ifPresent(this::writeAdapters);
     Optional.ofNullable(element(HttpValidPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeAdapters);
@@ -103,7 +104,8 @@ public final class ValidationProcessor extends AbstractProcessor {
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);
 
-    writeAdaptersForImported(round.getElementsAnnotatedWith(element(ImportPrism.PRISM_TYPE)));
+    writeAdaptersForImported(
+        round.getElementsAnnotatedWith(element(ImportValidPojoPrism.PRISM_TYPE)));
     initialiseComponent();
     cascadeTypes();
     initialiseComponent();
@@ -159,7 +161,8 @@ public final class ValidationProcessor extends AbstractProcessor {
   /** Elements that have a {@code @Valid.Import} annotation. */
   private void writeAdaptersForImported(Set<? extends Element> importedElements) {
     for (final var importedElement : ElementFilter.typesIn(importedElements)) {
-      for (final TypeMirror importType : ImportPrism.getInstanceOn(importedElement).value()) {
+      for (final TypeMirror importType :
+          ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
         // if imported by mixin annotation skip
         if (mixInImports.contains(importType.toString())) {
           continue;

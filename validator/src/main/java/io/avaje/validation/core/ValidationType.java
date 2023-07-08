@@ -1,13 +1,27 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.ConstraintViolationException;
-import io.avaje.lang.Nullable;
-
 import java.util.List;
 import java.util.Locale;
 
-public interface ValidationType<T> {
+import io.avaje.lang.Nullable;
+import io.avaje.validation.ConstraintViolationException;
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
 
-  void validate(T object, @Nullable Locale locale, List<Class<?>> groups)
-      throws ConstraintViolationException;
+final class ValidationType<T> {
+
+  private final ValidationContext ctx;
+  private final ValidationAdapter<T> adapter;
+
+  public ValidationType(ValidationContext validator, ValidationAdapter<T> adapter) {
+    this.ctx = validator;
+    this.adapter = adapter;
+  }
+
+  public void validate(T object, @Nullable Locale locale, List<Class<?>> groups)
+      throws ConstraintViolationException {
+    final var req = ctx.request(locale, groups);
+    adapter.validate(object, req);
+    req.throwWithViolations();
+  }
 }

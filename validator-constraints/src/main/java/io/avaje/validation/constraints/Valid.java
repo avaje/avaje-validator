@@ -1,4 +1,4 @@
-package io.avaje.validation;
+package io.avaje.validation.constraints;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -15,13 +15,5 @@ public @interface Valid {
 
   /**
    */
-  @Retention(CLASS)
-  @Target({TYPE, PACKAGE})
-  @interface Import {
 
-    /**
-     * Specify types to generate Valid Adapters for.
-     */
-    Class<?>[] value();
-  }
 }

@@ -28,12 +28,13 @@ import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
 import io.avaje.validation.adapter.ValidatorComponent;
+import io.avaje.validation.spi.MessageInterpolator;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator, ValidationContext {
 
   private final CoreAdapterBuilder builder;
-  private final Map<Type, DValidationType<?>> typeCache = new ConcurrentHashMap<>();
+  private final Map<Type, ValidationType<?>> typeCache = new ConcurrentHashMap<>();
   private final MessageInterpolator interpolator;
   private final LocaleResolver localeResolver;
   private final DTemplateLookup templateLookup;
@@ -83,7 +84,7 @@ final class DValidator implements Validator, ValidationContext {
 
   @SuppressWarnings("unchecked")
   private <T> ValidationType<T> typeWithCache(Type type) {
-    return (ValidationType<T>) typeCache.computeIfAbsent(type, _type -> new DValidationType<>(this, adapter(_type)));
+    return (ValidationType<T>) typeCache.computeIfAbsent(type, _type -> new ValidationType<>(this, adapter(_type)));
   }
 
   @Override

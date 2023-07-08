@@ -1,4 +1,4 @@
-package io.avaje.validation.core;
+package io.avaje.validation.spi;
 
 import java.util.Map;
 

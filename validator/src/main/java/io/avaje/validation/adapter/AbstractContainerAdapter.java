@@ -2,16 +2,16 @@ package io.avaje.validation.adapter;
 
 import java.util.Collection;
 
-public abstract class AbstractMultiAdapter<T> implements ValidationAdapter<T> {
+public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T> {
 
   protected final ValidationAdapter<T> starterAdapter;
   private ValidationAdapter<Object> adapters;
 
-  protected AbstractMultiAdapter(ValidationAdapter<T> starterAdapter) {
+  protected AbstractContainerAdapter(ValidationAdapter<T> starterAdapter) {
     this.starterAdapter = starterAdapter;
   }
 
-  public AbstractMultiAdapter<T> andThenMulti(ValidationAdapter<?> adapter) {
+  public AbstractContainerAdapter<T> andThenMulti(ValidationAdapter<?> adapter) {
     this.adapters =
         this.adapters != null
             ? adapters.andThen((ValidationAdapter<Object>) adapter)

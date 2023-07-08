@@ -1,11 +1,9 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Valid
+//@Valid
 public class Contact {
     @NotBlank(groups = BasicTest.class)
     public String firstName;
