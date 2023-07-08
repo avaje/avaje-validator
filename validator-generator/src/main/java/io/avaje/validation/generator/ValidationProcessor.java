@@ -99,7 +99,7 @@ public final class ValidationProcessor extends AbstractProcessor {
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeAdapters);
 
-    Optional.ofNullable(element(ValidateParamsPrism.PRISM_TYPE))
+    Optional.ofNullable(element(ValidateMethodPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);

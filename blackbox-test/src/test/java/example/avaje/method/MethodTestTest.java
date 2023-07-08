@@ -1,7 +1,8 @@
 package example.avaje.method;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.List;
 
@@ -18,12 +19,19 @@ class MethodTestTest {
 
   @Test
   void test() {
-    assertThatNoException().isThrownBy(() -> proxy.test(List.of(""), 1, null));
+    assertThatNoException().isThrownBy(() -> proxy.test(List.of(""), 1, "result"));
   }
 
   @Test
   void invalid() {
-    assertThatThrownBy(() -> proxy.test(null, 0, null))
-        .isInstanceOf(ConstraintViolationException.class);
+    try {
+
+      proxy.test(List.of(), 0, null);
+      fail("how???");
+    } catch (final ConstraintViolationException e) {
+      final var violations = e.violations();
+
+      assertThat(violations).hasSize(3);
+    }
   }
 }

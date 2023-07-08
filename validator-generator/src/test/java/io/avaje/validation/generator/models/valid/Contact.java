@@ -6,18 +6,18 @@ import io.avaje.validation.constraints.Valid;
 
 @Valid
 public class Contact {
-    public String firstName;
-    public String lastName;
+  public String firstName;
+  public String lastName;
 
-    public Optional<Address> address;
+  public Optional<Address> address;
 
-    public Contact() {
-        this.firstName = "fn";
-        this.lastName = "ln";
-    }
-    public Contact(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
+  public Contact() {
+    this.firstName = "fn";
+    this.lastName = "ln";
+  }
 
+  public Contact(String firstName, String lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
 }

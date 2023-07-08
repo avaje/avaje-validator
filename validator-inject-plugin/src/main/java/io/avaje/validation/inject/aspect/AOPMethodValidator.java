@@ -10,7 +10,6 @@ import java.util.Map;
 import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.aop.MethodInterceptor;
 import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 
 // Imported into scope
