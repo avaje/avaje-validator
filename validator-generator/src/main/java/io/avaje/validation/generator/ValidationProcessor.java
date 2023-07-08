@@ -34,7 +34,7 @@ import javax.lang.model.util.ElementFilter;
   AvajeConstraintPrism.PRISM_TYPE,
   JakartaConstraintPrism.PRISM_TYPE,
   JavaxConstraintPrism.PRISM_TYPE,
-  ValidateParamsPrism.PRISM_TYPE
+  ValidateMethodPrism.PRISM_TYPE
 })
 public final class ValidationProcessor extends AbstractProcessor {
 
@@ -248,14 +248,14 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private void writeParamProviderForMethod(Set<ExecutableElement> elements) {
     if (element(ComponentPrism.PRISM_TYPE) == null) {
-      throw new IllegalStateException("ValidateParams can only be used with Avaje Inject Beans");
+      throw new IllegalStateException("ValidateMethod can only be used with Avaje Inject Beans");
     }
     for (final ExecutableElement executableElement : elements) {
 
       if (executableElement.getEnclosingElement().getAnnotationMirrors().stream()
           .map(m -> m.getAnnotationType().toString())
           .noneMatch(s -> s.contains("Singleton") || s.contains("Component"))) {
-        throw new IllegalStateException("ValidateParams can only be used with Avaje Inject Beans");
+        throw new IllegalStateException("ValidateMethod can only be used with Avaje Inject Beans");
       }
       writeParamProvider(executableElement);
     }

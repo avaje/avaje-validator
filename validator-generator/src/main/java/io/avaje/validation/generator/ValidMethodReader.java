@@ -17,6 +17,7 @@ final class ValidMethodReader {
   private final Set<String> importTypes = new TreeSet<>();
   private final List<? extends VariableElement> params;
   private final List<ElementAnnotationContainer> paramAnnotations;
+  private final ElementAnnotationContainer returnElementAnnotation;
 
   ValidMethodReader(ExecutableElement element) {
     this.methodElement = element;
@@ -33,6 +34,7 @@ final class ValidMethodReader {
     importTypes.add("io.avaje.validation.spi.Generated");
     importTypes.add("java.lang.reflect.Method");
     paramAnnotations = params.stream().map(ElementAnnotationContainer::create).toList();
+    returnElementAnnotation = ElementAnnotationContainer.create(element);
   }
 
   public String shortName() {
@@ -45,6 +47,7 @@ final class ValidMethodReader {
     }
 
     paramAnnotations.forEach(a -> a.addImports(importTypes));
+    returnElementAnnotation.addImports(importTypes);
     return importTypes;
   }
 
@@ -99,7 +102,18 @@ final class ValidMethodReader {
       }
     }
 
-    writer.append(");").eol();
+    writer.append(
+        """
+    );
+      }
+
+      @Override
+      public ValidationAdapter<Object> returnAdapter(ValidationContext ctx) {
+    """);
+    writer.append("    return ");
+    AdapterHelper.writeAdapterWithValues(writer, returnElementAnnotation, "", "Object");
+
+    writer.append(";").eol();
     writer.append("  }").eol();
   }
 

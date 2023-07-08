@@ -10,6 +10,6 @@ import jakarta.inject.Singleton;
 @Singleton
 public class MethodTest {
 
-  @ValidateParams
+  @ValidateMethod
   public void test(@NotEmpty List<@NotNull String> str, @Positive int inty, String regular) {}
 }

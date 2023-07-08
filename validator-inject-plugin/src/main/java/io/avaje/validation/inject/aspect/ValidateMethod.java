@@ -11,6 +11,7 @@ import io.avaje.inject.aop.Aspect;
 @Aspect
 @Target(METHOD)
 @Retention(RUNTIME)
-public @interface ValidateParams {
+/** Place on a method to execute validations on the parameters and return types */
+public @interface ValidateMethod {
   String locale() default "";
 }

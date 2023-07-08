@@ -11,6 +11,6 @@ import jakarta.validation.constraints.Positive;
 @Singleton
 public class MethodTest {
 
-  @ValidateParams
+  @ValidateMethod
   void test(@NotEmpty List<@NotNull String> str, @Positive int inty, String regular) {}
 }
