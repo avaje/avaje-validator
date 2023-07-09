@@ -5,7 +5,7 @@ import io.avaje.lang.Nullable;
 import java.util.Locale;
 import java.util.Set;
 
-public interface LocaleResolver {
+interface LocaleResolver {
   Locale resolve(@Nullable Locale requestLocale);
 
   Locale defaultLocale();

@@ -17,13 +17,13 @@ class OptionalValidationAdapter<T> extends AbstractContainerAdapter<T> {
     if (value == null) {
       return true;
     } else if (value instanceof final Optional o) {
-      o.ifPresent(v -> starterAdapter.validate((T) v, req, propertyName));
+      o.ifPresent(v -> initalAdapter.validate((T) v, req, propertyName));
     } else if (value instanceof final OptionalInt i) {
-      i.ifPresent(v -> starterAdapter.validate(((T) (Object) v), req, propertyName));
+      i.ifPresent(v -> initalAdapter.validate(((T) (Object) v), req, propertyName));
     } else if (value instanceof final OptionalLong l) {
-      l.ifPresent(v -> starterAdapter.validate(((T) (Object) v), req, propertyName));
+      l.ifPresent(v -> initalAdapter.validate(((T) (Object) v), req, propertyName));
     } else if (value instanceof final OptionalDouble d) {
-      d.ifPresent(v -> starterAdapter.validate(((T) (Object) v), req, propertyName));
+      d.ifPresent(v -> initalAdapter.validate(((T) (Object) v), req, propertyName));
     }
     return true;
   }

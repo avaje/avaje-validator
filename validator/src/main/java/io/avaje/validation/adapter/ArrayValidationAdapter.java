@@ -8,7 +8,7 @@ class ArrayValidationAdapter<T> extends AbstractContainerAdapter<T> {
 
   @Override
   public boolean validate(T value, ValidationRequest req, String propertyName) {
-    if (starterAdapter.validate(value, req, propertyName)) {
+    if (initalAdapter.validate(value, req, propertyName)) {
 
       return validateArray((Object[]) value, req, propertyName);
     }

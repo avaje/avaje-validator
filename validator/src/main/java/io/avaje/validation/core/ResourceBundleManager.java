@@ -11,13 +11,13 @@ import java.util.ResourceBundle;
 
 import io.avaje.lang.Nullable;
 
-final class DResourceBundleManager {
+final class ResourceBundleManager {
 
   private final Map<Locale, List<ResourceBundle>> map = new HashMap<>();
   private static final List<ResourceBundle> EMPTY = List.of();
   private static final String DEFAULT_BUNDLE = "io.avaje.validation.Messages";
 
-  DResourceBundleManager(List<String> names, List<ResourceBundle> providedBundles, LocaleResolver localeResolver) {
+  ResourceBundleManager(List<String> names, List<ResourceBundle> providedBundles, LocaleResolver localeResolver) {
     for (final var name : names) {
       addBundle(name, localeResolver.defaultLocale());
       for (final Locale locale : localeResolver.otherLocales()) {

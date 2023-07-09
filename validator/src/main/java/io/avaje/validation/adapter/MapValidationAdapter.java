@@ -16,7 +16,7 @@ class MapValidationAdapter<T> extends AbstractContainerAdapter<T> {
   public boolean validate(T value, ValidationRequest req, String propertyName) {
     final var map = (Map<Object, Object>) value;
 
-    if (starterAdapter.validate(value, req, propertyName)) {
+    if (initalAdapter.validate(value, req, propertyName)) {
       if (keys) {
         return validateAll(map.keySet(), req, propertyName);
       }

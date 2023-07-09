@@ -31,6 +31,9 @@ public interface Validator {
   void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups)
       throws ConstraintViolationException;
 
+  /** Get the validation context used to create adapters */
+  ValidationContext getContext();
+
   static Builder builder() {
     final var bootstrapService = ServiceLoader.load(Bootstrap.class).iterator();
     if (bootstrapService.hasNext()) {
@@ -48,17 +51,13 @@ public interface Validator {
     /** Add a AnnotationValidationAdapter to use for the given type. */
     <T> Builder add(Class<? extends Annotation> type, ValidationAdapter<T> adapter);
 
-    /**
-     * Lookup ResourceBundles with the given name and for error message interpolation
-     *
-     * @param bundleName the name of the bundleFiles
-     */
+    /** Lookup ResourceBundles with the given names for error message interpolation */
     Builder addResourceBundles(String... bundleName);
 
-    /** Add ResourceBundle for error message interpolation */
+    /** Add ResourceBundles for error message interpolation */
     Builder addResourceBundles(ResourceBundle... bundle);
 
-    /** Set Default Locale for this validator, if not set, will use Locale.getDefault() */
+    /** Set Default Locale for this validator. If not set, will use Locale.getDefault() */
     Builder setDefaultLocale(Locale defaultLocale);
 
     /** Adds additional Locales for this validator */
@@ -74,7 +73,7 @@ public interface Validator {
     Builder temporalTolerance(Duration temporalTolerance);
 
     /**
-     * En- or disables the fail fast mode. When fail fast is enabled the validation will stop on the
+     * Enable/Disable fail fast mode. When fail fast is enabled the validation will stop on the
      * first constraint violation detected.
      */
     Builder failFast(boolean failFast);
@@ -82,7 +81,9 @@ public interface Validator {
     /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
     Builder add(Type type, AdapterBuilder builder);
 
-    /** Add a AdapterBuilder which provides a ValidationAdapter to use for the given type. */
+    /**
+     * Add a AdapterBuilder which provides a Annotation ValidationAdapter to use for the given type.
+     */
     Builder add(Class<? extends Annotation> type, AnnotationAdapterBuilder builder);
 
     /** Add a Component which can provide multiple ValidationAdapters and or configuration. */
@@ -100,7 +101,7 @@ public interface Validator {
     Validator build();
   }
 
-  /** Function to build a ValidationAdapter that needs Validator. */
+  /** Function to build a ValidationAdapter from a Validation Context */
   @FunctionalInterface
   interface AdapterBuilder {
 

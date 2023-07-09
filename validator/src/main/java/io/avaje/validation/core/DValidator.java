@@ -37,7 +37,7 @@ final class DValidator implements Validator, ValidationContext {
   private final Map<Type, ValidationType<?>> typeCache = new ConcurrentHashMap<>();
   private final MessageInterpolator interpolator;
   private final LocaleResolver localeResolver;
-  private final DTemplateLookup templateLookup;
+  private final TemplateLookup templateLookup;
   private final Map<String, String> messageCache = new ConcurrentHashMap<>();
   private final boolean failfast;
 
@@ -53,8 +53,8 @@ final class DValidator implements Validator, ValidationContext {
       boolean failfast) {
     this.localeResolver = localeResolver;
     final var defaultResourceBundle =
-        new DResourceBundleManager(bundleNames, bundles, localeResolver);
-    this.templateLookup = new DTemplateLookup(defaultResourceBundle);
+        new ResourceBundleManager(bundleNames, bundles, localeResolver);
+    this.templateLookup = new TemplateLookup(defaultResourceBundle);
     this.interpolator = interpolator;
     this.builder =
         new CoreAdapterBuilder(
@@ -76,6 +76,11 @@ final class DValidator implements Validator, ValidationContext {
   public void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups) {
     final var type = (ValidationType<Object>) type(any.getClass());
     type.validate(any, locale, List.of(groups));
+  }
+
+  @Override
+  public ValidationContext getContext() {
+    return this;
   }
 
   private <T> ValidationType<T> type(Class<T> cls) {
