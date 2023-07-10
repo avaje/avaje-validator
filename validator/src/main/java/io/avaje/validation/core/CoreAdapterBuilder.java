@@ -1,7 +1,5 @@
 package io.avaje.validation.core;
 
-import static java.util.stream.Collectors.toUnmodifiableSet;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.time.Clock;

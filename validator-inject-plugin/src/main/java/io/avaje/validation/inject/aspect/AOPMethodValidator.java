@@ -19,7 +19,7 @@ public class AOPMethodValidator implements AspectProvider<ValidateMethod> {
   private final Map<Method, MethodAdapterProvider> paramAdapters;
 
   public AOPMethodValidator(Validator validator, List<MethodAdapterProvider> adapterProviders) {
-    this.ctx = (ValidationContext) validator;
+    this.ctx = validator.getContext();
     this.paramAdapters =
         adapterProviders.stream().collect(toMap(MethodAdapterProvider::provide, p -> p));
   }

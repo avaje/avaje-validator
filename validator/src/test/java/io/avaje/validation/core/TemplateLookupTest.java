@@ -7,15 +7,15 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
-class DTemplateLookupTest {
+class TemplateLookupTest {
 
-  private final DTemplateLookup lookup;
+  private final TemplateLookup lookup;
 
-  DTemplateLookupTest() {
+  TemplateLookupTest() {
     final var localeResolver = new DLocaleResolver(Locale.ENGLISH, List.of(Locale.GERMAN));
     final var defaultResourceBundle =
-        new DResourceBundleManager(List.of(), List.of(), localeResolver);
-    this.lookup = new DTemplateLookup(defaultResourceBundle);
+        new ResourceBundleManager(List.of(), List.of(), localeResolver);
+    this.lookup = new TemplateLookup(defaultResourceBundle);
   }
 
   @Test

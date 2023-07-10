@@ -2,10 +2,10 @@ package io.avaje.validation.core;
 
 import java.util.Locale;
 
-final class DTemplateLookup {
-  private final DResourceBundleManager bundleManager;
+final class TemplateLookup {
+  private final ResourceBundleManager bundleManager;
 
-  DTemplateLookup(DResourceBundleManager defaultBundle) {
+  TemplateLookup(ResourceBundleManager defaultBundle) {
     this.bundleManager = defaultBundle;
   }
 

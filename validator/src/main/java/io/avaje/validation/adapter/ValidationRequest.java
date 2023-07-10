@@ -2,9 +2,9 @@ package io.avaje.validation.adapter;
 
 import java.util.List;
 
-/**
- * A validation request.
- */
+import io.avaje.validation.ConstraintViolationException;
+
+/** A validation request. */
 public interface ValidationRequest {
 
   /** The groups tied to this ValidationRequest */
@@ -18,19 +18,12 @@ public interface ValidationRequest {
    */
   void addViolation(ValidationContext.Message message, String propertyName);
 
-  /**
-   * Push the nested path.
-   */
+  /** Push the nested property path. */
   void pushPath(String path);
 
-  /**
-   * Pop the nested path.
-   */
+  /** Pop the nested property path. */
   void popPath();
 
-  /**
-   * Throw ConstraintViolationException if there are violations for this request.
-   */
-  void throwWithViolations();
-
+  /** Throw ConstraintViolationException if there are violations in this request. */
+  void throwWithViolations() throws ConstraintViolationException;
 }
