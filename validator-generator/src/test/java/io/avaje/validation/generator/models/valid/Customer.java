@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.avaje.lang.Nullable;
-import io.avaje.validation.Valid;
+import io.avaje.validation.constraints.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 

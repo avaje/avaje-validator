@@ -1,13 +1,12 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.Valid;
-import jakarta.validation.constraints.Size;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Valid
+import jakarta.validation.constraints.Size;
+
+//@Valid
 public class Customer {
   boolean active;
   String name = "";

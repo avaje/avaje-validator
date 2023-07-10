@@ -1,7 +1,6 @@
 package io.avaje.validation.generator;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
@@ -158,92 +157,8 @@ final class FieldReader {
   public void writeConstructor(Append writer) {
     writer.append("    this.%s = ", adapterFieldName).eol();
 
-    boolean first = true;
-    final var annotations = elementAnnotations.annotations();
-    final var typeUse1 = elementAnnotations.typeUse1();
-    final var typeUse2 = elementAnnotations.typeUse2();
-    final var hasValid = elementAnnotations.hasValid();
-    for (final var a : annotations.entrySet()) {
-      if (first) {
-        writer.append(
-            "        ctx.<%s>adapter(%s.class, %s)",
-            PrimitiveUtil.wrap(genericType.shortType()), a.getKey().shortName(), a.getValue());
-        first = false;
-        continue;
-      }
-      writer
-          .eol()
-          .append(
-              "            .andThen(ctx.adapter(%s.class,%s))",
-              a.getKey().shortName(), a.getValue());
-    }
-    final var topType = genericType.topType();
-    if (Util.isBasicType(topType)) {
-      writer.append(";").eol();
-      return;
-    }
-
-    if (annotations.isEmpty()) {
-      writer.append("        ctx.<%s>noop()", PrimitiveUtil.wrap(genericType.shortType()));
-    }
-
-    if (!typeUse1.isEmpty()
-        && ("java.util.List".equals(genericType.topType())
-            || "java.util.Set".equals(genericType.topType()))) {
-      writer.eol().append("            .list()");
-      final var t = genericType.firstParamType();
-      writeTypeUse(writer, t, typeUse1);
-
-    } else if ((!typeUse1.isEmpty() || !typeUse2.isEmpty())
-        && "java.util.Map".equals(genericType.topType())) {
-
-      writer.eol().append("            .mapKeys()");
-      writeTypeUse(writer, genericType.firstParamType(), typeUse1);
-
-      writer.eol().append("            .mapValues()");
-      writeTypeUse(writer, genericType.secondParamType(), typeUse2, false);
-
-    } else if (genericType.topType().contains("[]") && hasValid) {
-
-      writer.eol().append("            .array()");
-      writeTypeUse(writer, genericType.firstParamType(), typeUse1);
-    } else if (hasValid) {
-      writer
-          .eol()
-          .append(
-              "            .andThen(ctx.adapter(%s.class))", Util.shortName(genericType.topType()));
-    }
+    AdapterHelper.writeAdapterWithValues(
+        writer, elementAnnotations, "        ", PrimitiveUtil.wrap(genericType.shortType()));
     writer.append(";").eol().eol();
-  }
-
-  private void writeTypeUse(
-      Append writer, String firstParamType, Map<GenericType, String> typeUse12) {
-    writeTypeUse(writer, firstParamType, typeUse12, true);
-  }
-
-  private void writeTypeUse(
-      Append writer, String t, Map<GenericType, String> typeUseMap, boolean keys) {
-
-    for (final var a : typeUseMap.entrySet()) {
-
-      if (Constants.VALID_ANNOTATIONS.contains(a.getKey().topType())) {
-        continue;
-      }
-      final var k = a.getKey().shortName();
-      final var v = a.getValue();
-      writer.eol().append("            .andThenMulti(ctx.adapter(%s.class,%s))", k, v);
-    }
-
-    if (!Util.isBasicType(t)
-        && typeUseMap.keySet().stream()
-            .map(GenericType::topType)
-            .anyMatch(Constants.VALID_ANNOTATIONS::contains)) {
-
-      writer
-          .eol()
-          .append(
-              "            .andThenMulti(ctx.adapter(%s.class))",
-              Util.shortName(keys ? genericType.firstParamType() : genericType.secondParamType()));
-    }
   }
 }

@@ -13,11 +13,11 @@ public final class MethodTest$Proxy extends MethodTest {
   private final Method test0;
   private final MethodInterceptor test0ValidateParams;
 
-  public MethodTest$Proxy(AspectProvider<ValidateParams> validateParams) {
+  public MethodTest$Proxy(AspectProvider<ValidateMethod> validateParams) {
     try {
       test0 = MethodTest.class.getDeclaredMethod("test", List.class, int.class, String.class);
       test0ValidateParams =
-          validateParams.interceptor(test0, test0.getAnnotation(ValidateParams.class));
+          validateParams.interceptor(test0, test0.getAnnotation(ValidateMethod.class));
 
     } catch (final Exception e) {
       throw new IllegalStateException(e);

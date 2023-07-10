@@ -1,8 +1,6 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.Valid;
-
-@Valid
+//@Valid
 public class Address {
 
     public String line1;

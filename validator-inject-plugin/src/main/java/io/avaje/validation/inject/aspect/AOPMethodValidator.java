@@ -10,11 +10,10 @@ import java.util.Map;
 import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.aop.MethodInterceptor;
 import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 
 // Imported into scope
-public class AOPMethodValidator implements AspectProvider<ValidateParams> {
+public class AOPMethodValidator implements AspectProvider<ValidateMethod> {
 
   final ValidationContext ctx;
   private final Map<Method, MethodAdapterProvider> paramAdapters;
@@ -26,7 +25,7 @@ public class AOPMethodValidator implements AspectProvider<ValidateParams> {
   }
 
   @Override
-  public MethodInterceptor interceptor(Method method, ValidateParams aspectAnnotation) {
+  public MethodInterceptor interceptor(Method method, ValidateMethod aspectAnnotation) {
 
     final var localeStr = aspectAnnotation.locale();
     final Locale locale;
@@ -35,6 +34,7 @@ public class AOPMethodValidator implements AspectProvider<ValidateParams> {
     } else {
       locale = Locale.forLanguageTag(localeStr);
     }
-    return new ParamInterceptor(locale, ctx, paramAdapters.get(method));
+    return new ParamInterceptor(
+        locale, ctx, paramAdapters.get(method), aspectAnnotation.throwOnParamFailure());
   }
 }

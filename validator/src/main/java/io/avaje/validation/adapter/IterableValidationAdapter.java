@@ -1,10 +1,8 @@
 package io.avaje.validation.adapter;
 
-import java.util.Collection;
+class IterableValidationAdapter<T> extends AbstractContainerAdapter<T> {
 
-class CollectionValidationAdapter<T> extends AbstractMultiAdapter<T> {
-
-   CollectionValidationAdapter(ValidationAdapter<T> adapters) {
+  IterableValidationAdapter(ValidationAdapter<T> adapters) {
     super(adapters);
   }
 
@@ -12,7 +10,7 @@ class CollectionValidationAdapter<T> extends AbstractMultiAdapter<T> {
   @SuppressWarnings("unchecked")
   public boolean validate(T value, ValidationRequest req, String propertyName) {
     if (starterAdapter.validate(value, req, propertyName)) {
-      return validateAll((Collection<Object>) value, req, propertyName);
+      return validateAll((Iterable<Object>) value, req, propertyName);
     }
 
     return true;

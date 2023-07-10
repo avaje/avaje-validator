@@ -13,21 +13,25 @@ public interface ValidationAdapter<T> {
     return validate(value, req, null);
   }
 
-  default AbstractMultiAdapter<T> list() {
+  default AbstractContainerAdapter<T> list() {
 
-    return new CollectionValidationAdapter<>(this);
+    return new IterableValidationAdapter<>(this);
   }
 
-  default AbstractMultiAdapter<T> mapKeys() {
+  default AbstractContainerAdapter<T> mapKeys() {
     return new MapValidationAdapter<>(this, true);
   }
 
-  default AbstractMultiAdapter<T> mapValues() {
+  default AbstractContainerAdapter<T> mapValues() {
     return new MapValidationAdapter<>(this, false);
   }
 
-  default AbstractMultiAdapter<T> array() {
+  default AbstractContainerAdapter<T> array() {
     return new ArrayValidationAdapter<>(this);
+  }
+
+  default AbstractContainerAdapter<T> optional() {
+    return new OptionalValidationAdapter<>(this);
   }
 
   default ValidationAdapter<T> andThen(ValidationAdapter<? super T> after) {

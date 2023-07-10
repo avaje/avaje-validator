@@ -2,6 +2,8 @@ package io.avaje.validation.core;
 
 import java.util.Map;
 
+import io.avaje.validation.spi.MessageInterpolator;
+
 final class BasicMessageInterpolator implements MessageInterpolator {
 
   @Override

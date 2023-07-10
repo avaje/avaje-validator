@@ -26,7 +26,7 @@ import javax.lang.model.util.ElementFilter;
 
 @SupportedAnnotationTypes({
   AvajeValidPrism.PRISM_TYPE,
-  ImportPrism.PRISM_TYPE,
+  ImportValidPojoPrism.PRISM_TYPE,
   HttpValidPrism.PRISM_TYPE,
   JavaxValidPrism.PRISM_TYPE,
   JakartaValidPrism.PRISM_TYPE,
@@ -34,7 +34,7 @@ import javax.lang.model.util.ElementFilter;
   AvajeConstraintPrism.PRISM_TYPE,
   JakartaConstraintPrism.PRISM_TYPE,
   JavaxConstraintPrism.PRISM_TYPE,
-  ValidateParamsPrism.PRISM_TYPE
+  ValidateMethodPrism.PRISM_TYPE
 })
 public final class ValidationProcessor extends AbstractProcessor {
 
@@ -86,8 +86,9 @@ public final class ValidationProcessor extends AbstractProcessor {
     registerCustomAdapters(
         round.getElementsAnnotatedWith(element(AnnotationValidatorPrism.PRISM_TYPE)));
 
-    writeAdapters(round.getElementsAnnotatedWith(element(AvajeValidPrism.PRISM_TYPE)));
-
+    Optional.ofNullable(element(AvajeValidPrism.PRISM_TYPE))
+        .map(round::getElementsAnnotatedWith)
+        .ifPresent(this::writeAdapters);
     Optional.ofNullable(element(HttpValidPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeAdapters);
@@ -98,12 +99,13 @@ public final class ValidationProcessor extends AbstractProcessor {
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeAdapters);
 
-    Optional.ofNullable(element(ValidateParamsPrism.PRISM_TYPE))
+    Optional.ofNullable(element(ValidateMethodPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);
 
-    writeAdaptersForImported(round.getElementsAnnotatedWith(element(ImportPrism.PRISM_TYPE)));
+    writeAdaptersForImported(
+        round.getElementsAnnotatedWith(element(ImportValidPojoPrism.PRISM_TYPE)));
     initialiseComponent();
     cascadeTypes();
     initialiseComponent();
@@ -159,7 +161,8 @@ public final class ValidationProcessor extends AbstractProcessor {
   /** Elements that have a {@code @Valid.Import} annotation. */
   private void writeAdaptersForImported(Set<? extends Element> importedElements) {
     for (final var importedElement : ElementFilter.typesIn(importedElements)) {
-      for (final TypeMirror importType : ImportPrism.getInstanceOn(importedElement).value()) {
+      for (final TypeMirror importType :
+          ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
         // if imported by mixin annotation skip
         if (mixInImports.contains(importType.toString())) {
           continue;
@@ -245,14 +248,14 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private void writeParamProviderForMethod(Set<ExecutableElement> elements) {
     if (element(ComponentPrism.PRISM_TYPE) == null) {
-      throw new IllegalStateException("ValidateParams can only be used with Avaje Inject Beans");
+      throw new IllegalStateException("ValidateMethod can only be used with Avaje Inject Beans");
     }
     for (final ExecutableElement executableElement : elements) {
 
       if (executableElement.getEnclosingElement().getAnnotationMirrors().stream()
           .map(m -> m.getAnnotationType().toString())
           .noneMatch(s -> s.contains("Singleton") || s.contains("Component"))) {
-        throw new IllegalStateException("ValidateParams can only be used with Avaje Inject Beans");
+        throw new IllegalStateException("ValidateMethod can only be used with Avaje Inject Beans");
       }
       writeParamProvider(executableElement);
     }
