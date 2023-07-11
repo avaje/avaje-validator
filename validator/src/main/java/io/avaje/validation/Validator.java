@@ -3,7 +3,6 @@ package io.avaje.validation;
 import io.avaje.lang.Nullable;
 import io.avaje.validation.adapter.*;
 import io.avaje.validation.core.DefaultBootstrap;
-import io.avaje.validation.spi.Bootstrap;
 import io.avaje.validation.spi.ValidatorCustomizer;
 
 import java.lang.annotation.Annotation;
@@ -13,7 +12,6 @@ import java.time.Duration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Supplier;
 
