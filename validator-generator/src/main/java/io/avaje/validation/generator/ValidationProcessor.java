@@ -26,6 +26,7 @@ import javax.lang.model.util.ElementFilter;
 
 @SupportedAnnotationTypes({
   AvajeValidPrism.PRISM_TYPE,
+  BuilderCustomizerPrism.PRISM_TYPE,
   ImportValidPojoPrism.PRISM_TYPE,
   HttpValidPrism.PRISM_TYPE,
   JavaxValidPrism.PRISM_TYPE,
@@ -44,6 +45,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private final Set<String> mixInImports = new HashSet<>();
   private SimpleComponentWriter componentWriter;
   private boolean readModuleInfo;
+  private CustomizerServiceWriter customizerServiceWriter;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -55,6 +57,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     super.init(processingEnv);
     ProcessingContext.init(processingEnv);
     this.componentWriter = new SimpleComponentWriter(metaData);
+    this.customizerServiceWriter = new CustomizerServiceWriter();
   }
 
   /** Read the existing metadata from the generated component (if exists). */
@@ -108,7 +111,8 @@ public final class ValidationProcessor extends AbstractProcessor {
         round.getElementsAnnotatedWith(element(ImportValidPojoPrism.PRISM_TYPE)));
     initialiseComponent();
     cascadeTypes();
-    initialiseComponent();
+    customizerServiceWriter.writeMetaInf(
+        round.getElementsAnnotatedWith(element(BuilderCustomizerPrism.PRISM_TYPE)));
     writeComponent(round.processingOver());
     return false;
   }
@@ -184,6 +188,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private void writeComponent(boolean processingOver) {
     if (processingOver) {
       try {
+        customizerServiceWriter.close();
         componentWriter.write();
         componentWriter.writeMetaInf();
       } catch (final IOException e) {

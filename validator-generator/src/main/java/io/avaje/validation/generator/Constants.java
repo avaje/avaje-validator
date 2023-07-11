@@ -6,6 +6,8 @@ final class Constants {
 
   static final String META_INF_COMPONENT =
       "META-INF/services/io.avaje.validation.Validator$GeneratedComponent";
+  static final String META_INF_CUSTOMIZER =
+      "META-INF/services/io.avaje.validation.spi.ValidatorCustomizer";
   public static final String VALID_SPI = "io.avaje.validation.spi.*";
   public static final String VALIDATOR = "io.avaje.validation.Validator";
   public static final String COMPONENT = "io.avaje.inject.Component";

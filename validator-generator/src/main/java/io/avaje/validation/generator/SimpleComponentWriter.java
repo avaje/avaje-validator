@@ -54,7 +54,7 @@ final class SimpleComponentWriter {
 
   private void writeRegister() {
     writer.append("  @Override").eol();
-    writer.append("  public void register(Validator.Builder builder) {").eol();
+    writer.append("  public void customize(Validator.Builder builder) {").eol();
     final List<String> strings = metaData.allFactories();
     for (final String adapterFullName : strings) {
       final String adapterShortName = Util.shortName(adapterFullName);
