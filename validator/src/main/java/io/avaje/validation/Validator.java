@@ -4,6 +4,7 @@ import io.avaje.lang.Nullable;
 import io.avaje.validation.adapter.*;
 import io.avaje.validation.core.DefaultBootstrap;
 import io.avaje.validation.spi.Bootstrap;
+import io.avaje.validation.spi.ValidatorCustomizer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -35,10 +36,7 @@ public interface Validator {
   ValidationContext getContext();
 
   static Builder builder() {
-    final var bootstrapService = ServiceLoader.load(Bootstrap.class).iterator();
-    if (bootstrapService.hasNext()) {
-      return bootstrapService.next().builder();
-    }
+
     return DefaultBootstrap.builder();
   }
 
@@ -87,7 +85,7 @@ public interface Validator {
     Builder add(Class<? extends Annotation> type, AnnotationAdapterBuilder builder);
 
     /** Add a Component which can provide multiple ValidationAdapters and or configuration. */
-    Builder add(ValidatorComponent component);
+    Builder add(ValidatorCustomizer component);
 
     /** Add a ValidationAdapter.Factory which provides ValidationAdapters to use. */
     Builder add(ValidationContext.AdapterFactory factory);
@@ -120,10 +118,10 @@ public interface Validator {
 
   /** Components register ValidationAdapters Validator.Builder */
   @FunctionalInterface
-  interface GeneratedComponent extends ValidatorComponent {
+  interface GeneratedComponent extends ValidatorCustomizer {
 
-    /** Register ValidationAdapters with the Builder. */
+    /** Customize the Builder with generated ValidationAdapters. */
     @Override
-    void register(Builder builder);
+    void customize(Builder builder);
   }
 }
