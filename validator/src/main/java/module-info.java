@@ -5,10 +5,9 @@ module io.avaje.validation {
 
   requires io.avaje.lang;
 
-  uses io.avaje.validation.spi.Bootstrap;
   uses io.avaje.validation.Validator.GeneratedComponent;
   uses io.avaje.validation.spi.MessageInterpolator;
-  uses io.avaje.validation.adapter.ValidatorComponent;
+  uses io.avaje.validation.spi.ValidatorCustomizer;
   uses io.avaje.validation.adapter.ValidationContext.AdapterFactory;
   uses io.avaje.validation.adapter.ValidationContext.AnnotationFactory;
 }

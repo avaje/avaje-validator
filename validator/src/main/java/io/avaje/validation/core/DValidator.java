@@ -27,8 +27,8 @@ import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
-import io.avaje.validation.adapter.ValidatorComponent;
 import io.avaje.validation.spi.MessageInterpolator;
+import io.avaje.validation.spi.ValidatorCustomizer;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator, ValidationContext {
@@ -195,8 +195,8 @@ final class DValidator implements Validator, ValidationContext {
     }
 
     @Override
-    public Builder add(ValidatorComponent component) {
-      component.register(this);
+    public Builder add(ValidatorCustomizer component) {
+      component.customize(this);
       return this;
     }
 
@@ -260,12 +260,12 @@ final class DValidator implements Validator, ValidationContext {
     }
 
     private void registerComponents() {
-      // first register all user defined ValidatorComponent
-      for (final ValidatorComponent next : ServiceLoader.load(ValidatorComponent.class)) {
-        next.register(this);
+      // first register all user defined ValidatorCustomizer
+      for (final ValidatorCustomizer next : ServiceLoader.load(ValidatorCustomizer.class)) {
+        next.customize(this);
       }
       for (final GeneratedComponent next : ServiceLoader.load(GeneratedComponent.class)) {
-        next.register(this);
+        next.customize(this);
       }
     }
 
