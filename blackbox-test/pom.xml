@@ -16,7 +16,6 @@
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
 		<java.release>17</java.release>
-		<inject.version>9.3-RC3</inject.version>
 	</properties>
 
 	<dependencies>
