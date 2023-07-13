@@ -8,8 +8,11 @@
 		<artifactId>avaje-validator-parent</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>avaje-validator-inject-plugin</artifactId>
-	<name>validator-inject-plugin</name>
+	<artifactId>avaje-validator-http-plugin</artifactId>
+	<name>validator-http-plugin</name>
+	<properties>
+		<http.version>1.45-SNAPSHOT</http.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.avaje</groupId>
@@ -19,6 +22,12 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
+		
+		<dependency>
+			<groupId>io.avaje</groupId>
+			<artifactId>avaje-validator-inject-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>io.avaje</groupId>
@@ -27,12 +36,13 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
-
-		<dependency>
+		
+    <dependency>
 			<groupId>io.avaje</groupId>
-			<artifactId>validator-constraints</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
+			<artifactId>avaje-http-api</artifactId>
+			<version>${http.version}</version>
+			<scope>provided</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -41,7 +51,12 @@
 			<version>1.1</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>io.avaje</groupId>
+			<artifactId>avaje-inject-test</artifactId>
+			<version>${inject.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 </project>

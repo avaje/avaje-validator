@@ -26,12 +26,14 @@
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
     <java.version>17</java.version>
     <java.release>17</java.release>
+    <inject.version>9.3</inject.version>
   </properties>
 
   <modules>
     <module>validator</module>
     <module>validator-constraints</module>
     <module>validator-generator</module>
+    <module>validator-http-plugin</module>
     <module>validator-inject-plugin</module>
   </modules>
 
