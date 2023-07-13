@@ -18,21 +18,29 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
   @Override
   public void apply(BeanScopeBuilder builder) {
 
-    final var props = builder.propertyPlugin();
+    builder.provideDefault(
+        null,
+        Validator.class,
+        () -> {
+          final var props = builder.propertyPlugin();
 
-    final var locales = new ArrayList<Locale>();
+          final var locales = new ArrayList<Locale>();
 
-    props.get("validation.locale.default").map(Locale::forLanguageTag).ifPresent(locales::add);
+          props
+              .get("validation.locale.default")
+              .map(Locale::forLanguageTag)
+              .ifPresent(locales::add);
 
-    props.get("validation.locale.addedLocales").stream()
-        .flatMap(s -> Arrays.stream(s.split(",")))
-        .map(Locale::forLanguageTag)
-        .forEach(locales::add);
+          props.get("validation.locale.addedLocales").stream()
+              .flatMap(s -> Arrays.stream(s.split(",")))
+              .map(Locale::forLanguageTag)
+              .forEach(locales::add);
 
-    final var beanValidator = new BeanValidator(locales);
+          final var beanValidator = new BeanValidator(locales);
 
-    builder.addPostConstructConsumerHook(beanValidator::setValidator);
+          builder.addPostConstructConsumerHook(beanValidator::setValidator);
 
-    builder.provideDefault(null, Validator.class, () -> beanValidator);
+          return beanValidator;
+        });
   }
 }

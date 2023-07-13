@@ -1,17 +1,19 @@
-package io.avaje.validation.http;
+package example.avaje.typeuse;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.avaje.http.api.ValidationException;
 import io.avaje.http.api.Validator;
-import io.avaje.inject.BeanScope;
 import io.avaje.inject.spi.Builder;
 import io.avaje.inject.spi.Module;
+import io.avaje.inject.test.InjectTest;
+import jakarta.inject.Inject;
 
+@InjectTest
 class DefaultValidatorProviderTest {
   Module mod =
       new Module() {
@@ -24,26 +26,12 @@ class DefaultValidatorProviderTest {
         @Override
         public void build(Builder builder) {}
       };
-  private Validator validator;
+
+  @Inject private Validator validator;
 
   @BeforeAll
   static void setLocale() {
     System.setProperty("validation.locale.default", "en-us");
-  }
-
-  @BeforeEach
-  void before() {
-    System.setProperty("validation.locale.default", "en-us");
-    final var v =
-        io.avaje.validation.Validator.builder()
-            .add(CrewMate.class, CrewMateValidationAdapter::new)
-            .build();
-    this.validator =
-        BeanScope.builder()
-            .modules(mod)
-            .bean(io.avaje.validation.Validator.class, v)
-            .build()
-            .get(Validator.class);
   }
 
   @Test
