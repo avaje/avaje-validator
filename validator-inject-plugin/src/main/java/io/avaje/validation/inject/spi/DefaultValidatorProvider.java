@@ -1,12 +1,19 @@
 package io.avaje.validation.inject.spi;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Locale;
 
 import io.avaje.inject.BeanScopeBuilder;
+import io.avaje.inject.aop.AspectProvider;
+import io.avaje.inject.spi.GenericType;
 import io.avaje.validation.Validator;
+import io.avaje.validation.inject.aspect.AOPMethodValidator;
+import io.avaje.validation.inject.aspect.MethodAdapterProvider;
+import io.avaje.validation.inject.aspect.ValidateMethod;
 
 /** Plugin for avaje inject that provides a default Jsonb instance. */
 public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugin {
@@ -17,8 +24,19 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
   }
 
   @Override
+  public Class<?>[] providesAspects() {
+    return new Class<?>[] {ValidateMethod.class};
+  }
+
+  @Override
   public void apply(BeanScopeBuilder builder) {
 
+    validator(builder);
+
+    paramAspect(builder);
+  }
+
+  private void validator(BeanScopeBuilder builder) {
     builder.provideDefault(
         null,
         Validator.class,
@@ -55,6 +73,26 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
                     validator.temporalTolerance(Duration.of(l, unit));
                   });
           return validator.build();
+        });
+  }
+
+  private void paramAspect(BeanScopeBuilder builder) {
+    builder.provideDefault(
+        null,
+        new GenericType<AspectProvider<ValidateMethod>>() {}.type(),
+        () -> {
+          final var methodValidator = new AOPMethodValidator();
+
+          builder.addPostConstructConsumerHook(
+              b -> {
+                final var ctx = b.get(Validator.class).getContext();
+                final var map =
+                    b.list(MethodAdapterProvider.class).stream()
+                        .collect(toMap(MethodAdapterProvider::provide, p -> p));
+                methodValidator.post(ctx, map);
+              });
+
+          return methodValidator;
         });
   }
 }

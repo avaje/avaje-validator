@@ -1,5 +1,6 @@
 package io.avaje.validation.inject.aspect;
 
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -19,9 +20,12 @@ class TestMethodValidation {
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
 
-    final var val =
-        new AOPMethodValidator(Validator.builder().build(), List.of(new TestParamProvider()));
+    final var val = new AOPMethodValidator();
     proxy = new MethodTest$Proxy(val);
+    val.post(
+        Validator.builder().build().getContext(),
+        List.of(new TestParamProvider()).stream()
+            .collect(toMap(MethodAdapterProvider::provide, p -> p)));
   }
 
   @Test

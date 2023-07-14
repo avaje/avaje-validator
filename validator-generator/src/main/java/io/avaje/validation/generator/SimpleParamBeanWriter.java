@@ -14,7 +14,6 @@ final class SimpleParamBeanWriter {
   private final String adapterPackage;
   private final String adapterFullName;
   private Append writer;
-  private static boolean writeAspect = true;
 
   SimpleParamBeanWriter(ValidMethodReader beanReader) {
     this.beanReader = beanReader;
@@ -53,7 +52,7 @@ final class SimpleParamBeanWriter {
   }
 
   private void writeImports() {
-    beanReader.writeImports(writer, writeAspect);
+    beanReader.writeImports(writer);
   }
 
   private void writePackage() {
@@ -61,15 +60,15 @@ final class SimpleParamBeanWriter {
   }
 
   private void writeClassStart() {
-    writer.append("@Generated").eol();
-    writer.append("@Component").eol();
-    if (writeAspect) {
-      writer.append("@Component.Import(AOPMethodValidator.class)").eol();
-      writeAspect = false;
-    }
-
-    writer.append("public final class %s implements MethodAdapterProvider", adapterShortName);
-    writer.append("{").eol().eol();
+    writer
+        .append(
+            """
+    		@Generated
+    		@Component
+    		public final class %s implements MethodAdapterProvider {
+    		""",
+            adapterShortName)
+        .eol();
   }
 
   private void writeMethods() {

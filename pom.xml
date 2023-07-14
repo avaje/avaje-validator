@@ -27,7 +27,7 @@
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
     <java.version>17</java.version>
     <java.release>17</java.release>
-    <inject.version>9.3</inject.version>
+    <inject.version>9.4-SNAPSHOT</inject.version>
     <http.version>1.45</http.version>
   </properties>
 

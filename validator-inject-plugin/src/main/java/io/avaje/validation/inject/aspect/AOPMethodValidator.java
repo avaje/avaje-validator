@@ -1,27 +1,27 @@
 package io.avaje.validation.inject.aspect;
 
-import static java.util.stream.Collectors.toMap;
-
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
+import io.avaje.inject.PostConstruct;
 import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.aop.MethodInterceptor;
-import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.ValidationContext;
 
-// Imported into scope
-public class AOPMethodValidator implements AspectProvider<ValidateMethod> {
+public final class AOPMethodValidator implements AspectProvider<ValidateMethod> {
 
-  final ValidationContext ctx;
-  private final Map<Method, MethodAdapterProvider> paramAdapters;
+  private List<BiConsumer<ValidationContext, Map<Method, MethodAdapterProvider>>> consumers =
+      new ArrayList<>();
 
-  public AOPMethodValidator(Validator validator, List<MethodAdapterProvider> adapterProviders) {
-    this.ctx = validator.getContext();
-    this.paramAdapters =
-        adapterProviders.stream().collect(toMap(MethodAdapterProvider::provide, p -> p));
+  @PostConstruct
+  public void post(ValidationContext ctx, Map<Method, MethodAdapterProvider> map) {
+
+    consumers.forEach(c -> c.accept(ctx, map));
+    consumers = null;
   }
 
   @Override
@@ -34,7 +34,9 @@ public class AOPMethodValidator implements AspectProvider<ValidateMethod> {
     } else {
       locale = Locale.forLanguageTag(localeStr);
     }
-    return new ParamInterceptor(
-        locale, ctx, paramAdapters.get(method), aspectAnnotation.throwOnParamFailure());
+    final var interceptor =
+        new ParamInterceptor(locale, method, aspectAnnotation.throwOnParamFailure());
+    consumers.add(interceptor::postConstruct);
+    return interceptor;
   }
 }

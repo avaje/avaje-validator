@@ -44,16 +44,12 @@ final class ValidMethodReader {
     if (Util.validImportType(type)) {
       importTypes.add(type);
     }
-
     paramAnnotations.forEach(a -> a.addImports(importTypes));
     returnElementAnnotation.addImports(importTypes);
     return importTypes;
   }
 
-  public void writeImports(Append writer, boolean writeAspect) {
-    if (writeAspect) {
-      importTypes.add("io.avaje.validation.inject.aspect.AOPMethodValidator");
-    }
+  public void writeImports(Append writer) {
     for (final String importType : importTypes()) {
       if (Util.validImportType(importType)) {
         writer.append("import %s;", importType).eol();
