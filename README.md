@@ -7,7 +7,7 @@
 
 Reflection-free pojo validation via apt source code generation. A light (~85kb + generated code) source code generation style alternative to Hibernate Validation. (code generation vs reflection)
 
-- Annotate java classes with `@Valid` (or use `@Valid.Import` for types we "don't own" or can't annotate)
+- Annotate java classes with `@Valid` (or use `@ImportValidPojo` for types we "don't own" or can't annotate)
 - `avaje-validator-generator` annotation processor generates Java source code to write validation classes
 - Supports Avaje/Jakarta/Javax Constraint Annotations
 - Groups Support
