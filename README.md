@@ -1,5 +1,10 @@
 # Avaje Validator (site docs coming soon)
 
+[![Build](https://github.com/avaje/avaje-validator/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-validator/actions/workflows/build.yml)
+<img src="https://img.shields.io/maven-central/v/io.avaje/avaje-validator.svg?label=Maven%20Central">
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
+[![Discord](https://img.shields.io/discord/1074074312421683250?color=%237289da&label=discord)](https://discord.gg/Qcqf9R27BR)
+
 Reflection-free pojo validation via apt source code generation. A light (~85kb + generated code) source code generation style alternative to Hibernate Validation. (code generation vs reflection)
 
 - Annotate java classes with `@Valid` (or use `@Valid.Import` for types we "don't own" or can't annotate)
