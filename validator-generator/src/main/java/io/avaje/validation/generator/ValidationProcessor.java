@@ -259,7 +259,7 @@ public final class ValidationProcessor extends AbstractProcessor {
           .map(m -> m.getAnnotationType().toString())
           .noneMatch(s -> s.contains("Singleton") || s.contains("Component"))) {
         throw new IllegalStateException(
-            "The ValidateMethod Annotation can only be used with JSR-330 Injectable Classes");
+            "The ValidMethod Annotation can only be used with JSR-330 Injectable Classes");
       }
       writeParamProvider(executableElement);
     }
