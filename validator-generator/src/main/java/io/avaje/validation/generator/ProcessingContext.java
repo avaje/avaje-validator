@@ -28,6 +28,7 @@ final class ProcessingContext {
     private final Elements elements;
     private final Types types;
     private final int jdkVersion;
+    private final String diAnnotation;
 
     Ctx(ProcessingEnvironment env) {
       this.env = env;
@@ -36,6 +37,15 @@ final class ProcessingContext {
       this.elements = env.getElementUtils();
       this.types = env.getTypeUtils();
       this.jdkVersion = env.getSourceVersion().ordinal();
+
+      final var useComponent = elements.getTypeElement(Constants.COMPONENT) != null;
+
+      final var jakarta = elements.getTypeElement(Constants.SINGLETON_JAKARTA) != null;
+
+      diAnnotation =
+          (useComponent
+              ? Constants.COMPONENT
+              : jakarta ? Constants.SINGLETON_JAKARTA : Constants.SINGLETON_JAVAX);
     }
   }
 
@@ -45,10 +55,6 @@ final class ProcessingContext {
     CTX.set(new Ctx(processingEnv));
   }
 
-  static boolean useEnhancedSwitch() {
-    return jdkVersion() >= 14;
-  }
-
   static int jdkVersion() {
     return CTX.get().jdkVersion;
   }
@@ -56,8 +62,8 @@ final class ProcessingContext {
   static boolean isAssignable2Interface(String type, String superType) {
     return type.equals(superType)
         || Optional.ofNullable(element(type)).stream()
-        .flatMap(ProcessingContext::superTypes)
-        .anyMatch(superType::equals);
+            .flatMap(ProcessingContext::superTypes)
+            .anyMatch(superType::equals);
   }
 
   public static Stream<String> superTypes(Element element) {
@@ -105,6 +111,10 @@ final class ProcessingContext {
 
   static ProcessingEnvironment env() {
     return CTX.get().env;
+  }
+
+  static String diAnnotation() {
+    return CTX.get().diAnnotation;
   }
 
   static void clear() {

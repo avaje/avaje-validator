@@ -1,6 +1,7 @@
 package io.avaje.validation.generator;
 
 import static java.util.stream.Collectors.joining;
+import static io.avaje.validation.generator.ProcessingContext.diAnnotation;
 
 import java.util.List;
 import java.util.Set;
@@ -24,7 +25,7 @@ final class ValidMethodReader {
     this.params = element.getParameters();
     importTypes.add(type);
     importTypes.add("java.util.List");
-    importTypes.add(Constants.COMPONENT);
+    importTypes.add(diAnnotation());
     importTypes.add("java.util.Set");
     importTypes.add("java.util.Map");
     importTypes.add("io.avaje.validation.inject.aspect.MethodAdapterProvider");

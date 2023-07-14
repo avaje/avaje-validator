@@ -1,6 +1,7 @@
 package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.ProcessingContext.createWriter;
+import static io.avaje.validation.generator.ProcessingContext.diAnnotation;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -64,10 +65,10 @@ final class SimpleParamBeanWriter {
         .append(
             """
     		@Generated
-    		@Component
+    		%s
     		public final class %s implements MethodAdapterProvider {
     		""",
-            adapterShortName)
+            diAnnotation(), adapterShortName)
         .eol();
   }
 

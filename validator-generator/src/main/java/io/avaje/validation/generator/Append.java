@@ -1,7 +1,5 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.ProcessingContext.useEnhancedSwitch;
-
 import java.io.IOException;
 import java.io.Writer;
 
@@ -46,7 +44,4 @@ final class Append {
     return append(String.format(format, args));
   }
 
-  public Append appendSwitchCase() {
-    return append(useEnhancedSwitch() ? " -> {" : ":");
-  }
 }

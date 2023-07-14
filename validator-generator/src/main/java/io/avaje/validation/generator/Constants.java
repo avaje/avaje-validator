@@ -11,6 +11,9 @@ final class Constants {
   public static final String VALID_SPI = "io.avaje.validation.spi.*";
   public static final String VALIDATOR = "io.avaje.validation.Validator";
   public static final String COMPONENT = "io.avaje.inject.Component";
+  static final String SINGLETON_JAKARTA = "jakarta.inject.Singleton";
+  static final String SINGLETON_JAVAX = "javax.inject.Singleton";
+
   public static final Set<String> VALID_ANNOTATIONS =
       Set.of(
           AvajeValidPrism.PRISM_TYPE,
