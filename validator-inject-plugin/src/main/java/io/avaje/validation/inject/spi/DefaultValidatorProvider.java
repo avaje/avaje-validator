@@ -61,13 +61,13 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
               .forEach(validator::addLocales);
 
           props
-              .get("validation.temporal.value")
+              .get("validation.temporal.tolerance.value")
               .map(Long::valueOf)
               .ifPresent(
                   l -> {
                     final var unit =
                         props
-                            .get("validation.temporal.chronoUnit")
+                            .get("validation.temporal.tolerance.chronoUnit")
                             .map(ChronoUnit::valueOf)
                             .orElse(ChronoUnit.MILLIS);
                     validator.temporalTolerance(Duration.of(l, unit));
