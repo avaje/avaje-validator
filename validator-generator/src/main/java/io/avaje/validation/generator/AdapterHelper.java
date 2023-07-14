@@ -33,26 +33,25 @@ public class AdapterHelper {
 
     if (!typeUse1.isEmpty()
         && (isAssignable2Interface(genericType.topType(), "java.lang.Iterable"))) {
-      writer.eol().append("%s    .list()", indent);
+      writer.append("%s    .list()", indent);
       final var t = genericType.firstParamType();
       writeTypeUse(writer, indent, t, typeUse1, genericType);
 
     } else if ((!typeUse1.isEmpty() || !typeUse2.isEmpty())
         && "java.util.Map".equals(genericType.topType())) {
 
-      writer.eol().append("%s    .mapKeys()", indent);
+      writer.append("%s    .mapKeys()", indent);
       writeTypeUse(writer, indent, genericType.firstParamType(), typeUse1, genericType);
 
-      writer.eol().append("%s    .mapValues()", indent);
+      writer.append("%s    .mapValues()", indent);
       writeTypeUse(writer, indent, genericType.secondParamType(), typeUse2, false, genericType);
 
     } else if (genericType.topType().contains("[]") && hasValid) {
 
-      writer.eol().append("%s    .array()", indent);
+      writer.append("%s    .array()", indent);
       writeTypeUse(writer, indent, genericType.firstParamType(), typeUse1, genericType);
     } else if (hasValid) {
       writer
-          .eol()
           .append(
               "%s    .andThen(ctx.adapter(%s.class))",
               indent, Util.shortName(genericType.topType()));
@@ -85,7 +84,7 @@ public class AdapterHelper {
       }
       final var k = a.getKey().shortName();
       final var v = a.getValue();
-      writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class,%s))", indent, k, v);
+      writer.append("%s    .andThenMulti(ctx.adapter(%s.class,%s))", indent, k, v);
     }
 
     if (!Util.isBasicType(paramType)
@@ -94,7 +93,6 @@ public class AdapterHelper {
             .anyMatch(Constants.VALID_ANNOTATIONS::contains)) {
 
       writer
-          .eol()
           .append(
               "%s    .andThenMulti(ctx.adapter(%s.class))",
               indent,
