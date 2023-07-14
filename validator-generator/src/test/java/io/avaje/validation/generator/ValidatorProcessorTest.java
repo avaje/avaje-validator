@@ -29,6 +29,7 @@ class ValidatorProcessorTest {
   @AfterEach
   void deleteGeneratedFiles() throws IOException {
     try {
+
       Files.walk(Paths.get("io").toAbsolutePath())
           .sorted(Comparator.reverseOrder())
           .map(Path::toFile)
