@@ -20,8 +20,8 @@ import java.lang.annotation.Target;
 import io.avaje.validation.constraints.DecimalMin.List;
 
 /**
- * The annotated element must be a number whose value must be lower or equal to the specified
- * maximum.
+ * The annotated element must be a number whose value must be higher or equal to the specified
+ * minimum.
  *
  * <p>Supported types are:
  *

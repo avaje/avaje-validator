@@ -13,23 +13,39 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * The annotated element size must be between the specified boundaries (included).
+ *
+ * <p>Supported types are:
+ *
+ * <ul>
+ *   <li>{@code CharSequence} (length of character sequence is evaluated)
+ *   <li>{@code Collection} (collection size is evaluated)
+ *   <li>{@code Map} (map size is evaluated)
+ *   <li>Array (array length is evaluated)
+ * </ul>
+ *
+ * <p>{@code null} elements are considered valid.
+ *
+ * @author Emmanuel Bernard
+ */
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Size.List.class)
 public @interface Size {
-    String message() default "{avaje.Size.message}";
+  String message() default "{avaje.Size.message}";
 
-    Class<?>[] groups() default {};
+  Class<?>[] groups() default {};
 
-    int min() default 0;
+  int min() default 0;
 
-    int max() default Integer.MAX_VALUE;
+  int max() default Integer.MAX_VALUE;
 
-    @Target({ElementType.METHOD, ElementType.FIELD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @interface List {
-        Size[] value();
-    }
+  @Target({ElementType.METHOD, ElementType.FIELD})
+  @Retention(RetentionPolicy.RUNTIME)
+  @Documented
+  @interface List {
+    Size[] value();
+  }
 }

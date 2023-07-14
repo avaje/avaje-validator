@@ -14,6 +14,13 @@ import java.lang.annotation.Target;
 
 import io.avaje.validation.constraints.NotBlank.List;
 
+/**
+ * The annotated element must not be {@code null} and must contain at least one non-whitespace
+ * character. Accepts {@code CharSequence}.
+ *
+ * @author Hardy Ferentschik
+ * @see Character#isWhitespace(char)
+ */
 @Constraint
 @Documented
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})

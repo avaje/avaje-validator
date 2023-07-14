@@ -14,6 +14,23 @@ import java.lang.annotation.Target;
 
 import io.avaje.validation.constraints.Negative.List;
 
+/**
+ * The annotated element must be a strictly negative number (i.e. 0 is considered as an invalid
+ * value).
+ *
+ * <p>Supported types are:
+ *
+ * <ul>
+ *   <li>{@code BigDecimal}
+ *   <li>{@code BigInteger}
+ *   <li>{@code byte}, {@code short}, {@code int}, {@code long}, {@code float}, {@code double} and
+ *       their respective wrappers
+ * </ul>
+ *
+ * <p>{@code null} elements are considered valid.
+ *
+ * @author Gunnar Morling
+ */
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
