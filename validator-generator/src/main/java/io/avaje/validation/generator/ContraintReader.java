@@ -126,7 +126,7 @@ final class ContraintReader implements BeanReader {
 """);
 
     boolean first = true;
-    for (final var a : annotations.entrySet()) {
+    for (final var a : new ArrayList<>(annotations.entrySet())) {
       if (first) {
         writer.append("        ctx.adapter(%s.class, groups, message, %s)", a.getKey().shortName(), a.getValue());
         first = false;
