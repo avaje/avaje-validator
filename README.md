@@ -54,7 +54,7 @@ for each type annotated with `@Valid`. These will be automatically registered wi
 when it is started using a service loader mechanism.
 
 ```java
-@Json
+@Valid
 public class Leyndell {
   @NotBlank
   private String street;
