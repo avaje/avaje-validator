@@ -10,11 +10,11 @@ Reflection-free pojo validation via apt source code generation. A light (~85kb +
 - Annotate java classes with `@Valid` (or use `@Valid.Import` for types we "don't own" or can't annotate)
 - `avaje-validator-generator` annotation processor generates Java source code to write validation classes
 - Supports Avaje/Jakarta/Javax Constraint Annotations
-- Group Support
+- Groups Support
 - Composable Contraint Annotations
 - loading and interpolating error messages (with multiple Locales) through ResourceBundles
 - Getter Validation 
-- Method parameter validation (via Avaje Inject AOP only)
+- Method parameter validation (via Avaje Inject AOP only at the moment)
 
 # Quick Start
 
