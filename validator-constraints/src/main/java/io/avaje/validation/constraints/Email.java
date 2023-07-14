@@ -15,10 +15,11 @@ import java.lang.annotation.Target;
 import io.avaje.validation.constraints.Email.List;
 
 /**
- * The annotated {@code CharSequence} must match the specified regular expression. The regular
- * expression follows the Java regular expression conventions see {@link java.util.regex.Pattern}.
+ * The string has to be a well-formed email address. Exact semantics of what makes up a valid email
+ * address are left to the provided Email Annotation ValidationAdapter providers. Accepts {@code
+ * CharSequence}.
  *
- * <p>Accepts {@code CharSequence}. {@code null} elements are considered valid.
+ * <p>{@code null} elements are considered valid.
  */
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})

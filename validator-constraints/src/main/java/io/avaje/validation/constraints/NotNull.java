@@ -14,6 +14,11 @@ import java.lang.annotation.Target;
 
 import io.avaje.validation.constraints.NotNull.List;
 
+/**
+ * The annotated element must not be {@code null}. Accepts any type.
+ *
+ * @author Emmanuel Bernard
+ */
 @Constraint
 @Documented
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})

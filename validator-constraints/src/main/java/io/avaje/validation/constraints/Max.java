@@ -13,21 +13,40 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * The annotated element must be a number whose value must be lower or equal to the specified
+ * maximum.
+ *
+ * <p>Supported types are:
+ *
+ * <ul>
+ *   <li>{@code BigDecimal}
+ *   <li>{@code BigInteger}
+ *   <li>{@code byte}, {@code short}, {@code int}, {@code long}, and their respective wrappers
+ * </ul>
+ *
+ * Note that {@code double} and {@code float} are not supported due to rounding errors (some
+ * providers might provide some approximative support).
+ *
+ * <p>{@code null} elements are considered valid.
+ *
+ * @author Emmanuel Bernard
+ */
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Max.List.class)
 public @interface Max {
-    String message() default "{avaje.Max.message}";
+  String message() default "{avaje.Max.message}";
 
-    Class<?>[] groups() default {};
+  Class<?>[] groups() default {};
 
-    long value();
+  long value();
 
-    @Target({ElementType.METHOD, ElementType.FIELD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @interface List {
-        Max[] value();
-    }
+  @Target({ElementType.METHOD, ElementType.FIELD})
+  @Retention(RetentionPolicy.RUNTIME)
+  @Documented
+  @interface List {
+    Max[] value();
+  }
 }

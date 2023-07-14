@@ -19,6 +19,8 @@ import io.avaje.validation.constraints.Pattern.List;
  * expression follows the Java regular expression conventions see {@link java.util.regex.Pattern}.
  *
  * <p>Accepts {@code CharSequence}. {@code null} elements are considered valid.
+ *
+ * @author Emmanuel Bernard
  */
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})

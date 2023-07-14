@@ -13,6 +13,26 @@ import java.lang.annotation.Target;
 
 import io.avaje.validation.constraints.DecimalMax.List;
 
+/**
+ * The annotated element must be a number whose value must be lower or equal to the specified
+ * maximum.
+ *
+ * <p>Supported types are:
+ *
+ * <ul>
+ *   <li>{@code BigDecimal}
+ *   <li>{@code BigInteger}
+ *   <li>{@code CharSequence}
+ *   <li>{@code byte}, {@code short}, {@code int}, {@code long}, and their respective wrappers
+ * </ul>
+ *
+ * Note that {@code double} and {@code float} are not supported due to rounding errors (some
+ * providers might provide some approximative support).
+ *
+ * <p>{@code null} elements are considered valid.
+ *
+ * @author Emmanuel Bernard
+ */
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
