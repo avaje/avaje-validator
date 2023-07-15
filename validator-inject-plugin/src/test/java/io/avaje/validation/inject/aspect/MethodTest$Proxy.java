@@ -7,17 +7,18 @@ import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.aop.Invocation;
 import io.avaje.inject.aop.InvocationException;
 import io.avaje.inject.aop.MethodInterceptor;
+import io.avaje.validation.ValidMethod;
 
 public final class MethodTest$Proxy extends MethodTest {
 
   private final Method test0;
   private final MethodInterceptor test0ValidateParams;
 
-  public MethodTest$Proxy(AspectProvider<ValidateMethod> validateParams) {
+  public MethodTest$Proxy(AspectProvider<ValidMethod> validateParams) {
     try {
       test0 = MethodTest.class.getDeclaredMethod("test", List.class, int.class, String.class);
       test0ValidateParams =
-          validateParams.interceptor(test0, test0.getAnnotation(ValidateMethod.class));
+          validateParams.interceptor(test0, test0.getAnnotation(ValidMethod.class));
 
     } catch (final Exception e) {
       throw new IllegalStateException(e);
