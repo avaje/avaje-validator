@@ -65,10 +65,10 @@ final class SimpleParamBeanWriter {
         .append(
             """
     		@Generated
-    		%s
+    		@%s
     		public final class %s implements MethodAdapterProvider {
     		""",
-            diAnnotation(), adapterShortName)
+            Util.shortName(diAnnotation()), adapterShortName)
         .eol();
   }
 
