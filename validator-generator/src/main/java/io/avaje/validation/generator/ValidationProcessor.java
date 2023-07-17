@@ -252,15 +252,14 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private void writeParamProviderForMethod(Set<ExecutableElement> elements) {
-    if (element(ComponentPrism.PRISM_TYPE) == null) {
-      throw new IllegalStateException("ValidateMethod can only be used with Avaje Inject Beans");
-    }
+
     for (final ExecutableElement executableElement : elements) {
 
       if (executableElement.getEnclosingElement().getAnnotationMirrors().stream()
           .map(m -> m.getAnnotationType().toString())
           .noneMatch(s -> s.contains("Singleton") || s.contains("Component"))) {
-        throw new IllegalStateException("ValidateMethod can only be used with Avaje Inject Beans");
+        throw new IllegalStateException(
+            "The ValidMethod Annotation can only be used with JSR-330 Injectable Classes");
       }
       writeParamProvider(executableElement);
     }
