@@ -15,7 +15,7 @@ public class MethodTest {
   public MethodTest(Validator apiValidator) {}
 
   @NotNull
-  @ValidMethod
+  @ValidMethod(throwOnParamFailure = false)
   String test(@NotEmpty List<@NotNull String> str, @Positive int inty, String regular) {
     return regular;
   }

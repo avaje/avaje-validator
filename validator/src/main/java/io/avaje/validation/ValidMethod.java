@@ -15,5 +15,5 @@ import io.avaje.inject.aop.Aspect;
 public @interface ValidMethod {
   String locale() default "";
 
-  boolean throwOnParamFailure() default false;
+  boolean throwOnParamFailure() default true;
 }
