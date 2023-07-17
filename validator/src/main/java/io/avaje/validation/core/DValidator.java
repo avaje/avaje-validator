@@ -10,7 +10,6 @@ import java.lang.reflect.Type;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +88,7 @@ final class DValidator implements Validator, ValidationContext {
 
   @SuppressWarnings("unchecked")
   private <T> ValidationType<T> typeWithCache(Type type) {
-    return (ValidationType<T>) typeCache.computeIfAbsent(type, _type -> new ValidationType<>(this, adapter(_type)));
+    return (ValidationType<T>) typeCache.computeIfAbsent(type, k -> new ValidationType<>(this, adapter(k)));
   }
 
   @Override
@@ -317,10 +316,9 @@ final class DValidator implements Validator, ValidationContext {
       return (targetType, ctx, groups, attributes) ->
           simpleMatch(type, targetType) ? builder.build(ctx, groups, attributes) : null;
     }
-  }
 
-  private static boolean simpleMatch(Type type, Type targetType) {
-    return Util.typesMatch(type, targetType);
+    private static boolean simpleMatch(Type type, Type targetType) {
+      return Util.typesMatch(type, targetType);
+    }
   }
-
 }
