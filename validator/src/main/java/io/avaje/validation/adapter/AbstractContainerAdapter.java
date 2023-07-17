@@ -11,8 +11,8 @@ public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T
   private ValidationAdapter<Object> multiAdapter;
 
   /** @param initialAdapter initial adapter that can be used to validate the container itself */
-  protected AbstractContainerAdapter(ValidationAdapter<T> initalAdapter) {
-    this.initalAdapter = initalAdapter;
+  protected AbstractContainerAdapter(ValidationAdapter<T> initialAdapter) {
+    this.initalAdapter = initialAdapter;
   }
 
   /**
