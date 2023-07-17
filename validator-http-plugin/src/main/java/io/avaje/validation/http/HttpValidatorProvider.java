@@ -8,7 +8,7 @@ import io.avaje.http.api.Validator;
 import io.avaje.inject.BeanScopeBuilder;
 
 /** Plugin for avaje inject that provides a default Http Validator instance. */
-public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugin {
+public final class HttpValidatorProvider implements io.avaje.inject.spi.Plugin {
 
   @Override
   public Class<?>[] provides() {

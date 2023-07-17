@@ -16,7 +16,7 @@ final class TemplateLookup {
     final String key = template.substring(1, template.length() - 1);
     final String msg = bundleManager.message(key, resolvedLocale);
     if (msg != null) {
-      return msg;
+      return lookup(msg, resolvedLocale);
     }
     return template;
   }

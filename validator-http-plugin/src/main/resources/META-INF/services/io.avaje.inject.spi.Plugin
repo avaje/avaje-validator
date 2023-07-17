@@ -1,1 +1,1 @@
-io.avaje.validation.http.DefaultValidatorProvider
+io.avaje.validation.http.HttpValidatorProvider
