@@ -3,6 +3,7 @@ package io.avaje.validation;
 import io.avaje.lang.Nullable;
 import io.avaje.validation.adapter.*;
 import io.avaje.validation.core.DefaultBootstrap;
+import io.avaje.validation.spi.MessageInterpolator;
 import io.avaje.validation.spi.ValidatorCustomizer;
 
 import java.lang.annotation.Annotation;
@@ -97,6 +98,11 @@ public interface Validator {
     Builder temporalTolerance(Duration temporalTolerance);
 
     /**
+    * Set the MessageInterpolator that will be used to parse and interpolate error messages
+    */
+    Builder messageInterpolator(MessageInterpolator interpolator);
+
+    /**
      * Enable/Disable fail fast mode. When fail fast is enabled the validation will stop on the
      * first constraint violation detected.
      */
@@ -123,6 +129,7 @@ public interface Validator {
      * Build and return the Validator instance with all the given adapters and factories registered.
      */
     Validator build();
+
   }
 
   /** Function to build a ValidationAdapter from a Validation Context */
