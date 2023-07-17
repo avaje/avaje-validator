@@ -1,6 +1,6 @@
 package io.avaje.validation.adapter;
 
-class IterableValidationAdapter<T> extends AbstractContainerAdapter<T> {
+final class IterableValidationAdapter<T> extends AbstractContainerAdapter<T> {
 
   IterableValidationAdapter(ValidationAdapter<T> adapters) {
     super(adapters);
