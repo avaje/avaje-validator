@@ -79,7 +79,7 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  public ValidationContext content() {
+  public ValidationContext context() {
     return this;
   }
 

@@ -48,7 +48,7 @@ public interface Validator {
       throws ConstraintViolationException;
 
   /** Return the validation context used to create adapters */
-  ValidationContext content();
+  ValidationContext context();
 
   /**
    * Return the Builder used to build the Validator.
