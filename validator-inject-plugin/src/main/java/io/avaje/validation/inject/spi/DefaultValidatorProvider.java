@@ -86,7 +86,7 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
 
           builder.addPostConstructConsumerHook(
               b -> {
-                final var ctx = b.get(ValidationContext.class);
+                final var ctx = (ValidationContext) b.get(Validator.class);
                 final var map =
                     b.list(MethodAdapterProvider.class).stream()
                         .collect(toMap(MethodAdapterProvider::provide, p -> p));
