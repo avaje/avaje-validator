@@ -15,14 +15,14 @@ import io.avaje.validation.adapter.ValidationContext;
 
 public final class AOPMethodValidator implements AspectProvider<ValidMethod> {
 
-  private List<BiConsumer<ValidationContext, Map<Method, MethodAdapterProvider>>> consumers =
+  private final List<BiConsumer<ValidationContext, Map<Method, MethodAdapterProvider>>> consumers =
       new ArrayList<>();
 
   @PostConstruct
   public void post(ValidationContext ctx, Map<Method, MethodAdapterProvider> map) {
 
     consumers.forEach(c -> c.accept(ctx, map));
-    consumers = null;
+    consumers.clear();
   }
 
   @Override

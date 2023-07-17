@@ -20,7 +20,9 @@ import io.avaje.validation.core.adapters.NumberAdapters;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
 final class CoreAdapterBuilder {
+  @SuppressWarnings("rawtypes")
   public static final ValidationAdapter NOOP = (type, req, propertyName) -> true;
+
   private final DValidator context;
   private final List<ValidationContext.AdapterFactory> factories = new ArrayList<>();
   private final List<ValidationContext.AnnotationFactory> annotationFactories = new ArrayList<>();

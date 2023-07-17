@@ -16,7 +16,7 @@ final class OptionalValidationAdapter<T> extends AbstractContainerAdapter<T> {
   public boolean validate(T value, ValidationRequest req, String propertyName) {
     if (value == null) {
       return true;
-    } else if (value instanceof final Optional o) {
+    } else if (value instanceof final Optional<?> o) {
       o.ifPresent(v -> initalAdapter.validate((T) v, req, propertyName));
     } else if (value instanceof final OptionalInt i) {
       i.ifPresent(v -> initalAdapter.validate(((T) (Object) v), req, propertyName));

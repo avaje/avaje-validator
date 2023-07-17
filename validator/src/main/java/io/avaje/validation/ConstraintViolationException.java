@@ -7,7 +7,8 @@ import java.util.Set;
  */
 public final class ConstraintViolationException extends RuntimeException {
 
-  private final Set<ConstraintViolation> violations;
+  private static final long serialVersionUID = 1L;
+  private final transient Set<ConstraintViolation> violations;
 
   /** Create with the given constraint violations */
   public ConstraintViolationException(Set<ConstraintViolation> violations) {

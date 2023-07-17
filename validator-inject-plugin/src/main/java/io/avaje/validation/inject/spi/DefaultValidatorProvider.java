@@ -12,6 +12,7 @@ import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.spi.GenericType;
 import io.avaje.validation.ValidMethod;
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.inject.aspect.AOPMethodValidator;
 import io.avaje.validation.inject.aspect.MethodAdapterProvider;
 
@@ -85,7 +86,7 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
 
           builder.addPostConstructConsumerHook(
               b -> {
-                final var ctx = b.get(Validator.class).getContext();
+                final var ctx = (ValidationContext) b.get(Validator.class);
                 final var map =
                     b.list(MethodAdapterProvider.class).stream()
                         .collect(toMap(MethodAdapterProvider::provide, p -> p));

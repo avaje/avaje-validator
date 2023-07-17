@@ -14,7 +14,7 @@ Reflection-free pojo validation via apt source code generation. A light (~85kb +
 - Composable Contraint Annotations
 - loading and interpolating error messages (with multiple Locales) through ResourceBundles
 - Getter Validation 
-- Method parameter validation (via Avaje Inject AOP only at the moment)
+- Method parameter validation (requires a DI container to retrieve the generated MethodAdapter classes)
 
 # Quick Start
 

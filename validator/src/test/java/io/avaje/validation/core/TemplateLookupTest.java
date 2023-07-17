@@ -12,7 +12,7 @@ class TemplateLookupTest {
   private final TemplateLookup lookup;
 
   TemplateLookupTest() {
-    final var localeResolver = new DLocaleResolver(Locale.ENGLISH, List.of(Locale.GERMAN));
+    final var localeResolver = new LocaleResolver(Locale.ENGLISH, List.of(Locale.GERMAN));
     final var defaultResourceBundle =
         new ResourceBundleManager(List.of(), List.of(), localeResolver);
     this.lookup = new TemplateLookup(defaultResourceBundle);

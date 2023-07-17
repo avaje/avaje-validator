@@ -19,6 +19,7 @@ public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T
    * Compose the given adapter with the multiAdapter of this AbstractContainerAdapter for validating
    * multiple items.
    */
+  @SuppressWarnings("unchecked")
   public AbstractContainerAdapter<T> andThenMulti(ValidationAdapter<?> adapter) {
     this.multiAdapter =
         this.multiAdapter != null
