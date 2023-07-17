@@ -35,7 +35,7 @@ import javax.lang.model.util.ElementFilter;
   AvajeConstraintPrism.PRISM_TYPE,
   JakartaConstraintPrism.PRISM_TYPE,
   JavaxConstraintPrism.PRISM_TYPE,
-  ValidateMethodPrism.PRISM_TYPE
+  ValidMethodPrism.PRISM_TYPE
 })
 public final class ValidationProcessor extends AbstractProcessor {
 
@@ -102,7 +102,7 @@ public final class ValidationProcessor extends AbstractProcessor {
         .map(round::getElementsAnnotatedWith)
         .ifPresent(this::writeAdapters);
 
-    Optional.ofNullable(element(ValidateMethodPrism.PRISM_TYPE))
+    Optional.ofNullable(element(ValidMethodPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);

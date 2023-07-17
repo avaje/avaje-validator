@@ -10,10 +10,10 @@ import java.util.Locale;
 import io.avaje.inject.BeanScopeBuilder;
 import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.spi.GenericType;
+import io.avaje.validation.ValidMethod;
 import io.avaje.validation.Validator;
 import io.avaje.validation.inject.aspect.AOPMethodValidator;
 import io.avaje.validation.inject.aspect.MethodAdapterProvider;
-import io.avaje.validation.inject.aspect.ValidateMethod;
 
 /** Plugin for avaje inject that provides a default Jsonb instance. */
 public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugin {
@@ -25,7 +25,7 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
 
   @Override
   public Class<?>[] providesAspects() {
-    return new Class<?>[] {ValidateMethod.class};
+    return new Class<?>[] {ValidMethod.class};
   }
 
   @Override
@@ -79,7 +79,7 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
   private void paramAspect(BeanScopeBuilder builder) {
     builder.provideDefault(
         null,
-        new GenericType<AspectProvider<ValidateMethod>>() {}.type(),
+        new GenericType<AspectProvider<ValidMethod>>() {}.type(),
         () -> {
           final var methodValidator = new AOPMethodValidator();
 

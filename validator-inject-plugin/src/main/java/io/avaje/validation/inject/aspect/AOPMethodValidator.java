@@ -10,9 +10,10 @@ import java.util.function.BiConsumer;
 import io.avaje.inject.PostConstruct;
 import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.aop.MethodInterceptor;
+import io.avaje.validation.ValidMethod;
 import io.avaje.validation.adapter.ValidationContext;
 
-public final class AOPMethodValidator implements AspectProvider<ValidateMethod> {
+public final class AOPMethodValidator implements AspectProvider<ValidMethod> {
 
   private List<BiConsumer<ValidationContext, Map<Method, MethodAdapterProvider>>> consumers =
       new ArrayList<>();
@@ -25,7 +26,7 @@ public final class AOPMethodValidator implements AspectProvider<ValidateMethod> 
   }
 
   @Override
-  public MethodInterceptor interceptor(Method method, ValidateMethod aspectAnnotation) {
+  public MethodInterceptor interceptor(Method method, ValidMethod aspectAnnotation) {
 
     final var localeStr = aspectAnnotation.locale();
     final Locale locale;
