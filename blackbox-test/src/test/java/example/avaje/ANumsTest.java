@@ -14,7 +14,10 @@ import static org.assertj.core.api.Assertions.fail;
 
 class ANumsTest {
 
-  final Validator validator = Validator.builder().addLocales(Locale.GERMAN).build();
+  final Validator validator = Validator.builder()
+    .setDefaultLocale(Locale.CANADA)
+    .addLocales(Locale.GERMAN)
+    .build();
 
   @Test
   void valid() {

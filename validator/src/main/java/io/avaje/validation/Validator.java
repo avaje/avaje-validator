@@ -15,6 +15,23 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Supplier;
 
+/**
+ * Validate plain Java objects that have been annotated with validation constraints.
+ *
+ * <pre>{@code
+ *
+ *   // create a validator
+ *   final Validator validator = Validator.builder()
+ *     .setDefaultLocale(Locale.CANADA)
+ *     .addLocales(Locale.GERMAN)
+ *     .build();
+ *
+ *  // validate a pojo
+ *  Customer customer = ...;
+ *  validator.validate(customer);
+ *
+ * }</pre>
+ */
 public interface Validator {
 
   /** Validate the object using the default locale. */
@@ -30,11 +47,22 @@ public interface Validator {
   void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups)
       throws ConstraintViolationException;
 
-  /** Get the validation context used to create adapters */
-  ValidationContext getContext();
+  /** Return the validation context used to create adapters */
+  ValidationContext content();
 
+  /**
+   * Return the Builder used to build the Validator.
+   *
+   * <pre>{@code
+   *
+   *   final Validator validator = Validator.builder()
+   *     .setDefaultLocale(Locale.CANADA)
+   *     .addLocales(Locale.GERMAN)
+   *     .build();
+   *
+   * }</pre>
+   */
   static Builder builder() {
-
     return DefaultBootstrap.builder();
   }
 
