@@ -273,7 +273,7 @@ final class DValidator implements Validator, ValidationContext {
     public DValidator build() {
       registerComponents();
 
-      final LocaleResolver localeResolver = new DLocaleResolver(defaultLocal, otherLocals);
+      final var localeResolver = new LocaleResolver(defaultLocal, otherLocals);
       final var interpolator =
           ServiceLoader.load(MessageInterpolator.class)
               .findFirst()
