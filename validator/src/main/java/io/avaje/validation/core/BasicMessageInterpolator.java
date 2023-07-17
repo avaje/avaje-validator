@@ -12,7 +12,6 @@ final class BasicMessageInterpolator implements MessageInterpolator {
     for (final Map.Entry<String, Object> entry : attributes.entrySet()) {
       result = result.replace('{' + entry.getKey() + '}', String.valueOf(entry.getValue()));
     }
-    // return the message
     return result;
   }
 }
