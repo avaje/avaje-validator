@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -172,11 +173,12 @@ final class DValidator implements Validator, ValidationContext {
     private final List<AnnotationFactory> afactories = new ArrayList<>();
     private final List<String> bundleNames = new ArrayList<>();
     private final List<ResourceBundle> bundles = new ArrayList<>();
-    private final List<Locale> otherLocals = new ArrayList<>();
-    private Locale defaultLocal = Locale.getDefault();
+    private final List<Locale> otherLocales = new ArrayList<>();
+    private Locale defaultLocale = Locale.getDefault();
     private Supplier<Clock> clockSupplier = Clock::systemDefaultZone;
     private Duration temporalTolerance = Duration.ZERO;
     private boolean failfast;
+    private MessageInterpolator userInterpolator;
 
     @Override
     public Builder add(Type type, AdapterBuilder builder) {
@@ -230,13 +232,13 @@ final class DValidator implements Validator, ValidationContext {
 
     @Override
     public Builder setDefaultLocale(Locale defaultLocal) {
-      this.defaultLocal = defaultLocal;
+      this.defaultLocale = defaultLocal;
       return this;
     }
 
     @Override
     public Builder addLocales(Locale... locals) {
-      Collections.addAll(otherLocals, locals);
+      Collections.addAll(otherLocales, locals);
       return this;
     }
 
@@ -258,6 +260,12 @@ final class DValidator implements Validator, ValidationContext {
       return this;
     }
 
+    @Override
+    public Builder messageInterpolator(MessageInterpolator interpolator) {
+      this.userInterpolator = interpolator;
+      return this;
+    }
+
     private void registerComponents() {
       // first register all user defined ValidatorCustomizer
       for (final ValidatorCustomizer next : ServiceLoader.load(ValidatorCustomizer.class)) {
@@ -272,11 +280,12 @@ final class DValidator implements Validator, ValidationContext {
     public DValidator build() {
       registerComponents();
 
-      final var localeResolver = new LocaleResolver(defaultLocal, otherLocals);
+      final var localeResolver = new LocaleResolver(defaultLocale, otherLocales);
       final var interpolator =
-          ServiceLoader.load(MessageInterpolator.class)
-              .findFirst()
+          Optional.ofNullable(this.userInterpolator)
+              .or(() -> ServiceLoader.load(MessageInterpolator.class).findFirst())
               .orElseGet(BasicMessageInterpolator::new);
+
       return new DValidator(
           factories,
           afactories,
