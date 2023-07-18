@@ -2,20 +2,16 @@ package example.avaje.optional;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
-import example.avaje.composable.Sans;
 import io.avaje.validation.ConstraintViolation;
-import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
 
 class OptionalTest {
@@ -62,12 +58,6 @@ class OptionalTest {
   }
 
   Set<String> violations(Object any) {
-    try {
-      validator.validate(any);
-      fail("not expected");
-      return null;
-    } catch (final ConstraintViolationException e) {
-      return e.violations().stream().map(ConstraintViolation::message).collect(toSet());
-    }
+    return validator.validate(any).stream().map(ConstraintViolation::message).collect(toSet());
   }
 }

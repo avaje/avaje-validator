@@ -19,4 +19,8 @@ public final class ConstraintViolationException extends RuntimeException {
   public Set<ConstraintViolation> violations() {
     return violations;
   }
+
+  public static void throwWithViolations(Set<ConstraintViolation> violations) {
+    throw new ConstraintViolationException(violations);
+  }
 }

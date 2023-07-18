@@ -93,7 +93,7 @@ class JPastFutureTest {
 
   ConstraintViolation one(Object any, Locale locale) {
     try {
-      validator.validate(any, locale);
+      ConstraintViolationException.throwWithViolations(validator.validate(any, locale));
       fail("not expected");
       return null;
     } catch (ConstraintViolationException e) {

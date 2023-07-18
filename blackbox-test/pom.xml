@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-validator-parent</artifactId>
-    <version>0.12</version>
+    <version>0.13</version>
   </parent>
 
   <artifactId>validator-blackbox-test</artifactId>
@@ -35,6 +35,11 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-validator</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-validator-http-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

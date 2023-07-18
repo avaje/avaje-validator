@@ -35,12 +35,7 @@ class SansComposableTest {
   }
 
   Set<ConstraintViolation> violations(Object any) {
-    try {
-      validator.validate(any);
-      fail("not expected");
-      return null;
-    } catch (final ConstraintViolationException e) {
-      return e.violations();
-    }
+
+    return validator.validate(any);
   }
 }

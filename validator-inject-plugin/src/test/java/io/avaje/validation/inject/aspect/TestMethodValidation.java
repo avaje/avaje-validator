@@ -23,7 +23,7 @@ class TestMethodValidation {
     final var val = new AOPMethodValidator();
     proxy = new MethodTest$Proxy(val);
     val.post(
-        Validator.builder().build().getContext(),
+        Validator.builder().build().context(),
         List.of(new TestParamProvider()).stream()
             .collect(toMap(MethodAdapterProvider::provide, p -> p)));
   }

@@ -10,7 +10,6 @@ import io.avaje.http.api.ValidationException;
 import io.avaje.inject.BeanScope;
 import io.avaje.inject.PostConstruct;
 import io.avaje.validation.ConstraintViolation;
-import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
 
 public class BeanValidator implements io.avaje.http.api.Validator {
@@ -27,11 +26,8 @@ public class BeanValidator implements io.avaje.http.api.Validator {
       throws ValidationException {
 
     final Locale language = resolveLocale(acceptLanguage, locales);
-    try {
-      validator.validate(bean, language, groups);
-    } catch (final ConstraintViolationException e) {
-      throwExceptionWith(e.violations());
-    }
+
+    throwExceptionWith(validator.validate(bean, language, groups));
   }
 
   @PostConstruct
@@ -40,6 +36,8 @@ public class BeanValidator implements io.avaje.http.api.Validator {
   }
 
   private void throwExceptionWith(Set<ConstraintViolation> violations) {
+
+    if (violations.isEmpty()) return;
 
     final Map<String, Object> errors = new LinkedHashMap<>();
     for (final var violation : violations) {

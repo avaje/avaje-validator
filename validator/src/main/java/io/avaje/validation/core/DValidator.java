@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import io.avaje.lang.Nullable;
+import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
@@ -66,15 +67,15 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  public void validate(Object any, @Nullable Class<?>... groups) {
-    validate(any, null, groups);
+  public Set<ConstraintViolation> validate(Object any, @Nullable Class<?>... groups) {
+    return validate(any, null, groups);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups) {
+  public Set<ConstraintViolation> validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups) {
     final var type = (ValidationType<Object>) type(any.getClass());
-    type.validate(any, locale, List.of(groups));
+    return type.validate(any, locale, List.of(groups));
   }
 
   @Override

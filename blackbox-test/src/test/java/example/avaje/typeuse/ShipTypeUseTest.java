@@ -38,14 +38,12 @@ class ShipTypeUseTest {
   }
 
   ConstraintViolation one(Object any) {
-    try {
-      validator.validate(any);
-      fail("not expected");
-      return null;
-    } catch (final ConstraintViolationException e) {
-      final var violations = new ArrayList<>(e.violations());
-      assertThat(violations).hasSize(1);
-      return violations.get(0);
-    }
+
+    final var violations = new ArrayList<>(validator.validate(any));
+
+    if (violations.isEmpty()) throw new IllegalStateException();
+
+    assertThat(violations).hasSize(1);
+    return violations.get(0);
   }
 }

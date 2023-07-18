@@ -17,19 +17,19 @@ class JMyPatternTest {
 
   @Test
   void valid() {
-    var bean = new JMyPattern("12");
+    final var bean = new JMyPattern("12");
     validator.validate(bean);
   }
 
   @Test
   void pattern() {
-    var violation = one(new JMyPattern("abc"));
+    final var violation = one(new JMyPattern("abc"));
     assertThat(violation.message()).isEqualTo("must match \"[0-3]+\"");
   }
 
   @Test
   void patternDE() {
-    var violation = one(new JMyPattern("abc"), Locale.GERMAN);
+    final var violation = one(new JMyPattern("abc"), Locale.GERMAN);
     assertThat(violation.message()).isEqualTo("muss mit \"[0-3]+\" übereinstimmen");
   }
 
@@ -38,14 +38,12 @@ class JMyPatternTest {
   }
 
   ConstraintViolation one(Object any, Locale locale) {
-    try {
-      validator.validate(any, locale);
-      fail("not expected");
-      return null;
-    } catch (ConstraintViolationException e) {
-      var violations = new ArrayList<>(e.violations());
-      assertThat(violations).hasSize(1);
-      return violations.get(0);
-    }
+
+    final var violations = new ArrayList<>(validator.validate(any, locale));
+
+    if (violations.isEmpty()) throw new IllegalStateException();
+
+    assertThat(violations).hasSize(1);
+    return violations.get(0);
   }
 }

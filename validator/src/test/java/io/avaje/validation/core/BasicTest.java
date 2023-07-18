@@ -1,16 +1,15 @@
 package io.avaje.validation.core;
 
-import io.avaje.validation.ConstraintViolation;
-import io.avaje.validation.ConstraintViolationException;
-import io.avaje.validation.Validator;
-import io.avaje.validation.adapter.ValidationContext;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import io.avaje.validation.ConstraintViolation;
+import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.ValidationContext;
 
 public abstract class BasicTest {
 
@@ -31,13 +30,12 @@ public abstract class BasicTest {
       new DRequest((DValidator) validator, false, null, List.of(BasicTest.class));
 
   protected ConstraintViolation one(Object pojo, Locale locale, Class<?>... groups) {
-    try {
-      validator.validate(pojo, locale, groups);
-      throw new IllegalStateException("don't get here");
-    } catch (final ConstraintViolationException e) {
-      final var violations = new ArrayList<>(e.violations());
-      assertThat(violations).hasSize(1);
-      return violations.get(0);
-    }
+
+    final var violations = new ArrayList<>(validator.validate(pojo, locale, groups));
+
+    if (violations.isEmpty()) throw new IllegalStateException();
+
+    assertThat(violations).hasSize(1);
+    return violations.get(0);
   }
 }

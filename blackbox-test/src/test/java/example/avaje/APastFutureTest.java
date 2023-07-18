@@ -93,14 +93,12 @@ class APastFutureTest {
   }
 
   ConstraintViolation one(Object any, Locale locale) {
-    try {
-      validator.validate(any, locale);
-      fail("not expected");
-      return null;
-    } catch (ConstraintViolationException e) {
-      var violations = new ArrayList<>(e.violations());
-      assertThat(violations).hasSize(1);
-      return violations.get(0);
-    }
+
+    final var violations = new ArrayList<>(validator.validate(any, locale));
+
+    if (violations.isEmpty()) throw new IllegalStateException();
+
+    assertThat(violations).hasSize(1);
+    return violations.get(0);
   }
 }

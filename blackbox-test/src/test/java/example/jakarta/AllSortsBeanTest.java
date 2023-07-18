@@ -14,15 +14,14 @@ class AllSortsBeanTest {
 
   final Validator validator = Validator.builder().addLocales(Locale.GERMAN).build();
 
-  protected ConstraintViolation one(AllSortsBean pojo, Locale locale) {
-    try {
-      validator.validate(pojo, locale);
-      throw new IllegalStateException("don't get here");
-    } catch (ConstraintViolationException e) {
-      var violations = new ArrayList<>(e.violations());
-      assertThat(violations).hasSize(1);
-      return violations.get(0);
-    }
+  ConstraintViolation one(Object any, Locale locale) {
+
+    final var violations = new ArrayList<>(validator.validate(any, locale));
+
+    if (violations.isEmpty()) throw new IllegalStateException();
+
+    assertThat(violations).hasSize(1);
+    return violations.get(0);
   }
 
   @Test

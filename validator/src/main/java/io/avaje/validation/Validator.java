@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 public interface Validator {
 
   /** Validate the object using the default locale. */
-  void validate(Object value, @Nullable Class<?>... groups) throws ConstraintViolationException;
+  Set<ConstraintViolation> validate(Object value, @Nullable Class<?>... groups) throws ConstraintViolationException;
 
   /**
    * Validate the object with a given locale.
@@ -44,7 +44,7 @@ public interface Validator {
    *
    * <p>This is expected to be used when the Validator is configured to support multiple locales.
    */
-  void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups)
+  Set<ConstraintViolation> validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups)
       throws ConstraintViolationException;
 
   /** Return the validation context used to create adapters */

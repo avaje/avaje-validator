@@ -38,7 +38,7 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
 
           final var beanValidator = new BeanValidator(locales);
 
-          builder.addPostConstructConsumerHook(beanValidator::setValidator);
+          builder.addPostConstructHooks(beanValidator::setValidator);
 
           return beanValidator;
         });
