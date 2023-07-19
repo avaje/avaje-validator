@@ -106,8 +106,6 @@ public interface ValidationAdapter<T> {
   default boolean checkGroups(Set<Class<?>> adapterGroups, ValidationRequest request) {
     final var requestGroups = request.groups();
 
-    if (requestGroups.isEmpty()) return true;
-
     for (final var group : requestGroups) {
       if (adapterGroups.contains(group)) {
         return true;
