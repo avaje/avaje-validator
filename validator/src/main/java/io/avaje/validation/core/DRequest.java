@@ -5,10 +5,13 @@ import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
+import io.avaje.validation.groups.Default;
 
 import java.util.*;
 
 final class DRequest implements ValidationRequest {
+
+  private static final List<Class<?>> DEFAULT_GROUP = List.of(Default.class);
 
   private final ArrayDeque<String> pathStack = new ArrayDeque<>();
 
@@ -23,7 +26,7 @@ final class DRequest implements ValidationRequest {
     this.validator = validator;
     this.failfast = failfast;
     this.locale = locale;
-    this.groups = groups;
+    this.groups = !groups.isEmpty() ? groups : DEFAULT_GROUP;
   }
 
   private String currentPath() {

@@ -17,12 +17,14 @@ import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.core.adapters.BasicAdapters;
 import io.avaje.validation.core.adapters.FuturePastAdapterFactory;
 import io.avaje.validation.core.adapters.NumberAdapters;
+import io.avaje.validation.groups.Default;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
 final class CoreAdapterBuilder {
   @SuppressWarnings("rawtypes")
   public static final ValidationAdapter NOOP = (type, req, propertyName) -> true;
 
+  private static final Set<Class<?>> DEFAULT_GROUP = Set.of(Default.class);
   private final DValidator context;
   private final List<ValidationContext.AdapterFactory> factories = new ArrayList<>();
   private final List<ValidationContext.AnnotationFactory> annotationFactories = new ArrayList<>();
@@ -55,7 +57,7 @@ final class CoreAdapterBuilder {
 
   <T> ValidationAdapter<T> annotationAdapter(
       Class<? extends Annotation> cls, Map<String, Object> attributes, Set<Class<?>> groups) {
-    return buildAnnotation(cls, attributes,groups);
+    return buildAnnotation(cls, attributes, groups);
   }
 
   /** Build given type and annotations. */
@@ -84,11 +86,15 @@ final class CoreAdapterBuilder {
       Map<String, Object> attributes,
       @Nullable Set<Class<?>> groups) {
 
-    final var paramGroups =
-        groups != null ? groups : (Set<Class<?>>) attributes.getOrDefault("groups", Set.of());
+    var paramGroups =
+        groups != null ? groups : (Set<Class<?>>) attributes.getOrDefault("groups", DEFAULT_GROUP);
+
+    if (paramGroups.isEmpty()) {
+      paramGroups = DEFAULT_GROUP;
+    }
 
     // Ask each factory to create the validation adapter.
-    for (final ValidationContext.AnnotationFactory factory : annotationFactories) {
+    for (final var factory : annotationFactories) {
       final var result =
           (ValidationAdapter<T>) factory.create(cls, context, paramGroups, attributes);
       if (result != null) {

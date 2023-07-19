@@ -67,7 +67,7 @@ class ValidatorTest {
       fail("");
     } catch (ConstraintViolationException e) {
       Set<ConstraintViolation> violations = e.violations();
-      assertThat(violations).hasSize(7);
+      assertThat(violations).hasSize(6);
       List<ConstraintViolation> asList = new ArrayList<>(violations);
 
       var last = asList.get(violations.size() - 1);
