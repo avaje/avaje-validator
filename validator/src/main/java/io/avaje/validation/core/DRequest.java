@@ -60,7 +60,7 @@ final class DRequest implements ValidationRequest {
   @Override
   public void throwWithViolations() {
     if (!violations.isEmpty()) {
-      throw new ConstraintViolationException(violations);
+      throw new ConstraintViolationException(violations, groups);
     }
   }
 

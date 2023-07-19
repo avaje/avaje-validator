@@ -10,7 +10,7 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-validator-parent</artifactId>
-  <version>0.12</version>
+  <version>0.13</version>
 
   <packaging>pom</packaging>
   <name>validator parent</name>
@@ -27,7 +27,7 @@
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
     <java.version>17</java.version>
     <java.release>17</java.release>
-    <inject.version>9.4-RC2</inject.version>
+    <inject.version>9.4-RC3</inject.version>
     <http.version>1.45</http.version>
   </properties>
 

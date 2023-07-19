@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.ValidationContext;
 
 class TestMethodValidation {
 
@@ -23,7 +24,7 @@ class TestMethodValidation {
     final var val = new AOPMethodValidator();
     proxy = new MethodTest$Proxy(val);
     val.post(
-        Validator.builder().build().getContext(),
+        (ValidationContext) Validator.builder().build(),
         List.of(new TestParamProvider()).stream()
             .collect(toMap(MethodAdapterProvider::provide, p -> p)));
   }
