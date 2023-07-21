@@ -31,7 +31,7 @@ import javax.lang.model.util.ElementFilter;
   HttpValidPrism.PRISM_TYPE,
   JavaxValidPrism.PRISM_TYPE,
   JakartaValidPrism.PRISM_TYPE,
-  AnnotationValidatorPrism.PRISM_TYPE,
+  ConstraintValidatorPrism.PRISM_TYPE,
   AvajeConstraintPrism.PRISM_TYPE,
   JakartaConstraintPrism.PRISM_TYPE,
   JavaxConstraintPrism.PRISM_TYPE,
@@ -87,7 +87,7 @@ public final class ValidationProcessor extends AbstractProcessor {
         .ifPresent(this::writeContraintAdapters);
 
     registerCustomAdapters(
-        round.getElementsAnnotatedWith(element(AnnotationValidatorPrism.PRISM_TYPE)));
+        round.getElementsAnnotatedWith(element(ConstraintValidatorPrism.PRISM_TYPE)));
 
     Optional.ofNullable(element(AvajeValidPrism.PRISM_TYPE))
         .map(round::getElementsAnnotatedWith)
