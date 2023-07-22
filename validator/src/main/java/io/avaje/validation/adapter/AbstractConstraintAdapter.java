@@ -2,10 +2,7 @@ package io.avaje.validation.adapter;
 
 import java.util.Set;
 
-/**
- * Abstract Adapter that validates objects based on Constraint Annotations.
- *
- */
+/** Abstract Adapter that validates objects based on Constraint Annotations. */
 public abstract class AbstractConstraintAdapter<T> implements ValidationAdapter<T> {
 
   protected final ValidationContext.Message message;
@@ -17,6 +14,12 @@ public abstract class AbstractConstraintAdapter<T> implements ValidationAdapter<
     this.groups = groups;
   }
 
+  /**
+   * Execute Constraint validations for the given object.
+   *
+   * @param value the object to validate
+   * @return false if a violation error should be added
+   */
   protected abstract boolean isValid(T value);
 
   @Override
