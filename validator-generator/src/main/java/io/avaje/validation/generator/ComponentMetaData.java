@@ -89,7 +89,7 @@ final class ComponentMetaData {
       packageImports.add(Util.packageOf(adapterFullName) + ".*");
       packageImports.add(Util.baseTypeOfAdapter(adapterFullName));
 
-      ConstraintValidatorPrism.getInstanceOn(adapter)
+      ConstraintAdapterPrism.getInstanceOn(adapter)
           .value()
           .toString()
           .transform(packageImports::add);

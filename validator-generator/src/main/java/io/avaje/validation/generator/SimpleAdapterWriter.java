@@ -89,7 +89,7 @@ final class SimpleAdapterWriter {
   private void writeClassStart() {
     writer.append("@Generated").eol();
     if (isContraint) {
-      writer.append("@ConstraintValidator(%s.class)", beanReader.contraintTarget()).eol();
+      writer.append("@ConstraintAdapter(%s.class)", beanReader.contraintTarget()).eol();
     }
 
     writer.append("public final class %sValidationAdapter implements ValidationAdapter<%s> ", adapterShortName, beanReader.shortName());

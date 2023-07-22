@@ -271,7 +271,11 @@ final class Util {
   static String baseTypeOfAdapter(String adapterFullName) {
 
     return element(adapterFullName).getInterfaces().stream()
-        .filter(t -> t.toString().contains("io.avaje.validation.adapter.ValidationAdapter"))
+        .filter(
+            t ->
+                t.toString().contains("io.avaje.validation.adapter.ValidationAdapter")
+                    || t.toString()
+                        .contains("io.avaje.validation.adapter.AbstractConstraintAdapter"))
         .findFirst()
         .map(Object::toString)
         .map(GenericType::parse)
@@ -280,9 +284,7 @@ final class Util {
         .orElseThrow(
             () ->
                 new IllegalStateException(
-                    "Adapter: "
-                        + adapterFullName
-                        + " does not directly implement ValidationAdapter"));
+                    "Adapter: " + adapterFullName + " does not implement ValidationAdapter"));
   }
 
   static String extractTypeWithNest(String fullType) {

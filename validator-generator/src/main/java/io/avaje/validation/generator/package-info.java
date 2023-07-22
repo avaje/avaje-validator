@@ -3,7 +3,7 @@
     name = "AvajeValidPrism",
     superInterfaces = ValidPrism.class)
 @GeneratePrism(io.avaje.validation.ImportValidPojo.class)
-@GeneratePrism(io.avaje.validation.adapter.ConstraintValidator.class)
+@GeneratePrism(io.avaje.validation.adapter.ConstraintAdapter.class)
 @GeneratePrism(
     value = javax.validation.Valid.class,
     name = "JavaxValidPrism",
