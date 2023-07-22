@@ -5,6 +5,7 @@ import static io.avaje.validation.generator.ProcessingContext.element;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -264,19 +265,18 @@ final class Util {
     return sb.toString();
   }
 
-  /**
-   * Return the base type given the JsonAdapter type. Remove the "jsonb" sub-package and the
-   * "JsonAdapter" suffix.
-   */
+  /** Return the base type given the ValidationAdapter type. */
   static String baseTypeOfAdapter(String adapterFullName) {
+    final var element = element(adapterFullName);
 
-    return element(adapterFullName).getInterfaces().stream()
-        .filter(
-            t ->
-                t.toString().contains("io.avaje.validation.adapter.ValidationAdapter")
-                    || t.toString()
-                        .contains("io.avaje.validation.adapter.AbstractConstraintAdapter"))
-        .findFirst()
+    return Optional.of(element.getSuperclass())
+        .filter(t -> t.toString().contains("io.avaje.validation.adapter.AbstractConstraintAdapter"))
+        .or(
+            () ->
+                element.getInterfaces().stream()
+                    .filter(
+                        t -> t.toString().contains("io.avaje.validation.adapter.ValidationAdapter"))
+                    .findFirst())
         .map(Object::toString)
         .map(GenericType::parse)
         .map(GenericType::firstParamType)
