@@ -80,7 +80,7 @@ public record Address(
       ) {}
 ```
 
-For types we cannot annotate with `@Valid` we can place `@Valid.Import(TypeToimport.class)` on any class/package-info to generate the adapters.
+For types we cannot annotate with `@Valid` we can place `@ImportValidPojo` on any class/package-info to generate the adapters.
 
 ## Step 3 - Use
 
