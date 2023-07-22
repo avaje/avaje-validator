@@ -21,13 +21,13 @@ public final class CustomAnnotationAdapter extends AbstractConstraintAdapter<Str
 
   @Override
   public boolean isValid(String object) {
-
     if (object == null) {
-
       return true;
     }
-
-    return caseMode != CaseMode.UPPER
-        || !object.equals(object.toUpperCase()) && !object.equals(object.toLowerCase());
+    if (caseMode == CaseMode.UPPER) {
+      return object.equals(object.toUpperCase());
+    } else {
+      return object.equals(object.toLowerCase());
+    }
   }
 }
