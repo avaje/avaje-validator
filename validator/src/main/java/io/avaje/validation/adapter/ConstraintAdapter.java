@@ -9,36 +9,31 @@ import java.lang.annotation.Target;
  *
  * Marks a type as a Constraint Adapter to be registered automatically.
  *
- * <p> A custom adapter registered using this annotation must have a public constructor accepting a ValidationContext instance, and must directly implement the ValidationAdapter Interface.
+ * <p> A custom adapter registered using this annotation must have a public constructor accepting a ValidationContext instance, and must extend the AbstractConstraintAdapter class.
  *
  * <h3>Example:</h3>
  *
  * <pre>{@code
  * @ConstraintAdapter(SomeAnnotation.class)
- * public final class CustomAnnotationAdapter implements ValidationAdapter<Object> {
+ * public final class CustomAnnotationAdapter extends AbstractConstraintAdapter<Object> {
  *
- *   private final Message message;
+ *   String value;
  *
  *   public CustomAnnotationAdapter(ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes) {
- *     //create a message object for error interpolation
- *     message = ctx.message("{message.property}");
+ *     //create a message object for error interpolation and set groups
+ *      super(ctx.message(attributes), groups);
  *
  *      //use the attributes to extract the annotation values
- *
+ *      value = (String) attributes.get("value");
  *   }
  *
  *
  * 	 @Override
- *   public boolean validate(Object value, ValidationRequest req, String propertyName) {
+ *   public boolean isValid(Object value) {
  *
  *     var isValid = ...custom validation based on the attributes;
  *
- *     if (!isValid) {
- *       req.addViolation(message, propertyName);
- *       return false;
- *     }
- *
- *     return true;
+ *     return isValid;
  * }
  *
  * }</pre>
