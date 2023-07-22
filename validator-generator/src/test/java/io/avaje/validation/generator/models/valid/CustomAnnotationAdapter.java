@@ -9,10 +9,11 @@ import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
 
-public final class CustomAnnotationAdapter implements ValidationAdapter<Object> {
 @ConstraintAdapter(Nullable.class)
+public final class CustomAnnotationAdapter implements ValidationAdapter<Object> {
 
-  public CustomAnnotationAdapter(ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes) {}
+  public CustomAnnotationAdapter(
+      ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes) {}
 
   @Override
   public boolean validate(Object value, ValidationRequest req, String propertyName) {
