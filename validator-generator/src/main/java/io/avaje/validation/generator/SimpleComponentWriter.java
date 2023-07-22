@@ -79,7 +79,7 @@ final class SimpleComponentWriter {
               .transform(this::typeShortName);
 
       final var target =
-          AnnotationValidatorPrism.getInstanceOn(adapter)
+          ConstraintValidatorPrism.getInstanceOn(adapter)
               .value()
               .toString()
               .transform(Util::shortType)

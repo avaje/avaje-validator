@@ -7,14 +7,14 @@ import java.lang.annotation.Target;
 
 /**
  *
- * Marks a type as a Annotation Validator to be registered automatically.
+ * Marks a type as a Constraint Validator to be registered automatically.
  *
  * <p> A custom adapter registered using this annotation must have a public constructor accepting a ValidationContext instance, and must directly implement the ValidationAdapter Interface.
  *
  * <h3>Example:</h3>
  *
  * <pre>{@code
- * @AnnotationValidator(SomeAnnotation.class)
+ * @ConstraintValidator(SomeAnnotation.class)
  * public final class CustomAnnotationAdapter implements ValidationAdapter<Object> {
  *
  *   private final Message message;
@@ -44,7 +44,7 @@ import java.lang.annotation.Target;
  * }</pre>
  */
 @Target(TYPE)
-public @interface AnnotationValidator {
+public @interface ConstraintValidator {
 
   /** The Annotation this validator targets */
   Class<? extends Annotation> value();

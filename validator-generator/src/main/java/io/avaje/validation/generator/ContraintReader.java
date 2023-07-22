@@ -25,7 +25,7 @@ final class ContraintReader implements BeanReader {
     importTypes.add("java.util.List");
     importTypes.add("java.util.Set");
     importTypes.add("java.util.Map");
-    importTypes.add("io.avaje.validation.adapter.AnnotationValidator");
+    importTypes.add("io.avaje.validation.adapter.ConstraintValidator");
     importTypes.add("io.avaje.validation.adapter.ValidationAdapter");
     importTypes.add("io.avaje.validation.adapter.ValidationContext");
     importTypes.add("io.avaje.validation.adapter.ValidationRequest");
