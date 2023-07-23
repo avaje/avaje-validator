@@ -45,9 +45,9 @@ And add avaje-validator-generator as an annotation processor.
 </dependency>
 ```
 
-## Step 2 - Add `@Valid`
+## Step 2 - Add (Avaje/Jakarta/Javax) `@Valid`
 
-Add `@Valid` to the types we want to add validation.
+Add `@Valid` to the types we want to add validation. 
 
 The `avaje-validator-generator` annotation processor will generate validation adapter classes as Java source code
 for each type annotated with `@Valid`. These will be automatically registered with `Validator`
