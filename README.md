@@ -1,4 +1,4 @@
-# Avaje Validator (site docs coming soon)
+# [Avaje Validator](https://avaje.io/validator/)
 
 [![Build](https://github.com/avaje/avaje-validator/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-validator/actions/workflows/build.yml)
 <img src="https://img.shields.io/maven-central/v/io.avaje/avaje-validator.svg?label=Maven%20Central">
