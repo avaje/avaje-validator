@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+import io.avaje.validation.adapter.AbstractConstraintAdapter;
 import io.avaje.validation.adapter.RegexFlag;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
@@ -33,17 +34,14 @@ public final class BasicAdapters {
             default -> null;
           };
 
-  private static final class PatternAdapter implements ValidationAdapter<CharSequence> {
+  private static final class PatternAdapter extends AbstractConstraintAdapter<CharSequence> {
 
-    private final ValidationContext.Message message;
-    private final Set<Class<?>> groups;
     private final Predicate<String> pattern;
 
     @SuppressWarnings("unchecked")
     PatternAdapter(
         ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-      this.message = message;
-      this.groups = groups;
+      super(message, groups);
       int flags = 0;
 
       final List<RegexFlag> flags1 = (List<RegexFlag>) attributes.get("flags");
@@ -52,20 +50,14 @@ public final class BasicAdapters {
           flags |= flag.getValue();
         }
       }
-      this.pattern = Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
+      this.pattern =
+          Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
     }
 
     @Override
-    public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
-      if (!checkGroups(groups, req) || value == null) {
-        return true;
-      }
+    public boolean isValid(CharSequence value) {
 
-      if (pattern.test(value.toString())) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      return true;
+      return value == null || !pattern.test(value.toString());
     }
   }
 
@@ -120,23 +112,16 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class NotBlankAdapter implements ValidationAdapter<CharSequence> {
-
-    private final ValidationContext.Message message;
-    private final Set<Class<?>> groups;
+  private static final class NotBlankAdapter extends AbstractConstraintAdapter<CharSequence> {
 
     NotBlankAdapter(ValidationContext.Message message, Set<Class<?>> groups) {
-      this.message = message;
-      this.groups = groups;
+      super(message, groups);
     }
 
     @Override
-    public boolean validate(CharSequence cs, ValidationRequest req, String propertyName) {
-      if (checkGroups(groups, req) && (cs == null || isBlank(cs))) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      return true;
+    public boolean isValid(CharSequence cs) {
+
+      return (cs != null) && !isBlank(cs);
     }
 
     private static boolean isBlank(final CharSequence cs) {
@@ -153,42 +138,31 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class NotEmptyAdapter implements ValidationAdapter<Object> {
-
-    private final ValidationContext.Message message;
-    private final Set<Class<?>> groups;
+  private static final class NotEmptyAdapter extends AbstractConstraintAdapter<Object> {
 
     NotEmptyAdapter(ValidationContext.Message message, Set<Class<?>> groups) {
-      this.message = message;
-      this.groups = groups;
+      super(message, groups);
     }
 
     @Override
-    public boolean validate(Object value, ValidationRequest req, String propertyName) {
-      if (!checkGroups(groups, req)) {
-        return true;
-      } else if (value == null) {
-        req.addViolation(message, propertyName);
+    public boolean isValid(Object value) {
+      if (value == null) {
         return false;
       } else if (value instanceof final Collection<?> col) {
         if (col.isEmpty()) {
-          req.addViolation(message, propertyName);
           return false;
         }
       } else if (value instanceof final Map<?, ?> map) {
         if (map.isEmpty()) {
-          req.addViolation(message, propertyName);
           return false;
         }
       } else if (value instanceof final CharSequence sequence) {
         if (sequence.length() == 0) {
-          req.addViolation(message, propertyName);
           return false;
         }
       } else if (value.getClass().isArray()) {
         final var len = arrayLength(value);
         if (len == 0) {
-          req.addViolation(message, propertyName);
           return false;
         }
       }
@@ -197,73 +171,57 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class AssertBooleanAdapter implements ValidationAdapter<Boolean> {
+  private static final class AssertBooleanAdapter extends AbstractConstraintAdapter<Boolean> {
 
-    private final ValidationContext.Message message;
     private final Boolean assertBool;
-    private final Set<Class<?>> groups;
 
     AssertBooleanAdapter(
         ValidationContext.Message message, Set<Class<?>> groups, Boolean assertBool) {
-      this.message = message;
-      this.groups = groups;
+      super(message, groups);
       this.assertBool = assertBool;
     }
 
     @Override
-    public boolean validate(Boolean type, ValidationRequest req, String propertyName) {
-      if (!checkGroups(groups, req) || !assertBool.booleanValue() && type == null) {
-        return true;
-      }
+    public boolean isValid(Boolean type) {
 
-      if (!assertBool.equals(type)) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      return true;
+      return !assertBool.booleanValue() && type == null || assertBool.equals(type);
     }
   }
 
-  private static final class NullableAdapter implements ValidationAdapter<Object> {
+  private static final class NullableAdapter extends AbstractConstraintAdapter<Object> {
 
-    private final ValidationContext.Message message;
     private final boolean shouldBeNull;
-    private final Set<Class<?>> groups;
 
     NullableAdapter(ValidationContext.Message message, Set<Class<?>> groups, boolean shouldBeNull) {
-      this.message = message;
-      this.groups = groups;
+      super(message, groups);
       this.shouldBeNull = shouldBeNull;
     }
 
     @Override
-    public boolean validate(Object value, ValidationRequest req, String propertyName) {
-      if (checkGroups(groups, req) && (value == null) != shouldBeNull) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      return true;
+    public boolean isValid(Object value) {
+
+      return (value == null) == shouldBeNull;
     }
   }
 
   private static int arrayLength(Object array) {
 
-    if (array instanceof int[] arr) {
-      return arr.length;
-    } else if (array instanceof boolean[] arr) {
-      return arr.length;
-    } else if (array instanceof byte[] arr) {
-      return arr.length;
-    } else if (array instanceof char[] arr) {
-      return arr.length;
-    } else if (array instanceof short[] arr) {
-      return arr.length;
-    } else if (array instanceof float[] arr) {
-      return arr.length;
-    } else if (array instanceof double[] arr) {
-      return arr.length;
-    } else if (array instanceof long[] arr) {
-      return arr.length;
+    if (array instanceof final int[] intArr) {
+      return intArr.length;
+    } else if (array instanceof final boolean[] boolArr) {
+      return boolArr.length;
+    } else if (array instanceof final byte[] byteArr) {
+      return byteArr.length;
+    } else if (array instanceof final char[] charArr) {
+      return charArr.length;
+    } else if (array instanceof final short[] shortArr) {
+      return shortArr.length;
+    } else if (array instanceof final float[] floatArr) {
+      return floatArr.length;
+    } else if (array instanceof final double[] doubleArr) {
+      return doubleArr.length;
+    } else if (array instanceof final long[] longArr) {
+      return longArr.length;
     } else {
       return ((Object[]) array).length;
     }

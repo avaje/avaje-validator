@@ -3,20 +3,31 @@ package io.avaje.validation.generator.models.valid;
 import java.util.Map;
 import java.util.Set;
 
-import io.avaje.lang.Nullable;
-import io.avaje.validation.adapter.ConstraintValidator;
-import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.AbstractConstraintAdapter;
+import io.avaje.validation.adapter.ConstraintAdapter;
 import io.avaje.validation.adapter.ValidationContext;
-import io.avaje.validation.adapter.ValidationRequest;
+import io.avaje.validation.generator.models.valid.CheckCase.CaseMode;
 
-@ConstraintValidator(Nullable.class)
-public final class CustomAnnotationAdapter implements ValidationAdapter<Object> {
+@ConstraintAdapter(CheckCase.class)
+public final class CustomAnnotationAdapter extends AbstractConstraintAdapter<String> {
 
-  public CustomAnnotationAdapter(ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes) {}
+  private final CaseMode caseMode;
+
+  public CustomAnnotationAdapter(
+      ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes) {
+    super(ctx.message(attributes), groups);
+    caseMode = (CaseMode) attributes.get("caseMode");
+  }
 
   @Override
-  public boolean validate(Object value, ValidationRequest req, String propertyName) {
-
-    return true;
+  public boolean isValid(String object) {
+    if (object == null) {
+      return true;
+    }
+    if (caseMode == CaseMode.UPPER) {
+      return object.equals(object.toUpperCase());
+    } else {
+      return object.equals(object.toLowerCase());
+    }
   }
 }
