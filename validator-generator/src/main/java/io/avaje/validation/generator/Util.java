@@ -7,11 +7,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 final class Util {
 
@@ -42,7 +45,6 @@ final class Util {
   }
 
   static boolean validImportType(String type) {
-
     return type.indexOf('.') > 0 && !type.startsWith("java.lang.")
         || (type.startsWith("java.lang.")
             && type.replace("java.lang.", "").transform(s -> s.contains(".")));
@@ -82,9 +84,7 @@ final class Util {
   }
 
   public static String trimAnnotations(String input) {
-
     input = COMMA_PATTERN.matcher(input).replaceAll(",");
-
     return cutAnnotations(input);
   }
 
@@ -101,12 +101,10 @@ final class Util {
       currentIndex = matcher.start();
     }
     final var result = input.substring(0, pos) + input.substring(currentIndex + 1);
-
     return cutAnnotations(result);
   }
 
   static List<List<String>> typeUse(String type, boolean genericOnly) {
-
     final var list = new ArrayList<List<String>>(2);
     final int pos = type.indexOf('<');
     if (type.indexOf('@') == -1 || genericOnly && pos == -1) {
@@ -119,7 +117,6 @@ final class Util {
     }
 
     if (trimmed.startsWith("java.util.Map")) {
-
       final var mapArgs = splitStringWithRegex(str);
       final var first = mapArgs[0];
       final var second = mapArgs[1];
@@ -143,7 +140,6 @@ final class Util {
   }
 
   private static List<String> extractTypeUseAnnotations(String input) {
-
     final List<String> list = new ArrayList<>();
     input = COMMA_PATTERN.matcher(input).replaceAll(",");
     final var str2 =
@@ -160,20 +156,17 @@ final class Util {
   }
 
   private static String retrieveAnnotations(String starter, String input) {
-
     final int pos = starter.indexOf("@");
     if (pos == -1) {
       return input + ",";
     }
 
     final Matcher matcher = WHITE_SPACE_REGEX.matcher(starter);
-
     int currentIndex = 0;
     if (matcher.find()) {
       currentIndex = matcher.start();
     }
     final var result = starter.substring(pos, currentIndex);
-
     return retrieveAnnotations(input.replace(result, ""), result);
   }
 
@@ -195,7 +188,6 @@ final class Util {
     }
 
     result.add(input.substring(startIndex).trim());
-
     return result.toArray(new String[0]);
   }
 
@@ -271,12 +263,7 @@ final class Util {
 
     return Optional.of(element.getSuperclass())
         .filter(t -> t.toString().contains("io.avaje.validation.adapter.AbstractConstraintAdapter"))
-        .or(
-            () ->
-                element.getInterfaces().stream()
-                    .filter(
-                        t -> t.toString().contains("io.avaje.validation.adapter.ValidationAdapter"))
-                    .findFirst())
+        .or(validationAdapter(element))
         .map(Object::toString)
         .map(GenericType::parse)
         .map(GenericType::firstParamType)
@@ -285,6 +272,13 @@ final class Util {
             () ->
                 new IllegalStateException(
                     "Adapter: " + adapterFullName + " does not implement ValidationAdapter"));
+  }
+
+  private static Supplier<Optional<? extends TypeMirror>> validationAdapter(TypeElement element) {
+    return () ->
+      element.getInterfaces().stream()
+        .filter(t -> t.toString().contains("io.avaje.validation.adapter.ValidationAdapter"))
+        .findFirst();
   }
 
   static String extractTypeWithNest(String fullType) {
@@ -296,7 +290,6 @@ final class Util {
       var foundClass = false;
       var firstClass = true;
       for (final String part : fullType.split("\\.")) {
-
         if (Character.isUpperCase(part.charAt(0))) {
           foundClass = true;
         }
