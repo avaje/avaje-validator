@@ -1,4 +1,4 @@
-# Avaje Validator (site docs coming soon)
+# [Avaje Validator](https://avaje.io/validator/)
 
 [![Build](https://github.com/avaje/avaje-validator/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-validator/actions/workflows/build.yml)
 <img src="https://img.shields.io/maven-central/v/io.avaje/avaje-validator.svg?label=Maven%20Central">
@@ -45,9 +45,9 @@ And add avaje-validator-generator as an annotation processor.
 </dependency>
 ```
 
-## Step 2 - Add `@Valid`
+## Step 2 - Add (Avaje/Jakarta/Javax) `@Valid`
 
-Add `@Valid` to the types we want to add validation.
+Add `@Valid` to the types we want to add validation. 
 
 The `avaje-validator-generator` annotation processor will generate validation adapter classes as Java source code
 for each type annotated with `@Valid`. These will be automatically registered with `Validator`
