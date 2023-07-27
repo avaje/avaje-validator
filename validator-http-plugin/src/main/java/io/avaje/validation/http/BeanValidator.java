@@ -37,7 +37,7 @@ public class BeanValidator implements io.avaje.http.api.Validator {
     List<Violation> errors = new ArrayList<>();
     for (final var violation : cause.violations()) {
       final var path = violation.path();
-      final var field = violation.propertyName();
+      final var field = violation.field();
       final var message = violation.message();
       errors.add(new Violation(path, field, message));
     }

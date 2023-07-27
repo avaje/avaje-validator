@@ -29,18 +29,16 @@ public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T
   }
 
   /** Execute validations for all items in the given iterable */
-  protected boolean validateAll(
-      Iterable<Object> value, ValidationRequest req, String propertyName) {
+  protected boolean validateAll(Iterable<Object> value, ValidationRequest req, String propertyName) {
     if (value == null) {
       return true;
     }
     if (propertyName != null) {
       req.pushPath(propertyName);
     }
-    int index = -1;
+    int index = 0;
     for (final var element : value) {
-      index++;
-      multiAdapter.validate(element, req, String.valueOf(index));
+      multiAdapter.validate(element, req, "[" + index++);
     }
     if (propertyName != null) {
       req.popPath();

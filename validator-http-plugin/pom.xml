@@ -13,7 +13,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-validator</artifactId>
-      <version>0.13</version>
+      <version>0.16.1</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
