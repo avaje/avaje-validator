@@ -122,14 +122,14 @@ final class ClassReader implements BeanReader {
   public void writeValidatorMethod(Append writer) {
     writer.eol();
     writer.append("  @Override").eol();
-    writer.append("  public boolean validate(%s value, ValidationRequest request, String propertyName) {", shortName).eol();
-    writer.append("    if (propertyName != null) {").eol();
-    writer.append("      request.pushPath(propertyName);").eol();
+    writer.append("  public boolean validate(%s value, ValidationRequest request, String field) {", shortName).eol();
+    writer.append("    if (field != null) {").eol();
+    writer.append("      request.pushPath(field);").eol();
     writer.append("    }").eol();
     for (final FieldReader allField : allFields) {
       allField.writeValidate(writer);
     }
-    writer.append("    if (propertyName != null) {").eol();
+    writer.append("    if (field != null) {").eol();
     writer.append("      request.popPath();").eol();
     writer.append("    }").eol();
     writer.append("    return true;", shortName).eol();

@@ -71,8 +71,8 @@ class ValidatorTest {
       List<ConstraintViolation> asList = new ArrayList<>(violations);
 
       var last = asList.get(violations.size() - 1);
-      assertThat(last.path()).isEqualTo("contacts.1.address");
-      assertThat(last.propertyName()).isEqualTo("line1");
+      assertThat(last.path()).isEqualTo("contacts[1].address.line1");
+      assertThat(last.field()).isEqualTo("line1");
       assertThat(last.message()).isEqualTo("myCustomNullMessage");
     }
   }
@@ -89,8 +89,8 @@ class ValidatorTest {
       List<ConstraintViolation> asList = new ArrayList<>(violations);
 
       var first = asList.get(0);
-      assertThat(first.path()).isEqualTo("");
-      assertThat(first.propertyName()).isEqualTo("lastName");
+      assertThat(first.path()).isEqualTo("lastName");
+      assertThat(first.field()).isEqualTo("lastName");
       assertThat(first.message()).isEqualTo("must not be null");
     }
   }
@@ -109,8 +109,8 @@ class ValidatorTest {
       List<ConstraintViolation> asList = new ArrayList<>(violations);
 
       var first = asList.get(0);
-      assertThat(first.path()).isEqualTo("");
-      assertThat(first.propertyName()).isEqualTo("billingAddress");
+      assertThat(first.path()).isEqualTo("billingAddress");
+      assertThat(first.field()).isEqualTo("billingAddress");
       assertThat(first.message()).isEqualTo("must not be null");
     }
   }

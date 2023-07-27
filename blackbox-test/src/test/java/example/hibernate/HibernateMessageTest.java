@@ -65,6 +65,35 @@ class HibernateMessageTest {
         assertThat(err.getMessage()).isEqualTo("My custom error message with max 7");
     }
 
+  @Test
+  void nested() {
+    var customer = new HCustomer("ok", "IAmNotValidHere");
+    customer.contacts().add(new HContact("", 42));
+    customer.contacts().add(new HContact("ok", 23));
+    customer.contacts().add(new HContact(null, -23));
+
+    Set<ConstraintViolation<HCustomer>> violations = validator.validate(customer);
+    assertThat(violations).hasSize(4);
+
+    ConstraintViolation<HCustomer> v0 = forPath(violations, "other");
+    assertThat(v0.getMessage()).isEqualTo("My custom error message with max 7");
+
+    ConstraintViolation<HCustomer> v1 = forPath(violations, "contacts[0].name");
+    assertThat(v1.getMessage()).isEqualTo("must not be empty");
+
+    ConstraintViolation<HCustomer> v2 = forPath(violations, "contacts[2].score");
+    assertThat(v2.getMessage()).isEqualTo("must be greater than 0");
+
+    ConstraintViolation<HCustomer> v3 = forPath(violations, "contacts[2].name");
+    assertThat(v3.getMessage()).isEqualTo("must not be empty");
+  }
+
+  <T> ConstraintViolation<T> forPath(Set<ConstraintViolation<T>> violations, String path) {
+    return violations.stream()
+      .filter(violation -> path.equals(violation.getPropertyPath().toString()))
+      .findFirst().orElseThrow();
+  }
+
     private ConstraintViolation<HCustomer> one(HCustomer cust) {
         List<ConstraintViolation<HCustomer>> violations = new ArrayList<>(validator.validate(cust));
         assertThat(violations).hasSize(1);

@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Valid
 public class HCustomer {
 
@@ -12,6 +15,9 @@ public class HCustomer {
 
     @NotBlank @Size(max = 7, message = "My custom error message with max {max}")
     final String other;
+
+    @Valid
+    final List<HContact> contacts = new ArrayList<>();
 
     public HCustomer(String name, String other) {
         this.name = name;
@@ -29,4 +35,8 @@ public class HCustomer {
     public String getOther() {
         return other;
     }
+
+  public List<HContact> contacts() {
+    return contacts;
+  }
 }

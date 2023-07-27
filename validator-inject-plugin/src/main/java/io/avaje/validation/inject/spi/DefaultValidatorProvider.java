@@ -64,13 +64,13 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
               .get("validation.temporal.tolerance.value")
               .map(Long::valueOf)
               .ifPresent(
-                  l -> {
+                  duration -> {
                     final var unit =
                         props
                             .get("validation.temporal.tolerance.chronoUnit")
                             .map(ChronoUnit::valueOf)
                             .orElse(ChronoUnit.MILLIS);
-                    validator.temporalTolerance(Duration.of(l, unit));
+                    validator.temporalTolerance(Duration.of(duration, unit));
                   });
           return validator.build();
         });

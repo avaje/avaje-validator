@@ -30,18 +30,29 @@ final class DRequest implements ValidationRequest {
   }
 
   private String currentPath() {
-    final StringJoiner joiner = new StringJoiner(".");
+    if (pathStack.isEmpty()) {
+      return "";
+    }
+    final StringBuilder sb = new StringBuilder(70);
     final var descendingIterator = pathStack.descendingIterator();
     while (descendingIterator.hasNext()) {
-      joiner.add(descendingIterator.next());
+      String next = descendingIterator.next();
+      if (next.charAt(0) == '[') {
+        sb.append(next).append(']');
+      } else {
+        if (!sb.isEmpty()) {
+          sb.append('.');
+        }
+        sb.append(next);
+      }
     }
-    return joiner.toString();
+    return sb.append('.').toString();
   }
 
   @Override
   public void addViolation(ValidationContext.Message msg, String propertyName) {
     final String message = validator.interpolate(msg, locale);
-    violations.add(new ConstraintViolation(currentPath(), propertyName, message));
+    violations.add(new ConstraintViolation(currentPath() + propertyName, propertyName, message));
     if (failfast) {
       throwWithViolations();
     }
