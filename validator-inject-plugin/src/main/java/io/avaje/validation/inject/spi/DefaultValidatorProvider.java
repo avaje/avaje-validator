@@ -30,9 +30,7 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
 
   @Override
   public void apply(BeanScopeBuilder builder) {
-
     validator(builder);
-
     paramAspect(builder);
   }
 
