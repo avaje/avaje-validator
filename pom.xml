@@ -10,7 +10,7 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-validator-parent</artifactId>
-  <version>0.16</version>
+  <version>0.17</version>
 
   <packaging>pom</packaging>
   <name>validator parent</name>
