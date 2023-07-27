@@ -77,19 +77,19 @@ final class ProcessingContext {
 
   /** Log an error message. */
   static void logError(Element e, String msg, Object... args) {
-    CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
+    CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, msg.formatted(args), e);
   }
 
   static void logError(String msg, Object... args) {
-    CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args));
+    CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, msg.formatted(args));
   }
 
   static void logWarn(String msg, Object... args) {
-    CTX.get().messager.printMessage(Diagnostic.Kind.WARNING, String.format(msg, args));
+    CTX.get().messager.printMessage(Diagnostic.Kind.WARNING, msg.formatted(args));
   }
 
   static void logDebug(String msg, Object... args) {
-    CTX.get().messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
+    CTX.get().messager.printMessage(Diagnostic.Kind.NOTE, msg.formatted(args));
   }
 
   /** Create a file writer for the given class name. */

@@ -6,9 +6,12 @@ package io.avaje.validation.adapter;
  */
 public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T> {
 
+	/**
+	 * Adapter placed on the the container type
+	 */
   protected final ValidationAdapter<T> initalAdapter;
 
-  private ValidationAdapter<Object> multiAdapter;
+  protected ValidationAdapter<Object> multiAdapter;
 
   /** @param initialAdapter initial adapter that can be used to validate the container itself */
   protected AbstractContainerAdapter(ValidationAdapter<T> initialAdapter) {
