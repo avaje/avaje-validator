@@ -1,18 +1,14 @@
 package io.avaje.validation.core.adapters;
 
-import static java.util.regex.Pattern.CASE_INSENSITIVE;
+import io.avaje.validation.adapter.AbstractConstraintAdapter;
+import io.avaje.validation.adapter.RegexFlag;
+import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import io.avaje.validation.adapter.AbstractConstraintAdapter;
-import io.avaje.validation.adapter.RegexFlag;
-import io.avaje.validation.adapter.ValidationAdapter;
-import io.avaje.validation.adapter.ValidationContext;
-import io.avaje.validation.adapter.ValidationRequest;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 /* most of this was written by
  * @author Emmanuel Bernard
@@ -46,9 +42,9 @@ final class EmailAdapter extends AbstractConstraintAdapter<CharSequence> {
   private final Predicate<String> pattern;
 
   @SuppressWarnings("unchecked")
-  EmailAdapter(
-      ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-    super(message, groups);
+  EmailAdapter(AdapterCreateRequest request) {
+    super(request);
+    final var attributes = request.attributes();
     int flags = 0;
     var regex = (String) attributes.get("regexp");
     if (regex == null) {

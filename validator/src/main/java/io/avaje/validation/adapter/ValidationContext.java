@@ -146,10 +146,20 @@ public interface ValidationContext {
      * @param attributes The attributes associated with the annotation
      * @return The created validation adapter or null if not applicable
      */
-    ValidationAdapter<?> create(
-        Class<? extends Annotation> annotationType,
-        ValidationContext ctx,
-        Set<Class<?>> groups,
-        Map<String, Object> attributes);
+    ValidationAdapter<?> create(AdapterCreateRequest request);
+  }
+
+  /** Request to create a Validation Adapter */
+  interface AdapterCreateRequest {
+
+    ValidationContext ctx();
+
+    Class<? extends Annotation> annotationType();
+
+    Set<Class<?>> groups();
+
+    Map<String, Object> attributes();
+
+    Message message();
   }
 }
