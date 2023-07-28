@@ -30,7 +30,7 @@ public final class BasicAdapters {
             case "NotBlank" -> new NotBlankAdapter(context.message(attributes), groups);
             case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes), groups);
             case "Pattern" -> new PatternAdapter(context.message(attributes), groups, attributes);
-            case "Size" -> new SizeAdapter(context.message(attributes), groups, attributes);
+            case "Size", "Length" -> new SizeAdapter(context.message(attributes), groups, attributes);
             default -> null;
           };
 
