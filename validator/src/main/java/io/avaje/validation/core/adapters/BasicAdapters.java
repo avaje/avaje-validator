@@ -30,8 +30,7 @@ public final class BasicAdapters {
             case "NotBlank" -> new NotBlankAdapter(context.message(attributes), groups);
             case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes), groups);
             case "Pattern" -> new PatternAdapter(context.message(attributes), groups, attributes);
-            case "Size" -> new SizeAdapter(context.message(attributes), groups, attributes);
-            case "Length" -> new LengthAdapter(context.message(attributes), groups, attributes);
+            case "Size", "Length" -> new SizeAdapter(context.message(attributes), groups, attributes);
             default -> null;
           };
 
@@ -109,37 +108,6 @@ public final class BasicAdapters {
         }
       }
 
-      return true;
-    }
-  }
-
-  private static final class LengthAdapter implements ValidationAdapter<Object> {
-
-    private final ValidationContext.Message message;
-    private final Set<Class<?>> groups;
-    private final int min;
-    private final int max;
-
-    LengthAdapter(ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-      this.message = message;
-      this.groups = groups;
-      this.min = (int) attributes.get("min");
-      this.max = (int) attributes.get("max");
-    }
-
-    @Override
-    public boolean validate(Object value, ValidationRequest req, String propertyName) {
-      if (!checkGroups(groups, req) || value == null) {
-        return true;
-      }
-
-      if (value instanceof final CharSequence sequence) {
-        final var len = sequence.length();
-        if (len > max || len < min) {
-          req.addViolation(message, propertyName);
-          return false;
-        }
-      }
       return true;
     }
   }
