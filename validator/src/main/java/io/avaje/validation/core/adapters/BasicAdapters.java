@@ -30,17 +30,28 @@ public final class BasicAdapters {
             case "NotBlank" -> new NotBlankAdapter(context.message(attributes), groups);
             case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes), groups);
             case "Pattern" -> new PatternAdapter(context.message(attributes), groups, attributes);
-            case "Size", "Length" -> new SizeAdapter(context.message(attributes), groups, attributes);
+            case "UUID" -> new UUIDAdapter(context.message(attributes), groups, attributes);
+            case "Size", "Length" -> new SizeAdapter(
+                context.message(attributes), groups, attributes);
             default -> null;
           };
 
-  private static final class PatternAdapter extends AbstractConstraintAdapter<CharSequence> {
+  static sealed class PatternAdapter extends AbstractConstraintAdapter<CharSequence>
+      permits EmailAdapter {
 
-    private final Predicate<String> pattern;
+    protected final Predicate<String> pattern;
 
-    @SuppressWarnings("unchecked")
     PatternAdapter(
         ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
+      this(message, groups, attributes, (String) attributes.get("regexp"));
+    }
+
+    @SuppressWarnings("unchecked")
+    public PatternAdapter(
+        ValidationContext.Message message,
+        Set<Class<?>> groups,
+        Map<String, Object> attributes,
+        String regex) {
       super(message, groups);
       int flags = 0;
 
@@ -50,8 +61,7 @@ public final class BasicAdapters {
           flags |= flag.getValue();
         }
       }
-      this.pattern =
-          Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
+      this.pattern = Pattern.compile(regex, flags).asMatchPredicate().negate();
     }
 
     @Override
@@ -124,7 +134,7 @@ public final class BasicAdapters {
       return (cs != null) && !isBlank(cs);
     }
 
-    private static boolean isBlank(final CharSequence cs) {
+    static boolean isBlank(final CharSequence cs) {
       final int strLen = cs.length();
       if (strLen == 0) {
         return true;

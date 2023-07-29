@@ -9,7 +9,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
+import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationRequest;
 
 public final class NumberAdapters {
   private NumberAdapters() {}
@@ -28,6 +30,7 @@ public final class NumberAdapters {
                 context.message(attributes), groups, attributes);
             case "DecimalMin" -> new DecimalMinAdapter(
                 context.message(attributes), groups, attributes);
+            case "Range" -> new RangeAdapter(context.message(attributes), groups, attributes);
             default -> null;
           };
 
@@ -77,11 +80,8 @@ public final class NumberAdapters {
       }
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
-      if (inclusive ? comparisonResult < 0 : comparisonResult <= 0) {
 
-        return false;
-      }
-      return true;
+      return !(inclusive ? comparisonResult < 0 : comparisonResult <= 0);
     }
   }
 
@@ -96,18 +96,17 @@ public final class NumberAdapters {
       this.value = (long) attributes.get("value");
     }
 
+    MaxAdapter(ValidationContext.Message message, Set<Class<?>> groups, long value) {
+
+      super(message, groups);
+      this.value = value;
+    }
+
     @Override
     public boolean isValid(Number number) {
       // null values are valid
-      if (number == null) {
-        return true;
-      }
 
-      if (NumberComparatorHelper.compare(number, value, GREATER_THAN) > 0) {
-
-        return false;
-      }
-      return true;
+      return number == null || NumberComparatorHelper.compare(number, value, GREATER_THAN) <= 0;
     }
   }
 
@@ -122,18 +121,17 @@ public final class NumberAdapters {
       this.value = (long) attributes.get("value");
     }
 
+    MinAdapter(ValidationContext.Message message, Set<Class<?>> groups, long value) {
+
+      super(message, groups);
+      this.value = value;
+    }
+
     @Override
     public boolean isValid(Number number) {
       // null values are valid
-      if (number == null) {
-        return true;
-      }
 
-      if (NumberComparatorHelper.compare(number, value, LESS_THAN) < 0) {
-
-        return false;
-      }
-      return true;
+      return number == null || NumberComparatorHelper.compare(number, value, LESS_THAN) >= 0;
     }
   }
 
@@ -166,12 +164,8 @@ public final class NumberAdapters {
 
       final int integerPartLength = bigNum.precision() - bigNum.scale();
       final int fractionPartLength = Math.max(bigNum.scale(), 0);
-      if (integer < integerPartLength || fraction < fractionPartLength) {
 
-        return false;
-      }
-
-      return true;
+      return (integer >= integerPartLength) && (fraction >= fractionPartLength);
     }
   }
 
@@ -193,12 +187,8 @@ public final class NumberAdapters {
       }
 
       final int sign = NumberSignHelper.signum(value, LESS_THAN);
-      if (inclusive ? sign < 0 : sign <= 0) {
 
-        return false;
-      }
-
-      return true;
+      return !(inclusive ? sign < 0 : sign <= 0);
     }
   }
 
@@ -220,12 +210,32 @@ public final class NumberAdapters {
       }
 
       final int sign = NumberSignHelper.signum(value, GREATER_THAN);
-      if (inclusive ? sign > 0 : sign >= 0) {
 
-        return false;
+      return !(inclusive ? sign > 0 : sign >= 0);
+    }
+  }
+
+  private static final class RangeAdapter implements ValidationAdapter<Object> {
+
+    private final ValidationAdapter<Number> adapter;
+
+    RangeAdapter(
+        ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
+
+      final var min = (int) attributes.get("min");
+      final var max = (int) attributes.get("max");
+      this.adapter =
+          new MaxAdapter(message, groups, max).andThen(new MinAdapter(message, groups, min));
+    }
+
+    @Override
+    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+
+      if (value instanceof final String s) {
+        value = Long.parseLong(s);
       }
 
-      return true;
+      return adapter.validate((Number) value, req);
     }
   }
 }
