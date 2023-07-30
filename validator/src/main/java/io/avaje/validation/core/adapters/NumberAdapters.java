@@ -7,10 +7,8 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
-import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
-import io.avaje.validation.adapter.ValidationRequest;
 
 public final class NumberAdapters {
   private NumberAdapters() {}
@@ -203,27 +201,28 @@ public final class NumberAdapters {
     }
   }
 
-  private static final class RangeAdapter implements ValidationAdapter<Object> {
+  private static final class RangeAdapter extends AbstractConstraintAdapter<Object> {
 
-    private final ValidationAdapter<Number> adapter;
+    private final MaxAdapter maxAdapter;
+    private final MinAdapter minAdapter;
 
     RangeAdapter(AdapterCreateRequest request) {
-
-        final var attributes = request.attributes();
+      super(request);
+      final var attributes = request.attributes();
       final var min = (int) attributes.get("min");
       final var max = (int) attributes.get("max");
-      this.adapter =
-          new MaxAdapter(request, max).andThen(new MinAdapter(request, min));
+      this.maxAdapter = new MaxAdapter(request, max);
+      this.minAdapter = new MinAdapter(request, min);
     }
 
     @Override
-    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+    public boolean isValid(Object value) {
 
       if (value instanceof final String s) {
         value = Long.parseLong(s);
       }
-
-      return adapter.validate((Number) value, req);
+      final var num = (Number) value;
+      return minAdapter.isValid(num) && maxAdapter.isValid(num);
     }
   }
 }
