@@ -8,6 +8,15 @@ import java.util.regex.Pattern;
 
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.core.adapters.BasicAdapters.PatternAdapter;
+import io.avaje.validation.adapter.AbstractConstraintAdapter;
+import io.avaje.validation.adapter.RegexFlag;
+import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
+
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 /* most of this was written by
  * @author Emmanuel Bernard
@@ -38,9 +47,8 @@ final class EmailAdapter extends PatternAdapter {
               + ")*",
           CASE_INSENSITIVE);
 
-  EmailAdapter(
-      ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-    super(message, groups, attributes, (String) attributes.getOrDefault("regexp", ".*"));
+  EmailAdapter(AdapterCreateRequest request) {
+    super(request, (String) request.attributes().getOrDefault("regexp", ".*"));
   }
 
   @Override

@@ -1,8 +1,5 @@
 package io.avaje.validation.generator.models.valid;
 
-import java.util.Map;
-import java.util.Set;
-
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
 import io.avaje.validation.adapter.ConstraintAdapter;
 import io.avaje.validation.adapter.ValidationContext;
@@ -13,9 +10,9 @@ public final class CustomAnnotationAdapter extends AbstractConstraintAdapter<Str
 
   private final CaseMode caseMode;
 
-  public CustomAnnotationAdapter(
-      ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes) {
-    super(ctx.message(attributes), groups);
+  public CustomAnnotationAdapter(ValidationContext.AdapterCreateRequest request) {
+    super(request);
+    final var attributes = request.attributes();
     caseMode = (CaseMode) attributes.get("caseMode");
   }
 

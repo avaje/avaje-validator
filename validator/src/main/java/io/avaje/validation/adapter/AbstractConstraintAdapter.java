@@ -1,17 +1,20 @@
 package io.avaje.validation.adapter;
 
+import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
+import io.avaje.validation.adapter.ValidationContext.Message;
+
 import java.util.Set;
 
 /** Abstract Adapter that validates objects based on Constraint Annotations. */
 public abstract class AbstractConstraintAdapter<T> implements ValidationAdapter<T> {
 
-  protected final ValidationContext.Message message;
+  protected final Message message;
   protected final Set<Class<?>> groups;
 
-  /** @param initialAdapter initial adapter that can be used to validate the container itself */
-  protected AbstractConstraintAdapter(ValidationContext.Message message, Set<Class<?>> groups) {
-    this.message = message;
-    this.groups = groups;
+  /** Create given the create request */
+  protected AbstractConstraintAdapter(AdapterCreateRequest request) {
+    this.message = request.message();
+    this.groups = request.groups();
   }
 
   /**

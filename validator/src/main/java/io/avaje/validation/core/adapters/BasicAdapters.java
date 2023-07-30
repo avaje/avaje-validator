@@ -11,27 +11,27 @@ import io.avaje.validation.adapter.AbstractConstraintAdapter;
 import io.avaje.validation.adapter.RegexFlag;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 import io.avaje.validation.adapter.ValidationRequest;
 
 public final class BasicAdapters {
   private BasicAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-      (annotationType, context, groups, attributes) ->
-          switch (annotationType.getSimpleName()) {
-            case "Email" -> new EmailAdapter(context.message(attributes), groups, attributes);
-            case "Null" -> new NullableAdapter(context.message(attributes), groups, true);
+      (request) ->
+          switch (request.annotationType().getSimpleName()) {
+            case "Email" -> new EmailAdapter(request);
+            case "Null" -> new NullableAdapter(request, true);
             case "NotNull", "NonNull" -> new NullableAdapter(
-                context.message(attributes), groups, false);
+              request, false);
             case "AssertTrue" -> new AssertBooleanAdapter(
-                context.message(attributes), groups, Boolean.TRUE);
+                request, Boolean.TRUE);
             case "AssertFalse" -> new AssertBooleanAdapter(
-                context.message(attributes), groups, Boolean.FALSE);
-            case "NotBlank" -> new NotBlankAdapter(context.message(attributes), groups);
-            case "NotEmpty" -> new NotEmptyAdapter(context.message(attributes), groups);
-            case "Pattern" -> new PatternAdapter(context.message(attributes), groups, attributes);
-            case "Size", "Length" -> new SizeAdapter(
-                context.message(attributes), groups, attributes);
+                request, Boolean.FALSE);
+            case "NotBlank" -> new NotBlankAdapter(request);
+            case "NotEmpty" -> new NotEmptyAdapter(request);
+            case "Pattern" -> new PatternAdapter(request);
+            case "Size", "Length" -> new SizeAdapter(request);
             default -> null;
           };
 
@@ -40,20 +40,12 @@ public final class BasicAdapters {
 
     protected final Predicate<String> pattern;
 
-    PatternAdapter(
-        ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-      this(message, groups, attributes, (String) attributes.get("regexp"));
-    }
-
     @SuppressWarnings("unchecked")
-    public PatternAdapter(
-        ValidationContext.Message message,
-        Set<Class<?>> groups,
-        Map<String, Object> attributes,
-        String regex) {
-      super(message, groups);
+    PatternAdapter(AdapterCreateRequest request) {
+      super(request);
       int flags = 0;
 
+      final var attributes = request.attributes();
       final List<RegexFlag> flags1 = (List<RegexFlag>) attributes.get("flags");
       if (flags1 != null) {
         for (final var flag : flags1) {
@@ -77,10 +69,10 @@ public final class BasicAdapters {
     private final int min;
     private final int max;
 
-    SizeAdapter(
-        ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-      this.message = message;
-      this.groups = groups;
+    SizeAdapter(AdapterCreateRequest request) {
+      this.message = request.message();
+      this.groups = request.groups();
+      final var attributes = request.attributes();
       this.min = (int) attributes.get("min");
       this.max = (int) attributes.get("max");
     }
@@ -123,8 +115,8 @@ public final class BasicAdapters {
 
   private static final class NotBlankAdapter extends AbstractConstraintAdapter<CharSequence> {
 
-    NotBlankAdapter(ValidationContext.Message message, Set<Class<?>> groups) {
-      super(message, groups);
+    NotBlankAdapter(AdapterCreateRequest request) {
+      super(request);
     }
 
     @Override
@@ -149,8 +141,8 @@ public final class BasicAdapters {
 
   private static final class NotEmptyAdapter extends AbstractConstraintAdapter<Object> {
 
-    NotEmptyAdapter(ValidationContext.Message message, Set<Class<?>> groups) {
-      super(message, groups);
+    NotEmptyAdapter(AdapterCreateRequest request) {
+      super(request);
     }
 
     @Override
@@ -184,9 +176,8 @@ public final class BasicAdapters {
 
     private final Boolean assertBool;
 
-    AssertBooleanAdapter(
-        ValidationContext.Message message, Set<Class<?>> groups, Boolean assertBool) {
-      super(message, groups);
+    AssertBooleanAdapter(AdapterCreateRequest request, Boolean assertBool) {
+      super(request);
       this.assertBool = assertBool;
     }
 
@@ -201,14 +192,13 @@ public final class BasicAdapters {
 
     private final boolean shouldBeNull;
 
-    NullableAdapter(ValidationContext.Message message, Set<Class<?>> groups, boolean shouldBeNull) {
-      super(message, groups);
+    NullableAdapter(AdapterCreateRequest request, boolean shouldBeNull) {
+      super(request);
       this.shouldBeNull = shouldBeNull;
     }
 
     @Override
     public boolean isValid(Object value) {
-
       return (value == null) == shouldBeNull;
     }
   }

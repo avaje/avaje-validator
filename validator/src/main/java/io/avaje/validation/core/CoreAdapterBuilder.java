@@ -93,15 +93,30 @@ final class CoreAdapterBuilder {
       paramGroups = DEFAULT_GROUP;
     }
 
+    var request = new Request(context, cls, paramGroups, attributes);
     // Ask each factory to create the validation adapter.
     for (final var factory : annotationFactories) {
-      final var result =
-          (ValidationAdapter<T>) factory.create(cls, context, paramGroups, attributes);
+      final var result = (ValidationAdapter<T>) factory.create(request);
       if (result != null) {
         return result;
       }
     }
     // unknown annotations have noop
     return NOOP;
+  }
+
+  record Request(
+
+    ValidationContext ctx,
+    Class<? extends Annotation> annotationType,
+    Set<Class<?>> groups,
+    Map<String, Object> attributes
+
+  ) implements ValidationContext.AdapterCreateRequest {
+
+    @Override
+    public ValidationContext.Message message() {
+      return ctx.message(attributes);
+    }
   }
 }

@@ -25,12 +25,11 @@ final class FuturePastAdapter extends AbstractConstraintAdapter<Object> {
   private final Clock referenceClock;
 
   FuturePastAdapter(
-      ValidationContext.Message message,
-      Set<Class<?>> groups,
+      ValidationContext.AdapterCreateRequest request,
       boolean past,
       boolean includePresent,
       Clock referenceClock) {
-    super(message, groups);
+    super(request);
     this.past = past;
     this.includePresent = includePresent;
     this.referenceClock = referenceClock;
