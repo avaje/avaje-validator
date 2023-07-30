@@ -18,16 +18,13 @@ public final class BasicAdapters {
   private BasicAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-      (request) ->
+      request ->
           switch (request.annotationType().getSimpleName()) {
             case "Email" -> new EmailAdapter(request);
             case "Null" -> new NullableAdapter(request, true);
-            case "NotNull", "NonNull" -> new NullableAdapter(
-              request, false);
-            case "AssertTrue" -> new AssertBooleanAdapter(
-                request, Boolean.TRUE);
-            case "AssertFalse" -> new AssertBooleanAdapter(
-                request, Boolean.FALSE);
+            case "NotNull", "NonNull" -> new NullableAdapter(request, false);
+            case "AssertTrue" -> new AssertBooleanAdapter(request, Boolean.TRUE);
+            case "AssertFalse" -> new AssertBooleanAdapter(request, Boolean.FALSE);
             case "NotBlank" -> new NotBlankAdapter(request);
             case "NotEmpty" -> new NotEmptyAdapter(request);
             case "Pattern" -> new PatternAdapter(request);
@@ -35,12 +32,17 @@ public final class BasicAdapters {
             default -> null;
           };
 
-  private static final class PatternAdapter extends AbstractConstraintAdapter<CharSequence> {
+  static sealed class PatternAdapter extends AbstractConstraintAdapter<CharSequence>
+      permits EmailAdapter {
 
-    private final Predicate<String> pattern;
+    protected final Predicate<String> pattern;
+
+    PatternAdapter(AdapterCreateRequest request) {
+      this(request, (String) request.attributes().get("regexp"));
+    }
 
     @SuppressWarnings("unchecked")
-    PatternAdapter(AdapterCreateRequest request) {
+    PatternAdapter(AdapterCreateRequest request, String regex) {
       super(request);
       int flags = 0;
 
@@ -51,8 +53,7 @@ public final class BasicAdapters {
           flags |= flag.getValue();
         }
       }
-      this.pattern =
-          Pattern.compile((String) attributes.get("regexp"), flags).asMatchPredicate().negate();
+      this.pattern = Pattern.compile(regex, flags).asMatchPredicate().negate();
     }
 
     @Override
@@ -125,7 +126,7 @@ public final class BasicAdapters {
       return (cs != null) && !isBlank(cs);
     }
 
-    private static boolean isBlank(final CharSequence cs) {
+    static boolean isBlank(final CharSequence cs) {
       final int strLen = cs.length();
       if (strLen == 0) {
         return true;

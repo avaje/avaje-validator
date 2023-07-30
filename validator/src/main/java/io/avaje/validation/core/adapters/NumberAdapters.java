@@ -14,19 +14,19 @@ public final class NumberAdapters {
   private NumberAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-      (request) ->
-          switch (request.annotationType().getSimpleName()) {
-            case "Digits" -> new DigitsAdapter(request);
-            case "Positive" -> new PositiveAdapter(request, false);
-            case "PositiveOrZero" -> new PositiveAdapter(request, true);
-            case "Negative" -> new NegativeAdapter(request, false);
-            case "NegativeOrZero" -> new NegativeAdapter(request, true);
-            case "Max" -> new MaxAdapter(request);
-            case "Min" -> new MinAdapter(request);
-            case "DecimalMax" -> new DecimalMaxAdapter(request);
-            case "DecimalMin" -> new DecimalMinAdapter(request);
-            default -> null;
-          };
+      request->switch (request.annotationType().getSimpleName()) {
+    case "Digits" -> new DigitsAdapter(request);
+    case "Positive" -> new PositiveAdapter(request, false);
+    case "PositiveOrZero" -> new PositiveAdapter(request, true);
+    case "Negative" -> new NegativeAdapter(request, false);
+    case "NegativeOrZero" -> new NegativeAdapter(request, true);
+    case "Max" -> new MaxAdapter(request);
+    case "Min" -> new MinAdapter(request);
+    case "DecimalMax" -> new DecimalMaxAdapter(request);
+    case "DecimalMin" -> new DecimalMinAdapter(request);
+    case "Range" -> new RangeAdapter(request);
+    default -> null;
+  };
 
   private static final class DecimalMaxAdapter extends AbstractConstraintAdapter<Number> {
 
@@ -73,10 +73,8 @@ public final class NumberAdapters {
       }
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
-      if (inclusive ? comparisonResult < 0 : comparisonResult <= 0) {
-        return false;
-      }
-      return true;
+
+      return !(inclusive ? comparisonResult < 0 : comparisonResult <= 0);
     }
   }
 
@@ -90,18 +88,16 @@ public final class NumberAdapters {
       this.value = (long) attributes.get("value");
     }
 
+    MaxAdapter(AdapterCreateRequest request, long value) {
+      super(request);
+      this.value = value;
+    }
+
     @Override
     public boolean isValid(Number number) {
       // null values are valid
-      if (number == null) {
-        return true;
-      }
 
-      if (NumberComparatorHelper.compare(number, value, GREATER_THAN) > 0) {
-
-        return false;
-      }
-      return true;
+      return number == null || NumberComparatorHelper.compare(number, value, GREATER_THAN) <= 0;
     }
   }
 
@@ -115,18 +111,16 @@ public final class NumberAdapters {
       this.value = (long) attributes.get("value");
     }
 
+    MinAdapter(AdapterCreateRequest request, long value) {
+      super(request);
+      this.value = value;
+    }
+
     @Override
     public boolean isValid(Number number) {
       // null values are valid
-      if (number == null) {
-        return true;
-      }
 
-      if (NumberComparatorHelper.compare(number, value, LESS_THAN) < 0) {
-
-        return false;
-      }
-      return true;
+      return number == null || NumberComparatorHelper.compare(number, value, LESS_THAN) >= 0;
     }
   }
 
@@ -158,12 +152,8 @@ public final class NumberAdapters {
 
       final int integerPartLength = bigNum.precision() - bigNum.scale();
       final int fractionPartLength = Math.max(bigNum.scale(), 0);
-      if (integer < integerPartLength || fraction < fractionPartLength) {
 
-        return false;
-      }
-
-      return true;
+      return (integer >= integerPartLength) && (fraction >= fractionPartLength);
     }
   }
 
@@ -184,12 +174,8 @@ public final class NumberAdapters {
       }
 
       final int sign = NumberSignHelper.signum(value, LESS_THAN);
-      if (inclusive ? sign < 0 : sign <= 0) {
 
-        return false;
-      }
-
-      return true;
+      return !(inclusive ? sign < 0 : sign <= 0);
     }
   }
 
@@ -210,12 +196,33 @@ public final class NumberAdapters {
       }
 
       final int sign = NumberSignHelper.signum(value, GREATER_THAN);
-      if (inclusive ? sign > 0 : sign >= 0) {
 
-        return false;
+      return !(inclusive ? sign > 0 : sign >= 0);
+    }
+  }
+
+  private static final class RangeAdapter extends AbstractConstraintAdapter<Object> {
+
+    private final MaxAdapter maxAdapter;
+    private final MinAdapter minAdapter;
+
+    RangeAdapter(AdapterCreateRequest request) {
+      super(request);
+      final var attributes = request.attributes();
+      final var min = (int) attributes.get("min");
+      final var max = (int) attributes.get("max");
+      this.maxAdapter = new MaxAdapter(request, max);
+      this.minAdapter = new MinAdapter(request, min);
+    }
+
+    @Override
+    public boolean isValid(Object value) {
+
+      if (value instanceof final String s) {
+        value = Long.parseLong(s);
       }
-
-      return true;
+      final var num = (Number) value;
+      return minAdapter.isValid(num) && maxAdapter.isValid(num);
     }
   }
 }
