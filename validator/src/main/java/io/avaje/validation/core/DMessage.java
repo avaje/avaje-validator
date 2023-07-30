@@ -4,7 +4,7 @@ import io.avaje.validation.adapter.ValidationContext;
 
 import java.util.Map;
 
-final record DMessage(String template, Map<String, Object> attributes, int dedupNumber)
+record DMessage(String template, Map<String, Object> attributes, int dedupNumber)
     implements ValidationContext.Message {
 
   // templates can be the same across multiple adapters
@@ -12,7 +12,6 @@ final record DMessage(String template, Map<String, Object> attributes, int dedup
   private static int messageCounter = 0;
 
   DMessage(String template, Map<String, Object> attributes) {
-
     this(template, attributes, messageCounter++);
   }
 

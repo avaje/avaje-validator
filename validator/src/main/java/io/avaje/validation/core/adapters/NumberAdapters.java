@@ -4,30 +4,27 @@ import static io.avaje.validation.core.adapters.InfinityNumberComparatorHelper.G
 import static io.avaje.validation.core.adapters.InfinityNumberComparatorHelper.LESS_THAN;
 
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
 import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 
 public final class NumberAdapters {
   private NumberAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-      (annotationType, context, groups, attributes) ->
-          switch (annotationType.getSimpleName()) {
-            case "Digits" -> new DigitsAdapter(context.message(attributes), groups, attributes);
-            case "Positive" -> new PositiveAdapter(context.message(attributes), groups, false);
-            case "PositiveOrZero" -> new PositiveAdapter(context.message(attributes), groups, true);
-            case "Negative" -> new NegativeAdapter(context.message(attributes), groups, false);
-            case "NegativeOrZero" -> new NegativeAdapter(context.message(attributes), groups, true);
-            case "Max" -> new MaxAdapter(context.message(attributes), groups, attributes);
-            case "Min" -> new MinAdapter(context.message(attributes), groups, attributes);
-            case "DecimalMax" -> new DecimalMaxAdapter(
-                context.message(attributes), groups, attributes);
-            case "DecimalMin" -> new DecimalMinAdapter(
-                context.message(attributes), groups, attributes);
+      (request) ->
+          switch (request.annotationType().getSimpleName()) {
+            case "Digits" -> new DigitsAdapter(request);
+            case "Positive" -> new PositiveAdapter(request, false);
+            case "PositiveOrZero" -> new PositiveAdapter(request, true);
+            case "Negative" -> new NegativeAdapter(request, false);
+            case "NegativeOrZero" -> new NegativeAdapter(request, true);
+            case "Max" -> new MaxAdapter(request);
+            case "Min" -> new MinAdapter(request);
+            case "DecimalMax" -> new DecimalMaxAdapter(request);
+            case "DecimalMin" -> new DecimalMinAdapter(request);
             default -> null;
           };
 
@@ -36,9 +33,9 @@ public final class NumberAdapters {
     private final BigDecimal value;
     private final boolean inclusive;
 
-    DecimalMaxAdapter(
-        ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-      super(message, groups);
+    DecimalMaxAdapter(AdapterCreateRequest request) {
+      super(request);
+      final var attributes = request.attributes();
       this.value = new BigDecimal((String) attributes.get("value"));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
     }
@@ -61,10 +58,9 @@ public final class NumberAdapters {
     private final BigDecimal value;
     private final boolean inclusive;
 
-    DecimalMinAdapter(
-        ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-
-      super(message, groups);
+    DecimalMinAdapter(AdapterCreateRequest request) {
+      super(request);
+      final var attributes = request.attributes();
       this.value = new BigDecimal((String) attributes.get("value"));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
     }
@@ -78,7 +74,6 @@ public final class NumberAdapters {
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
       if (inclusive ? comparisonResult < 0 : comparisonResult <= 0) {
-
         return false;
       }
       return true;
@@ -89,10 +84,9 @@ public final class NumberAdapters {
 
     private final long value;
 
-    MaxAdapter(
-        ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-
-      super(message, groups);
+    MaxAdapter(AdapterCreateRequest request) {
+      super(request);
+      final var attributes = request.attributes();
       this.value = (long) attributes.get("value");
     }
 
@@ -115,10 +109,9 @@ public final class NumberAdapters {
 
     private final long value;
 
-    MinAdapter(
-        ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-
-      super(message, groups);
+    MinAdapter(AdapterCreateRequest request) {
+      super(request);
+      final var attributes = request.attributes();
       this.value = (long) attributes.get("value");
     }
 
@@ -142,10 +135,9 @@ public final class NumberAdapters {
     private final int integer;
     private final int fraction;
 
-    DigitsAdapter(
-        ValidationContext.Message message, Set<Class<?>> groups, Map<String, Object> attributes) {
-
-      super(message, groups);
+    DigitsAdapter(AdapterCreateRequest request) {
+      super(request);
+      final var attributes = request.attributes();
       this.integer = (int) attributes.get("integer");
       this.fraction = (int) attributes.get("fraction");
     }
@@ -179,9 +171,8 @@ public final class NumberAdapters {
 
     private final boolean inclusive;
 
-    PositiveAdapter(ValidationContext.Message message, Set<Class<?>> groups, boolean inclusive) {
-
-      super(message, groups);
+    PositiveAdapter(AdapterCreateRequest request, boolean inclusive) {
+      super(request);
       this.inclusive = inclusive;
     }
 
@@ -206,9 +197,8 @@ public final class NumberAdapters {
 
     private final boolean inclusive;
 
-    NegativeAdapter(ValidationContext.Message message, Set<Class<?>> groups, boolean inclusive) {
-
-      super(message, groups);
+    NegativeAdapter(AdapterCreateRequest request, boolean inclusive) {
+      super(request);
       this.inclusive = inclusive;
     }
 
