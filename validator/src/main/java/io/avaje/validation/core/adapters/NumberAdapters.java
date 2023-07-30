@@ -9,27 +9,26 @@ import java.util.Optional;
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
-import io.avaje.validation.adapter.ValidationRequest;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
+import io.avaje.validation.adapter.ValidationRequest;
 
 public final class NumberAdapters {
   private NumberAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-      (request) ->
-          switch (request.annotationType().getSimpleName()) {
-            case "Digits" -> new DigitsAdapter(request);
-            case "Positive" -> new PositiveAdapter(request, false);
-            case "PositiveOrZero" -> new PositiveAdapter(request, true);
-            case "Negative" -> new NegativeAdapter(request, false);
-            case "NegativeOrZero" -> new NegativeAdapter(request, true);
-            case "Max" -> new MaxAdapter(request);
-            case "Min" -> new MinAdapter(request);
-            case "DecimalMax" -> new DecimalMaxAdapter(request);
-            case "DecimalMin" -> new DecimalMinAdapter(request);
-            case "Range" -> new RangeAdapter(request);
-            default -> null;
-          };
+      request->switch (request.annotationType().getSimpleName()) {
+    case "Digits" -> new DigitsAdapter(request);
+    case "Positive" -> new PositiveAdapter(request, false);
+    case "PositiveOrZero" -> new PositiveAdapter(request, true);
+    case "Negative" -> new NegativeAdapter(request, false);
+    case "NegativeOrZero" -> new NegativeAdapter(request, true);
+    case "Max" -> new MaxAdapter(request);
+    case "Min" -> new MinAdapter(request);
+    case "DecimalMax" -> new DecimalMaxAdapter(request);
+    case "DecimalMin" -> new DecimalMinAdapter(request);
+    case "Range" -> new RangeAdapter(request);
+    default -> null;
+  };
 
   private static final class DecimalMaxAdapter extends AbstractConstraintAdapter<Number> {
 
@@ -91,9 +90,8 @@ public final class NumberAdapters {
       this.value = (long) attributes.get("value");
     }
 
-    MaxAdapter(ValidationContext.Message message, Set<Class<?>> groups, long value) {
-
-      super(message, groups);
+    MaxAdapter(AdapterCreateRequest request, long value) {
+      super(request);
       this.value = value;
     }
 
@@ -115,9 +113,8 @@ public final class NumberAdapters {
       this.value = (long) attributes.get("value");
     }
 
-    MinAdapter(ValidationContext.Message message, Set<Class<?>> groups, long value) {
-
-      super(message, groups);
+    MinAdapter(AdapterCreateRequest request, long value) {
+      super(request);
       this.value = value;
     }
 
@@ -212,10 +209,11 @@ public final class NumberAdapters {
 
     RangeAdapter(AdapterCreateRequest request) {
 
+        final var attributes = request.attributes();
       final var min = (int) attributes.get("min");
       final var max = (int) attributes.get("max");
       this.adapter =
-          new MaxAdapter(message, groups, max).andThen(new MinAdapter(message, groups, min));
+          new MaxAdapter(request, max).andThen(new MinAdapter(request, min));
     }
 
     @Override

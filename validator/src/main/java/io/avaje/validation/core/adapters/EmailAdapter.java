@@ -2,21 +2,10 @@ package io.avaje.validation.core.adapters;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
-import io.avaje.validation.adapter.ValidationContext;
-import io.avaje.validation.core.adapters.BasicAdapters.PatternAdapter;
-import io.avaje.validation.adapter.AbstractConstraintAdapter;
-import io.avaje.validation.adapter.RegexFlag;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
-
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-
-import static java.util.regex.Pattern.CASE_INSENSITIVE;
+import io.avaje.validation.core.adapters.BasicAdapters.PatternAdapter;
 
 /* most of this was written by
  * @author Emmanuel Bernard

@@ -18,16 +18,13 @@ public final class BasicAdapters {
   private BasicAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-      (request) ->
+      request ->
           switch (request.annotationType().getSimpleName()) {
             case "Email" -> new EmailAdapter(request);
             case "Null" -> new NullableAdapter(request, true);
-            case "NotNull", "NonNull" -> new NullableAdapter(
-              request, false);
-            case "AssertTrue" -> new AssertBooleanAdapter(
-                request, Boolean.TRUE);
-            case "AssertFalse" -> new AssertBooleanAdapter(
-                request, Boolean.FALSE);
+            case "NotNull", "NonNull" -> new NullableAdapter(request, false);
+            case "AssertTrue" -> new AssertBooleanAdapter(request, Boolean.TRUE);
+            case "AssertFalse" -> new AssertBooleanAdapter(request, Boolean.FALSE);
             case "NotBlank" -> new NotBlankAdapter(request);
             case "NotEmpty" -> new NotEmptyAdapter(request);
             case "Pattern" -> new PatternAdapter(request);
@@ -40,8 +37,12 @@ public final class BasicAdapters {
 
     protected final Predicate<String> pattern;
 
-    @SuppressWarnings("unchecked")
     PatternAdapter(AdapterCreateRequest request) {
+      this(request, (String) request.attributes().get("regexp"));
+    }
+
+    @SuppressWarnings("unchecked")
+    PatternAdapter(AdapterCreateRequest request, String regex) {
       super(request);
       int flags = 0;
 
