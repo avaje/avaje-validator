@@ -161,5 +161,7 @@ public interface ValidationContext {
     Map<String, Object> attributes();
 
     Message message();
+
+    String targetType();
   }
 }

@@ -115,6 +115,11 @@ final class CoreAdapterBuilder {
   ) implements ValidationContext.AdapterCreateRequest {
 
     @Override
+    public String targetType() {
+      return (String)attributes.get("_type");
+    }
+
+    @Override
     public ValidationContext.Message message() {
       return ctx.message(attributes);
     }

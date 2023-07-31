@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
+import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 
@@ -14,19 +15,32 @@ public final class NumberAdapters {
   private NumberAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-      request->switch (request.annotationType().getSimpleName()) {
+    request -> switch (request.annotationType().getSimpleName()) {
     case "Digits" -> new DigitsAdapter(request);
     case "Positive" -> new PositiveAdapter(request, false);
     case "PositiveOrZero" -> new PositiveAdapter(request, true);
     case "Negative" -> new NegativeAdapter(request, false);
     case "NegativeOrZero" -> new NegativeAdapter(request, true);
-    case "Max" -> new MaxAdapter(request);
+    case "Max" -> forMax(request);
     case "Min" -> new MinAdapter(request);
     case "DecimalMax" -> new DecimalMaxAdapter(request);
     case "DecimalMin" -> new DecimalMinAdapter(request);
     case "Range" -> new RangeAdapter(request);
     default -> null;
   };
+
+  private static ValidationAdapter<?> forMax(AdapterCreateRequest request) {
+    final String targetType = request.targetType();
+    if (targetType == null) {
+      return new MaxAdapter(request);
+    }
+    return switch (targetType) {
+      case "Integer" -> new NumMax.IntegerAdapter(request);
+      case "Long" -> new NumMax.LongAdapter(request);
+      case "BigDecimal" -> new NumMax.BigDecimalAdapter(request);
+      default -> new MaxAdapter(request);
+    };
+  }
 
   private static final class DecimalMaxAdapter extends AbstractConstraintAdapter<Number> {
 
