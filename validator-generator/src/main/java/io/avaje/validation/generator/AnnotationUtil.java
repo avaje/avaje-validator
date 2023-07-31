@@ -1,5 +1,6 @@
 package io.avaje.validation.generator;
 
+import static io.avaje.validation.generator.Util.trimAnnotations;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
@@ -19,12 +20,13 @@ import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 final class AnnotationUtil {
 
   interface Handler {
-    String attributes(AnnotationMirror annotationMirror, Element element);
+    String attributes(AnnotationMirror annotationMirror, Element element, Element target);
 
     String attributes(Map<String, Object> attributeMap);
   }
@@ -43,16 +45,12 @@ final class AnnotationUtil {
     handlers.put("jakarta.validation.constraints.DecimalMax", decimalHandler);
     handlers.put("jakarta.validation.constraints.DecimalMin", decimalHandler);
 
-    final var commonHandler = new CommonHandler();
-    final String[] keys = {
-      "AssertFalse",
-      "AssertTrue",
-      "Null",
-      "NotNull",
-      "NotBlank",
-      "NotEmpty",
+    final String[] withTypeKeys = {
+      "Length",
+      "Range",
+      "Max",
+      "Min",
       "Size",
-      "Email",
       "Past",
       "PastOrPresent",
       "Future",
@@ -62,8 +60,21 @@ final class AnnotationUtil {
       "PositiveOrZero",
       "Negative",
       "NegativeOrZero",
-      "Max",
-      "Min"
+    };
+    var c = new CommonWithTypeHandler();
+    for (final String key : withTypeKeys) {
+      handlers.put("io.avaje.validation.constraints." + key, c);
+      handlers.put("jakarta.validation.constraints." + key, c);
+    }
+    final var commonHandler = new CommonHandler();
+    final String[] keys = {
+      "AssertFalse",
+      "AssertTrue",
+      "Null",
+      "NotNull",
+      "NotBlank",
+      "NotEmpty",
+      "Email",
     };
     for (final String key : keys) {
       handlers.put("io.avaje.validation.constraints." + key, commonHandler);
@@ -73,11 +84,11 @@ final class AnnotationUtil {
 
   private AnnotationUtil() {}
 
-  static String annotationAttributeMap(AnnotationMirror annotationMirror) {
+  static String annotationAttributeMap(AnnotationMirror annotationMirror, Element target) {
     final Element element = annotationMirror.getAnnotationType().asElement();
     final Handler handler = handlers.get(element.toString());
     return Objects.requireNonNullElse(handler, defaultHandler)
-        .attributes(annotationMirror, element);
+        .attributes(annotationMirror, element, target);
   }
 
   static String annotationAttributeMap(String annotationStr) {
@@ -221,7 +232,7 @@ final class AnnotationUtil {
   static class PatternHandler extends BaseHandler {
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element) {
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
       return new PatternHandler().writeAttributes(annotationMirror);
     }
 
@@ -289,21 +300,24 @@ final class AnnotationUtil {
 
     protected final AnnotationMirror annotationMirror;
     protected final Element element;
+    protected final Element target;
 
     /** Prototype factory */
     StandardHandler() {
       this.annotationMirror = null;
       this.element = null;
+      this.target = null;
     }
 
-    StandardHandler(AnnotationMirror annotationMirror, Element element) {
+    StandardHandler(AnnotationMirror annotationMirror, Element element, Element target) {
       this.annotationMirror = annotationMirror;
       this.element = element;
+      this.target = target;
     }
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element) {
-      return new StandardHandler(annotationMirror, element).writeAttributes();
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
+      return new StandardHandler(annotationMirror, element, target).writeAttributes();
     }
 
     String writeAttributes() {
@@ -316,8 +330,13 @@ final class AnnotationUtil {
         }
         writeAttribute(member.getSimpleName(), value, defaultValue);
       }
+      writeTypeAttribute(target.asType());
       sb.append(")");
       return sb.toString();
+    }
+
+    protected void writeTypeAttribute(TypeMirror typeMirror) {
+      // do nothing by default
     }
 
     void writeAttribute(Name simpleName, AnnotationValue value, AnnotationValue defaultValue) {
@@ -365,18 +384,39 @@ final class AnnotationUtil {
     }
   }
 
+  static class CommonWithTypeHandler extends CommonHandler {
+
+    CommonWithTypeHandler(AnnotationMirror annotationMirror, Element element, Element target) {
+      super(annotationMirror, element, target);
+    }
+
+    CommonWithTypeHandler() {
+    }
+
+    @Override
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
+      return new CommonWithTypeHandler(annotationMirror, element, target).writeAttributes();
+    }
+
+    @Override
+    protected void writeTypeAttribute(TypeMirror typeMirror) {
+      writeAttributeKey("_type");
+      sb.append(trimAnnotations(typeMirror.toString()) + ".class");
+    }
+  }
+
   static class CommonHandler extends StandardHandler {
 
     /** Prototype factory only */
     CommonHandler() {}
 
-    CommonHandler(AnnotationMirror annotationMirror, Element element) {
-      super(annotationMirror, element);
+    CommonHandler(AnnotationMirror annotationMirror, Element element, Element target) {
+      super(annotationMirror, element, target);
     }
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element) {
-      return new CommonHandler(annotationMirror, element).writeAttributes();
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
+      return new CommonHandler(annotationMirror, element, target).writeAttributes();
     }
 
     @Override
@@ -405,12 +445,12 @@ final class AnnotationUtil {
     DecimalHandler() {}
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element) {
-      return new DecimalHandler(annotationMirror, element).writeAttributes();
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
+      return new DecimalHandler(annotationMirror, element, target).writeAttributes();
     }
 
-    DecimalHandler(AnnotationMirror annotationMirror, Element element) {
-      super(annotationMirror, element);
+    DecimalHandler(AnnotationMirror annotationMirror, Element element, Element target) {
+      super(annotationMirror, element, target);
     }
 
     @Override
