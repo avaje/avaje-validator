@@ -1,5 +1,6 @@
 package io.avaje.validation.generator;
 
+import static io.avaje.validation.generator.ProcessingContext.isAssignable2Interface;
 import static io.avaje.validation.generator.Util.trimAnnotations;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
@@ -82,6 +83,41 @@ final class AnnotationUtil {
     }
   }
 
+  static Map<String,String> KNOWN_TYPES = new HashMap<>();
+  static {
+    KNOWN_TYPES.put("byte", "Byte");
+    KNOWN_TYPES.put("java.lang.Byte", "Byte");
+    KNOWN_TYPES.put("short", "Short");
+    KNOWN_TYPES.put("java.lang.Short", "Short");
+    KNOWN_TYPES.put("int", "Integer");
+    KNOWN_TYPES.put("java.lang.Integer", "Integer");
+    KNOWN_TYPES.put("long", "Long");
+    KNOWN_TYPES.put("java.lang.Long", "Long");
+    KNOWN_TYPES.put("float", "Float");
+    KNOWN_TYPES.put("java.lang.Float", "Float");
+    KNOWN_TYPES.put("double", "Double");
+    KNOWN_TYPES.put("java.lang.Double", "Double");
+    KNOWN_TYPES.put("java.math.BigDecimal", "BigDecimal");
+    KNOWN_TYPES.put("java.math.BigInteger", "BigInteger");
+    KNOWN_TYPES.put("java.lang.String", "String");
+    //TODO; Consider java.time types
+  }
+
+  static String lookupType(TypeMirror typeMirror) {
+    String rawType = trimAnnotations(typeMirror.toString());
+    final String val = KNOWN_TYPES.get(rawType);
+    if (val != null) {
+      return val;
+    }
+    if (isAssignable2Interface(rawType, "java.lang.Number")) {
+      return "Number";
+    }
+    if (isAssignable2Interface(rawType, "java.lang.CharSequence")) {
+      return "CharSequence";
+    }
+    return null;
+  }
+
   private AnnotationUtil() {}
 
   static String annotationAttributeMap(AnnotationMirror annotationMirror, Element target) {
@@ -111,7 +147,6 @@ final class AnnotationUtil {
     convertTypeUse(element, attributeMap);
 
     final Handler handler = handlers.get(result);
-
     return Objects.requireNonNullElse(handler, defaultHandler).attributes(attributeMap);
   }
 
@@ -400,8 +435,11 @@ final class AnnotationUtil {
 
     @Override
     protected void writeTypeAttribute(TypeMirror typeMirror) {
-      writeAttributeKey("_type");
-      sb.append(trimAnnotations(typeMirror.toString()) + ".class");
+      String _type = lookupType(typeMirror);
+      if (_type != null) {
+        writeAttributeKey("_type");
+        sb.append('"').append(_type).append('"');
+      }
     }
   }
 
