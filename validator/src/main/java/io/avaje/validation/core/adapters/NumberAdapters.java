@@ -209,8 +209,8 @@ public final class NumberAdapters {
     RangeAdapter(AdapterCreateRequest request) {
       super(request);
       final var attributes = request.attributes();
-      final var min = (int) attributes.get("min");
-      final var max = (int) attributes.get("max");
+      final var min = (long) attributes.get("min");
+      final var max = (long) attributes.get("max");
       this.maxAdapter = new MaxAdapter(request, max);
       this.minAdapter = new MinAdapter(request, min);
     }
