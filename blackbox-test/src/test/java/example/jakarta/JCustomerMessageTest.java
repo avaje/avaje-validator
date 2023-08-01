@@ -36,7 +36,7 @@ class JCustomerMessageTest {
   @Test
   void sizeMax() {
     var violation = one(new JCustomer("NameIsTooLarge", "Other"));
-    assertThat(violation.message()).isEqualTo("size must be between 0 and 5");
+    assertThat(violation.message()).isEqualTo("maximum size 5 exceeded");
   }
 
   @Test

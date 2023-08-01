@@ -76,6 +76,8 @@ public final class BasicAdapters {
       this.max = (int) request.attribute("max");
       if (min == 0 && "{avaje.Length.message}".equals(request.attribute("message"))) {
         this.message = request.message("{avaje.Length.max.message}");
+      } else if (min == 0 && "{avaje.Size.message}".equals(request.attribute("message"))) {
+        this.message = request.message("{avaje.Size.max.message}");
       } else {
         this.message = request.message();
       }
