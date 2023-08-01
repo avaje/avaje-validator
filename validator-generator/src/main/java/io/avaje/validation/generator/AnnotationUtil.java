@@ -109,6 +109,12 @@ final class AnnotationUtil {
     if (val != null) {
       return val;
     }
+    if (isAssignable2Interface(rawType, "java.math.BigDecimal")) {
+      return "BigDecimal";
+    }
+    if (isAssignable2Interface(rawType, "java.math.BigInteger")) {
+      return "BigInteger";
+    }
     if (isAssignable2Interface(rawType, "java.lang.Number")) {
       return "Number";
     }

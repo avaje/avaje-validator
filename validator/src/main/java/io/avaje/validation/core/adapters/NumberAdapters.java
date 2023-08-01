@@ -235,7 +235,7 @@ public final class NumberAdapters {
       if (value instanceof final BigDecimal bd) {
         bigNum = bd;
       } else {
-        bigNum = NumberSignHelper.getBigDecimalValue(value.toString()).stripTrailingZeros();
+        bigNum = NumberSignHelper.toBigDecimal(value.toString()).stripTrailingZeros();
       }
 
       final int integerPartLength = bigNum.precision() - bigNum.scale();
@@ -247,10 +247,12 @@ public final class NumberAdapters {
   private static final class PositiveAdapter extends AbstractConstraintAdapter<Object> {
 
     private final boolean inclusive;
+    private final String targetType;
 
     PositiveAdapter(AdapterCreateRequest request, boolean inclusive) {
       super(request);
       this.inclusive = inclusive;
+      this.targetType = request.targetType();
     }
 
     @Override
@@ -259,8 +261,7 @@ public final class NumberAdapters {
       if (value == null) {
         return true;
       }
-
-      final int sign = NumberSignHelper.signum(value, LESS_THAN);
+      final int sign = NumberSignHelper.signum(targetType, value, LESS_THAN);
       return !(inclusive ? sign < 0 : sign <= 0);
     }
   }
@@ -268,10 +269,12 @@ public final class NumberAdapters {
   private static final class NegativeAdapter extends AbstractConstraintAdapter<Object> {
 
     private final boolean inclusive;
+    private final String targetType;
 
     NegativeAdapter(AdapterCreateRequest request, boolean inclusive) {
       super(request);
       this.inclusive = inclusive;
+      this.targetType = request.targetType();
     }
 
     @Override
@@ -280,8 +283,7 @@ public final class NumberAdapters {
       if (value == null) {
         return true;
       }
-
-      final int sign = NumberSignHelper.signum(value, GREATER_THAN);
+      final int sign = NumberSignHelper.signum(targetType, value, GREATER_THAN);
       return !(inclusive ? sign > 0 : sign >= 0);
     }
   }
