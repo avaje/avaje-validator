@@ -9,6 +9,9 @@ final class NumberComparatorHelper {
   private NumberComparatorHelper() {}
 
   static int compareDecimal(String targetType, Number number, BigDecimal value, OptionalInt treatNanAs) {
+    if (targetType == null) {
+      return compare(number.doubleValue(), value, treatNanAs);
+    }
     return switch (targetType) {
       case "Double" -> compare((Double) number, value, treatNanAs);
       case "Float" -> compare((Float) number, value, treatNanAs);

@@ -22,6 +22,9 @@ final class NumberSignHelper {
   }
 
   static int signum(String targetType, Object value, OptionalInt treatNanAs) {
+    if (targetType == null) {
+      return Double.compare(((Number) value).doubleValue(), DOUBLE_ZERO);
+    }
     return switch (targetType) {
       case "String", "CharSequence" -> toBigDecimal(value).signum();
       case "BigDecimal" -> ((BigDecimal) value).signum();

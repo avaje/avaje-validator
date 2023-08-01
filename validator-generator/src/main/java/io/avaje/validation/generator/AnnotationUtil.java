@@ -46,7 +46,15 @@ final class AnnotationUtil {
     handlers.put("jakarta.validation.constraints.DecimalMax", decimalHandler);
     handlers.put("jakarta.validation.constraints.DecimalMin", decimalHandler);
 
-    final String[] withTypeKeys = {
+    final var commonHandler = new CommonHandler();
+    final String[] keys = {
+      "AssertFalse",
+      "AssertTrue",
+      "Null",
+      "NotNull",
+      "NotBlank",
+      "NotEmpty",
+      "Email",
       "Length",
       "Range",
       "Max",
@@ -61,21 +69,6 @@ final class AnnotationUtil {
       "PositiveOrZero",
       "Negative",
       "NegativeOrZero",
-    };
-    var c = new CommonWithTypeHandler();
-    for (final String key : withTypeKeys) {
-      handlers.put("io.avaje.validation.constraints." + key, c);
-      handlers.put("jakarta.validation.constraints." + key, c);
-    }
-    final var commonHandler = new CommonHandler();
-    final String[] keys = {
-      "AssertFalse",
-      "AssertTrue",
-      "Null",
-      "NotNull",
-      "NotBlank",
-      "NotEmpty",
-      "Email",
     };
     for (final String key : keys) {
       handlers.put("io.avaje.validation.constraints." + key, commonHandler);
@@ -377,7 +370,11 @@ final class AnnotationUtil {
     }
 
     protected void writeTypeAttribute(TypeMirror typeMirror) {
-      // do nothing by default
+      String _type = lookupType(typeMirror);
+      if (_type != null) {
+        writeAttributeKey("_type");
+        sb.append('"').append(_type).append('"');
+      }
     }
 
     void writeAttribute(Name simpleName, AnnotationValue value, AnnotationValue defaultValue) {
@@ -422,30 +419,6 @@ final class AnnotationUtil {
       sb.append("Map.of(");
       first = true;
       return result;
-    }
-  }
-
-  static class CommonWithTypeHandler extends CommonHandler {
-
-    CommonWithTypeHandler(AnnotationMirror annotationMirror, Element element, Element target) {
-      super(annotationMirror, element, target);
-    }
-
-    CommonWithTypeHandler() {
-    }
-
-    @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
-      return new CommonWithTypeHandler(annotationMirror, element, target).writeAttributes();
-    }
-
-    @Override
-    protected void writeTypeAttribute(TypeMirror typeMirror) {
-      String _type = lookupType(typeMirror);
-      if (_type != null) {
-        writeAttributeKey("_type");
-        sb.append('"').append(_type).append('"');
-      }
     }
   }
 
