@@ -18,10 +18,10 @@ class DecimalMinMaxTest extends BasicTest {
   @interface DecimalMax {}
 
   ValidationAdapter<Object> minAdapter =
-      ctx.adapter(DecimalMin.class, Map.of("message", "mini", "value", "-69"));
+      ctx.adapter(DecimalMin.class, Map.of("message", "mini", "value", "-69", "_type", "Number"));
 
   ValidationAdapter<Object> maxAdapter =
-      ctx.adapter(DecimalMax.class, Map.of("message", "maxwell", "value", "69"));
+      ctx.adapter(DecimalMax.class, Map.of("message", "maxwell", "value", "69", "_type", "Number"));
 
   @Test
   void testNull() {

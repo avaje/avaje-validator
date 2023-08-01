@@ -54,12 +54,14 @@ public final class NumberAdapters {
 
     private final BigDecimal value;
     private final boolean inclusive;
+    private final String targetType;
 
     DecimalMaxAdapter(AdapterCreateRequest request) {
       super(request);
       final var attributes = request.attributes();
       this.value = new BigDecimal((String) attributes.get("value"));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
+      this.targetType = request.targetType();
     }
 
     @Override
@@ -68,8 +70,7 @@ public final class NumberAdapters {
       if (number == null) {
         return true;
       }
-
-      final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
+      final int comparisonResult = NumberComparatorHelper.compareDecimal(targetType, number, value, LESS_THAN);
       return !(inclusive ? comparisonResult > 0 : comparisonResult >= 0);
     }
   }
@@ -78,12 +79,14 @@ public final class NumberAdapters {
 
     private final BigDecimal value;
     private final boolean inclusive;
+    private final String targetType;
 
     DecimalMinAdapter(AdapterCreateRequest request) {
       super(request);
       final var attributes = request.attributes();
       this.value = new BigDecimal((String) attributes.get("value"));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
+      this.targetType = request.targetType();
     }
 
     @Override
@@ -92,8 +95,7 @@ public final class NumberAdapters {
       if (number == null) {
         return true;
       }
-
-      final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
+      final int comparisonResult = NumberComparatorHelper.compareDecimal(targetType, number, value, LESS_THAN);
       return !(inclusive ? comparisonResult < 0 : comparisonResult <= 0);
     }
   }

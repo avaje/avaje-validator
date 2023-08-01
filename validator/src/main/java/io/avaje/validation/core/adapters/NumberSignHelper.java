@@ -24,18 +24,17 @@ final class NumberSignHelper {
   static int signum(String targetType, Object value, OptionalInt treatNanAs) {
     return switch (targetType) {
       case "String", "CharSequence" -> toBigDecimal(value).signum();
-      case "BigDecimal" -> ((BigDecimal)value).signum();
-      case "BigInteger" -> ((BigInteger)value).signum();
-      case "Byte" -> ((Byte)value).compareTo(BYTE_ZERO);
-      case "Short" -> ((Short)value).compareTo(SHORT_ZERO);
-      case "Integer" -> Integer.signum((Integer)value);
-      case "Long" -> Long.signum((Long)value);
-      case "Float" -> signum((Float)value, treatNanAs);
-      case "Double" -> signum((Double)value, treatNanAs);
-      default -> Double.compare(((Number)value).doubleValue(), DOUBLE_ZERO);
+      case "BigDecimal" -> ((BigDecimal) value).signum();
+      case "BigInteger" -> ((BigInteger) value).signum();
+      case "Byte" -> ((Byte) value).compareTo(BYTE_ZERO);
+      case "Short" -> ((Short) value).compareTo(SHORT_ZERO);
+      case "Integer" -> Integer.signum((Integer) value);
+      case "Long" -> Long.signum((Long) value);
+      case "Float" -> signum((Float) value, treatNanAs);
+      case "Double" -> signum((Double) value, treatNanAs);
+      default -> Double.compare(((Number) value).doubleValue(), DOUBLE_ZERO);
     };
   }
-
 
   static int signum(Float number, OptionalInt treatNanAs) {
     final OptionalInt infinity = InfinityNumberComparatorHelper.infinityCheck(number, treatNanAs);
