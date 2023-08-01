@@ -164,6 +164,8 @@ public interface ValidationContext {
 
     Message message();
 
+    Message message(String key);
+
     String targetType();
 
     AdapterCreateRequest withValue(long value);

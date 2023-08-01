@@ -71,10 +71,14 @@ public final class BasicAdapters {
     private final int max;
 
     SizeAdapter(AdapterCreateRequest request) {
-      this.message = request.message();
       this.groups = request.groups();
       this.min = (int) request.attribute("min");
       this.max = (int) request.attribute("max");
+      if (min == 0 && "{avaje.Length.message}".equals(request.attribute("message"))) {
+        this.message = request.message("{avaje.Length.max.message}");
+      } else {
+        this.message = request.message();
+      }
     }
 
     @Override
