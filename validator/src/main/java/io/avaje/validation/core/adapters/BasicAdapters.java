@@ -21,6 +21,7 @@ public final class BasicAdapters {
       request ->
           switch (request.annotationType().getSimpleName()) {
             case "Email" -> new EmailAdapter(request);
+            case "UUID" -> new UuidAdapter(request);
             case "Null" -> new NullableAdapter(request, true);
             case "NotNull", "NonNull" -> new NullableAdapter(request, false);
             case "AssertTrue" -> new AssertBooleanAdapter(request, Boolean.TRUE);

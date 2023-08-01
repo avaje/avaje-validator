@@ -65,6 +65,7 @@ final class AnnotationUtil {
       "PositiveOrZero",
       "Negative",
       "NegativeOrZero",
+      "UUID"
     };
     for (final String key : keys) {
       handlers.put("io.avaje.validation.constraints." + key, commonHandler);
