@@ -22,6 +22,7 @@ public final class BasicAdapters {
           switch (request.annotationType().getSimpleName()) {
             case "Email" -> new EmailAdapter(request);
             case "UUID" -> new UuidAdapter(request);
+            case "URI" -> new UriAdapter(request);
             case "Null" -> new NullableAdapter(request, true);
             case "NotNull", "NonNull" -> new NullableAdapter(request, false);
             case "AssertTrue" -> new AssertBooleanAdapter(request, Boolean.TRUE);
@@ -58,7 +59,6 @@ public final class BasicAdapters {
 
     @Override
     public boolean isValid(CharSequence value) {
-
       return value == null || !pattern.test(value.toString());
     }
   }
@@ -108,7 +108,6 @@ public final class BasicAdapters {
           return len > 0;
         }
       }
-
       return true;
     }
   }
@@ -121,7 +120,6 @@ public final class BasicAdapters {
 
     @Override
     public boolean isValid(CharSequence cs) {
-
       return (cs != null) && !isBlank(cs);
     }
 
@@ -167,7 +165,6 @@ public final class BasicAdapters {
           return false;
         }
       }
-
       return true;
     }
   }
@@ -183,7 +180,6 @@ public final class BasicAdapters {
 
     @Override
     public boolean isValid(Boolean type) {
-
       return !assertBool.booleanValue() && type == null || assertBool.equals(type);
     }
   }
@@ -204,7 +200,6 @@ public final class BasicAdapters {
   }
 
   private static int arrayLength(Object array) {
-
     if (array instanceof final int[] intArr) {
       return intArr.length;
     } else if (array instanceof final boolean[] boolArr) {
