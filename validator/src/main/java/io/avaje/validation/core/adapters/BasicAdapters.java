@@ -65,6 +65,10 @@ public final class BasicAdapters {
 
   private static final class SizeAdapter implements ValidationAdapter<Object> {
 
+    private static final String LENGTH = "{avaje.Length.message}";
+    private static final String LENGTH_MAX = "{avaje.Length.max.message}";
+    private static final String SIZE = "{avaje.Size.message}";
+    private static final String SIZE_MAX = "{avaje.Size.max.message}";
     private final ValidationContext.Message message;
     private final Set<Class<?>> groups;
     private final int min;
@@ -74,13 +78,23 @@ public final class BasicAdapters {
       this.groups = request.groups();
       this.min = (int) request.attribute("min");
       this.max = (int) request.attribute("max");
-      if (min == 0 && "{avaje.Length.message}".equals(request.attribute("message"))) {
-        this.message = request.message("{avaje.Length.max.message}");
-      } else if (min == 0 && "{avaje.Size.message}".equals(request.attribute("message"))) {
-        this.message = request.message("{avaje.Size.max.message}");
+
+      final Object msgKey = request.attribute("message");
+      if (min == 0 && LENGTH.equals(msgKey)) {
+        this.message = request.message(LENGTH_MAX);
+      } else if (min == 0 && SIZE.equals(msgKey)) {
+        this.message = request.message(useLength(request) ? LENGTH_MAX : SIZE_MAX);
+      } else if (SIZE.equals(msgKey) && useLength(request)) {
+        this.message = request.message(LENGTH);
       } else {
         this.message = request.message();
       }
+    }
+
+    /** Use 'Length' rather than 'Size' for string types */
+    private static boolean useLength(AdapterCreateRequest request) {
+      final String targetType = request.targetType();
+      return "String".equals(targetType) || "CharSequence".equals(targetType);
     }
 
     @Override
