@@ -132,5 +132,12 @@ final class CoreAdapterBuilder {
     public ValidationContext.Message message() {
       return ctx.message(attributes);
     }
+
+    @Override
+    public ValidationContext.Message message(String messageKey) {
+      Map<String, Object> newAttributes = new HashMap<>(attributes);
+      newAttributes.put("message", messageKey);
+      return ctx.message(newAttributes);
+    }
   }
 }

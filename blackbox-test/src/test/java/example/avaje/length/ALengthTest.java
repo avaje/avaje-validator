@@ -41,6 +41,19 @@ class ALengthTest {
   }
 
   @Test
+  void lengthOnlyMax() {
+    var violation = one(new ALength("ok", "TooLargeHere", "ok", "ok"));
+    assertThat(violation.message()).isEqualTo("maximum length 5 exceeded");
+  }
+
+  @Test
+  void lengthOnlyMax_DE() {
+    // no {avaje.Length.max.message} for DE so uses fallback
+    var violation = one(new ALength("ok", "TooLargeHere", "ok", "ok"), Locale.GERMAN);
+    assertThat(violation.message()).isEqualTo("Länge muss zwischen 0 und 5 sein");
+  }
+
+  @Test
   void lengthMaxDE() {
     var violation = one(new ALength("TooLarge", "ok", "ok", "ok"), Locale.GERMAN);
     assertThat(violation.message()).isEqualTo("Länge muss zwischen 1 und 3 sein");
@@ -49,7 +62,7 @@ class ALengthTest {
   @Test
   void lengthMinMax() {
     var violation = one(new ACustomer("valid", "Other", "TooLarge"));
-    assertThat(violation.message()).isEqualTo("size must be between 2 and 4");
+    assertThat(violation.message()).isEqualTo("length must be between 2 and 4");
   }
 
   @Test

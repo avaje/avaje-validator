@@ -36,25 +36,25 @@ class ACustomerMessageTest {
   @Test
   void sizeMax() {
     var violation = one(new ACustomer("NameIsTooLarge", "Other"));
-    assertThat(violation.message()).isEqualTo("size must be between 0 and 5");
+    assertThat(violation.message()).isEqualTo("maximum length 5 exceeded");
   }
 
   @Test
   void sizeMaxDE() {
     var violation = one(new ACustomer("NameIsTooLarge", "Other"), Locale.GERMAN);
-    assertThat(violation.message()).isEqualTo("Größe muss zwischen 0 und 5 sein");
+    assertThat(violation.message()).isEqualTo("Länge muss zwischen 0 und 5 sein");
   }
 
   @Test
   void sizeMinMax() {
     var violation = one(new ACustomer("valid", "Other", "TooLarge"));
-    assertThat(violation.message()).isEqualTo("size must be between 2 and 4");
+    assertThat(violation.message()).isEqualTo("length must be between 2 and 4");
   }
 
   @Test
   void sizeMinMaxDE() {
     var violation = one(new ACustomer("valid", "Other", "TooLarge"), Locale.GERMAN);
-    assertThat(violation.message()).isEqualTo("Größe muss zwischen 2 und 4 sein");
+    assertThat(violation.message()).isEqualTo("Länge muss zwischen 2 und 4 sein");
   }
 
   @Test

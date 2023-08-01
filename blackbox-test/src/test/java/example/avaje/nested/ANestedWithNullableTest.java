@@ -26,7 +26,7 @@ class ANestedWithNullableTest {
       var v0 = violations.get(0);
       assertThat(v0.path()).isEqualTo("lastName");
       assertThat(v0.field()).isEqualTo("lastName");
-      assertThat(v0.message()).isEqualTo("size must be between 0 and 5");
+      assertThat(v0.message()).isEqualTo("maximum length 5 exceeded");
     }
   }
 
@@ -44,7 +44,7 @@ class ANestedWithNullableTest {
       var v0 = violations.get(0);
       assertThat(v0.path()).isEqualTo("lastName");
       assertThat(v0.field()).isEqualTo("lastName");
-      assertThat(v0.message()).isEqualTo("size must be between 0 and 5");
+      assertThat(v0.message()).isEqualTo("maximum length 5 exceeded");
     }
   }
 
@@ -62,7 +62,7 @@ class ANestedWithNullableTest {
       var v0 = violations.get(0);
       assertThat(v0.path()).isEqualTo("lastName");
       assertThat(v0.field()).isEqualTo("lastName");
-      assertThat(v0.message()).isEqualTo("size must be between 0 and 5");
+      assertThat(v0.message()).isEqualTo("maximum length 5 exceeded");
 
       var v1 = violations.get(1);
       assertThat(v1.path()).isEqualTo("address.line1");
@@ -72,7 +72,7 @@ class ANestedWithNullableTest {
       var v2 = violations.get(2);
       assertThat(v2.path()).isEqualTo("address.line2");
       assertThat(v2.field()).isEqualTo("line2");
-      assertThat(v2.message()).isEqualTo("size must be between 0 and 4");
+      assertThat(v2.message()).isEqualTo("maximum length 4 exceeded");
 
       var v3 = violations.get(3);
       assertThat(v3.path()).isEqualTo("address.longValue");
