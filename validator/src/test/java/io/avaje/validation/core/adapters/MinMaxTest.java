@@ -17,64 +17,88 @@ class MinMaxTest extends BasicTest {
 
   @interface Max {}
 
-  ValidationAdapter<Object> minAdapter =
-      ctx.adapter(Min.class, Map.of("message", "mini", "value", -69L));
+  ValidationAdapter<Object> minBD =
+      ctx.adapter(Min.class, Map.of("message", "mini", "value", -69L, "_type", "BigDecimal"));
+  ValidationAdapter<Object> minBI =
+    ctx.adapter(Min.class, Map.of("message", "mini", "value", -69L, "_type", "BigInteger"));
 
-  ValidationAdapter<Object> maxAdapter =
-      ctx.adapter(Max.class, Map.of("message", "maxwell", "value", 69L));
+  ValidationAdapter<Object> minLong =
+    ctx.adapter(Min.class, Map.of("message", "mini", "value", -69L, "_type", "Long"));
+  ValidationAdapter<Object> minFloat =
+    ctx.adapter(Min.class, Map.of("message", "mini", "value", -69L, "_type", "Float"));
+  ValidationAdapter<Object> minDouble =
+    ctx.adapter(Min.class, Map.of("message", "mini", "value", -69L, "_type", "Double"));
+
+  ValidationAdapter<Object> maxBD =
+      ctx.adapter(Max.class, Map.of("message", "maxwell", "value", 69L, "_type", "BigDecimal"));
+
+  ValidationAdapter<Object> maxBI =
+    ctx.adapter(Max.class, Map.of("message", "maxwell", "value", 69L, "_type", "BigInteger"));
+
+
+  ValidationAdapter<Object> maxLong =
+    ctx.adapter(Max.class, Map.of("message", "maxwell", "value", 69L, "_type", "Long"));
+
+  ValidationAdapter<Object> maxFloat =
+    ctx.adapter(Max.class, Map.of("message", "maxwell", "value", 69L, "_type", "Float"));
+
+  ValidationAdapter<Object> maxDouble =
+    ctx.adapter(Max.class, Map.of("message", "maxwell", "value", 69L, "_type", "Double"));
+
 
   @Test
   void testNull() {
-    assertThat(minAdapter.validate(null, request)).isTrue();
-    assertThat(maxAdapter.validate(null, request)).isTrue();
+    assertThat(minBD.validate(null, request)).isTrue();
+    assertThat(maxBD.validate(null, request)).isTrue();
+    assertThat(minLong.validate(null, request)).isTrue();
+    assertThat(maxLong.validate(null, request)).isTrue();
   }
 
   @Test
   void testMax() {
-
-    assertThat(maxAdapter.validate(0, request)).isTrue();
-    assertThat(maxAdapter.validate(0f, request)).isTrue();
-    assertThat(maxAdapter.validate(0D, request)).isTrue();
-    assertThat(maxAdapter.validate(0L, request)).isTrue();
-    assertThat(maxAdapter.validate((short) 0, request)).isTrue();
-    assertThat(maxAdapter.validate((byte) 0, request)).isTrue();
-    assertThat(maxAdapter.validate(BigInteger.valueOf(0), request)).isTrue();
-    assertThat(maxAdapter.validate(BigDecimal.valueOf(0), request)).isTrue();
+    assertThat(maxLong.validate(0, request)).isTrue();
+    assertThat(maxFloat.validate(0f, request)).isTrue();
+    assertThat(maxDouble.validate(0D, request)).isTrue();
+    assertThat(maxLong.validate(0L, request)).isTrue();
+    assertThat(maxLong.validate((short) 0, request)).isTrue();
+    assertThat(maxLong.validate((byte) 0, request)).isTrue();
+    assertThat(maxBI.validate(BigInteger.valueOf(0), request)).isTrue();
+    assertThat(maxBD.validate(BigDecimal.valueOf(0), request)).isTrue();
   }
 
   @Test
   void testMin() {
-    assertThat(minAdapter.validate(-0, request)).isTrue();
-    assertThat(minAdapter.validate(-0f, request)).isTrue();
-    assertThat(minAdapter.validate(-0D, request)).isTrue();
-    assertThat(minAdapter.validate(-0L, request)).isTrue();
-    assertThat(minAdapter.validate((short) -0, request)).isTrue();
-    assertThat(minAdapter.validate((byte) -0, request)).isTrue();
-    assertThat(minAdapter.validate(BigInteger.valueOf(-0), request)).isTrue();
-    assertThat(minAdapter.validate(BigDecimal.valueOf(-0), request)).isTrue();
+    assertThat(minLong.validate(-0, request)).isTrue();
+    assertThat(minFloat.validate(-0f, request)).isTrue();
+    assertThat(minDouble.validate(-0D, request)).isTrue();
+    assertThat(minLong.validate(-0L, request)).isTrue();
+    assertThat(minLong.validate((short) -0, request)).isTrue();
+    assertThat(minLong.validate((byte) -0, request)).isTrue();
+    assertThat(minBI.validate(BigInteger.valueOf(-0), request)).isTrue();
+    assertThat(minBD.validate(BigDecimal.valueOf(-0), request)).isTrue();
   }
 
   @Test
   void testMaxInValid() {
-    assertThat(maxAdapter.validate(01234, request)).isFalse();
-    assertThat(maxAdapter.validate(01234f, request)).isFalse();
-    assertThat(maxAdapter.validate(01234D, request)).isFalse();
-    assertThat(maxAdapter.validate(01234L, request)).isFalse();
-    assertThat(maxAdapter.validate((short) 01234, request)).isFalse();
-    assertThat(maxAdapter.validate((byte) 01234567, request)).isFalse();
-    assertThat(maxAdapter.validate(BigInteger.valueOf(01234), request)).isFalse();
-    assertThat(maxAdapter.validate(BigDecimal.valueOf(01234), request)).isFalse();
+    assertThat(maxLong.validate(01234, request)).isFalse();
+    assertThat(maxFloat.validate(01234f, request)).isFalse();
+    assertThat(maxDouble.validate(01234D, request)).isFalse();
+    assertThat(maxLong.validate(01234L, request)).isFalse();
+    assertThat(maxLong.validate((short) 01234, request)).isFalse();
+    assertThat(maxLong.validate((byte) 01234567, request)).isFalse();
+    assertThat(maxBI.validate(BigInteger.valueOf(01234), request)).isFalse();
+    assertThat(maxBD.validate(BigDecimal.valueOf(01234), request)).isFalse();
   }
 
   @Test
   void testMinInValid() {
-    assertThat(minAdapter.validate(-01234, request)).isFalse();
-    assertThat(minAdapter.validate(-01234f, request)).isFalse();
-    assertThat(minAdapter.validate(-01234D, request)).isFalse();
-    assertThat(minAdapter.validate(-01234L, request)).isFalse();
-    assertThat(minAdapter.validate((short) -01234, request)).isFalse();
-    assertThat(minAdapter.validate((byte) -01234567, request)).isFalse();
-    assertThat(minAdapter.validate(BigInteger.valueOf(-01234), request)).isFalse();
-    assertThat(minAdapter.validate(BigDecimal.valueOf(-01234), request)).isFalse();
+    assertThat(minLong.validate(-01234, request)).isFalse();
+    assertThat(minFloat.validate(-01234f, request)).isFalse();
+    assertThat(minDouble.validate(-01234D, request)).isFalse();
+    assertThat(minLong.validate(-01234L, request)).isFalse();
+    assertThat(minLong.validate((short) -01234, request)).isFalse();
+    assertThat(minLong.validate((byte) -01234567, request)).isFalse();
+    assertThat(minBI.validate(BigInteger.valueOf(-01234), request)).isFalse();
+    assertThat(minBD.validate(BigDecimal.valueOf(-01234), request)).isFalse();
   }
 }

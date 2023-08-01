@@ -47,7 +47,7 @@ final class NumberComparatorHelper {
     return compare(number.doubleValue(), value, treatNanAs);
   }
 
-  private static int compareDouble(Double number, long value, OptionalInt treatNanAs) {
+  static int compareDouble(Double number, long value, OptionalInt treatNanAs) {
     final OptionalInt infinity = InfinityNumberComparatorHelper.infinityCheck(number, treatNanAs);
     if (infinity.isPresent()) {
       return infinity.getAsInt();
@@ -55,7 +55,7 @@ final class NumberComparatorHelper {
     return Double.compare(number, value);
   }
 
-  private static int compareFloat(Float number, long value, OptionalInt treatNanAs) {
+  static int compareFloat(Float number, long value, OptionalInt treatNanAs) {
     final OptionalInt infinity = InfinityNumberComparatorHelper.infinityCheck(number, treatNanAs);
     if (infinity.isPresent()) {
       return infinity.getAsInt();

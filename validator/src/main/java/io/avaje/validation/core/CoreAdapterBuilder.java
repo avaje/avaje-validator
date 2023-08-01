@@ -4,10 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.time.Clock;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -116,7 +113,19 @@ final class CoreAdapterBuilder {
 
     @Override
     public String targetType() {
-      return (String)attributes.get("_type");
+      return (String)attribute("_type");
+    }
+
+    @Override
+    public Object attribute(String key) {
+      return attributes.get(key);
+    }
+
+    @Override
+    public Request withValue(long value) {
+      Map<String, Object> newAttributes = new HashMap<>(attributes);
+      newAttributes.put("value", value);
+      return new Request(ctx, annotationType, groups, newAttributes);
     }
 
     @Override

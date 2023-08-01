@@ -2,12 +2,14 @@ package io.avaje.validation.core.adapters;
 
 import static io.avaje.validation.core.adapters.InfinityNumberComparatorHelper.GREATER_THAN;
 import static io.avaje.validation.core.adapters.InfinityNumberComparatorHelper.LESS_THAN;
+import static io.avaje.validation.core.adapters.NumberComparatorHelper.compareDouble;
+import static io.avaje.validation.core.adapters.NumberComparatorHelper.compareFloat;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Optional;
 
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
-import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 
@@ -29,18 +31,25 @@ public final class NumberAdapters {
     default -> null;
   };
 
-  private static ValidationAdapter<?> forMax(AdapterCreateRequest request) {
+  private static AbstractConstraintAdapter<? extends Number> forMax(AdapterCreateRequest request) {
     final String targetType = request.targetType();
-    if (targetType == null) {
-      return new MaxAdapter(request);
-    }
     return switch (targetType) {
-      case "Integer" -> new NumMax.IntegerAdapter(request);
-      case "Long" -> new NumMax.LongAdapter(request);
-      case "BigDecimal" -> new NumMax.BigDecimalAdapter(request);
+      case "BigDecimal" -> new MaxBigDecimal(request);
+      case "BigInteger" -> new MaxBigInteger(request);
       default -> new MaxAdapter(request);
     };
   }
+
+  private static AbstractConstraintAdapter<? extends Number> forMin(AdapterCreateRequest request) {
+//    final String targetType = request.targetType();
+//    return switch (targetType) {
+//      case "BigDecimal" -> new MinBigDecimal(request);
+//      case "BigInteger" -> new MinBigInteger(request);
+//      default -> new MinAdapter(request);
+//    };
+    return new MinAdapter(request);
+  }
+
 
   private static final class DecimalMaxAdapter extends AbstractConstraintAdapter<Number> {
 
@@ -62,7 +71,6 @@ public final class NumberAdapters {
       }
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
-
       return !(inclusive ? comparisonResult > 0 : comparisonResult >= 0);
     }
   }
@@ -87,53 +95,82 @@ public final class NumberAdapters {
       }
 
       final int comparisonResult = NumberComparatorHelper.compareDecimal(number, value, LESS_THAN);
-
       return !(inclusive ? comparisonResult < 0 : comparisonResult <= 0);
     }
   }
 
-  private static final class MaxAdapter extends AbstractConstraintAdapter<Number> {
+  public interface NumberAdapter<T extends Number> {
+    boolean isValid(T number);
+  }
+
+  private static final class MaxAdapter extends AbstractConstraintAdapter<Number> implements NumberAdapter<Number> {
 
     private final long value;
+    private final String targetType;
 
     MaxAdapter(AdapterCreateRequest request) {
       super(request);
-      final var attributes = request.attributes();
-      this.value = (long) attributes.get("value");
-    }
-
-    MaxAdapter(AdapterCreateRequest request, long value) {
-      super(request);
-      this.value = value;
+      this.targetType = request.targetType();
+      this.value = (long) request.attribute("value");
     }
 
     @Override
     public boolean isValid(Number number) {
       // null values are valid
-
-      return number == null || NumberComparatorHelper.compare(number, value, GREATER_THAN) <= 0;
+      if (number == null) {
+        return true;
+      }
+      return switch (targetType) {
+        case "Integer", "Long", "Short", "Byte" -> number.longValue() <= value;
+        case "Double" -> compareDouble(number.doubleValue(), value, GREATER_THAN)  <= 0;
+        case "Float" -> compareFloat((Float)number, value, GREATER_THAN)  <= 0;
+        default -> throw new IllegalStateException();
+      };
     }
   }
 
-  private static final class MinAdapter extends AbstractConstraintAdapter<Number> {
+  static final class MaxBigDecimal extends AbstractConstraintAdapter<BigDecimal> implements NumberAdapter<BigDecimal> {
+
+    private final BigDecimal max;
+
+    MaxBigDecimal(AdapterCreateRequest request) {
+      super(request);
+      this.max = new BigDecimal(String.valueOf(request.attribute("value")));
+    }
+
+    @Override
+    public boolean isValid(BigDecimal number) {
+      return number == null || number.compareTo(max) <= 0;
+    }
+  }
+
+  static final class MaxBigInteger extends AbstractConstraintAdapter<BigInteger> implements NumberAdapter<BigInteger> {
+
+    private final BigInteger max;
+
+    MaxBigInteger(AdapterCreateRequest request) {
+      super(request);
+      this.max = new BigInteger(String.valueOf(request.attribute("value")));
+    }
+
+    @Override
+    public boolean isValid(BigInteger number) {
+      return number == null || number.compareTo(max) <= 0;
+    }
+  }
+
+  private static final class MinAdapter extends AbstractConstraintAdapter<Number> implements NumberAdapter<Number> {
 
     private final long value;
 
     MinAdapter(AdapterCreateRequest request) {
       super(request);
-      final var attributes = request.attributes();
-      this.value = (long) attributes.get("value");
-    }
-
-    MinAdapter(AdapterCreateRequest request, long value) {
-      super(request);
-      this.value = value;
+      this.value = (long) request.attribute("value");
     }
 
     @Override
     public boolean isValid(Number number) {
       // null values are valid
-
       return number == null || NumberComparatorHelper.compare(number, value, LESS_THAN) >= 0;
     }
   }
@@ -145,9 +182,8 @@ public final class NumberAdapters {
 
     DigitsAdapter(AdapterCreateRequest request) {
       super(request);
-      final var attributes = request.attributes();
-      this.integer = (int) attributes.get("integer");
-      this.fraction = (int) attributes.get("fraction");
+      this.integer = (int) request.attribute("integer");
+      this.fraction = (int) request.attribute("fraction");
     }
 
     @Override
@@ -166,7 +202,6 @@ public final class NumberAdapters {
 
       final int integerPartLength = bigNum.precision() - bigNum.scale();
       final int fractionPartLength = Math.max(bigNum.scale(), 0);
-
       return (integer >= integerPartLength) && (fraction >= fractionPartLength);
     }
   }
@@ -188,7 +223,6 @@ public final class NumberAdapters {
       }
 
       final int sign = NumberSignHelper.signum(value, LESS_THAN);
-
       return !(inclusive ? sign < 0 : sign <= 0);
     }
   }
@@ -210,28 +244,26 @@ public final class NumberAdapters {
       }
 
       final int sign = NumberSignHelper.signum(value, GREATER_THAN);
-
       return !(inclusive ? sign > 0 : sign >= 0);
     }
   }
 
   private static final class RangeAdapter extends AbstractConstraintAdapter<Object> {
 
-    private final MaxAdapter maxAdapter;
-    private final MinAdapter minAdapter;
+    private final NumberAdapter<Number> maxAdapter;
+    private final NumberAdapter<Number> minAdapter;
 
+    @SuppressWarnings("unchecked")
     RangeAdapter(AdapterCreateRequest request) {
       super(request);
-      final var attributes = request.attributes();
-      final var min = (long) attributes.get("min");
-      final var max = (long) attributes.get("max");
-      this.maxAdapter = new MaxAdapter(request, max);
-      this.minAdapter = new MinAdapter(request, min);
+      final var min = (long) request.attribute("min");
+      final var max = (long) request.attribute("max");
+      this.maxAdapter = (NumberAdapter<Number>)forMax(request.withValue(max));
+      this.minAdapter = (NumberAdapter<Number>)forMin(request.withValue(min));
     }
 
     @Override
     public boolean isValid(Object value) {
-
       if (value instanceof final String s) {
         value = Long.parseLong(s);
       }
