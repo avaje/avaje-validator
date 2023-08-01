@@ -6,11 +6,7 @@ import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -84,12 +80,15 @@ final class AnnotationUtil {
     KNOWN_TYPES.put("java.lang.Short", "Short");
     KNOWN_TYPES.put("int", "Integer");
     KNOWN_TYPES.put("java.lang.Integer", "Integer");
+    KNOWN_TYPES.put("java.util.OptionalInt", "Integer");
     KNOWN_TYPES.put("long", "Long");
     KNOWN_TYPES.put("java.lang.Long", "Long");
+    KNOWN_TYPES.put("java.util.OptionalLong", "Long");
     KNOWN_TYPES.put("float", "Float");
     KNOWN_TYPES.put("java.lang.Float", "Float");
     KNOWN_TYPES.put("double", "Double");
     KNOWN_TYPES.put("java.lang.Double", "Double");
+    KNOWN_TYPES.put("java.util.OptionalDouble", "Double");
     KNOWN_TYPES.put("java.math.BigDecimal", "BigDecimal");
     KNOWN_TYPES.put("java.math.BigInteger", "BigInteger");
     KNOWN_TYPES.put("java.lang.String", "String");
