@@ -41,6 +41,12 @@ class ALengthTest {
   }
 
   @Test
+  void lengthOnlyMax() {
+    var violation = one(new ALength("ok", "TooLargeHere", "ok", "ok"));
+    assertThat(violation.message()).isEqualTo("length must be between 0 and 5");
+  }
+
+  @Test
   void lengthMaxDE() {
     var violation = one(new ALength("TooLarge", "ok", "ok", "ok"), Locale.GERMAN);
     assertThat(violation.message()).isEqualTo("Länge muss zwischen 1 und 3 sein");
