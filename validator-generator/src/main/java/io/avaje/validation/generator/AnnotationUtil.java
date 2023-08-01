@@ -1,14 +1,12 @@
 package io.avaje.validation.generator;
 
+import static io.avaje.validation.generator.ProcessingContext.isAssignable2Interface;
+import static io.avaje.validation.generator.Util.trimAnnotations;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -19,12 +17,13 @@ import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 final class AnnotationUtil {
 
   interface Handler {
-    String attributes(AnnotationMirror annotationMirror, Element element);
+    String attributes(AnnotationMirror annotationMirror, Element element, Element target);
 
     String attributes(Map<String, Object> attributeMap);
   }
@@ -51,8 +50,12 @@ final class AnnotationUtil {
       "NotNull",
       "NotBlank",
       "NotEmpty",
-      "Size",
       "Email",
+      "Length",
+      "Range",
+      "Max",
+      "Min",
+      "Size",
       "Past",
       "PastOrPresent",
       "Future",
@@ -62,8 +65,6 @@ final class AnnotationUtil {
       "PositiveOrZero",
       "Negative",
       "NegativeOrZero",
-      "Max",
-      "Min"
     };
     for (final String key : keys) {
       handlers.put("io.avaje.validation.constraints." + key, commonHandler);
@@ -71,13 +72,57 @@ final class AnnotationUtil {
     }
   }
 
+  static Map<String,String> KNOWN_TYPES = new HashMap<>();
+  static {
+    KNOWN_TYPES.put("byte", "Byte");
+    KNOWN_TYPES.put("java.lang.Byte", "Byte");
+    KNOWN_TYPES.put("short", "Short");
+    KNOWN_TYPES.put("java.lang.Short", "Short");
+    KNOWN_TYPES.put("int", "Integer");
+    KNOWN_TYPES.put("java.lang.Integer", "Integer");
+    KNOWN_TYPES.put("java.util.OptionalInt", "Integer");
+    KNOWN_TYPES.put("long", "Long");
+    KNOWN_TYPES.put("java.lang.Long", "Long");
+    KNOWN_TYPES.put("java.util.OptionalLong", "Long");
+    KNOWN_TYPES.put("float", "Float");
+    KNOWN_TYPES.put("java.lang.Float", "Float");
+    KNOWN_TYPES.put("double", "Double");
+    KNOWN_TYPES.put("java.lang.Double", "Double");
+    KNOWN_TYPES.put("java.util.OptionalDouble", "Double");
+    KNOWN_TYPES.put("java.math.BigDecimal", "BigDecimal");
+    KNOWN_TYPES.put("java.math.BigInteger", "BigInteger");
+    KNOWN_TYPES.put("java.lang.String", "String");
+    //TODO; Consider java.time types
+  }
+
+  static String lookupType(TypeMirror typeMirror) {
+    String rawType = trimAnnotations(typeMirror.toString());
+    final String val = KNOWN_TYPES.get(rawType);
+    if (val != null) {
+      return val;
+    }
+    if (isAssignable2Interface(rawType, "java.math.BigDecimal")) {
+      return "BigDecimal";
+    }
+    if (isAssignable2Interface(rawType, "java.math.BigInteger")) {
+      return "BigInteger";
+    }
+    if (isAssignable2Interface(rawType, "java.lang.Number")) {
+      return "Number";
+    }
+    if (isAssignable2Interface(rawType, "java.lang.CharSequence")) {
+      return "CharSequence";
+    }
+    return null;
+  }
+
   private AnnotationUtil() {}
 
-  static String annotationAttributeMap(AnnotationMirror annotationMirror) {
+  static String annotationAttributeMap(AnnotationMirror annotationMirror, Element target) {
     final Element element = annotationMirror.getAnnotationType().asElement();
     final Handler handler = handlers.get(element.toString());
     return Objects.requireNonNullElse(handler, defaultHandler)
-        .attributes(annotationMirror, element);
+        .attributes(annotationMirror, element, target);
   }
 
   static String annotationAttributeMap(String annotationStr) {
@@ -100,7 +145,6 @@ final class AnnotationUtil {
     convertTypeUse(element, attributeMap);
 
     final Handler handler = handlers.get(result);
-
     return Objects.requireNonNullElse(handler, defaultHandler).attributes(attributeMap);
   }
 
@@ -221,7 +265,7 @@ final class AnnotationUtil {
   static class PatternHandler extends BaseHandler {
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element) {
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
       return new PatternHandler().writeAttributes(annotationMirror);
     }
 
@@ -289,21 +333,24 @@ final class AnnotationUtil {
 
     protected final AnnotationMirror annotationMirror;
     protected final Element element;
+    protected final Element target;
 
     /** Prototype factory */
     StandardHandler() {
       this.annotationMirror = null;
       this.element = null;
+      this.target = null;
     }
 
-    StandardHandler(AnnotationMirror annotationMirror, Element element) {
+    StandardHandler(AnnotationMirror annotationMirror, Element element, Element target) {
       this.annotationMirror = annotationMirror;
       this.element = element;
+      this.target = target;
     }
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element) {
-      return new StandardHandler(annotationMirror, element).writeAttributes();
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
+      return new StandardHandler(annotationMirror, element, target).writeAttributes();
     }
 
     String writeAttributes() {
@@ -316,8 +363,17 @@ final class AnnotationUtil {
         }
         writeAttribute(member.getSimpleName(), value, defaultValue);
       }
+      writeTypeAttribute(target.asType());
       sb.append(")");
       return sb.toString();
+    }
+
+    protected void writeTypeAttribute(TypeMirror typeMirror) {
+      String _type = lookupType(typeMirror);
+      if (_type != null) {
+        writeAttributeKey("_type");
+        sb.append('"').append(_type).append('"');
+      }
     }
 
     void writeAttribute(Name simpleName, AnnotationValue value, AnnotationValue defaultValue) {
@@ -370,13 +426,13 @@ final class AnnotationUtil {
     /** Prototype factory only */
     CommonHandler() {}
 
-    CommonHandler(AnnotationMirror annotationMirror, Element element) {
-      super(annotationMirror, element);
+    CommonHandler(AnnotationMirror annotationMirror, Element element, Element target) {
+      super(annotationMirror, element, target);
     }
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element) {
-      return new CommonHandler(annotationMirror, element).writeAttributes();
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
+      return new CommonHandler(annotationMirror, element, target).writeAttributes();
     }
 
     @Override
@@ -405,12 +461,12 @@ final class AnnotationUtil {
     DecimalHandler() {}
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element) {
-      return new DecimalHandler(annotationMirror, element).writeAttributes();
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
+      return new DecimalHandler(annotationMirror, element, target).writeAttributes();
     }
 
-    DecimalHandler(AnnotationMirror annotationMirror, Element element) {
-      super(annotationMirror, element);
+    DecimalHandler(AnnotationMirror annotationMirror, Element element, Element target) {
+      super(annotationMirror, element, target);
     }
 
     @Override

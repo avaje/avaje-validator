@@ -13,45 +13,30 @@ final class NumberSignHelper {
   private static final double DOUBLE_ZERO = 0D;
   private static final byte BYTE_ZERO = (byte) 0;
 
-  static BigDecimal getBigDecimalValue(Object value) {
-    BigDecimal bd;
+  static BigDecimal toBigDecimal(Object value) {
     try {
-      bd = new BigDecimal(value.toString());
+      return new BigDecimal(value.toString());
     } catch (final NumberFormatException nfe) {
       throw new IllegalArgumentException("Object: " + value + " Is not a valid number", nfe);
     }
-    return bd;
   }
 
-  static int signum(Object value, OptionalInt treatNanAs) {
-    if (value instanceof CharSequence) {
-      return signum(getBigDecimalValue(value), treatNanAs);
-    } else if (value instanceof final Number number) {
-      return signum(number, treatNanAs);
+  static int signum(String targetType, Object value, OptionalInt treatNanAs) {
+    if (targetType == null) {
+      return Double.compare(((Number) value).doubleValue(), DOUBLE_ZERO);
     }
-    throw new IllegalArgumentException("Object: " + value + " Is not a valid number");
-  }
-
-  private static int signum(Number number, OptionalInt treatNanAs) {
-    if (number instanceof final BigDecimal bd) {
-      return bd.signum();
-    } else if (number instanceof final BigInteger bi) {
-      return bi.signum();
-    } else if (number instanceof final Short sh) {
-      return sh.compareTo(SHORT_ZERO);
-    } else if (number instanceof final Integer i) {
-      return Integer.signum(i);
-    } else if (number instanceof final Long l) {
-      return Long.signum(l);
-    } else if (number instanceof final Float f) {
-      return signum(f, treatNanAs);
-    } else if (number instanceof final Double d) {
-      return signum(d, treatNanAs);
-    } else if (number instanceof final Byte b) {
-      return b.compareTo(BYTE_ZERO);
-    } else {
-      return Double.compare(number.doubleValue(), DOUBLE_ZERO);
-    }
+    return switch (targetType) {
+      case "String", "CharSequence" -> toBigDecimal(value).signum();
+      case "BigDecimal" -> ((BigDecimal) value).signum();
+      case "BigInteger" -> ((BigInteger) value).signum();
+      case "Byte" -> ((Byte) value).compareTo(BYTE_ZERO);
+      case "Short" -> ((Short) value).compareTo(SHORT_ZERO);
+      case "Integer" -> Integer.signum((Integer) value);
+      case "Long" -> Long.signum((Long) value);
+      case "Float" -> signum((Float) value, treatNanAs);
+      case "Double" -> signum((Double) value, treatNanAs);
+      default -> Double.compare(((Number) value).doubleValue(), DOUBLE_ZERO);
+    };
   }
 
   static int signum(Float number, OptionalInt treatNanAs) {

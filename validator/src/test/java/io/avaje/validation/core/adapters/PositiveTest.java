@@ -18,9 +18,15 @@ class PositiveTest extends BasicTest {
   @interface PositiveOrZero {}
 
   ValidationAdapter<Object> positiveAdapter =
-      ctx.adapter(Positive.class, Map.of("message", "you gotta accent-"));
+      ctx.adapter(Positive.class, Map.of("message", "you gotta accent-", "_type", "Number"));
   ValidationAdapter<Object> positiveOrZeroAdapter =
-      ctx.adapter(PositiveOrZero.class, Map.of("message", "-tuate the positive"));
+      ctx.adapter(PositiveOrZero.class, Map.of("message", "-tuate the positive", "_type", "Number"));
+
+  ValidationAdapter<Object> positiveString =
+    ctx.adapter(Positive.class, Map.of("message", "you gotta accent-", "_type", "String"));
+  ValidationAdapter<Object> positiveOrZeroString =
+    ctx.adapter(PositiveOrZero.class, Map.of("message", "-tuate the positive", "_type", "String"));
+
 
   @Test
   void testNull() {
@@ -43,7 +49,7 @@ class PositiveTest extends BasicTest {
 
   @Test
   void testPositive() {
-    assertThat(positiveAdapter.validate("1", request)).isTrue();
+    assertThat(positiveString.validate("1", request)).isTrue();
     assertThat(positiveAdapter.validate(1, request)).isTrue();
     assertThat(positiveAdapter.validate(1f, request)).isTrue();
     assertThat(positiveAdapter.validate(1D, request)).isTrue();
@@ -53,7 +59,7 @@ class PositiveTest extends BasicTest {
     assertThat(positiveAdapter.validate(BigInteger.ONE, request)).isTrue();
     assertThat(positiveAdapter.validate(BigDecimal.ONE, request)).isTrue();
 
-    assertThat(positiveOrZeroAdapter.validate("1", request)).isTrue();
+    assertThat(positiveOrZeroString.validate("1", request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(1, request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(1f, request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(1D, request)).isTrue();
@@ -67,7 +73,7 @@ class PositiveTest extends BasicTest {
   @Test
   void testNegative() {
 
-    assertThat(positiveAdapter.validate("-1", request)).isFalse();
+    assertThat(positiveString.validate("-1", request)).isFalse();
     assertThat(positiveAdapter.validate(-1, request)).isFalse();
     assertThat(positiveAdapter.validate(-1f, request)).isFalse();
     assertThat(positiveAdapter.validate(-1D, request)).isFalse();
@@ -77,7 +83,7 @@ class PositiveTest extends BasicTest {
     assertThat(positiveAdapter.validate(BigInteger.valueOf(-1), request)).isFalse();
     assertThat(positiveAdapter.validate(BigDecimal.valueOf(-1), request)).isFalse();
 
-    assertThat(positiveOrZeroAdapter.validate("-1", request)).isFalse();
+    assertThat(positiveOrZeroString.validate("-1", request)).isFalse();
     assertThat(positiveOrZeroAdapter.validate(-1, request)).isFalse();
     assertThat(positiveOrZeroAdapter.validate(-1f, request)).isFalse();
     assertThat(positiveOrZeroAdapter.validate(-1D, request)).isFalse();
@@ -90,7 +96,7 @@ class PositiveTest extends BasicTest {
 
   @Test
   void testZero() {
-    assertThat(positiveAdapter.validate("0", request)).isFalse();
+    assertThat(positiveString.validate("0", request)).isFalse();
     assertThat(positiveAdapter.validate(0, request)).isFalse();
     assertThat(positiveAdapter.validate(0f, request)).isFalse();
     assertThat(positiveAdapter.validate(0D, request)).isFalse();
@@ -100,7 +106,7 @@ class PositiveTest extends BasicTest {
     assertThat(positiveAdapter.validate(BigInteger.ZERO, request)).isFalse();
     assertThat(positiveAdapter.validate(BigDecimal.ZERO, request)).isFalse();
 
-    assertThat(positiveOrZeroAdapter.validate("0", request)).isTrue();
+    assertThat(positiveOrZeroString.validate("0", request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(0, request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(0f, request)).isTrue();
     assertThat(positiveOrZeroAdapter.validate(0D, request)).isTrue();

@@ -160,6 +160,12 @@ public interface ValidationContext {
 
     Map<String, Object> attributes();
 
+    Object attribute(String key);
+
     Message message();
+
+    String targetType();
+
+    AdapterCreateRequest withValue(long value);
   }
 }

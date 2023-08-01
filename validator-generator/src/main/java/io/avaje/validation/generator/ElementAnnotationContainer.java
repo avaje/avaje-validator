@@ -52,7 +52,7 @@ public record ElementAnnotationContainer(
             .collect(
                 toMap(
                     a -> GenericType.parse(a.getAnnotationType().toString()),
-                    AnnotationUtil::annotationAttributeMap));
+                    a -> AnnotationUtil.annotationAttributeMap(a, element)));
 
     return new ElementAnnotationContainer(genericType, hasValid, annotations, typeUse1, typeUse2);
   }

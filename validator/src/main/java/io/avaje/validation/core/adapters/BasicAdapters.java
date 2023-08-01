@@ -38,7 +38,7 @@ public final class BasicAdapters {
     protected final Predicate<String> pattern;
 
     PatternAdapter(AdapterCreateRequest request) {
-      this(request, (String) request.attributes().get("regexp"));
+      this(request, (String) request.attribute("regexp"));
     }
 
     @SuppressWarnings("unchecked")
@@ -46,8 +46,7 @@ public final class BasicAdapters {
       super(request);
       int flags = 0;
 
-      final var attributes = request.attributes();
-      final List<RegexFlag> flags1 = (List<RegexFlag>) attributes.get("flags");
+      final List<RegexFlag> flags1 = (List<RegexFlag>) request.attribute("flags");
       if (flags1 != null) {
         for (final var flag : flags1) {
           flags |= flag.getValue();
@@ -73,9 +72,8 @@ public final class BasicAdapters {
     SizeAdapter(AdapterCreateRequest request) {
       this.message = request.message();
       this.groups = request.groups();
-      final var attributes = request.attributes();
-      this.min = (int) attributes.get("min");
-      this.max = (int) attributes.get("max");
+      this.min = (int) request.attribute("min");
+      this.max = (int) request.attribute("max");
     }
 
     @Override

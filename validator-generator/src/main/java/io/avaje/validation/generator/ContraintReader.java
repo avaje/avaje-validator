@@ -38,7 +38,7 @@ final class ContraintReader implements BeanReader {
             .collect(
                 toMap(
                     a -> GenericType.parse(a.getAnnotationType().toString()),
-                    AnnotationUtil::annotationAttributeMap));
+                    a -> AnnotationUtil.annotationAttributeMap(a, element)));
   }
 
   private List<AnnotationMirror> expand(AnnotationMirror m, List<AnnotationMirror> mirrors) {
