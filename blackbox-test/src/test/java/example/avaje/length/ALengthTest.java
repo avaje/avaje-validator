@@ -62,7 +62,7 @@ class ALengthTest {
   @Test
   void lengthMinMax() {
     var violation = one(new ACustomer("valid", "Other", "TooLarge"));
-    assertThat(violation.message()).isEqualTo("size must be between 2 and 4");
+    assertThat(violation.message()).isEqualTo("length must be between 2 and 4");
   }
 
   @Test

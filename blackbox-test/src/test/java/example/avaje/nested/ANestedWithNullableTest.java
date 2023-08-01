@@ -26,7 +26,7 @@ class ANestedWithNullableTest {
       var v0 = violations.get(0);
       assertThat(v0.path()).isEqualTo("lastName");
       assertThat(v0.field()).isEqualTo("lastName");
-      assertThat(v0.message()).isEqualTo("maximum size 5 exceeded");
+      assertThat(v0.message()).isEqualTo("maximum length 5 exceeded");
     }
   }
 
@@ -44,7 +44,7 @@ class ANestedWithNullableTest {
       var v0 = violations.get(0);
       assertThat(v0.path()).isEqualTo("lastName");
       assertThat(v0.field()).isEqualTo("lastName");
-      assertThat(v0.message()).isEqualTo("maximum size 5 exceeded");
+      assertThat(v0.message()).isEqualTo("maximum length 5 exceeded");
     }
   }
 

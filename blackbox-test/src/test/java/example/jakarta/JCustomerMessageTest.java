@@ -42,19 +42,19 @@ class JCustomerMessageTest {
   @Test
   void sizeMaxDE() {
     var violation = one(new JCustomer("NameIsTooLarge", "Other"), Locale.GERMAN);
-    assertThat(violation.message()).isEqualTo("Größe muss zwischen 0 und 5 sein");
+    assertThat(violation.message()).isEqualTo("Länge muss zwischen 0 und 5 sein");
   }
 
   @Test
   void sizeMinMax() {
     var violation = one(new JCustomer("valid", "Other", "TooLarge"));
-    assertThat(violation.message()).isEqualTo("size must be between 2 and 4");
+    assertThat(violation.message()).isEqualTo("length must be between 2 and 4");
   }
 
   @Test
   void sizeMinMaxDE() {
     var violation = one(new JCustomer("valid", "Other", "TooLarge"), Locale.GERMAN);
-    assertThat(violation.message()).isEqualTo("Größe muss zwischen 2 und 4 sein");
+    assertThat(violation.message()).isEqualTo("Länge muss zwischen 2 und 4 sein");
   }
 
   @Test
