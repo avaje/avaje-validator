@@ -24,7 +24,7 @@ public final class NumberAdapters {
     case "Negative" -> new NegativeAdapter(request, false);
     case "NegativeOrZero" -> new NegativeAdapter(request, true);
     case "Max" -> forMax(request);
-    case "Min" -> new MinAdapter(request);
+    case "Min" -> forMin(request);
     case "DecimalMax" -> new DecimalMaxAdapter(request);
     case "DecimalMin" -> new DecimalMinAdapter(request);
     case "Range" -> new RangeAdapter(request);
@@ -41,13 +41,12 @@ public final class NumberAdapters {
   }
 
   private static AbstractConstraintAdapter<? extends Number> forMin(AdapterCreateRequest request) {
-//    final String targetType = request.targetType();
-//    return switch (targetType) {
-//      case "BigDecimal" -> new MinBigDecimal(request);
-//      case "BigInteger" -> new MinBigInteger(request);
-//      default -> new MinAdapter(request);
-//    };
-    return new MinAdapter(request);
+    final String targetType = request.targetType();
+    return switch (targetType) {
+      case "BigDecimal" -> new MinBigDecimal(request);
+      case "BigInteger" -> new MinBigInteger(request);
+      default -> new MinAdapter(request);
+    };
   }
 
 
@@ -162,16 +161,55 @@ public final class NumberAdapters {
   private static final class MinAdapter extends AbstractConstraintAdapter<Number> implements NumberAdapter<Number> {
 
     private final long value;
+    private final String targetType;
 
     MinAdapter(AdapterCreateRequest request) {
       super(request);
+      this.targetType = request.targetType();
       this.value = (long) request.attribute("value");
     }
 
     @Override
     public boolean isValid(Number number) {
-      // null values are valid
-      return number == null || NumberComparatorHelper.compare(number, value, LESS_THAN) >= 0;
+      if (number == null) {
+        return true;
+      }
+      return switch (targetType) {
+        case "Integer", "Long", "Short", "Byte" -> number.longValue() >= value;
+        case "Double" -> compareDouble(number.doubleValue(), value, LESS_THAN)  >= 0;
+        case "Float" -> compareFloat((Float)number, value, LESS_THAN)  >= 0;
+        default -> throw new IllegalStateException();
+      };
+    }
+  }
+
+  static final class MinBigDecimal extends AbstractConstraintAdapter<BigDecimal> implements NumberAdapter<BigDecimal> {
+
+    private final BigDecimal min;
+
+    MinBigDecimal(AdapterCreateRequest request) {
+      super(request);
+      this.min = new BigDecimal(String.valueOf(request.attribute("value")));
+    }
+
+    @Override
+    public boolean isValid(BigDecimal number) {
+      return number == null || number.compareTo(min) >= 0;
+    }
+  }
+
+  static final class MinBigInteger extends AbstractConstraintAdapter<BigInteger> implements NumberAdapter<BigInteger> {
+
+    private final BigInteger min;
+
+    MinBigInteger(AdapterCreateRequest request) {
+      super(request);
+      this.min = new BigInteger(String.valueOf(request.attribute("value")));
+    }
+
+    @Override
+    public boolean isValid(BigInteger number) {
+      return number == null || number.compareTo(min) >= 0;
     }
   }
 
