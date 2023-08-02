@@ -17,10 +17,8 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
@@ -208,24 +206,34 @@ public final class ValidationProcessor extends AbstractProcessor {
   private void writeContraintAdapters(Set<? extends Element> beans) {
     ElementFilter.typesIn(beans).stream()
         .filter(
-            t ->
-                t.getAnnotationMirrors().stream()
+            type ->
+                type.getAnnotationMirrors().stream()
                     .anyMatch(m -> ConstraintPrism.isPresent(m.getAnnotationType().asElement())))
-        .forEach(this::writeAdapterForContraint);
+        .forEach(this::writeAdapterForConstraint);
   }
 
   private void writeAdapterForType(TypeElement typeElement) {
+    if (isController(typeElement)) {
+      // @Valid on controller just indicating the controller request
+      // payloads should be validated - ignore this one
+      return;
+    }
     final ClassReader beanReader = new ClassReader(typeElement);
     writeAdapter(typeElement, beanReader);
   }
 
-  private void writeAdapterForContraint(TypeElement typeElement) {
+  private boolean isController(TypeElement typeElement) {
+    return typeElement.getAnnotationMirrors().stream()
+      .map(AnnotationMirror::getAnnotationType)
+      .map(DeclaredType::toString)
+      .anyMatch(val -> val.endsWith(".Controller"));
+  }
 
+  private void writeAdapterForConstraint(TypeElement typeElement) {
     if (ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
         .noneMatch(m -> "message".equals(m.getSimpleName().toString()))) {
       throw new IllegalStateException("Constraint annotations must contain a message method");
     }
-
     final ContraintReader beanReader = new ContraintReader(typeElement);
     writeAdapter(typeElement, beanReader);
   }
