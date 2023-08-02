@@ -28,6 +28,9 @@ import io.avaje.validation.constraints.NotBlank.List;
 @Repeatable(List.class)
 public @interface NotBlank {
 
+  /** Set the maximum length. By default this is 0 meaning unlimited. */
+  int max() default 0;
+
   String message() default "{avaje.NotBlank.message}";
 
   Class<?>[] groups() default {};
