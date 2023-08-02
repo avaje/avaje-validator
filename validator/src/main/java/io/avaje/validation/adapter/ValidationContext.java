@@ -164,7 +164,7 @@ public interface ValidationContext {
 
     Message message();
 
-    Message message(String key);
+    Message message(String key, Object... extraKeyValues);
 
     String targetType();
 

@@ -1,9 +1,6 @@
 package io.avaje.validation.core.adapters;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -99,7 +96,7 @@ public final class BasicAdapters {
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-      if (!checkGroups(groups, req) || value == null) {
+      if (value == null || !checkGroups(groups, req)) {
         return true;
       }
 
@@ -132,15 +129,47 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class NotBlankAdapter extends AbstractConstraintAdapter<CharSequence> {
+  private static final class NotBlankAdapter implements ValidationAdapter<CharSequence> {
+
+    private final ValidationContext.Message message;
+    private final ValidationContext.Message maxLengthMessage;
+    private final Set<Class<?>> groups;
+    private final int maxLength;
 
     NotBlankAdapter(AdapterCreateRequest request) {
-      super(request);
+      this.groups = request.groups();
+      this.message = request.message();
+      this.maxLength = maxLength(request);
+      if (maxLength > 0 && standardMessage(request)) {
+        maxLengthMessage = request.message("{avaje.Length.max.message}", "min", 1);
+      } else {
+        maxLengthMessage = null;
+      }
+    }
+
+    private static int maxLength(AdapterCreateRequest request) {
+      final Integer max = (Integer) request.attribute("max");
+      return Objects.requireNonNullElse(max, 0);
+    }
+
+    private static boolean standardMessage(AdapterCreateRequest request) {
+      return "{avaje.NotBlank.message}".equals(request.attribute("message"));
     }
 
     @Override
-    public boolean isValid(CharSequence cs) {
-      return (cs != null) && !isBlank(cs);
+    public boolean validate(CharSequence value, ValidationRequest req, String propertyName) {
+      if (!checkGroups(groups, req)) {
+        return true;
+      }
+      if (value == null || isBlank(value)) {
+        req.addViolation(message, propertyName);
+        return false;
+      }
+      if (maxLength > 0 && value.length() > maxLength) {
+        req.addViolation(maxLengthMessage != null ? maxLengthMessage : message, propertyName);
+        return false;
+      }
+      return true;
     }
 
     static boolean isBlank(final CharSequence cs) {
