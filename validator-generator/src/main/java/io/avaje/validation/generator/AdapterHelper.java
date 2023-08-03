@@ -29,23 +29,10 @@ final class AdapterHelper {
   }
 
   void write() {
-    final var annotations = elementAnnotations.annotations();
     final var typeUse1 = elementAnnotations.typeUse1();
     final var typeUse2 = elementAnnotations.typeUse2();
     final var hasValid = elementAnnotations.hasValid();
-    boolean first = true;
-    for (final var a : annotations.entrySet()) {
-      if (first) {
-        writer.append("%sctx.<%s>adapter(%s.class, %s)", indent, type, a.getKey().shortName(), a.getValue());
-        first = false;
-        continue;
-      }
-      writer.eol().append("%s    .andThen(ctx.adapter(%s.class,%s))", indent, a.getKey().shortName(), a.getValue());
-    }
-
-    if (annotations.isEmpty()) {
-      writer.append("%sctx.<%s>noop()", indent, type);
-    }
+    writeFirst(elementAnnotations.annotations());
 
     if (!typeUse1.isEmpty() && (isAssignable2Interface(genericType.topType(), "java.lang.Iterable"))) {
       writer.eol().append("%s    .list()", indent);
@@ -58,9 +45,7 @@ final class AdapterHelper {
         writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, Util.shortName(topType.firstParamType()));
       }
 
-    } else if ((!typeUse1.isEmpty() || !typeUse2.isEmpty())
-        && "java.util.Map".equals(genericType.topType())) {
-
+    } else if (isMapType(typeUse1, typeUse2)) {
       writer.eol().append("%s    .mapKeys()", indent);
       writeTypeUse(genericType.firstParamType(), typeUse1);
 
@@ -81,11 +66,28 @@ final class AdapterHelper {
     }
   }
 
-  private boolean isTopTypeIterable() {
-    if (topType != null && isAssignable2Interface(topType.topType(), "java.lang.Iterable")) {
-      return true;
+  private void writeFirst(Map<GenericType, String> annotations) {
+    boolean first = true;
+    for (final var a : annotations.entrySet()) {
+      if (first) {
+        writer.append("%sctx.<%s>adapter(%s.class, %s)", indent, type, a.getKey().shortName(), a.getValue());
+        first = false;
+        continue;
+      }
+      writer.eol().append("%s    .andThen(ctx.adapter(%s.class,%s))", indent, a.getKey().shortName(), a.getValue());
     }
-    return false;
+    if (annotations.isEmpty()) {
+      writer.append("%sctx.<%s>noop()", indent, type);
+    }
+  }
+
+  private boolean isMapType(Map<GenericType, String> typeUse1, Map<GenericType, String> typeUse2) {
+    return (!typeUse1.isEmpty() || !typeUse2.isEmpty())
+      && "java.util.Map".equals(genericType.topType());
+  }
+
+  private boolean isTopTypeIterable() {
+    return topType != null && isAssignable2Interface(topType.topType(), "java.lang.Iterable");
   }
 
   private void writeTypeUse(String firstParamType, Map<GenericType, String> typeUse12) {
