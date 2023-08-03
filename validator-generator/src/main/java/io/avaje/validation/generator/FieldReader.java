@@ -157,8 +157,9 @@ final class FieldReader {
   public void writeConstructor(Append writer) {
     writer.append("    this.%s = ", adapterFieldName).eol();
 
-    AdapterHelper.writeAdapterWithValues(
-        writer, elementAnnotations, "        ", PrimitiveUtil.wrap(genericType.shortType()));
+    new AdapterHelper(
+        writer, elementAnnotations, "        ", PrimitiveUtil.wrap(genericType.shortType()), genericType)
+      .write();
     writer.append(";").eol().eol();
   }
 }
