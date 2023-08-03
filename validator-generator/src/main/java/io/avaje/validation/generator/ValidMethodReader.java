@@ -34,7 +34,7 @@ final class ValidMethodReader {
     importTypes.add("io.avaje.validation.spi.Generated");
     importTypes.add("java.lang.reflect.Method");
     paramAnnotations = params.stream().map(ElementAnnotationContainer::create).toList();
-    returnElementAnnotation = ElementAnnotationContainer.create(element);
+    returnElementAnnotation = ElementAnnotationContainer.create(element, false);
   }
 
   public String shortName() {

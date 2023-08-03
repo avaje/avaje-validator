@@ -5,7 +5,6 @@ import java.util.Set;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
 
 final class FieldReader {
 
@@ -34,7 +33,7 @@ final class FieldReader {
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
     this.element = element;
-    this.elementAnnotations = ElementAnnotationContainer.create(element);
+    this.elementAnnotations = ElementAnnotationContainer.create(element, classLevel);
     this.genericType = elementAnnotations.genericType();
     final String shortType = genericType.shortType();
     adapterShortType = initAdapterShortType(shortType);

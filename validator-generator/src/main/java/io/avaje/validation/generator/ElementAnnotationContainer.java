@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -18,7 +19,7 @@ public record ElementAnnotationContainer(
     Map<GenericType, String> typeUse1,
     Map<GenericType, String> typeUse2) {
 
-  static ElementAnnotationContainer create(Element element) {
+  static ElementAnnotationContainer create(Element element, boolean classLevel) {
     final var hasValid = ValidPrism.isPresent(element);
     String rawType;
     Map<GenericType, String> typeUse1;
@@ -50,12 +51,22 @@ public record ElementAnnotationContainer(
     final var annotations =
         element.getAnnotationMirrors().stream()
             .filter(m -> !ValidPrism.isInstance(m))
+            .filter(m -> !classLevel || hasMetaConstraintAnnotation(m))
             .collect(
                 toMap(
                     a -> GenericType.parse(a.getAnnotationType().toString()),
                     a -> AnnotationUtil.annotationAttributeMap(a, element)));
 
     return new ElementAnnotationContainer(genericType, hasValid, annotations, typeUse1, typeUse2);
+  }
+
+  private static boolean hasMetaConstraintAnnotation(AnnotationMirror m) {
+    for (AnnotationMirror annotationMirror : m.getAnnotationType().asElement().getAnnotationMirrors()) {
+      if (annotationMirror.toString().contains("io.avaje.validation.constraints.Constraint")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // it seems we cannot directly retrieve mirrors from var elements, for varElements needs special
