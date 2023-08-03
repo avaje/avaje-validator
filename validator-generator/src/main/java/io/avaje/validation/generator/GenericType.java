@@ -50,7 +50,7 @@ final class GenericType {
   }
 
   void addImports(Set<String> importTypes) {
-    final String type = trimExtends();
+    final String type = trimExtends().replace("[]", "");
     if (includeInImports(type)) {
       importTypes.add(type);
     }
@@ -97,10 +97,18 @@ final class GenericType {
     }
   }
 
+  String shortNameMinusArray() {
+    return shortNameRaw().replace("[]", "");
+  }
+
   String shortName() {
+    return shortNameRaw().replace("[]", "Array");
+  }
+
+  String shortNameRaw() {
     final StringBuilder sb = new StringBuilder();
     shortName(sb);
-    return sb.toString().replace("[]", "Array");
+    return sb.toString();
   }
 
   void shortName(StringBuilder sb) {

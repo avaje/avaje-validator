@@ -4,7 +4,7 @@ import java.util.Map;
 
 import static io.avaje.validation.generator.ProcessingContext.isAssignable2Interface;
 
-class AdapterHelper {
+final class AdapterHelper {
 
   private final Append writer;
   private final ElementAnnotationContainer elementAnnotations;
@@ -67,9 +67,9 @@ class AdapterHelper {
       writer.eol().append("%s    .mapValues()", indent);
       writeTypeUse(genericType.secondParamType(), typeUse2, false);
 
-    } else if (genericType.topType().contains("[]") && hasValid) {
+    } else if (hasValid && genericType.topType().contains("[]")) {
       writer.eol().append("%s    .array()", indent);
-      writeTypeUse(genericType.firstParamType(), typeUse1);
+      writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, topType.shortNameMinusArray());
 
     } else if (hasValid) {
       if (!classLevel) {
