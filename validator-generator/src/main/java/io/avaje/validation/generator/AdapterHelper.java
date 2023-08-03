@@ -12,18 +12,20 @@ class AdapterHelper {
   private final String type;
   private final GenericType topType;
   private final GenericType genericType;
+  private final boolean classLevel;
 
   AdapterHelper(Append writer, ElementAnnotationContainer elementAnnotations, String indent) {
-    this(writer, elementAnnotations, indent,"Object", null);
+    this(writer, elementAnnotations, indent,"Object", null, false);
   }
 
-  AdapterHelper(Append writer, ElementAnnotationContainer elementAnnotations, String indent, String type, GenericType topType) {
+  AdapterHelper(Append writer, ElementAnnotationContainer elementAnnotations, String indent, String type, GenericType topType, boolean classLevel) {
     this.writer = writer;
     this.elementAnnotations = elementAnnotations;
     this.indent = indent;
     this.type = type;
     this.topType = topType;
     this.genericType = elementAnnotations.genericType();
+    this.classLevel = classLevel;
   }
 
   void write() {
@@ -70,7 +72,9 @@ class AdapterHelper {
       writeTypeUse(genericType.firstParamType(), typeUse1);
 
     } else if (hasValid) {
-      writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, Util.shortName(genericType.topType()));
+      if (!classLevel) {
+        writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, Util.shortName(genericType.topType()));
+      }
 
     } else if (genericType.topType().contains("java.util.Optional")) {
       writer.eol().append("%s    .optional()", indent);
