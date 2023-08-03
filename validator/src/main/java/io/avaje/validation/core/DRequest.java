@@ -76,8 +76,21 @@ final class DRequest implements ValidationRequest {
   @Override
   public void throwWithViolations() {
     if (!violations.isEmpty()) {
-      throw new ConstraintViolationException(violations, groups);
+      throw new ConstraintViolationException(message(), violations, groups);
     }
+  }
+
+  private String message() {
+    final var msg = new StringBuilder(100);
+    msg.append(violations.size()).append(" constraint violation(s) occurred.");
+    violations.stream().limit(10).forEach(cv -> {
+      msg.append("\n ").append(cv.path()).append(": ").append(cv.message());
+    });
+    final int others = violations.size() - 10;
+    if (others > 0) {
+      msg.append("\n and ").append(others).append(" other error(s)");
+    }
+    return msg.toString();
   }
 
   @Override
