@@ -58,7 +58,10 @@ final class TypeReader {
       }
     }
 
-    localFields.add(new FieldReader(type, genericTypeParams));
+    final var classAdapter = new FieldReader(type, genericTypeParams);
+    if (classAdapter.hasAnnotations()) {
+      localFields.add(classAdapter);
+    }
 
     for (final FieldReader localField : localFields) {
       allFields.add(localField);

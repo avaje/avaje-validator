@@ -50,6 +50,7 @@ public record ElementAnnotationContainer(
 
     final var annotations =
         element.getAnnotationMirrors().stream()
+            .filter(m -> !hasValid && !ValidPrism.isInstance(m))
             .collect(
                 toMap(
                     a -> GenericType.parse(a.getAnnotationType().toString()),
@@ -94,5 +95,9 @@ public record ElementAnnotationContainer(
     annotations.keySet().forEach(t -> t.addImports(importTypes));
     typeUse1.keySet().forEach(t -> t.addImports(importTypes));
     typeUse2.keySet().forEach(t -> t.addImports(importTypes));
+  }
+
+  boolean isEmpty() {
+    return annotations.isEmpty() && typeUse1.isEmpty() && typeUse2.isEmpty();
   }
 }

@@ -175,4 +175,8 @@ final class FieldReader {
   public boolean isClassLvl() {
     return classLevel;
   }
+
+  public boolean hasAnnotations() {
+    return !elementAnnotations.isEmpty();
+  }
 }
