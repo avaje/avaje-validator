@@ -175,5 +175,9 @@ public interface ValidationContext {
 
     /** Clone and return the request with a new value attribute */
     AdapterCreateRequest withValue(long value);
+
+    /** Clone and return the request with new message and attributes */
+    AdapterCreateRequest with(String messageKey, Object... extraKeyValues);
+
   }
 }

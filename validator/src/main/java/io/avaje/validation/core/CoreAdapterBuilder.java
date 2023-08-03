@@ -134,6 +134,18 @@ final class CoreAdapterBuilder {
     }
 
     @Override
+    public Request with(String messageKey, Object... extraKeyValues) {
+      Map<String, Object> newAttributes = new HashMap<>(attributes);
+      newAttributes.put("message", messageKey);
+      if (extraKeyValues != null) {
+        for (int i = 0; i < extraKeyValues.length; i += 2) {
+          newAttributes.put(String.valueOf(extraKeyValues[i]), extraKeyValues[i + 1]);
+        }
+      }
+      return new Request(ctx, annotationType, groups, newAttributes);
+    }
+
+    @Override
     public ValidationContext.Message message(String messageKey, Object... extraKeyValues) {
       Map<String, Object> newAttributes = new HashMap<>(attributes);
       newAttributes.put("message", messageKey);

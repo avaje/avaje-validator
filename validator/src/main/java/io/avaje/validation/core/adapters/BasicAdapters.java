@@ -60,12 +60,22 @@ public final class BasicAdapters {
     }
   }
 
+  /** For @Max on a String use Max Length via SizeAdapter */
+  static ValidationAdapter<?> maxSize(AdapterCreateRequest request) {
+    final int maxValue = (int)(long)request.attribute("value");
+    final String currentMsg = (String)request.attribute("message");
+    final String message = MAX_MESSAGE.equals(currentMsg) ? LENGTH_MAX : currentMsg;
+    return new SizeAdapter(request.with(message, "max", maxValue, "min", 0));
+  }
+
+  private static final String MAX_MESSAGE = "{avaje.Max.message}";
+  private static final String LENGTH_MAX = "{avaje.Length.max.message}";
+  private static final String LENGTH = "{avaje.Length.message}";
+  private static final String SIZE = "{avaje.Size.message}";
+  private static final String SIZE_MAX = "{avaje.Size.max.message}";
+
   private static final class SizeAdapter implements ValidationAdapter<Object> {
 
-    private static final String LENGTH = "{avaje.Length.message}";
-    private static final String LENGTH_MAX = "{avaje.Length.max.message}";
-    private static final String SIZE = "{avaje.Size.message}";
-    private static final String SIZE_MAX = "{avaje.Size.max.message}";
     private final ValidationContext.Message message;
     private final Set<Class<?>> groups;
     private final int min;

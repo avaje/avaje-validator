@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
+import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 
@@ -23,7 +24,7 @@ public final class NumberAdapters {
     case "PositiveOrZero" -> new PositiveAdapter(request, true);
     case "Negative" -> new NegativeAdapter(request, false);
     case "NegativeOrZero" -> new NegativeAdapter(request, true);
-    case "Max" -> forMax(request);
+    case "Max" -> max(request);
     case "Min" -> forMin(request);
     case "DecimalMax" -> new DecimalMaxAdapter(request);
     case "DecimalMin" -> new DecimalMinAdapter(request);
@@ -31,6 +32,14 @@ public final class NumberAdapters {
     default -> null;
   };
 
+  private static ValidationAdapter<?> max(AdapterCreateRequest request) {
+    final String targetType = request.targetType();
+    if ("String".equals(targetType) || "CharSequence".equals(targetType)) {
+      return BasicAdapters.maxSize(request);
+    } else {
+      return forMax(request);
+    }
+  }
   private static AbstractConstraintAdapter<? extends Number> forMax(AdapterCreateRequest request) {
     final String targetType = request.targetType();
     return switch (targetType) {
