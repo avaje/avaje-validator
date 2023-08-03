@@ -17,6 +17,24 @@ class ALengthTest {
   final Validator validator = Validator.builder().addLocales(Locale.GERMAN).build();
 
   @Test
+  void check() {
+    var violations = validator.check(new ALength("ok", "ok", "ok", "ok"));
+    assertThat(violations).isEmpty();
+  }
+
+  @Test
+  void checkOne() {
+    var violations = validator.check(new ALength("", "ok", "ok", "ok"));
+    assertThat(violations).hasSize(1);
+  }
+
+  @Test
+  void checkMulti() {
+    var violations = validator.check(new ALength("", "123456", "e", "e"));
+    assertThat(violations).hasSize(4);
+  }
+
+  @Test
   void valid() {
     var cust = new ALength("ok", "ok", "ok", "ok");
     validator.validate(cust);

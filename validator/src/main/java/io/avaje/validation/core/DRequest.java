@@ -81,6 +81,11 @@ final class DRequest implements ValidationRequest {
   }
 
   @Override
+  public Set<ConstraintViolation> violations() {
+    return violations;
+  }
+
+  @Override
   public List<Class<?>> groups() {
     return groups;
   }

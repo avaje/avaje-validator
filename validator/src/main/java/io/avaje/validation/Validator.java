@@ -6,6 +6,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import io.avaje.lang.Nullable;
@@ -47,6 +48,27 @@ public interface Validator {
    */
   void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups)
       throws ConstraintViolationException;
+
+  /**
+   * Validate the object returning the constraint violations.
+   *
+   * @param any The object to validate
+   * @param groups The groups targeted for validation
+   *
+   * @return The constraint violations
+   */
+  Set<ConstraintViolation> check(Object any, @Nullable Class<?>... groups);
+
+  /**
+   * Validate the object returning the constraint violations.
+   *
+   * @param any The object to validate
+   * @param locale The locale to use for messages
+   * @param groups The groups targeted for validation
+   *
+   * @return The constraint violations
+   */
+  Set<ConstraintViolation> check(Object any, @Nullable Locale locale, @Nullable Class<?>... groups);
 
   /** Return the validation context used to create adapters */
   ValidationContext context();
