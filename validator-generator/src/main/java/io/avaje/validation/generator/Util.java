@@ -260,7 +260,9 @@ final class Util {
   /** Return the base type given the ValidationAdapter type. */
   static String baseTypeOfAdapter(String adapterFullName) {
     final var element = element(adapterFullName);
-
+    if (element == null) {
+      throw new NullPointerException("Element not found for [" + adapterFullName + "]");
+    }
     return Optional.of(element.getSuperclass())
         .filter(t -> t.toString().contains("io.avaje.validation.adapter.AbstractConstraintAdapter"))
         .or(validationAdapter(element))

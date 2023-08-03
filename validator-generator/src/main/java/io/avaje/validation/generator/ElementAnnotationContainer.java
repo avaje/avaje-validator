@@ -8,7 +8,6 @@ import java.util.Set;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
 // TODO: better name???
@@ -20,7 +19,7 @@ public record ElementAnnotationContainer(
     Map<GenericType, String> typeUse2) {
 
   static ElementAnnotationContainer create(Element element) {
-    final var hasValid = !(element instanceof TypeElement) && ValidPrism.isPresent(element);
+    final var hasValid = ValidPrism.isPresent(element);
     String rawType;
     Map<GenericType, String> typeUse1;
     Map<GenericType, String> typeUse2;
@@ -50,7 +49,7 @@ public record ElementAnnotationContainer(
 
     final var annotations =
         element.getAnnotationMirrors().stream()
-            .filter(m -> !hasValid && !ValidPrism.isInstance(m))
+            .filter(m -> !ValidPrism.isInstance(m))
             .collect(
                 toMap(
                     a -> GenericType.parse(a.getAnnotationType().toString()),

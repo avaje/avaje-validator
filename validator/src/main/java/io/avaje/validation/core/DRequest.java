@@ -36,7 +36,7 @@ final class DRequest implements ValidationRequest {
     final StringBuilder sb = new StringBuilder(70);
     final var descendingIterator = pathStack.descendingIterator();
     while (descendingIterator.hasNext()) {
-      String next = descendingIterator.next();
+      final String next = descendingIterator.next();
       if (next.charAt(0) == '[') {
         sb.append(next).append(']');
       } else {
@@ -78,5 +78,15 @@ final class DRequest implements ValidationRequest {
   @Override
   public List<Class<?>> groups() {
     return groups;
+  }
+
+  @Override
+  public String toString() {
+    return violations.toString();
+  }
+
+  @Override
+  public boolean hasViolations() {
+    return !violations.isEmpty();
   }
 }

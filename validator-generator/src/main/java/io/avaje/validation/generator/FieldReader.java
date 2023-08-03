@@ -26,6 +26,10 @@ final class FieldReader {
   private final boolean classLevel;
 
   FieldReader(Element element, List<String> genericTypeParams) {
+    this(element, genericTypeParams, false);
+  }
+
+  FieldReader(Element element, List<String> genericTypeParams, boolean classLevel) {
     this.genericTypeParams = genericTypeParams;
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
@@ -36,7 +40,7 @@ final class FieldReader {
     adapterShortType = initAdapterShortType(shortType);
     adapterFieldName = initShortName();
     this.optionalValidation = Util.isNullable(element);
-    this.classLevel = element instanceof TypeElement;
+    this.classLevel = classLevel;
   }
 
   private String initAdapterShortType(String shortType) {
@@ -137,7 +141,13 @@ final class FieldReader {
 
   void writeValidate(Append writer) {
     if (classLevel) {
-      writer.append("    %s.validate(value, request, field);", adapterFieldName);
+      writer.append(
+          """
+    		    if (!request.hasViolations()) {
+    		      %s.validate(value, request, field);
+    		    }
+    		""",
+          adapterFieldName);
       writer.eol().eol();
       return;
     }
@@ -168,8 +178,12 @@ final class FieldReader {
     writer.append("    this.%s = ", adapterFieldName).eol();
 
     new AdapterHelper(
-        writer, elementAnnotations, "        ", PrimitiveUtil.wrap(genericType.shortType()), genericType)
-      .write();
+            writer,
+            elementAnnotations,
+            "        ",
+            PrimitiveUtil.wrap(genericType.shortType()),
+            genericType)
+        .write();
     writer.append(";").eol().eol();
   }
 
