@@ -2,6 +2,7 @@ package io.avaje.validation.adapter;
 
 import java.util.Objects;
 import java.util.Set;
+
 /**
  * This interface defines a set of validation methods for validating a value based on specific
  * rules. The methods in this interface allow for executing validations, composing validation
@@ -105,9 +106,7 @@ public interface ValidationAdapter<T> {
    *     false} otherwise
    */
   default boolean checkGroups(Set<Class<?>> adapterGroups, ValidationRequest request) {
-    final var requestGroups = request.groups();
-
-    for (final var group : requestGroups) {
+    for (final var group : request.groups()) {
       if (adapterGroups.contains(group)) {
         return true;
       }

@@ -14,13 +14,14 @@ import java.lang.annotation.Target;
  * <h3>Example:</h3>
  *
  * <pre>{@code
+ *
  * @ConstraintAdapter(SomeAnnotation.class)
  * public final class CustomAnnotationAdapter extends AbstractConstraintAdapter<Object> {
  *
  *   String value;
  *
  *   public CustomAnnotationAdapter(AdapterCreateRequest req) {
- *     //create a message object for error interpolation and set groups
+ *      //create a message object for error interpolation and set groups
  *      super(req);
  *
  *      //use the attributes to extract the annotation values
@@ -34,7 +35,7 @@ import java.lang.annotation.Target;
  *     var isValid = ...custom validation based on the attributes;
  *
  *     return isValid;
- * }
+ *   }
  *
  * }</pre>
  */
