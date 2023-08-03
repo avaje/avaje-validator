@@ -11,9 +11,11 @@ Reflection-free pojo validation via apt source code generation. A light (~85kb +
 - `avaje-validator-generator` annotation processor generates Java source code to write validation classes
 - Supports Avaje/Jakarta/Javax Constraint Annotations
 - Groups Support
+- Class level Constraints
 - Composable Contraint Annotations
+- Inheritable Constraints
 - loading and interpolating error messages (with multiple Locales) through ResourceBundles
-- Getter Validation 
+- Getter Validation
 - Method parameter validation (requires a DI container to retrieve the generated MethodAdapter classes)
 
 # Quick Start
@@ -41,13 +43,14 @@ And add avaje-validator-generator as an annotation processor.
   <groupId>io.avaje</groupId>
   <artifactId>avaje-validator-generator</artifactId>
   <version>${avaje.validator.version}</version>
+  <optional>true</optional>
   <scope>provided</scope>
 </dependency>
 ```
 
 ## Step 2 - Add (Avaje/Jakarta/Javax) `@Valid`
 
-Add `@Valid` to the types we want to add validation. 
+Add `@Valid` to the types we want to add validation.
 
 The `avaje-validator-generator` annotation processor will generate validation adapter classes as Java source code
 for each type annotated with `@Valid`. These will be automatically registered with `Validator`
@@ -121,11 +124,11 @@ public final class AddressValidationAdapter implements ValidationAdapter<Address
   private final ValidationAdapter<String> cityValidationAdapter;
 
   public AddressValidationAdapter(ValidationContext ctx) {
-    this.streetValidationAdapter = 
+    this.streetValidationAdapter =
         ctx.<String>adapter(NotBlank.class, Map.of("message","{avaje.NotBlank.message}"));
-    this.suburbValidationAdapter = 
+    this.suburbValidationAdapter =
         ctx.<String>adapter(NotEmpty.class, Map.of("message","must not be empty"));
-    this.cityValidationAdapter = 
+    this.cityValidationAdapter =
         ctx.<String>adapter(NotNull.class, Map.of("message","{avaje.NotNull.message}", "groups",Set.of(example.avaje.typeuse.SomeGroup.class)));
   }
 
