@@ -140,34 +140,40 @@ public interface ValidationContext {
      * Create and return a ValidationAdapter given the type and annotations or return null.
      * Returning null means that the adapter could be created by another factory.
      *
-     * @param annotationType The annotation type for which the adapter is being created
-     * @param ctx The validation context
-     * @param groups The validation groups associated with the annotation
-     * @param attributes The attributes associated with the annotation
+     * @param request Holds the details used to create the adapter
      * @return The created validation adapter or null if not applicable
      */
     ValidationAdapter<?> create(AdapterCreateRequest request);
   }
 
-  /** Request to create a Validation Adapter */
+  /** Request to create a Validation Adapter. */
   interface AdapterCreateRequest {
 
+    /** Return the context. */
     ValidationContext ctx();
 
+    /** Return the validation annotation type. */
     Class<? extends Annotation> annotationType();
 
+    /** Return the groups this constraint is active for. */
     Set<Class<?>> groups();
 
+    /** Return the annotation attributes. */
     Map<String, Object> attributes();
 
+    /** Return the attribute for the given key. */
     Object attribute(String key);
 
+    /** Return the message to use */
     Message message();
 
+    /** Build and return a message given the new message key and attributes */
     Message message(String key, Object... extraKeyValues);
 
+    /** Return the target type */
     String targetType();
 
+    /** Clone and return the request with a new value attribute */
     AdapterCreateRequest withValue(long value);
   }
 }
