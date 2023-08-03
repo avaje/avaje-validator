@@ -182,7 +182,8 @@ final class FieldReader {
             elementAnnotations,
             "        ",
             PrimitiveUtil.wrap(genericType.shortType()),
-            genericType)
+            genericType,
+            classLevel)
         .write();
     writer.append(";").eol().eol();
   }
