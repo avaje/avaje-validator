@@ -9,6 +9,7 @@ import java.util.Set;
  *
  * @param <T> The type of value to be validated
  */
+@FunctionalInterface
 public interface ValidationAdapter<T> {
 
   /**
