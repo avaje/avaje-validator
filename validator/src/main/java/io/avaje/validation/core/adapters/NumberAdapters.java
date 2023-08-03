@@ -24,23 +24,23 @@ public final class NumberAdapters {
     case "PositiveOrZero" -> new PositiveAdapter(request, true);
     case "Negative" -> new NegativeAdapter(request, false);
     case "NegativeOrZero" -> new NegativeAdapter(request, true);
-    case "Max" -> max(request);
-    case "Min" -> forMin(request);
+    case "Max" -> maxOrSize(request);
+    case "Min" -> min(request);
     case "DecimalMax" -> new DecimalMaxAdapter(request);
     case "DecimalMin" -> new DecimalMinAdapter(request);
     case "Range" -> new RangeAdapter(request);
     default -> null;
   };
 
-  private static ValidationAdapter<?> max(AdapterCreateRequest request) {
+  private static ValidationAdapter<?> maxOrSize(AdapterCreateRequest request) {
     final String targetType = request.targetType();
     if ("String".equals(targetType) || "CharSequence".equals(targetType)) {
       return BasicAdapters.maxSize(request);
     } else {
-      return forMax(request);
+      return max(request);
     }
   }
-  private static AbstractConstraintAdapter<? extends Number> forMax(AdapterCreateRequest request) {
+  private static AbstractConstraintAdapter<? extends Number> max(AdapterCreateRequest request) {
     final String targetType = request.targetType();
     return switch (targetType) {
       case "BigDecimal" -> new MaxBigDecimal(request);
@@ -49,7 +49,7 @@ public final class NumberAdapters {
     };
   }
 
-  private static AbstractConstraintAdapter<? extends Number> forMin(AdapterCreateRequest request) {
+  private static AbstractConstraintAdapter<? extends Number> min(AdapterCreateRequest request) {
     final String targetType = request.targetType();
     return switch (targetType) {
       case "BigDecimal" -> new MinBigDecimal(request);
@@ -309,8 +309,8 @@ public final class NumberAdapters {
       super(request);
       final var min = (long) request.attribute("min");
       final var max = (long) request.attribute("max");
-      this.maxAdapter = (NumberAdapter<Number>)forMax(request.withValue(max));
-      this.minAdapter = (NumberAdapter<Number>)forMin(request.withValue(min));
+      this.maxAdapter = (NumberAdapter<Number>) max(request.withValue(max));
+      this.minAdapter = (NumberAdapter<Number>) min(request.withValue(min));
     }
 
     @Override
