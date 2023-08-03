@@ -1,20 +1,20 @@
 package io.avaje.validation;
 
-import io.avaje.lang.Nullable;
-import io.avaje.validation.adapter.*;
-import io.avaje.validation.core.DefaultBootstrap;
-import io.avaje.validation.spi.MessageInterpolator;
-import io.avaje.validation.spi.ValidatorCustomizer;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.function.Supplier;
+
+import io.avaje.lang.Nullable;
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
+import io.avaje.validation.core.DefaultBootstrap;
+import io.avaje.validation.spi.MessageInterpolator;
+import io.avaje.validation.spi.ValidatorCustomizer;
 
 /**
  * Validate plain Java objects that have been annotated with validation constraints.
@@ -145,8 +145,7 @@ public interface Validator {
   interface AnnotationAdapterBuilder {
 
     /** Create a ValidationAdapter given the Validator instance. */
-    ValidationAdapter<?> build(
-        ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes);
+    ValidationAdapter<?> build(AdapterCreateRequest request);
   }
 
   /** Components register ValidationAdapters Validator.Builder */

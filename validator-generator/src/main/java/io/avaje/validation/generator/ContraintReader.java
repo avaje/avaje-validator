@@ -27,8 +27,8 @@ final class ContraintReader implements BeanReader {
     importTypes.add("java.util.Map");
     importTypes.add("io.avaje.validation.adapter.ConstraintAdapter");
     importTypes.add("io.avaje.validation.adapter.ValidationAdapter");
-    importTypes.add("io.avaje.validation.adapter.ValidationContext");
     importTypes.add("io.avaje.validation.adapter.ValidationRequest");
+    importTypes.add("io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest");
     importTypes.add("io.avaje.validation.spi.Generated");
 
     this.annotations =
@@ -121,7 +121,9 @@ final class ContraintReader implements BeanReader {
 
     writer.append(
         """
-    final var message = ctx.<Object>message(attributes).template();
+    final var message = req.message().template();
+    final var ctx = req.ctx();
+    final var groups = req.groups();
     this.adapter =
 """);
 

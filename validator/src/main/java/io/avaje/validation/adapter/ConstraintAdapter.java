@@ -19,12 +19,12 @@ import java.lang.annotation.Target;
  *
  *   String value;
  *
- *   public CustomAnnotationAdapter(ValidationContext ctx, Set<Class<?>> groups, Map<String, Object> attributes) {
+ *   public CustomAnnotationAdapter(AdapterCreateRequest req) {
  *     //create a message object for error interpolation and set groups
- *      super(ctx.message(attributes), groups);
+ *      super(req);
  *
  *      //use the attributes to extract the annotation values
- *      value = (String) attributes.get("value");
+ *      value = (String) req.attribute("value");
  *   }
  *
  *

@@ -89,7 +89,8 @@ final class DValidator implements Validator, ValidationContext {
 
   @SuppressWarnings("unchecked")
   private <T> ValidationType<T> typeWithCache(Type type) {
-    return (ValidationType<T>) typeCache.computeIfAbsent(type, k -> new ValidationType<>(this, adapter(k)));
+    return (ValidationType<T>)
+        typeCache.computeIfAbsent(type, k -> new ValidationType<>(this, adapter(k)));
   }
 
   @Override
@@ -116,7 +117,8 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
-  public <T> ValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes) {
+  public <T> ValidationAdapter<T> adapter(
+      Class<? extends Annotation> cls, Map<String, Object> attributes) {
     return builder.annotationAdapter(cls, attributes, null);
   }
 
@@ -302,8 +304,7 @@ final class DValidator implements Validator, ValidationContext {
         Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);
-      return (request) ->
-          simpleMatch(type, request.annotationType()) ? adapter : null;
+      return (request) -> simpleMatch(type, request.annotationType()) ? adapter : null;
     }
 
     private static <T> AdapterFactory newAdapterFactory(Type type, ValidationAdapter<T> adapter) {
@@ -322,8 +323,7 @@ final class DValidator implements Validator, ValidationContext {
         Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
       requireNonNull(type);
       requireNonNull(builder);
-      return (req) ->
-          simpleMatch(type, req.annotationType()) ? builder.build(req.ctx(), req.groups(), req.attributes()) : null;
+      return (req) -> simpleMatch(type, req.annotationType()) ? builder.build(req) : null;
     }
 
     private static boolean simpleMatch(Type type, Type targetType) {

@@ -44,7 +44,6 @@ class ValidatorProcessorTest {
     }
   }
 
-  @Disabled
   @Test
   void testGeneration() throws Exception {
     final String source =

@@ -50,15 +50,15 @@ final class SimpleAdapterWriter {
   }
 
   private void writeConstructor() {
-    writer.append("  public %sValidationAdapter(ValidationContext ctx", adapterShortName);
-    for (int i = 0; i < genericParamsCount; i++) {
-      writer.append(", Type param%d", i);
-    }
 
-    if (beanReader instanceof ContraintReader) {
-      writer.append(", Set<Class<?>> groups, Map<String, Object> attributes");
+    if (isContraint) {
+      writer.append("  public %sValidationAdapter(AdapterCreateRequest req", adapterShortName);
+    } else {
+      writer.append("  public %sValidationAdapter(ValidationContext ctx", adapterShortName);
+      for (int i = 0; i < genericParamsCount; i++) {
+        writer.append(", Type param%d", i);
+      }
     }
-
     writer.append(") {", adapterShortName).eol();
     beanReader.writeConstructor(writer);
     writer.append("  }").eol();
