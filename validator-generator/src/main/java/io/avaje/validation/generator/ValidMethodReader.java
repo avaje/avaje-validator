@@ -92,7 +92,7 @@ final class ValidMethodReader {
     writer.append("    return List.of(");
     final var size = paramAnnotations.size();
     for (int i = 0; i < paramAnnotations.size(); i++) {
-      AdapterHelper.writeAdapterWithValues(writer, paramAnnotations.get(i), "\n        ", "Object");
+      new AdapterHelper(writer, paramAnnotations.get(i), "\n        ").write();
       if (i + 1 != size) {
         writer.append(",");
       }
@@ -107,7 +107,7 @@ final class ValidMethodReader {
       public ValidationAdapter<Object> returnAdapter(ValidationContext ctx) {
     """);
     writer.append("    return ");
-    AdapterHelper.writeAdapterWithValues(writer, returnElementAnnotation, "", "Object");
+    new AdapterHelper(writer, returnElementAnnotation, "").write();
 
     writer.append(";").eol();
     writer.append("  }").eol();

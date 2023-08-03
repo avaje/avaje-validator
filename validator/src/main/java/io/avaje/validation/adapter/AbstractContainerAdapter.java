@@ -7,7 +7,7 @@ package io.avaje.validation.adapter;
 public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T> {
 
 	/**
-	 * Adapter placed on the the container type
+	 * Adapter placed on the container type
 	 */
   protected final ValidationAdapter<T> initalAdapter;
 
@@ -33,7 +33,7 @@ public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T
 
   /** Execute validations for all items in the given iterable */
   protected boolean validateAll(Iterable<Object> value, ValidationRequest req, String propertyName) {
-    if (value == null) {
+    if (value == null || multiAdapter == null) {
       return true;
     }
     if (propertyName != null) {
