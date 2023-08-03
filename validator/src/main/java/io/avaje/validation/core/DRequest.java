@@ -52,10 +52,15 @@ final class DRequest implements ValidationRequest {
   @Override
   public void addViolation(ValidationContext.Message msg, String propertyName) {
     final String message = validator.interpolate(msg, locale);
-    violations.add(new ConstraintViolation(currentPath() + propertyName, propertyName, message));
+    final String field = field(propertyName);
+    violations.add(new ConstraintViolation(currentPath() + field, field, message));
     if (failfast) {
       throwWithViolations();
     }
+  }
+
+  private String field(String propertyName) {
+    return propertyName == null ? "" : propertyName;
   }
 
   @Override
