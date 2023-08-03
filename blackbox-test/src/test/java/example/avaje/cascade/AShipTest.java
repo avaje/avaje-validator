@@ -19,31 +19,31 @@ class AShipTest {
 
   @Test
   void valid() {
-    var ship = new AShip("lollyPop", List.of(new ACrew("ok", null)));
+    var ship = new AShip("lollyPop", List.of(new ACrew("ok")));
     validator.validate(ship);
   }
 
   @Test
   void valid_usingSet() {
-    var ship = new BShip("lollyPop", Set.of(new ACrew("ok", null)));
+    var ship = new BShip("lollyPop", Set.of(new ACrew("ok")));
     validator.validate(ship);
   }
 
   @Test
   void valid_usingArray() {
-    var ship = new CShip("lollyPop", new ACrew[]{new ACrew("ok", null)});
+    var ship = new CShip("lollyPop", new ACrew[]{new ACrew("ok")});
     validator.validate(ship);
   }
 
   @Test
   void valid_usingArray3() {
-    var ship = new CShip3("lollyPop", new ACrew[]{new ACrew("ok", null)});
+    var ship = new CShip3("lollyPop", new ACrew[]{new ACrew("ok")});
     validator.validate(ship);
   }
 
   @Test
   void valid_usingScalarArray() {
-    var ship = new DShip("lollyPop", new String[]{"bob"});
+    var ship = new DShip("lollyPop", "ok", new String[]{"bob"});
     validator.validate(ship);
   }
 
@@ -61,19 +61,19 @@ class AShipTest {
 
   @Test
   void valid2() {
-    var ship = new AShip2("lollyPop", List.of(new ACrew("ok", null)));
+    var ship = new AShip2("lollyPop", List.of(new ACrew("ok")));
     validator.validate(ship);
   }
 
   @Test
   void valid3_expect_noCascadeValidationToCrew() {
-    var ship = new AShip3("lollyPop", List.of(new ACrew("NotValid", null)));
+    var ship = new AShip3("lollyPop", List.of(new ACrew("NotValid")));
     validator.validate(ship);
   }
 
   @Test
   void invalid() {
-    var ship = new AShip("", List.of(new ACrew("NotValid", null)));
+    var ship = new AShip("", List.of(new ACrew("NotValid")));
     List<ConstraintViolation> violations = violations(ship);
 
     assertThat(violations).hasSize(2);
@@ -109,7 +109,7 @@ class AShipTest {
 
   @Test
   void arrayCascade() {
-    var ship = new CShip("", new ACrew[]{new ACrew("NotValid", null)});
+    var ship = new CShip("", new ACrew[]{new ACrew("NotValid")});
     List<ConstraintViolation> violations = violations(ship);
 
     assertThat(violations).hasSize(2);
@@ -121,7 +121,7 @@ class AShipTest {
 
   @Test
   void arrayNotCascade() {
-    var ship = new CShip3("", new ACrew[]{new ACrew("NotValid", null)});
+    var ship = new CShip3("", new ACrew[]{new ACrew("NotValid")});
     List<ConstraintViolation> violations = violations(ship);
 
     assertThat(violations).hasSize(1);
@@ -153,7 +153,7 @@ class AShipTest {
 
   @Test
   void arrayNotEmpty_when_scalarArrayEmpty() {
-    var ship = new DShip("", new String[]{});
+    var ship = new DShip("", "ok", new String[]{});
     List<ConstraintViolation> violations = violations(ship);
 
     assertThat(violations).hasSize(2);
@@ -165,7 +165,7 @@ class AShipTest {
 
   @Test
   void arrayNotEmpty_when_scalarNull() {
-    var ship = new DShip("ok", null);
+    var ship = new DShip("ok", "ok", null);
     List<ConstraintViolation> violations = violations(ship);
 
     assertThat(violations).hasSize(1);
