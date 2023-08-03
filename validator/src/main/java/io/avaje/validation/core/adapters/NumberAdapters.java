@@ -34,6 +34,7 @@ public final class NumberAdapters {
   private static AbstractConstraintAdapter<? extends Number> forMax(AdapterCreateRequest request) {
     final String targetType = request.targetType();
     return switch (targetType) {
+      case "String", "CharSequence" -> throw new IllegalStateException("@Max is not allowed on a String type");
       case "BigDecimal" -> new MaxBigDecimal(request);
       case "BigInteger" -> new MaxBigInteger(request);
       default -> new MaxAdapter(request);
