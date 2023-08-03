@@ -23,8 +23,8 @@ class ATarnishedTest {
   void invalid_classLevelValidation() {
     var violation = one(new ATarnished("ok", 49, 50));
     assertThat(violation.message()).isEqualTo("put these foolish ambitions to rest");
-    assertThat(violation.path()).isEqualTo("null");
-    assertThat(violation.field()).isNull();
+    assertThat(violation.path()).isEqualTo("");
+    assertThat(violation.field()).isEqualTo("");
   }
 
 
