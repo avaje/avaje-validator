@@ -26,4 +26,7 @@ public interface ValidationRequest {
 
   /** Throw ConstraintViolationException if there are violations in this request. */
   void throwWithViolations() throws ConstraintViolationException;
+
+  /** return true if there are violations in this request. */
+  boolean hasViolations();
 }

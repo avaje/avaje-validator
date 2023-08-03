@@ -41,8 +41,8 @@ public interface ValidationContext {
   <T> ValidationAdapter<T> adapter(Class<? extends Annotation> cls, Map<String, Object> attributes);
 
   /**
-   * Return the constraint adapter for the given annotation with attributes. Used for adapters that combine
-   * multiple annotation adapters.
+   * Return the constraint adapter for the given annotation with attributes. Used for adapters that
+   * combine multiple annotation adapters.
    *
    * @param cls The class representing the annotation type
    * @param groups The validation groups associated with the annotation

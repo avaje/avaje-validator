@@ -32,14 +32,14 @@ final class TypeReader {
   private final Map<String, MethodReader> allGetterMethods = new LinkedHashMap<>();
   private final Map<String, MethodReader> maybeGetterMethods = new LinkedHashMap<>();
   private final TypeElement baseType;
-  private final boolean hasJsonAnnotation;
+  private final boolean hasValidAnnotation;
   private final Set<String> seenFields = new HashSet<>();
   private boolean nonAccessibleField;
   private final List<String> genericTypeParams;
 
   TypeReader(TypeElement baseType) {
     this.baseType = baseType;
-    this.hasJsonAnnotation = Util.isValid(baseType);
+    this.hasValidAnnotation = Util.isValid(baseType);
     this.genericTypeParams = initTypeParams(baseType);
   }
 
@@ -56,6 +56,11 @@ final class TypeReader {
         default:
           break;
       }
+    }
+
+    final var classAdapter = new FieldReader(type, genericTypeParams, true);
+    if (classAdapter.hasAnnotations()) {
+      localFields.add(classAdapter);
     }
 
     for (final FieldReader localField : localFields) {
@@ -93,10 +98,8 @@ final class TypeReader {
       final List<? extends VariableElement> parameters = methodElement.getParameters();
       final String methodKey = methodElement.getSimpleName().toString();
       final MethodReader methodReader = new MethodReader(methodElement, type).read();
-      if (parameters.size() == 0) {
-        if (!maybeGetterMethods.containsKey(methodKey)) {
-          maybeGetterMethods.put(methodKey, methodReader);
-        }
+      if (parameters.isEmpty()) {
+        maybeGetterMethods.putIfAbsent(methodKey, methodReader);
         allGetterMethods.put(methodKey.toLowerCase(), methodReader);
       }
       // for reading methods
@@ -112,6 +115,9 @@ final class TypeReader {
 
   private void matchFieldsToGetter() {
     for (final FieldReader field : allFields) {
+      if (field.isClassLvl()) {
+        continue;
+      }
       matchFieldToGetter(field);
     }
   }
@@ -121,8 +127,13 @@ final class TypeReader {
         && !matchFieldToGetter2(field, true)
         && !field.isPublicField()) {
       nonAccessibleField = true;
-      if (hasJsonAnnotation) {
-        logError("Non accessible field " + baseType + " " + field.fieldName() + " with no matching getter?");
+      if (hasValidAnnotation) {
+        logError(
+            "Non accessible field "
+                + baseType
+                + " "
+                + field.fieldName()
+                + " with no matching getter?");
       } else {
         logDebug("Non accessible field " + baseType + " " + field.fieldName());
       }
