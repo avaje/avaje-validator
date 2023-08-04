@@ -5,6 +5,7 @@ import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -19,6 +20,92 @@ class ARangeTest {
   void valid() {
     var value = new ARange(1, 3L);
     validator.validate(value);
+  }
+
+  @Test
+  void stringValid() {
+    var value = new StrRange("1");
+    validator.validate(value);
+  }
+
+  @Test
+  void decimalValid() {
+    validator.validate(new ADecimalRange(new BigDecimal("1")));
+    validator.validate(new ADecimalRange(null));
+  }
+
+  @Test
+  void doubleValid() {
+    validator.validate(new ADoubleRange(1d));
+  }
+
+  @Test
+  void stringValid_when_null() {
+    var value = new StrRange(null);
+    validator.validate(value);
+  }
+
+  @Test
+  void stringValid_when_decimal() {
+    validator.validate(new StrRange("1"));
+    validator.validate(new StrRange("1.0"));
+    validator.validate(new StrRange("1.1"));
+    validator.validate(new StrRange("3.0"));
+    validator.validate(new StrRange("3"));
+  }
+
+  @Test
+  void doubleValid_when_decimal() {
+    validator.validate(new ADoubleRange(1));
+    validator.validate(new ADoubleRange(1.0));
+    validator.validate(new ADoubleRange(1.1));
+    validator.validate(new ADoubleRange(3.0));
+    validator.validate(new ADoubleRange(3));
+  }
+
+  @Test
+  void decimalValid_when_decimal() {
+    validator.validate(new ADecimalRange(new BigDecimal("1")));
+    validator.validate(new ADecimalRange(new BigDecimal("1.0")));
+    validator.validate(new ADecimalRange(new BigDecimal("1.1")));
+    validator.validate(new ADecimalRange(new BigDecimal("3.0")));
+    validator.validate(new ADecimalRange(new BigDecimal("3")));
+  }
+
+  @Test
+  void stringInValid_when_decimalLow() {
+    var violation = one(new StrRange("0.9"));
+    assertThat(violation.message()).isEqualTo("must be between 1 and 3");
+  }
+
+  @Test
+  void decimalInValid_when_decimalLow() {
+    var violation = one(new ADecimalRange(new BigDecimal("0.9")));
+    assertThat(violation.message()).isEqualTo("must be between 1 and 3");
+  }
+
+  @Test
+  void doubleInValid_when_decimalLow() {
+    var violation = one(new ADoubleRange(0.9));
+    assertThat(violation.message()).isEqualTo("must be between 1 and 3");
+  }
+
+  @Test
+  void stringInValid_when_decimalHigh() {
+    var violation = one(new StrRange("3.1"));
+    assertThat(violation.message()).isEqualTo("must be between 1 and 3");
+  }
+
+  @Test
+  void decimalInValid_when_decimalHigh() {
+    var violation = one(new ADecimalRange(new BigDecimal("3.1")));
+    assertThat(violation.message()).isEqualTo("must be between 1 and 3");
+  }
+
+  @Test
+  void doubleInValid_when_decimalHigh() {
+    var violation = one(new ADoubleRange(3.1));
+    assertThat(violation.message()).isEqualTo("must be between 1 and 3");
   }
 
   @Test
