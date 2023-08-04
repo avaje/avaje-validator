@@ -73,6 +73,7 @@ final class AnnotationUtil {
   private static final String[] NUMBER_TYPE_ONLY_ANNOTATIONS = {"Max", "Min", "Positive", "PositiveOrZero", "Negative", "NegativeOrZero"};
   private static final String[] BOOLEAN_TYPE_ONLY_ANNOTATIONS = {"AssertTrue", "AssertFalse"};
   private static final String[] STRING_TYPE_ONLY_ANNOTATIONS = {"NotBlank","Email"};
+  private static final String[] TEMPORAL_ONLY_ANNOTATIONS = {"Past", "PastOrPresent", "Future", "FutureOrPresent"};
 
   private static final Handler defaultHandler = new StandardHandler();
 
@@ -100,6 +101,12 @@ final class AnnotationUtil {
       handlers.put("jakarta.validation.constraints." + key, booleanHandler);
     }
 
+    final var temporalHandler = new TypeCheckingHandler(new TemporalMeta());
+    for (final String key : TEMPORAL_ONLY_ANNOTATIONS) {
+      handlers.put("io.avaje.validation.constraints." + key, temporalHandler);
+      handlers.put("jakarta.validation.constraints." + key, temporalHandler);
+    }
+
     final var stringOnlyHandler = new TypeCheckingHandler(new HandlerMeta(Set.of("String", "CharSequence"), "non-string", true));
     for (final String key : STRING_TYPE_ONLY_ANNOTATIONS) {
       handlers.put("io.avaje.validation.constraints." + key, stringOnlyHandler);
@@ -114,10 +121,6 @@ final class AnnotationUtil {
       "Length",
       "Range",
       "Size",
-      "Past",
-      "PastOrPresent",
-      "Future",
-      "FutureOrPresent",
       "Digits",
       "URI",
       "UUID",
@@ -145,6 +148,15 @@ final class AnnotationUtil {
     }
     if (isAssignable2Interface(rawType, "java.lang.CharSequence")) {
       return "CharSequence";
+    }
+    if (isAssignable2Interface(rawType, "java.time.temporal.Temporal")) {
+      return "Temporal." + Util.shortName(rawType);
+    }
+    if (isAssignable2Interface(rawType, "java.util.Date")) {
+      return "Temporal.Date";
+    }
+    if (rawType.contains("[]")) {
+      return "Array";
     }
     return null;
   }
@@ -447,7 +459,29 @@ final class AnnotationUtil {
     }
   }
 
-  static final class HandlerMeta {
+  interface SupportedMeta {
+
+    String message(AnnotationMirror annotationMirror, Element target);
+
+    boolean isSupported(Element target, String _type);
+  }
+
+
+  static final class TemporalMeta implements SupportedMeta {
+
+    @Override
+    public String message(AnnotationMirror annotationMirror, Element target) {
+      return "Not allowed to use " + annotationMirror + " on a non-temporal type for " + target;
+    }
+
+    @Override
+    public boolean isSupported(Element target, String _type) {
+      boolean isMetaConstraint = hasMetaConstraintAnnotation(target);
+      return isMetaConstraint || _type == null || _type.startsWith("Temporal.");
+    }
+  }
+
+  static final class HandlerMeta implements SupportedMeta {
 
     private final Set<String> supportedTypes;
     private final String message;
@@ -459,11 +493,13 @@ final class AnnotationUtil {
       this.allowUnknown = allowUnknown;
     }
 
-    String message(AnnotationMirror annotationMirror, Element target) {
+    @Override
+    public String message(AnnotationMirror annotationMirror, Element target) {
       return "Not allowed to use " + annotationMirror + " on a " + message + " type for " + target;
     }
 
-    boolean isSupported(Element target, String _type) {
+    @Override
+    public boolean isSupported(Element target, String _type) {
       boolean isMetaConstraint = hasMetaConstraintAnnotation(target);
       return isMetaConstraint || (allowUnknown && _type == null) || (_type != null && supportedTypes.contains(_type));
     }
@@ -471,13 +507,13 @@ final class AnnotationUtil {
 
   /** Adds validation that the type this constraint is applied to is a numeric type */
   static class TypeCheckingHandler extends CommonHandler {
-    private final HandlerMeta meta;
+    private final SupportedMeta meta;
 
-    TypeCheckingHandler(HandlerMeta meta) {
+    TypeCheckingHandler(SupportedMeta meta) {
       this.meta = meta;
     }
 
-    TypeCheckingHandler(HandlerMeta meta, AnnotationMirror annotationMirror, Element element, Element target) {
+    TypeCheckingHandler(SupportedMeta meta, AnnotationMirror annotationMirror, Element element, Element target) {
       super(annotationMirror, element, target);
       this.meta = meta;
     }
