@@ -123,7 +123,7 @@ public final class NumberAdapters {
       }
       return switch (targetType) {
         case "Integer", "Long", "Short", "Byte" -> number.longValue() <= value;
-        case "Double" -> compareDouble(number.doubleValue(), value, GREATER_THAN)  <= 0;
+        case "Double", "Number" -> compareDouble(number.doubleValue(), value, GREATER_THAN)  <= 0;
         case "Float" -> compareFloat((Float)number, value, GREATER_THAN)  <= 0;
         default -> throw new IllegalStateException();
       };

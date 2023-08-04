@@ -7,7 +7,7 @@ import java.util.List;
 @Valid
 public class ANumberCheck {
 
-  @NotBlank @Max(10) MyNumericType customNumber;
+  @Max(10) MyNumericType customNumber;
 
   @Positive int myScore;
 
@@ -15,38 +15,81 @@ public class ANumberCheck {
   /** @Max(45) */  String notNumericTypeHere;
 
 
-  /** @Positive */ List<?> someCollection;
+   /** @Positive */  List<?> someCollection;
 
+   int foo;
+   @AssertTrue boolean active;
+
+   @AssertTrue Boolean objectActive;
+
+   //@AssertTrue
+   String stringNotBoolean;
+
+   @AssertTrue
+   public boolean methodValidation() {
+     return active;
+   }
+
+  public boolean active() {
+    return active;
+  }
+
+  public ANumberCheck setActive(boolean active) {
+    this.active = active;
+    return this;
+  }
+
+  public Boolean objectActive() {
+    return objectActive;
+  }
+
+  public ANumberCheck setObjectActive(Boolean objectActive) {
+    this.objectActive = objectActive;
+    return this;
+  }
+
+  public String stringNotBoolean() {
+    return stringNotBoolean;
+  }
+
+  public ANumberCheck setStringNotBoolean(String stringNotBoolean) {
+    this.stringNotBoolean = stringNotBoolean;
+    return this;
+  }
 
   public List<?> someCollection() {
     return someCollection;
   }
 
-  public void setSomeCollection(List<?> someCollection) {
+  public ANumberCheck setSomeCollection(List<?> someCollection) {
     this.someCollection = someCollection;
+    return this;
   }
 
   public MyNumericType customNumber() {
     return customNumber;
   }
 
-  public void setCustomNumber(MyNumericType customNumber) {
+  public ANumberCheck setCustomNumber(MyNumericType customNumber) {
     this.customNumber = customNumber;
+    return this;
   }
 
   public int myScore() {
     return myScore;
   }
 
-  public void setMyScore(int myScore) {
+  public ANumberCheck setMyScore(int myScore) {
     this.myScore = myScore;
+    return this;
   }
 
   public String notNumericTypeHere() {
     return notNumericTypeHere;
   }
 
-  public void setNotNumericTypeHere(String notNumericTypeHere) {
+  public ANumberCheck setNotNumericTypeHere(String notNumericTypeHere) {
     this.notNumericTypeHere = notNumericTypeHere;
+    return this;
   }
 }
