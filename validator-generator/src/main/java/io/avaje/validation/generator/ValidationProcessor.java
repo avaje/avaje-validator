@@ -72,36 +72,18 @@ public final class ValidationProcessor extends AbstractProcessor {
 
     readModule();
 
-    // Optional because these annotations are not guaranteed to exist
-    Optional.ofNullable(element(AvajeConstraintPrism.PRISM_TYPE))
-        .map(round::getElementsAnnotatedWith)
-        .ifPresent(this::writeContraintAdapters);
-
-    Optional.ofNullable(element(JavaxConstraintPrism.PRISM_TYPE))
-        .map(round::getElementsAnnotatedWith)
-        .ifPresent(this::writeContraintAdapters);
-    Optional.ofNullable(element(JakartaConstraintPrism.PRISM_TYPE))
-        .map(round::getElementsAnnotatedWith)
-        .ifPresent(this::writeContraintAdapters);
+    getElements(round, AvajeConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
+    getElements(round, JavaxConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
+    getElements(round, JakartaConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
 
     registerCustomAdapters(
         round.getElementsAnnotatedWith(element(ConstraintAdapterPrism.PRISM_TYPE)));
 
-    Optional.ofNullable(element(AvajeValidPrism.PRISM_TYPE))
-        .map(round::getElementsAnnotatedWith)
-        .ifPresent(this::writeAdapters);
-    Optional.ofNullable(element(HttpValidPrism.PRISM_TYPE))
-        .map(round::getElementsAnnotatedWith)
-        .ifPresent(this::writeAdapters);
-    Optional.ofNullable(element(JavaxValidPrism.PRISM_TYPE))
-        .map(round::getElementsAnnotatedWith)
-        .ifPresent(this::writeAdapters);
-    Optional.ofNullable(element(JakartaValidPrism.PRISM_TYPE))
-        .map(round::getElementsAnnotatedWith)
-        .ifPresent(this::writeAdapters);
-
-    Optional.ofNullable(element(ValidMethodPrism.PRISM_TYPE))
-        .map(round::getElementsAnnotatedWith)
+    getElements(round, AvajeValidPrism.PRISM_TYPE).ifPresent(this::writeAdapters);
+    getElements(round, HttpValidPrism.PRISM_TYPE).ifPresent(this::writeAdapters);
+    getElements(round, JavaxValidPrism.PRISM_TYPE).ifPresent(this::writeAdapters);
+    getElements(round, JakartaValidPrism.PRISM_TYPE).ifPresent(this::writeAdapters);
+    getElements(round, ValidMethodPrism.PRISM_TYPE)
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);
 
@@ -113,6 +95,12 @@ public final class ValidationProcessor extends AbstractProcessor {
         round.getElementsAnnotatedWith(element(BuilderCustomizerPrism.PRISM_TYPE)));
     writeComponent(round.processingOver());
     return false;
+  }
+
+  // Optional because these annotations are not guaranteed to exist
+  private Optional<? extends Set<? extends Element>> getElements(
+      RoundEnvironment round, String name) {
+    return Optional.ofNullable(element(name)).map(round::getElementsAnnotatedWith);
   }
 
   private void registerCustomAdapters(Set<? extends Element> elements) {
