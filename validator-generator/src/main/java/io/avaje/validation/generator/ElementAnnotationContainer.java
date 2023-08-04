@@ -60,8 +60,12 @@ public record ElementAnnotationContainer(
     return new ElementAnnotationContainer(genericType, hasValid, annotations, typeUse1, typeUse2);
   }
 
-  private static boolean hasMetaConstraintAnnotation(AnnotationMirror m) {
-    for (AnnotationMirror annotationMirror : m.getAnnotationType().asElement().getAnnotationMirrors()) {
+  static boolean hasMetaConstraintAnnotation(AnnotationMirror m) {
+    return hasMetaConstraintAnnotation(m.getAnnotationType().asElement());
+  }
+
+  static boolean hasMetaConstraintAnnotation(Element element) {
+    for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
       if (annotationMirror.toString().contains("io.avaje.validation.constraints.Constraint")) {
         return true;
       }
