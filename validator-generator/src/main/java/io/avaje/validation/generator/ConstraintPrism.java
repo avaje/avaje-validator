@@ -9,6 +9,9 @@ import io.avaje.prism.GeneratePrism;
     name = "AvajeConstraintPrism",
     superInterfaces = ConstraintPrism.class)
 @GeneratePrism(
+    value = io.avaje.validation.CrossParamConstraint.class,
+    superInterfaces = ConstraintPrism.class)
+@GeneratePrism(
     value = jakarta.validation.Constraint.class,
     name = "JakartaConstraintPrism",
     superInterfaces = ConstraintPrism.class)
@@ -21,6 +24,7 @@ public interface ConstraintPrism {
   static boolean isPresent(Element e) {
     return AvajeConstraintPrism.isPresent(e)
         || JakartaConstraintPrism.isPresent(e)
-        || JavaxConstraintPrism.isPresent(e);
+        || JavaxConstraintPrism.isPresent(e)
+        || CrossParamConstraintPrism.isPresent(e);
   }
 }

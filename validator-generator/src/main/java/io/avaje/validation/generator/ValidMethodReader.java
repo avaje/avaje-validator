@@ -28,7 +28,7 @@ final class ValidMethodReader {
     importTypes.add(diAnnotation());
     importTypes.add("java.util.Set");
     importTypes.add("java.util.Map");
-    importTypes.add("io.avaje.validation.inject.aspect.MethodAdapterProvider");
+    importTypes.add("io.avaje.validation.adapter.MethodAdapterProvider");
     importTypes.add("io.avaje.validation.adapter.ValidationAdapter");
     importTypes.add("io.avaje.validation.adapter.ValidationContext");
     importTypes.add("io.avaje.validation.spi.Generated");
@@ -108,6 +108,18 @@ final class ValidMethodReader {
     """);
     writer.append("    return ");
     new AdapterHelper(writer, returnElementAnnotation, "").write();
+
+    writer.append(
+        """
+        ;
+          }
+
+          @Override
+          public ValidationAdapter<Object[]> crossParamAdapter(ValidationContext ctx) {
+        """);
+    writer.append("    return ");
+
+    new AdapterHelper(writer, returnElementAnnotation, "", "Object[]", null, false, true).write();
 
     writer.append(";").eol();
     writer.append("  }").eol();

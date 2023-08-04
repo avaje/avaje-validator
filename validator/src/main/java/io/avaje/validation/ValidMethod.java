@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import io.avaje.inject.aop.Aspect;
 
-@Aspect
+@Aspect(ordering = 10)
 @Target(METHOD)
 @Retention(RUNTIME)
 /** Place on a method to execute validations on the parameters and return types */

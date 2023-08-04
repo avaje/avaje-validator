@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.MethodAdapterProvider;
 import io.avaje.validation.adapter.ValidationContext;
 
 class TestMethodValidation {

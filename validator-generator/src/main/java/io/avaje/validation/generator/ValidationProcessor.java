@@ -33,6 +33,7 @@ import javax.lang.model.util.ElementFilter;
   AvajeConstraintPrism.PRISM_TYPE,
   JakartaConstraintPrism.PRISM_TYPE,
   JavaxConstraintPrism.PRISM_TYPE,
+  CrossParamConstraintPrism.PRISM_TYPE,
   ValidMethodPrism.PRISM_TYPE
 })
 public final class ValidationProcessor extends AbstractProcessor {
@@ -75,6 +76,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     getElements(round, AvajeConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
     getElements(round, JavaxConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
     getElements(round, JakartaConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
+    getElements(round, CrossParamConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
 
     registerCustomAdapters(
         round.getElementsAnnotatedWith(element(ConstraintAdapterPrism.PRISM_TYPE)));
@@ -220,7 +222,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private void writeAdapterForConstraint(TypeElement typeElement) {
     if (ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
         .noneMatch(m -> "message".equals(m.getSimpleName().toString()))) {
-      throw new IllegalStateException("Constraint annotations must contain a message method");
+      logError(typeElement, "Constraint annotations must contain a message method");
     }
     final ContraintReader beanReader = new ContraintReader(typeElement);
     writeAdapter(typeElement, beanReader);
@@ -253,8 +255,14 @@ public final class ValidationProcessor extends AbstractProcessor {
 
       if (executableElement.getEnclosingElement().getAnnotationMirrors().stream()
           .map(m -> m.getAnnotationType().toString())
-          .noneMatch(s -> s.contains("Singleton") || s.contains("Component"))) {
-        throw new IllegalStateException(
+          .noneMatch(
+              s ->
+                  s.contains("Singleton")
+                      || s.contains("Component")
+                      || s.contains("Service")
+                      || s.contains("Controller"))) {
+        logError(
+            executableElement,
             "The ValidMethod Annotation can only be used with JSR-330 Injectable Classes");
       }
       writeParamProvider(executableElement);

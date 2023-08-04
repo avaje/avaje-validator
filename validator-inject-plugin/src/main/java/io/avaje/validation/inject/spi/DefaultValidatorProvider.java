@@ -12,8 +12,8 @@ import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.spi.GenericType;
 import io.avaje.validation.ValidMethod;
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.MethodAdapterProvider;
 import io.avaje.validation.inject.aspect.AOPMethodValidator;
-import io.avaje.validation.inject.aspect.MethodAdapterProvider;
 
 /** Plugin for avaje inject that provides a default Jsonb instance. */
 public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugin {
