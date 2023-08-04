@@ -1,6 +1,8 @@
 package io.avaje.validation.generator;
 
+import static io.avaje.validation.generator.ElementAnnotationContainer.hasMetaConstraintAnnotation;
 import static io.avaje.validation.generator.ProcessingContext.isAssignable2Interface;
+import static io.avaje.validation.generator.ProcessingContext.logError;
 import static io.avaje.validation.generator.Util.trimAnnotations;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
@@ -28,53 +30,7 @@ final class AnnotationUtil {
     String attributes(Map<String, Object> attributeMap);
   }
 
-  static final Handler defaultHandler = new StandardHandler();
-  static final Map<String, Handler> handlers = new HashMap<>();
-
-  static {
-    final var pattern = new PatternHandler();
-    handlers.put("io.avaje.constraints.Pattern", pattern);
-    handlers.put("jakarta.validation.constraints.Pattern", pattern);
-
-    final var decimalHandler = new DecimalHandler();
-    handlers.put("io.avaje.validation.constraints.DecimalMax", decimalHandler);
-    handlers.put("io.avaje.validation.constraints.DecimalMin", decimalHandler);
-    handlers.put("jakarta.validation.constraints.DecimalMax", decimalHandler);
-    handlers.put("jakarta.validation.constraints.DecimalMin", decimalHandler);
-
-    final var commonHandler = new CommonHandler();
-    final String[] keys = {
-      "AssertFalse",
-      "AssertTrue",
-      "Null",
-      "NotNull",
-      "NotBlank",
-      "NotEmpty",
-      "Email",
-      "Length",
-      "Range",
-      "Max",
-      "Min",
-      "Size",
-      "Past",
-      "PastOrPresent",
-      "Future",
-      "FutureOrPresent",
-      "Digits",
-      "Positive",
-      "PositiveOrZero",
-      "Negative",
-      "NegativeOrZero",
-      "URI",
-      "UUID",
-    };
-    for (final String key : keys) {
-      handlers.put("io.avaje.validation.constraints." + key, commonHandler);
-      handlers.put("jakarta.validation.constraints." + key, commonHandler);
-    }
-  }
-
-  static Map<String,String> KNOWN_TYPES = new HashMap<>();
+  private static final Map<String,String> KNOWN_TYPES = new HashMap<>();
   static {
     KNOWN_TYPES.put("byte", "Byte");
     KNOWN_TYPES.put("java.lang.Byte", "Byte");
@@ -95,6 +51,68 @@ final class AnnotationUtil {
     KNOWN_TYPES.put("java.math.BigInteger", "BigInteger");
     KNOWN_TYPES.put("java.lang.String", "String");
     //TODO; Consider java.time types
+  }
+
+  static Set<String> NUMBER_TYPES = new HashSet<>();
+  static {
+    NUMBER_TYPES.add("Byte");
+    NUMBER_TYPES.add("Short");
+    NUMBER_TYPES.add("Integer");
+    NUMBER_TYPES.add("Long");
+    NUMBER_TYPES.add("Float");
+    NUMBER_TYPES.add("Double");
+    NUMBER_TYPES.add("BigDecimal");
+    NUMBER_TYPES.add("BigInteger");
+    NUMBER_TYPES.add("Number");
+  }
+
+  /** These annotations should only be used on numeric types */
+  private static final String[] NUMBER_TYPE_ONLY_ANNOTATIONS = {"Max", "Min", "Positive", "PositiveOrZero", "Negative", "NegativeOrZero"};
+
+  private static final Handler defaultHandler = new StandardHandler();
+
+  private static final Map<String, Handler> handlers = new HashMap<>();
+  static {
+    final var pattern = new PatternHandler();
+    handlers.put("io.avaje.constraints.Pattern", pattern);
+    handlers.put("jakarta.validation.constraints.Pattern", pattern);
+
+    final var decimalHandler = new DecimalHandler();
+    handlers.put("io.avaje.validation.constraints.DecimalMax", decimalHandler);
+    handlers.put("io.avaje.validation.constraints.DecimalMin", decimalHandler);
+    handlers.put("jakarta.validation.constraints.DecimalMax", decimalHandler);
+    handlers.put("jakarta.validation.constraints.DecimalMin", decimalHandler);
+
+    final var numberHandler = new NumericHandler();
+    for (final String key : NUMBER_TYPE_ONLY_ANNOTATIONS) {
+      handlers.put("io.avaje.validation.constraints." + key, numberHandler);
+      handlers.put("jakarta.validation.constraints." + key, numberHandler);
+    }
+
+    final var commonHandler = new CommonHandler();
+    final String[] keys = {
+      "AssertFalse",
+      "AssertTrue",
+      "Null",
+      "NotNull",
+      "NotBlank",
+      "NotEmpty",
+      "Email",
+      "Length",
+      "Range",
+      "Size",
+      "Past",
+      "PastOrPresent",
+      "Future",
+      "FutureOrPresent",
+      "Digits",
+      "URI",
+      "UUID",
+    };
+    for (final String key : keys) {
+      handlers.put("io.avaje.validation.constraints." + key, commonHandler);
+      handlers.put("jakarta.validation.constraints." + key, commonHandler);
+    }
   }
 
   static String lookupType(TypeMirror typeMirror) {
@@ -150,8 +168,7 @@ final class AnnotationUtil {
     return Objects.requireNonNullElse(handler, defaultHandler).attributes(attributeMap);
   }
 
-  private static void convertTypeUse(
-      final TypeElement element, final Map<String, Object> attributeMap) {
+  private static void convertTypeUse(final TypeElement element, final Map<String, Object> attributeMap) {
     // convert attribute map values into proper types
     // and add default values if needed
     for (final var e : ElementFilter.methodsIn(element.getEnclosedElements())) {
@@ -162,9 +179,7 @@ final class AnnotationUtil {
           (k, v) -> {
             if (v == null) {
               final var defaultVal = e.getDefaultValue().getValue();
-
               if (defaultVal instanceof final List l) {
-
                 v = l.isEmpty() ? "{ }" : l;
               } else {
                 return switchType(returnType.toString(), e.getDefaultValue().getValue().toString());
@@ -181,7 +196,6 @@ final class AnnotationUtil {
                         .toList();
 
               } else {
-
                 v = switchType(returnType.toString(), s);
               }
             }
@@ -190,19 +204,18 @@ final class AnnotationUtil {
     }
   }
 
-  private static Object switchType(final String type, String s) {
-
+  private static Object switchType(final String type, String value) {
     return switch (type) {
-      case "long" -> Long.parseLong(s);
-      case "double" -> Double.parseDouble(s);
-      case "float" -> Float.parseFloat(s);
-      case "int" -> Integer.parseInt(s);
-      case "java.lang.String" -> s.startsWith("\"") && s.endsWith("\"") ? s : "\"" + s + "\"";
-      default -> s;
+      case "long" -> Long.parseLong(value);
+      case "double" -> Double.parseDouble(value);
+      case "float" -> Float.parseFloat(value);
+      case "int" -> Integer.parseInt(value);
+      case "java.lang.String" -> value.startsWith("\"") && value.endsWith("\"") ? value : "\"" + value + "\"";
+      default -> value;
     };
   }
 
-  public static String[] splitString(String input, String delimiter) {
+  static String[] splitString(String input, String delimiter) {
     final Pattern pattern = Pattern.compile(delimiter + "(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
     return pattern.split(input);
   }
@@ -210,6 +223,10 @@ final class AnnotationUtil {
   abstract static class BaseHandler implements Handler {
     final StringBuilder sb = new StringBuilder("Map.of(");
     boolean first = true;
+
+    void validate() {
+      // do nothing by default
+    }
 
     @SuppressWarnings("unchecked")
     final void writeVal(final StringBuilder sb, final AnnotationValue annotationValue) {
@@ -278,9 +295,7 @@ final class AnnotationUtil {
     }
 
     private static void pattern(StringBuilder sb, PatternPrism prism) {
-
       sb.append("\"regexp\",\"").append(prism.regexp()).append("\"");
-
       if (prism.message() != null) {
         sb.append(", \"message\",\"").append(avajeKey(prism.message())).append("\"");
       }
@@ -297,7 +312,6 @@ final class AnnotationUtil {
 
     @Override
     public String attributes(Map<String, Object> attributes) {
-
       sb.append("\"regexp\",\"").append(attributes.get("regexp")).append("\"");
       final var message = attributes.get("message");
       if (message != null) {
@@ -305,7 +319,6 @@ final class AnnotationUtil {
       }
 
       var flags = (String) attributes.get("flags");
-
       if (flags != null) {
         flags = Util.stripBrackets(flags);
         flags = Arrays.stream(flags.split(",")).map(Util::shortName).collect(joining(", "));
@@ -315,9 +328,7 @@ final class AnnotationUtil {
 
       String groups = (String) attributes.get("groups");
       if (groups != null) {
-
         groups = Util.stripBrackets(groups);
-
         sb.append(", \"groups\",Set.of(").append(groups).append(")");
       }
 
@@ -336,18 +347,21 @@ final class AnnotationUtil {
     protected final AnnotationMirror annotationMirror;
     protected final Element element;
     protected final Element target;
+    protected final String _type;
 
     /** Prototype factory */
     StandardHandler() {
       this.annotationMirror = null;
       this.element = null;
       this.target = null;
+      this._type = null;
     }
 
     StandardHandler(AnnotationMirror annotationMirror, Element element, Element target) {
       this.annotationMirror = annotationMirror;
       this.element = element;
       this.target = target;
+      this._type = lookupType(target.asType());
     }
 
     @Override
@@ -356,8 +370,8 @@ final class AnnotationUtil {
     }
 
     String writeAttributes() {
-      for (final ExecutableElement member :
-          ElementFilter.methodsIn(element.getEnclosedElements())) {
+      validate();
+      for (final ExecutableElement member : ElementFilter.methodsIn(element.getEnclosedElements())) {
         final AnnotationValue value = annotationMirror.getElementValues().get(member);
         final AnnotationValue defaultValue = member.getDefaultValue();
         if (value == null && defaultValue == null) {
@@ -365,13 +379,12 @@ final class AnnotationUtil {
         }
         writeAttribute(member.getSimpleName(), value, defaultValue);
       }
-      writeTypeAttribute(target.asType());
+      writeTypeAttribute();
       sb.append(")");
       return sb.toString();
     }
 
-    protected void writeTypeAttribute(TypeMirror typeMirror) {
-      String _type = lookupType(typeMirror);
+    protected void writeTypeAttribute() {
       if (_type != null) {
         writeAttributeKey("_type");
         sb.append('"').append(_type).append('"');
@@ -396,8 +409,7 @@ final class AnnotationUtil {
     }
 
     AnnotationValue memberValue(String nameMatch) {
-      for (final ExecutableElement member :
-          ElementFilter.methodsIn(element.getEnclosedElements())) {
+      for (final ExecutableElement member : ElementFilter.methodsIn(element.getEnclosedElements())) {
         if (nameMatch.equals(member.getSimpleName().toString())) {
           return annotationMirror.getElementValues().get(member);
         }
@@ -407,7 +419,6 @@ final class AnnotationUtil {
 
     @Override
     public String attributes(Map<String, Object> attributeMap) {
-
       for (final var entry : attributeMap.entrySet()) {
         writeAttributeKey(entry.getKey());
         writeVal(sb, entry.getValue());
@@ -420,6 +431,29 @@ final class AnnotationUtil {
       sb.append("Map.of(");
       first = true;
       return result;
+    }
+  }
+
+  /** Adds validation that the type this constraint is applied to is a numeric type */
+  static class NumericHandler extends CommonHandler {
+    /** Prototype factory only */
+    NumericHandler() {}
+
+    NumericHandler(AnnotationMirror annotationMirror, Element element, Element target) {
+      super(annotationMirror, element, target);
+    }
+
+    @Override
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
+      return new NumericHandler(annotationMirror, element, target).writeAttributes();
+    }
+
+    @Override
+    void validate() {
+      boolean isMetaConstraint = hasMetaConstraintAnnotation(target);
+      if (!isMetaConstraint && !NUMBER_TYPES.contains(_type)) {
+        logError(target, "Not allowed to use " + annotationMirror + " on a non-numeric type for " + target);
+      }
     }
   }
 
@@ -457,6 +491,7 @@ final class AnnotationUtil {
     }
   }
 
+  /** Adds inclusive/exclusive message key handling */
   static class DecimalHandler extends CommonHandler {
 
     /** Prototype factory only */
@@ -474,8 +509,7 @@ final class AnnotationUtil {
     @Override
     String messageKey(AnnotationValue defaultValue) {
       final AnnotationValue inclusiveValue = memberValue("inclusive");
-      final boolean inclusive =
-          (inclusiveValue == null || "true".equals(inclusiveValue.toString()));
+      final boolean inclusive = (inclusiveValue == null || "true".equals(inclusiveValue.toString()));
       String messageKey = super.messageKey(defaultValue);
       if (!inclusive) {
         messageKey = messageKey.replace(".message", ".exclusive.message");
