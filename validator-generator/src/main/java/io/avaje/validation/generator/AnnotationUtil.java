@@ -80,37 +80,31 @@ final class AnnotationUtil {
   private static final Map<String, Handler> handlers = new HashMap<>();
   static {
     final var pattern = new PatternHandler();
-    handlers.put("io.avaje.constraints.Pattern", pattern);
-    handlers.put("jakarta.validation.constraints.Pattern", pattern);
+    register(pattern, "Pattern");
 
     final var decimalHandler = new DecimalHandler();
-    handlers.put("io.avaje.validation.constraints.DecimalMax", decimalHandler);
-    handlers.put("io.avaje.validation.constraints.DecimalMin", decimalHandler);
-    handlers.put("jakarta.validation.constraints.DecimalMax", decimalHandler);
-    handlers.put("jakarta.validation.constraints.DecimalMin", decimalHandler);
+    for (String key : List.of("DecimalMax", "DecimalMin")) {
+      register(decimalHandler, key);
+    }
 
     final var numberHandler = new TypeCheckingHandler(new HandlerMeta(NUMBER_TYPES, "non-numeric", false));
     for (final String key : NUMBER_TYPE_ONLY_ANNOTATIONS) {
-      handlers.put("io.avaje.validation.constraints." + key, numberHandler);
-      handlers.put("jakarta.validation.constraints." + key, numberHandler);
+      register(numberHandler, key);
     }
 
     final var booleanHandler = new TypeCheckingHandler(new HandlerMeta(Set.of("Boolean"), "non-boolean", true));
     for (final String key : BOOLEAN_TYPE_ONLY_ANNOTATIONS) {
-      handlers.put("io.avaje.validation.constraints." + key, booleanHandler);
-      handlers.put("jakarta.validation.constraints." + key, booleanHandler);
+      register(booleanHandler, key);
     }
 
     final var temporalHandler = new TypeCheckingHandler(new TemporalMeta());
     for (final String key : TEMPORAL_ONLY_ANNOTATIONS) {
-      handlers.put("io.avaje.validation.constraints." + key, temporalHandler);
-      handlers.put("jakarta.validation.constraints." + key, temporalHandler);
+      register(temporalHandler, key);
     }
 
     final var stringOnlyHandler = new TypeCheckingHandler(new HandlerMeta(Set.of("String", "CharSequence"), "non-string", true));
     for (final String key : STRING_TYPE_ONLY_ANNOTATIONS) {
-      handlers.put("io.avaje.validation.constraints." + key, stringOnlyHandler);
-      handlers.put("jakarta.validation.constraints." + key, stringOnlyHandler);
+      register(stringOnlyHandler, key);
     }
 
     final var commonHandler = new CommonHandler();
@@ -126,9 +120,13 @@ final class AnnotationUtil {
       "UUID",
     };
     for (final String key : keys) {
-      handlers.put("io.avaje.validation.constraints." + key, commonHandler);
-      handlers.put("jakarta.validation.constraints." + key, commonHandler);
+      register(commonHandler, key);
     }
+  }
+
+  private static void register(Handler handler, String key) {
+    handlers.put("io.avaje.validation.constraints." + key, handler);
+    handlers.put("jakarta.validation.constraints." + key, handler);
   }
 
   static String lookupType(TypeMirror typeMirror) {
