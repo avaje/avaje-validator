@@ -72,6 +72,7 @@ final class AnnotationUtil {
   /** These annotations should only be used on numeric types */
   private static final String[] NUMBER_TYPE_ONLY_ANNOTATIONS = {"Max", "Min", "Positive", "PositiveOrZero", "Negative", "NegativeOrZero"};
   private static final String[] BOOLEAN_TYPE_ONLY_ANNOTATIONS = {"AssertTrue", "AssertFalse"};
+  private static final String[] STRING_TYPE_ONLY_ANNOTATIONS = {"NotBlank","Email"};
 
   private static final Handler defaultHandler = new StandardHandler();
 
@@ -87,25 +88,29 @@ final class AnnotationUtil {
     handlers.put("jakarta.validation.constraints.DecimalMax", decimalHandler);
     handlers.put("jakarta.validation.constraints.DecimalMin", decimalHandler);
 
-    final var numberHandler = new NumericHandler(new HandlerMeta(NUMBER_TYPES, "non-numeric", false));
+    final var numberHandler = new TypeCheckingHandler(new HandlerMeta(NUMBER_TYPES, "non-numeric", false));
     for (final String key : NUMBER_TYPE_ONLY_ANNOTATIONS) {
       handlers.put("io.avaje.validation.constraints." + key, numberHandler);
       handlers.put("jakarta.validation.constraints." + key, numberHandler);
     }
 
-    final var booleanHandler = new NumericHandler(new HandlerMeta(Set.of("Boolean"), "non-boolean", true));
+    final var booleanHandler = new TypeCheckingHandler(new HandlerMeta(Set.of("Boolean"), "non-boolean", true));
     for (final String key : BOOLEAN_TYPE_ONLY_ANNOTATIONS) {
       handlers.put("io.avaje.validation.constraints." + key, booleanHandler);
       handlers.put("jakarta.validation.constraints." + key, booleanHandler);
+    }
+
+    final var stringOnlyHandler = new TypeCheckingHandler(new HandlerMeta(Set.of("String", "CharSequence"), "non-string", true));
+    for (final String key : STRING_TYPE_ONLY_ANNOTATIONS) {
+      handlers.put("io.avaje.validation.constraints." + key, stringOnlyHandler);
+      handlers.put("jakarta.validation.constraints." + key, stringOnlyHandler);
     }
 
     final var commonHandler = new CommonHandler();
     final String[] keys = {
       "Null",
       "NotNull",
-      "NotBlank",
       "NotEmpty",
-      "Email",
       "Length",
       "Range",
       "Size",
@@ -465,21 +470,21 @@ final class AnnotationUtil {
   }
 
   /** Adds validation that the type this constraint is applied to is a numeric type */
-  static class NumericHandler extends CommonHandler {
+  static class TypeCheckingHandler extends CommonHandler {
     private final HandlerMeta meta;
 
-    NumericHandler(HandlerMeta meta) {
+    TypeCheckingHandler(HandlerMeta meta) {
       this.meta = meta;
     }
 
-    NumericHandler(HandlerMeta meta, AnnotationMirror annotationMirror, Element element, Element target) {
+    TypeCheckingHandler(HandlerMeta meta, AnnotationMirror annotationMirror, Element element, Element target) {
       super(annotationMirror, element, target);
       this.meta = meta;
     }
 
     @Override
     public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
-      return new NumericHandler(meta, annotationMirror, element, target).writeAttributes();
+      return new TypeCheckingHandler(meta, annotationMirror, element, target).writeAttributes();
     }
 
     @Override
