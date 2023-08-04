@@ -49,7 +49,7 @@ public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T
 
   /** Execute validations for all items in the given array */
   protected boolean validateArray(Object[] value, ValidationRequest req, String propertyName) {
-    if (value == null) {
+    if (value == null || multiAdapter == null) {
       return true;
     }
     if (propertyName != null) {

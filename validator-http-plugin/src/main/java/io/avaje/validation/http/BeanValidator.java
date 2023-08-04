@@ -42,6 +42,6 @@ public class BeanValidator implements io.avaje.http.api.Validator {
       errors.add(new Violation(path, field, message));
     }
 
-    throw new ValidationException(422, "Request failed validation", cause, errors);
+    throw new ValidationException(422, cause.getMessage(), cause, errors);
   }
 }

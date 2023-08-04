@@ -1,7 +1,9 @@
 package io.avaje.validation.adapter;
 
 import java.util.List;
+import java.util.Set;
 
+import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ConstraintViolationException;
 
 /** A validation request. */
@@ -26,6 +28,9 @@ public interface ValidationRequest {
 
   /** Throw ConstraintViolationException if there are violations in this request. */
   void throwWithViolations() throws ConstraintViolationException;
+
+  /** Return the violations */
+  Set<ConstraintViolation> violations();
 
   /** return true if there are violations in this request. */
   boolean hasViolations();

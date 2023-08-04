@@ -6,6 +6,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import io.avaje.lang.Nullable;
@@ -35,18 +36,54 @@ import io.avaje.validation.spi.ValidatorCustomizer;
  */
 public interface Validator {
 
-  /** Validate the object using the default locale. */
-  void validate(Object value, @Nullable Class<?>... groups) throws ConstraintViolationException;
+  /**
+   * Validate the object using the default locale throwing ConstraintViolationException when
+   * there are constraint violations.
+   *
+   * @param any The object to validate
+   * @param groups The groups targeted for validation
+   *
+   * @throws ConstraintViolationException when there are constraint violations
+   */
+  void validate(Object any, @Nullable Class<?>... groups) throws ConstraintViolationException;
 
   /**
-   * Validate the object with a given locale.
+   * Validate the object with a given locale throwing ConstraintViolationException when
+   * there are constraint violations.
    *
    * <p>If the locale is not one of the supported locales then the default locale will be used.
    *
    * <p>This is expected to be used when the Validator is configured to support multiple locales.
+
+   * @param any The object to validate
+   * @param locale The locale to use for constraint messages
+   * @param groups The groups targeted for validation
+   *
+   * @throws ConstraintViolationException when there are constraint violations
    */
   void validate(Object any, @Nullable Locale locale, @Nullable Class<?>... groups)
       throws ConstraintViolationException;
+
+  /**
+   * Validate the object returning the constraint violations.
+   *
+   * @param any The object to validate
+   * @param groups The groups targeted for validation
+   *
+   * @return The constraint violations
+   */
+  Set<ConstraintViolation> check(Object any, @Nullable Class<?>... groups);
+
+  /**
+   * Validate the object returning the constraint violations.
+   *
+   * @param any The object to validate
+   * @param locale The locale to use for constraint messages
+   * @param groups The groups targeted for validation
+   *
+   * @return The constraint violations
+   */
+  Set<ConstraintViolation> check(Object any, @Nullable Locale locale, @Nullable Class<?>... groups);
 
   /** Return the validation context used to create adapters */
   ValidationContext context();
@@ -89,8 +126,8 @@ public interface Validator {
     Builder addLocales(Locale... locales);
 
     /**
-     * Contract for obtaining the Clock used as the reference for now when validating the @Future
-     * and @Past constraints.
+     * Contract for obtaining the Clock used as the reference for now when validating the
+     * {@code @Future} and {@code @Past} constraints.
      */
     Builder clockProvider(Supplier<Clock> clockSupplier);
 
@@ -148,7 +185,7 @@ public interface Validator {
     ValidationAdapter<?> build(AdapterCreateRequest request);
   }
 
-  /** Components register ValidationAdapters Validator.Builder */
+  /** Components register ValidationAdapters with the Validator.Builder */
   @FunctionalInterface
   interface GeneratedComponent extends ValidatorCustomizer {
 

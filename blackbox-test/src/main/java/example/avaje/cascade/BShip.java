@@ -3,6 +3,10 @@ package example.avaje.cascade;
 import io.avaje.validation.constraints.NotBlank;
 import io.avaje.validation.constraints.Valid;
 
+import java.util.Set;
+
 @Valid
-public record ACrew (@NotBlank(max = 4) String name) {
-}
+public record BShip(
+  @NotBlank String name,
+  @Valid Set<ACrew> crew // cascade validation
+) { }

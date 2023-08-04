@@ -134,7 +134,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private boolean cascadeElement(TypeElement element) {
-    return element.getKind() != ElementKind.ENUM && !metaData.contains(adapterName(element));
+    return element != null && element.getKind() != ElementKind.ENUM && !metaData.contains(adapterName(element));
   }
 
   private String adapterName(TypeElement element) {

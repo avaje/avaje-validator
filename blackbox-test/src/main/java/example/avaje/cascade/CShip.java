@@ -4,5 +4,8 @@ import io.avaje.validation.constraints.NotBlank;
 import io.avaje.validation.constraints.Valid;
 
 @Valid
-public record ACrew (@NotBlank(max = 4) String name) {
+public record CShip(
+  @NotBlank String name,
+  @Valid ACrew[] crew // cascade validation
+) {
 }
