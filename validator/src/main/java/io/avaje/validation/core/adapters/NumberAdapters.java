@@ -307,7 +307,8 @@ public final class NumberAdapters {
     @Override
     public boolean isValid(Object value) {
       if (value instanceof final String s) {
-        value = Long.parseLong(s);
+        // value = new BigDecimal(s).longValue();
+        value = Long.parseLong(s); //TODO: I think we need to cater for decimal here
       }
       final var num = (Number) value;
       return minAdapter.isValid(num) && maxAdapter.isValid(num);
