@@ -125,6 +125,7 @@ final class CoreAdapterBuilder {
     public Request withValue(long value) {
       Map<String, Object> newAttributes = new HashMap<>(attributes);
       newAttributes.put("value", value);
+      //newAttributes.put("_type", "Long");
       return new Request(ctx, annotationType, groups, newAttributes);
     }
 

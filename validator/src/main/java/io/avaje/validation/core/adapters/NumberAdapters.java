@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
+import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 
@@ -23,24 +24,31 @@ public final class NumberAdapters {
     case "PositiveOrZero" -> new PositiveAdapter(request, true);
     case "Negative" -> new NegativeAdapter(request, false);
     case "NegativeOrZero" -> new NegativeAdapter(request, true);
-    case "Max" -> forMax(request);
-    case "Min" -> forMin(request);
+    case "Max" -> max(request);
+    case "Min" -> min(request);
     case "DecimalMax" -> new DecimalMaxAdapter(request);
     case "DecimalMin" -> new DecimalMinAdapter(request);
-    case "Range" -> new RangeAdapter(request);
+    case "Range" -> range(request);
     default -> null;
   };
 
-  private static AbstractConstraintAdapter<? extends Number> forMax(AdapterCreateRequest request) {
-    final String targetType = request.targetType();
-    return switch (targetType) {
+  private static ValidationAdapter<?> range(AdapterCreateRequest request) {
+    if ("String".equals(request.targetType())) {
+      return new RangeStringAdapter(request);
+    } else {
+      return new RangeAdapter(request);
+    }
+  }
+
+  private static AbstractConstraintAdapter<? extends Number> max(AdapterCreateRequest request) {
+    return switch (request.targetType()) {
       case "BigDecimal" -> new MaxBigDecimal(request);
       case "BigInteger" -> new MaxBigInteger(request);
       default -> new MaxAdapter(request);
     };
   }
 
-  private static AbstractConstraintAdapter<? extends Number> forMin(AdapterCreateRequest request) {
+  private static AbstractConstraintAdapter<? extends Number> min(AdapterCreateRequest request) {
     final String targetType = request.targetType();
     return switch (targetType) {
       case "BigDecimal" -> new MinBigDecimal(request);
@@ -48,7 +56,6 @@ public final class NumberAdapters {
       default -> new MinAdapter(request);
     };
   }
-
 
   private static final class DecimalMaxAdapter extends AbstractConstraintAdapter<Number> {
 
@@ -290,7 +297,7 @@ public final class NumberAdapters {
     }
   }
 
-  private static final class RangeAdapter extends AbstractConstraintAdapter<Object> {
+  private static final class RangeAdapter extends AbstractConstraintAdapter<Number> {
 
     private final NumberAdapter<Number> maxAdapter;
     private final NumberAdapter<Number> minAdapter;
@@ -300,18 +307,38 @@ public final class NumberAdapters {
       super(request);
       final var min = (long) request.attribute("min");
       final var max = (long) request.attribute("max");
-      this.maxAdapter = (NumberAdapter<Number>)forMax(request.withValue(max));
-      this.minAdapter = (NumberAdapter<Number>)forMin(request.withValue(min));
+      this.maxAdapter = (NumberAdapter<Number>) max(request.withValue(max));
+      this.minAdapter = (NumberAdapter<Number>) min(request.withValue(min));
+    }
+
+    @Override
+    public boolean isValid(Number value) {
+      if (value == null) {
+        return true;
+      }
+      return minAdapter.isValid(value) && maxAdapter.isValid(value);
+    }
+  }
+
+  private static final class RangeStringAdapter extends AbstractConstraintAdapter<Object> {
+
+    private final BigDecimal min;
+    private final BigDecimal max;
+
+    @SuppressWarnings("unchecked")
+    RangeStringAdapter(AdapterCreateRequest request) {
+      super(request);
+      this.min = BigDecimal.valueOf((long) request.attribute("min"));
+      this.max = BigDecimal.valueOf((long) request.attribute("max"));
     }
 
     @Override
     public boolean isValid(Object value) {
-      if (value instanceof final String s) {
-        // value = new BigDecimal(s).longValue();
-        value = Long.parseLong(s); //TODO: I think we need to cater for decimal here
+      if (value == null) {
+        return true;
       }
-      final var num = (Number) value;
-      return minAdapter.isValid(num) && maxAdapter.isValid(num);
+      final var decimal = new BigDecimal(value.toString());
+      return min.compareTo(decimal) <= 0 && max.compareTo(decimal) >= 0;
     }
   }
 }
