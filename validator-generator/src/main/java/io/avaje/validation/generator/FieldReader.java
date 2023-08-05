@@ -1,5 +1,7 @@
 package io.avaje.validation.generator;
 
+import static io.avaje.validation.generator.ProcessingContext.logError;
+
 import java.util.List;
 import java.util.Set;
 
@@ -133,7 +135,8 @@ final class FieldReader {
     } else if (publicField) {
       writer.append("value.%s%s", fieldName, suffix);
     } else {
-      throw new IllegalStateException(
+      logError(
+          element,
           "Field" + fieldName + " is inaccessible. Add a getter or make the field public.");
     }
   }

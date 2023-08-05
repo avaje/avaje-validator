@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.avaje.inject.Component;
+import io.avaje.validation.adapter.MethodAdapterProvider;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.constraints.NotEmpty;

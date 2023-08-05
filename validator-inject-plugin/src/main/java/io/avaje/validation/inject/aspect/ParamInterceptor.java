@@ -7,6 +7,7 @@ import java.util.Map;
 
 import io.avaje.inject.aop.Invocation;
 import io.avaje.inject.aop.MethodInterceptor;
+import io.avaje.validation.adapter.MethodAdapterProvider;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 
@@ -18,6 +19,7 @@ final class ParamInterceptor implements MethodInterceptor {
   private final Locale locale;
   private final boolean throwOnParamFailure;
   private final Method method;
+  private ValidationAdapter<Object[]> crossParamAdapter;
 
   public ParamInterceptor(Locale locale, Method method, boolean throwOnParamFailure) {
 
@@ -38,6 +40,8 @@ final class ParamInterceptor implements MethodInterceptor {
       ++i;
     }
 
+    crossParamAdapter.validate(args, req);
+
     if (throwOnParamFailure) {
       req.throwWithViolations();
     }
@@ -53,5 +57,6 @@ final class ParamInterceptor implements MethodInterceptor {
     this.ctx = ctx;
     this.paramValidationAdapter = methodAdapterProvider.paramAdapters(ctx);
     this.returnValidationAdapter = methodAdapterProvider.returnAdapter(ctx);
+    this.crossParamAdapter = methodAdapterProvider.crossParamAdapter(ctx);
   }
 }

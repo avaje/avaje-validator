@@ -11,6 +11,7 @@ import io.avaje.inject.PostConstruct;
 import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.aop.MethodInterceptor;
 import io.avaje.validation.ValidMethod;
+import io.avaje.validation.adapter.MethodAdapterProvider;
 import io.avaje.validation.adapter.ValidationContext;
 
 public final class AOPMethodValidator implements AspectProvider<ValidMethod> {

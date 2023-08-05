@@ -13,12 +13,30 @@ final class AdapterHelper {
   private final GenericType topType;
   private final GenericType genericType;
   private final boolean classLevel;
+  private final boolean crossParam;
 
   AdapterHelper(Append writer, ElementAnnotationContainer elementAnnotations, String indent) {
-    this(writer, elementAnnotations, indent,"Object", null, false);
+    this(writer, elementAnnotations, indent,"Object", null, false, false);
   }
 
-  AdapterHelper(Append writer, ElementAnnotationContainer elementAnnotations, String indent, String type, GenericType topType, boolean classLevel) {
+  AdapterHelper(
+      Append writer,
+      ElementAnnotationContainer elementAnnotations,
+      String indent,
+      String type,
+      GenericType topType,
+      boolean classLevel) {
+    this(writer, elementAnnotations, indent, type, topType, classLevel, false);
+  }
+
+  AdapterHelper(
+      Append writer,
+      ElementAnnotationContainer elementAnnotations,
+      String indent,
+      String type,
+      GenericType topType,
+      boolean classLevel,
+      boolean crossParam) {
     this.writer = writer;
     this.elementAnnotations = elementAnnotations;
     this.indent = indent;
@@ -26,13 +44,17 @@ final class AdapterHelper {
     this.topType = topType;
     this.genericType = elementAnnotations.genericType();
     this.classLevel = classLevel;
+    this.crossParam = crossParam;
   }
 
   void write() {
     final var typeUse1 = elementAnnotations.typeUse1();
     final var typeUse2 = elementAnnotations.typeUse2();
     final var hasValid = elementAnnotations.hasValid();
-    writeFirst(elementAnnotations.annotations());
+    writeFirst(crossParam ? elementAnnotations.crossParam() : elementAnnotations.annotations());
+    if (crossParam) {
+      return;
+    }
 
     if (!typeUse1.isEmpty() && (isAssignable2Interface(genericType.topType(), "java.lang.Iterable"))) {
       writer.eol().append("%s    .list()", indent);

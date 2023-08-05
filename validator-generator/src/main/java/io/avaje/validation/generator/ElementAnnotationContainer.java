@@ -3,7 +3,9 @@ package io.avaje.validation.generator;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -11,19 +13,20 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
-// TODO: better name???
 public record ElementAnnotationContainer(
     GenericType genericType,
     boolean hasValid,
     Map<GenericType, String> annotations,
     Map<GenericType, String> typeUse1,
-    Map<GenericType, String> typeUse2) {
+    Map<GenericType, String> typeUse2,
+    Map<GenericType, String> crossParam) {
 
   static ElementAnnotationContainer create(Element element, boolean classLevel) {
     final var hasValid = ValidPrism.isPresent(element);
     String rawType;
     Map<GenericType, String> typeUse1;
     Map<GenericType, String> typeUse2;
+    final Map<GenericType, String> crossParam = new HashMap<>();
     if (element instanceof final ExecutableElement executableElement) {
       rawType = Util.trimAnnotations(executableElement.getReturnType().toString());
       final var typeUse = Util.typeUse(executableElement.getReturnType().toString(), true);
@@ -52,12 +55,24 @@ public record ElementAnnotationContainer(
         element.getAnnotationMirrors().stream()
             .filter(m -> !ValidPrism.isInstance(m))
             .filter(m -> !classLevel || hasMetaConstraintAnnotation(m))
+            .map(
+                a -> {
+                  if (CrossParamConstraintPrism.isPresent(a.getAnnotationType().asElement())) {
+                    crossParam.put(
+                        GenericType.parse(a.getAnnotationType().toString()),
+                        AnnotationUtil.annotationAttributeMap(a, element));
+                    return null;
+                  }
+                  return a;
+                })
+            .filter(Objects::nonNull)
             .collect(
                 toMap(
                     a -> GenericType.parse(a.getAnnotationType().toString()),
                     a -> AnnotationUtil.annotationAttributeMap(a, element)));
 
-    return new ElementAnnotationContainer(genericType, hasValid, annotations, typeUse1, typeUse2);
+    return new ElementAnnotationContainer(
+        genericType, hasValid, annotations, typeUse1, typeUse2, crossParam);
   }
 
   static boolean hasMetaConstraintAnnotation(AnnotationMirror m) {
@@ -65,12 +80,8 @@ public record ElementAnnotationContainer(
   }
 
   static boolean hasMetaConstraintAnnotation(Element element) {
-    for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
-      if (annotationMirror.toString().contains("io.avaje.validation.constraints.Constraint")) {
-        return true;
-      }
-    }
-    return false;
+
+    return ConstraintPrism.isPresent(element);
   }
 
   // it seems we cannot directly retrieve mirrors from var elements, for varElements needs special
@@ -101,7 +112,7 @@ public record ElementAnnotationContainer(
     final boolean hasValid = Constants.VALID_ANNOTATIONS.stream().anyMatch(noGeneric::contains);
 
     return new ElementAnnotationContainer(
-        GenericType.parse(rawType), hasValid, annotations, typeUse1, typeUse2);
+        GenericType.parse(rawType), hasValid, annotations, typeUse1, typeUse2, Map.of());
   }
 
   public void addImports(Set<String> importTypes) {
