@@ -22,6 +22,12 @@ class ADecimalMaxTest {
   }
 
   @Test
+  void validNull() {
+    var violations = new ArrayList<>(validator.check(new ADecimalMax(null, null, null, null)));
+    assertThat(violations).hasSize(0);
+  }
+
+  @Test
   void validString() {
     var violations = new ArrayList<>(validator.check(new ADecimalStringMax("4.5", "4.4", "4.5", "4.6")));
     assertThat(violations).hasSize(0);
