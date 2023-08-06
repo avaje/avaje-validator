@@ -34,7 +34,7 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
             .andThen(ctx.adapter(NotBlank.class, Map.of("message", "empty")));
 
     this.activeDateAdapter =
-        ctx.adapter(Past.class, Map.of("message", "not in the past"));
+        ctx.adapter(Past.class, Map.of("message", "not in the past", "_type", "Temporal.LocalDate"));
 
     this.contactsValidator =
         ctx.<List<Contact>>adapter(
