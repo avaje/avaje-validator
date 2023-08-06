@@ -78,8 +78,10 @@ public final class ValidationProcessor extends AbstractProcessor {
     getElements(round, JakartaConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
     getElements(round, CrossParamConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
 
-    registerCustomAdapters(
-        round.getElementsAnnotatedWith(element(ConstraintAdapterPrism.PRISM_TYPE)));
+    //register custom adapters
+    getElements(round, ConstraintAdapterPrism.PRISM_TYPE).ifPresent(this::registerCustomAdapters);
+
+
 
     getElements(round, AvajeValidPrism.PRISM_TYPE).ifPresent(this::writeAdapters);
     getElements(round, HttpValidPrism.PRISM_TYPE).ifPresent(this::writeAdapters);
@@ -107,6 +109,29 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private void registerCustomAdapters(Set<? extends Element> elements) {
     for (final var typeElement : ElementFilter.typesIn(elements)) {
+      final var type = Util.baseTypeOfAdapter(typeElement);
+
+      if (!CrossParamConstraintPrism.getAllOnMetaAnnotations(typeElement).isEmpty()
+          && type.contains("Object[]")) {
+        logError(typeElement, "Cross Parameter Adapters must accept type Object[]");
+      }
+
+      ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
+          .filter(m -> m.getKind() == ElementKind.CONSTRUCTOR)
+          .filter(m -> m.getModifiers().contains(Modifier.PUBLIC))
+          .filter(m -> m.getParameters().size() == 1)
+          .map(m -> m.getParameters().get(0).asType().toString())
+          .map(Util::trimAnnotations)
+          .filter("io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest"::equals)
+          .findAny()
+          .ifPresentOrElse(
+              x -> {},
+              () ->
+                  logError(
+                      typeElement,
+                      "Custom Adapters must have a public contrustor that accepts a single AdapterCreateRequest parameter"));
+      
+
       metaData.addAnnotationAdapter(typeElement);
     }
   }
