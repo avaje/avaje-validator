@@ -1,4 +1,4 @@
-package example.avaje;
+package example.avaje.past;
 
 import example.jakarta.JPastFuture;
 import io.avaje.validation.ConstraintViolation;
@@ -20,6 +20,16 @@ class APastFutureTest {
   @Test
   void valid() {
     validator.validate(new JPastFuture());
+    validator.validate(new APastFutureInstant());
+    validator.validate(new APastFutureOffsetTime());
+    validator.validate(new APastFutureODT());
+    validator.validate(new APastFutureZDT());
+    validator.validate(new APastFutureLocalDate());
+    validator.validate(new APastFutureLocalDateTime());
+    validator.validate(new APastFutureLocalTime());
+    validator.validate(new APastFutureDate());
+    validator.validate(new APastFutureYearMonth());
+    validator.validate(new APastFutureYear());
   }
 
   @Test
@@ -86,6 +96,66 @@ class APastFutureTest {
     bean.pastOrPresent = LocalDate.now().plusDays(1);
     var violation = one(bean, Locale.GERMAN);
     assertThat(violation.message()).isEqualTo("muss ein Datum in der Vergangenheit oder in der Gegenwart sein");
+  }
+
+  @Test
+  void invalidInstant() {
+    var violations = new ArrayList<>(validator.check(new APastFutureInstant().makeInvalid()));
+    assertThat(violations).hasSize(4);
+  }
+
+  @Test
+  void invalidOffsetDateTime() {
+    var violations = new ArrayList<>(validator.check(new APastFutureODT().makeInvalid()));
+    assertThat(violations).hasSize(4);
+  }
+
+  @Test
+  void invalidOffsetTime() {
+    var violations = new ArrayList<>(validator.check(new APastFutureOffsetTime().makeInvalid()));
+    assertThat(violations).hasSize(4);
+  }
+
+  @Test
+  void invalidZonedDateTime() {
+    var violations = new ArrayList<>(validator.check(new APastFutureZDT().makeInvalid()));
+    assertThat(violations).hasSize(4);
+  }
+
+  @Test
+  void invalidLocalDate() {
+    var violations = new ArrayList<>(validator.check(new APastFutureLocalDate().makeInvalid()));
+    assertThat(violations).hasSize(4);
+  }
+
+  @Test
+  void invalidLocalDateTime() {
+    var violations = new ArrayList<>(validator.check(new APastFutureLocalDateTime().makeInvalid()));
+    assertThat(violations).hasSize(4);
+  }
+
+  @Test
+  void invalidLocalTime() {
+    var violations = new ArrayList<>(validator.check(new APastFutureLocalDateTime().makeInvalid()));
+    assertThat(violations).hasSize(4);
+  }
+
+  @Test
+  void invalidDate() {
+    var violations = new ArrayList<>(validator.check(new APastFutureDate().makeInvalid()));
+    assertThat(violations).hasSize(4);
+  }
+
+  @Test
+  void invalidYear() {
+    var violations = new ArrayList<>(validator.check(new APastFutureYear().makeInvalid()));
+    assertThat(violations).hasSize(4);
+  }
+
+  @Test
+  void invalidYearMonth() {
+    var violations = new ArrayList<>(validator.check(new APastFutureYearMonth().makeInvalid()));
+    assertThat(violations).hasSize(4);
   }
 
   ConstraintViolation one(Object any) {
