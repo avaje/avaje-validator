@@ -197,22 +197,13 @@ public final class BasicAdapters {
       if (value == null) {
         return false;
       } else if (value instanceof final Collection<?> col) {
-        if (col.isEmpty()) {
-          return false;
-        }
+        return !col.isEmpty();
       } else if (value instanceof final Map<?, ?> map) {
-        if (map.isEmpty()) {
-          return false;
-        }
+        return !map.isEmpty();
       } else if (value instanceof final CharSequence sequence) {
-        if (sequence.length() == 0) {
-          return false;
-        }
+        return sequence.length() != 0;
       } else if (value.getClass().isArray()) {
-        final var len = arrayLength(value);
-        if (len == 0) {
-          return false;
-        }
+        return arrayLength(value) != 0;
       }
       return true;
     }
