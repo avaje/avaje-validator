@@ -130,7 +130,6 @@ public final class ValidationProcessor extends AbstractProcessor {
                   logError(
                       typeElement,
                       "Custom Adapters must have a public contrustor that accepts a single AdapterCreateRequest parameter"));
-      
 
       metaData.addAnnotationAdapter(typeElement);
     }
