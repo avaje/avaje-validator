@@ -1,4 +1,4 @@
-package example.avaje;
+package example.avaje.past;
 
 import io.avaje.validation.constraints.*;
 

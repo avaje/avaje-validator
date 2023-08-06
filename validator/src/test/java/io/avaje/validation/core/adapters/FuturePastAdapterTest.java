@@ -24,12 +24,12 @@ class FuturePastAdapterTest extends BasicTest {
 
   @interface FutureOrPresent {}
 
-  ValidationAdapter<Object> pastAdapter = ctx.adapter(Past.class, Map.of("message", "wibbly"));
+  ValidationAdapter<Object> pastAdapter = ctx.adapter(Past.class, Map.of("message", "wibbly", "_type", "Temporal.Instant"));
   ValidationAdapter<Object> pastOrPresentAdapter =
-      ctx.adapter(PastOrPresent.class, Map.of("message", "wobbly"));
-  ValidationAdapter<Object> futureAdapter = ctx.adapter(Future.class, Map.of("message", "timey"));
+      ctx.adapter(PastOrPresent.class, Map.of("message", "wobbly", "_type", "Temporal.Instant"));
+  ValidationAdapter<Object> futureAdapter = ctx.adapter(Future.class, Map.of("message", "timey", "_type", "Temporal.Instant"));
   ValidationAdapter<Object> futureOrPresentAdapter =
-      ctx.adapter(FutureOrPresent.class, Map.of("message", "wimey"));
+      ctx.adapter(FutureOrPresent.class, Map.of("message", "wimey", "_type", "Temporal.Instant"));
 
   @Test
   void testNull() {
@@ -41,146 +41,26 @@ class FuturePastAdapterTest extends BasicTest {
 
   @Test
   void testPast() {
-
-    Object value;
     final var inst = Instant.now().minusMillis(50000);
-
     // Instant
     assertPast(inst);
-
-    // date
-    value = Date.from(inst);
-
-    assertPast(value);
-    // LocalDate
-    value = LocalDate.now().minusDays(1);
-
-    assertPast(value);
-    // LocalDateTime
-    value = LocalDateTime.now().minusDays(1);
-
-    assertPast(value);
-    // LocalTime
-    value = LocalTime.now().minusMinutes(1);
-
-    assertPast(value);
-
-    // ZonedDateTime
-    value = ZonedDateTime.now().minusMinutes(1);
-
-    assertPast(value);
-    // OffsetDateTime
-    value = OffsetDateTime.now().minusMinutes(1);
-
-    assertPast(value);
-    // OffsetTime
-    value = OffsetTime.now().minusMinutes(1);
-
-    assertPast(value);
-    // Year
-    value = Year.now().minusYears(1);
-
-    assertPast(value);
-    // YearMonth
-    value = YearMonth.now().minusYears(1);
-    assertPast(value);
   }
 
   @Test
   void testFuture() {
 
-    Object value;
     final var inst = Instant.now().plusMillis(1234567890);
 
     // Instant
     assertFuture(inst);
-
-    // date
-    value = Date.from(inst);
-
-    assertFuture(value);
-
-    // LocalDate
-    value = LocalDate.now().plusDays(1);
-
-    assertFuture(value);
-
-    // LocalDateTime
-    value = LocalDateTime.now().plusDays(1);
-
-    assertFuture(value);
-    // LocalTime
-    value = LocalTime.now().plusMinutes(1);
-
-    assertFuture(value);
-    // ZonedDateTime
-    value = ZonedDateTime.now().plusHours(1);
-
-    assertFuture(value);
-    // OffsetDateTime
-    value = OffsetDateTime.now().plusHours(1);
-
-    assertFuture(value);
-    // OffsetTime
-    value = OffsetTime.now().plusMinutes(1);
-
-    assertFuture(value);
-    // Year
-    value = Year.now().plusYears(1);
-
-    assertFuture(value);
-    // YearMonth
-    value = YearMonth.now().plusYears(1);
-    assertFuture(value);
   }
 
   @Test
   void testPresent() {
 
-    Object value;
     final var inst = Instant.now();
-
     // Instant
     assertPresent(inst);
-
-    // date
-    value = Date.from(inst);
-
-    assertPresent(value);
-
-    // LocalDate
-    value = LocalDate.now();
-
-    assertPresent(value);
-
-    // LocalDateTime
-    value = LocalDateTime.now();
-
-    assertPresent(value);
-    // LocalTime
-    value = LocalTime.now();
-
-    assertPresent(value);
-
-    // ZonedDateTime
-    value = ZonedDateTime.now();
-    assertPresent(value);
-
-    // OffsetDateTime
-    value = OffsetDateTime.now();
-
-    assertPresent(value);
-    // OffsetTime
-    value = OffsetTime.now();
-
-    assertPresent(value);
-    // Year
-    value = Year.now();
-
-    assertPresent(value);
-    // YearMonth
-    value = YearMonth.now();
-    assertPresent(value);
   }
 
   private void assertPast(Object value) {
