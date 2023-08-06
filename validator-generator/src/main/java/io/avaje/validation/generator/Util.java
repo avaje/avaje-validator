@@ -16,6 +16,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
+import static io.avaje.validation.generator.ProcessingContext.logError;
+
 final class Util {
 
   private static final Pattern WHITE_SPACE_REGEX =
@@ -263,6 +265,11 @@ final class Util {
     if (element == null) {
       throw new NullPointerException("Element not found for [" + adapterFullName + "]");
     }
+    return baseTypeOfAdapter(element);
+  }
+
+  static String baseTypeOfAdapter(TypeElement element) {
+
     return Optional.of(element.getSuperclass())
         .filter(t -> t.toString().contains("io.avaje.validation.adapter.AbstractConstraintAdapter"))
         .or(validationAdapter(element))
@@ -270,17 +277,20 @@ final class Util {
         .map(GenericType::parse)
         .map(GenericType::firstParamType)
         .map(Util::extractTypeWithNest)
-        .orElseThrow(
-            () ->
-                new IllegalStateException(
-                    "Adapter: " + adapterFullName + " does not implement ValidationAdapter"));
+        .orElseGet(
+            () -> {
+              logError(
+                  element,
+                  "Custom Constraint adapters must extend AbstractConstraintAdapter or implement ValidationAdapter");
+              return "Invalid";
+            });
   }
 
   private static Supplier<Optional<? extends TypeMirror>> validationAdapter(TypeElement element) {
     return () ->
-      element.getInterfaces().stream()
-        .filter(t -> t.toString().contains("io.avaje.validation.adapter.ValidationAdapter"))
-        .findFirst();
+        element.getInterfaces().stream()
+            .filter(t -> t.toString().contains("io.avaje.validation.adapter.ValidationAdapter"))
+            .findFirst();
   }
 
   static String extractTypeWithNest(String fullType) {

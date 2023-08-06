@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  *
  * Marks a type as a Constraint Adapter to be registered automatically.
  *
- * <p> A custom adapter registered using this annotation must have a public constructor accepting a ValidationContext instance, and must extend the AbstractConstraintAdapter class.
+ * <p> A custom adapter registered using this annotation must have a public constructor accepting a ValidationContext instance, and must extend the AbstractConstraintAdapter/ValidationAdapter class.
  *
  * <h3>Example:</h3>
  *
