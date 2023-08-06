@@ -116,8 +116,7 @@ public final class ValidationProcessor extends AbstractProcessor {
         logError(typeElement, "Cross Parameter Adapters must accept type Object[]");
       }
 
-      ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
-          .filter(m -> m.getKind() == ElementKind.CONSTRUCTOR)
+      ElementFilter.constructorsIn(typeElement.getEnclosedElements()).stream()
           .filter(m -> m.getModifiers().contains(Modifier.PUBLIC))
           .filter(m -> m.getParameters().size() == 1)
           .map(m -> m.getParameters().get(0).asType().toString())
