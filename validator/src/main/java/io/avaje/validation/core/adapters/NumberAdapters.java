@@ -57,7 +57,7 @@ public final class NumberAdapters {
     };
   }
 
-  private static final class DecimalMaxAdapter extends AbstractConstraintAdapter<Number> {
+  private static final class DecimalMaxAdapter extends AbstractConstraintAdapter<Object> {
 
     private final BigDecimal value;
     private final boolean inclusive;
@@ -72,7 +72,7 @@ public final class NumberAdapters {
     }
 
     @Override
-    public boolean isValid(Number number) {
+    public boolean isValid(Object number) {
       // null values are valid
       if (number == null) {
         return true;
@@ -82,7 +82,7 @@ public final class NumberAdapters {
     }
   }
 
-  private static final class DecimalMinAdapter extends AbstractConstraintAdapter<Number> {
+  private static final class DecimalMinAdapter extends AbstractConstraintAdapter<Object> {
 
     private final BigDecimal value;
     private final boolean inclusive;
@@ -97,7 +97,7 @@ public final class NumberAdapters {
     }
 
     @Override
-    public boolean isValid(Number number) {
+    public boolean isValid(Object number) {
       // null values are valid
       if (number == null) {
         return true;
