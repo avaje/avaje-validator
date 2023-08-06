@@ -281,7 +281,7 @@ final class Util {
             () -> {
               logError(
                   element,
-                  "Custom Constraint adapters must extent AbstractConstraintAdapter or implement ValidationAdapter");
+                  "Custom Constraint adapters must extend AbstractConstraintAdapter or implement ValidationAdapter");
               return "Invalid";
             });
   }
