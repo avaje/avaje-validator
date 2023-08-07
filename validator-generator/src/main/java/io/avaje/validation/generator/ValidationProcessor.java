@@ -73,15 +73,13 @@ public final class ValidationProcessor extends AbstractProcessor {
 
     readModule();
 
-    getElements(round, AvajeConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
-    getElements(round, JavaxConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
-    getElements(round, JakartaConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
-    getElements(round, CrossParamConstraintPrism.PRISM_TYPE).ifPresent(this::writeContraintAdapters);
+    getElements(round, AvajeConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
+    getElements(round, JavaxConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
+    getElements(round, JakartaConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
+    getElements(round, CrossParamConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
 
     //register custom adapters
     getElements(round, ConstraintAdapterPrism.PRISM_TYPE).ifPresent(this::registerCustomAdapters);
-
-
 
     getElements(round, AvajeValidPrism.PRISM_TYPE).ifPresent(this::writeAdapters);
     getElements(round, HttpValidPrism.PRISM_TYPE).ifPresent(this::writeAdapters);
@@ -91,19 +89,16 @@ public final class ValidationProcessor extends AbstractProcessor {
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);
 
-    writeAdaptersForImported(
-        round.getElementsAnnotatedWith(element(ImportValidPojoPrism.PRISM_TYPE)));
+    writeAdaptersForImported(round.getElementsAnnotatedWith(element(ImportValidPojoPrism.PRISM_TYPE)));
     initialiseComponent();
     cascadeTypes();
-    customizerServiceWriter.writeMetaInf(
-        round.getElementsAnnotatedWith(element(BuilderCustomizerPrism.PRISM_TYPE)));
+    customizerServiceWriter.writeMetaInf(round.getElementsAnnotatedWith(element(BuilderCustomizerPrism.PRISM_TYPE)));
     writeComponent(round.processingOver());
     return false;
   }
 
   // Optional because these annotations are not guaranteed to exist
-  private Optional<? extends Set<? extends Element>> getElements(
-      RoundEnvironment round, String name) {
+  private Optional<? extends Set<? extends Element>> getElements(RoundEnvironment round, String name) {
     return Optional.ofNullable(element(name)).map(round::getElementsAnnotatedWith);
   }
 
@@ -111,8 +106,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     for (final var typeElement : ElementFilter.typesIn(elements)) {
       final var type = Util.baseTypeOfAdapter(typeElement);
 
-      if (!CrossParamConstraintPrism.getAllOnMetaAnnotations(typeElement).isEmpty()
-          && type.contains("Object[]")) {
+      if (!CrossParamConstraintPrism.getAllOnMetaAnnotations(typeElement).isEmpty() && type.contains("Object[]")) {
         logError(typeElement, "Cross Parameter Adapters must accept type Object[]");
       }
 
@@ -176,8 +170,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   /** Elements that have a {@code @Valid.Import} annotation. */
   private void writeAdaptersForImported(Set<? extends Element> importedElements) {
     for (final var importedElement : ElementFilter.typesIn(importedElements)) {
-      for (final TypeMirror importType :
-          ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
+      for (final TypeMirror importType : ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
         // if imported by mixin annotation skip
         if (mixInImports.contains(importType.toString())) {
           continue;
@@ -216,7 +209,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   /** Read the beans that have changed. */
-  private void writeContraintAdapters(Set<? extends Element> beans) {
+  private void writeConstraintAdapters(Set<? extends Element> beans) {
     ElementFilter.typesIn(beans).stream()
         .filter(
             type ->
@@ -273,17 +266,10 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private void writeParamProviderForMethod(Set<ExecutableElement> elements) {
-
     for (final ExecutableElement executableElement : elements) {
-
       if (executableElement.getEnclosingElement().getAnnotationMirrors().stream()
           .map(m -> m.getAnnotationType().toString())
-          .noneMatch(
-              s ->
-                  s.contains("Singleton")
-                      || s.contains("Component")
-                      || s.contains("Service")
-                      || s.contains("Controller"))) {
+          .noneMatch(annotationType -> isInjectableComponent(annotationType))) {
         logError(
             executableElement,
             "The ValidMethod Annotation can only be used with JSR-330 Injectable Classes");
@@ -292,11 +278,17 @@ public final class ValidationProcessor extends AbstractProcessor {
     }
   }
 
+  private static boolean isInjectableComponent(String annotationType) {
+    return annotationType.contains("Singleton")
+      || annotationType.contains("Component")
+      || annotationType.contains("Service")
+      || annotationType.contains("Controller");
+  }
+
   private void writeParamProvider(ExecutableElement typeElement) {
     final ValidMethodReader beanReader = new ValidMethodReader(typeElement);
     try {
       final var beanWriter = new SimpleParamBeanWriter(beanReader);
-
       beanWriter.write();
     } catch (final IOException e) {
       logError("Error writing ValidationAdapter for %s %s", beanReader, e);
