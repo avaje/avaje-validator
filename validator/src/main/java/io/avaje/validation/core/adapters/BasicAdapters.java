@@ -220,13 +220,13 @@ public final class BasicAdapters {
     }
 
     @Override
-    public boolean isValid(Boolean type) {
-      return !assertBool && type == null || type != null && assertBool == type.booleanValue();
+    public boolean isValid(Boolean value) {
+      return value == null || assertBool == value.booleanValue();
     }
 
     @Override
-    public boolean isValid(boolean type) {
-      return assertBool == type;
+    public boolean isValid(boolean value) {
+      return assertBool == value;
     }
   }
 
