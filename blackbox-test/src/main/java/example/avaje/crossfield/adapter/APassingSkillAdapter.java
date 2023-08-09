@@ -1,5 +1,7 @@
-package example.avaje.crossfield;
+package example.avaje.crossfield.adapter;
 
+import example.avaje.crossfield.APassingSkill;
+import example.avaje.crossfield.ATarnished;
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
 import io.avaje.validation.adapter.ConstraintAdapter;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
