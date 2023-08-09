@@ -230,17 +230,6 @@ public final class ValidationProcessor extends AbstractProcessor {
   /** Read the beans that have changed. */
   private void writeConstraintAdapters(Set<? extends Element> beans) {
     ElementFilter.typesIn(beans).stream()
-        .peek(
-            t -> {
-              final var constraintPrism = ConstraintPrism.getOptionalOn(t).orElseThrow();
-              if (constraintPrism.unboxPrimitives()) {
-                t.asType()
-                    .toString()
-                    .transform(Util::trimAnnotations)
-                    .transform(Util::shortName)
-                    .transform(PrimitiveUtil::addPrimitiveValidationAnnotation);
-              }
-            })
         .filter(
             type ->
                 type.getAnnotationMirrors().stream()

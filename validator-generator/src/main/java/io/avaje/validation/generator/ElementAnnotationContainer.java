@@ -1,6 +1,7 @@
 package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.PrimitiveUtil.isPrimitiveValidationAnnotations;
+import static io.avaje.validation.generator.ProcessingContext.element;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 
@@ -126,12 +127,22 @@ public record ElementAnnotationContainer(
   }
 
   boolean supportsPrimitiveValidation() {
-    for (GenericType validationAnnotation : annotations.keySet()) {
+    for (final GenericType validationAnnotation : annotations.keySet()) {
+      final var type = validationAnnotation.topType();
+      ConstraintPrism.getOptionalOn(element(type))
+          .ifPresent(
+              p -> {
+                if (p.unboxPrimitives()) {
+                  validationAnnotation
+                      .shortName()
+                      .transform(PrimitiveUtil::addPrimitiveValidationAnnotation);
+                }
+              });
+
       if (!isPrimitiveValidationAnnotations(validationAnnotation.shortName())) {
         return false;
       }
     }
     return true;
   }
-
 }
