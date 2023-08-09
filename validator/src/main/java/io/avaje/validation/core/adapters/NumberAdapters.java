@@ -37,9 +37,8 @@ public final class NumberAdapters {
   private static ValidationAdapter<?> range(AdapterCreateRequest request) {
     if ("String".equals(request.targetType())) {
       return new RangeStringAdapter(request);
-    } else {
-      return new RangeAdapter(request);
     }
+    return new RangeAdapter(request);
   }
 
   private static AbstractConstraintAdapter<? extends Number> max(AdapterCreateRequest request) {
@@ -319,7 +318,7 @@ public final class NumberAdapters {
 
       final int integerPartLength = bigNum.precision() - bigNum.scale();
       final int fractionPartLength = Math.max(bigNum.scale(), 0);
-      return (integer >= integerPartLength) && (fraction >= fractionPartLength);
+      return integer >= integerPartLength && fraction >= fractionPartLength;
     }
   }
 

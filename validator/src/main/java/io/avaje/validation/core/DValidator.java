@@ -317,7 +317,7 @@ final class DValidator implements Validator, ValidationContext {
         Type type, ValidationAdapter<T> adapter) {
       requireNonNull(type);
       requireNonNull(adapter);
-      return (request) -> simpleMatch(type, request.annotationType()) ? adapter : null;
+      return request -> simpleMatch(type, request.annotationType()) ? adapter : null;
     }
 
     private static <T> AdapterFactory newAdapterFactory(Type type, ValidationAdapter<T> adapter) {
@@ -336,7 +336,7 @@ final class DValidator implements Validator, ValidationContext {
         Class<? extends Annotation> type, AnnotationAdapterBuilder builder) {
       requireNonNull(type);
       requireNonNull(builder);
-      return (req) -> simpleMatch(type, req.annotationType()) ? builder.build(req) : null;
+      return req -> simpleMatch(type, req.annotationType()) ? builder.build(req) : null;
     }
 
     private static boolean simpleMatch(Type type, Type targetType) {

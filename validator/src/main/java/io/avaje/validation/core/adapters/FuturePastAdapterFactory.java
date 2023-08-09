@@ -24,14 +24,10 @@ public final class FuturePastAdapterFactory implements AnnotationFactory {
   @Override
   public ValidationAdapter<?> create(AdapterCreateRequest request) {
     return switch (request.annotationType().getSimpleName()) {
-      case "Past" -> new FuturePastAdapter(
-          request, true, false, pastClock());
-      case "PastOrPresent" -> new FuturePastAdapter(
-          request, true, true, pastClock());
-      case "Future" -> new FuturePastAdapter(
-          request, false, false, futureClock());
-      case "FutureOrPresent" -> new FuturePastAdapter(
-          request, false, true, futureClock());
+      case "Past" -> new FuturePastAdapter(request, true, false, pastClock());
+      case "PastOrPresent" -> new FuturePastAdapter(request, true, true, pastClock());
+      case "Future" -> new FuturePastAdapter(request, false, false, futureClock());
+      case "FutureOrPresent" -> new FuturePastAdapter(request, false, true, futureClock());
       default -> null;
     };
   }

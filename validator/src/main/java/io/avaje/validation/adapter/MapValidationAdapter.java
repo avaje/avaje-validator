@@ -6,7 +6,7 @@ final class MapValidationAdapter<T> extends AbstractContainerAdapter<T> {
 
   private final boolean keys;
 
-   MapValidationAdapter(ValidationAdapter<T> adapters, boolean keys) {
+  MapValidationAdapter(ValidationAdapter<T> adapters, boolean keys) {
     super(adapters);
     this.keys = keys;
   }
