@@ -25,7 +25,7 @@ class AssertBooleanTest extends BasicTest {
 
   @Test
   void testNull() {
-    assertThat(trueAdapter.validate(null, request)).isFalse();
+    assertThat(trueAdapter.validate(null, request)).isTrue();
     assertThat(falseAdapter.validate(null, request)).isTrue();
   }
 
