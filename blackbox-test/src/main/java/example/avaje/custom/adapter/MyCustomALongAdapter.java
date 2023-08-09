@@ -15,6 +15,8 @@ public final class MyCustomALongAdapter extends PrimitiveAdapter<Long> {
   @Override
   public boolean isValid(long value) {
     return value == 4;
+    // assert on primitive long different to object Long to show
+    // that we generally need both isValid() method implemented appropriately
   }
 
   @Override
