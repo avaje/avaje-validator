@@ -7,7 +7,8 @@ import java.util.Set;
 final class PrimitiveUtil {
 
   private static final Set<String> primitiveValidationTypes = Set.of("int", "long");
-  private static final Set<String> primitiveValidationAnnotations = Set.of("Range");
+  private static final Set<String> primitiveValidationAnnotations =
+    Set.of("Range", "Min", "Max", "Positive", "PositiveOrZero", "Negative", "NegativeOrZero");
   private static final Map<String, String> wrapperMap = new HashMap<>();
 
   static {

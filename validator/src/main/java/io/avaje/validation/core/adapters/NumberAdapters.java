@@ -112,15 +112,25 @@ public final class NumberAdapters {
     boolean isValid(T number);
   }
 
-  private static final class MaxAdapter extends AbstractConstraintAdapter<Number> implements NumberAdapter<Number> {
+  private static final class MaxAdapter extends PrimitiveAdapter<Number> implements NumberAdapter<Number> {
 
-    private final long value;
+    private final long max;
     private final String targetType;
 
     MaxAdapter(AdapterCreateRequest request) {
       super(request);
       this.targetType = request.targetType();
-      this.value = (long) request.attribute("value");
+      this.max = (long) request.attribute("value");
+    }
+
+    @Override
+    boolean isValid(int value) {
+      return value <= max;
+    }
+
+    @Override
+    boolean isValid(long value) {
+      return value <= max;
     }
 
     @Override
@@ -130,9 +140,9 @@ public final class NumberAdapters {
         return true;
       }
       return switch (targetType) {
-        case "Integer", "Long", "Short", "Byte" -> number.longValue() <= value;
-        case "Double", "Number" -> compareDouble(number.doubleValue(), value, GREATER_THAN)  <= 0;
-        case "Float" -> compareFloat((Float)number, value, GREATER_THAN)  <= 0;
+        case "Integer", "Long", "Short", "Byte" -> number.longValue() <= max;
+        case "Double", "Number" -> compareDouble(number.doubleValue(), max, GREATER_THAN)  <= 0;
+        case "Float" -> compareFloat((Float)number, max, GREATER_THAN)  <= 0;
         default -> throw new IllegalStateException();
       };
     }
@@ -168,15 +178,25 @@ public final class NumberAdapters {
     }
   }
 
-  private static final class MinAdapter extends AbstractConstraintAdapter<Number> implements NumberAdapter<Number> {
+  private static final class MinAdapter extends PrimitiveAdapter<Number> implements NumberAdapter<Number> {
 
-    private final long value;
+    private final long min;
     private final String targetType;
 
     MinAdapter(AdapterCreateRequest request) {
       super(request);
       this.targetType = request.targetType();
-      this.value = (long) request.attribute("value");
+      this.min = (long) request.attribute("value");
+    }
+
+    @Override
+    boolean isValid(int value) {
+      return value >= min;
+    }
+
+    @Override
+    boolean isValid(long value) {
+      return value >= min;
     }
 
     @Override
@@ -185,9 +205,9 @@ public final class NumberAdapters {
         return true;
       }
       return switch (targetType) {
-        case "Integer", "Long", "Short", "Byte" -> number.longValue() >= value;
-        case "Double" -> compareDouble(number.doubleValue(), value, LESS_THAN)  >= 0;
-        case "Float" -> compareFloat((Float)number, value, LESS_THAN)  >= 0;
+        case "Integer", "Long", "Short", "Byte" -> number.longValue() >= min;
+        case "Double" -> compareDouble(number.doubleValue(), min, LESS_THAN)  >= 0;
+        case "Float" -> compareFloat((Float)number, min, LESS_THAN)  >= 0;
         default -> throw new IllegalStateException();
       };
     }
@@ -254,7 +274,7 @@ public final class NumberAdapters {
     }
   }
 
-  private static final class PositiveAdapter extends AbstractConstraintAdapter<Object> {
+  private static final class PositiveAdapter extends PrimitiveAdapter<Object> {
 
     private final boolean inclusive;
     private final String targetType;
@@ -274,9 +294,19 @@ public final class NumberAdapters {
       final int sign = NumberSignHelper.signum(targetType, value, LESS_THAN);
       return !(inclusive ? sign < 0 : sign <= 0);
     }
+
+    @Override
+    boolean isValid(int value) {
+      return inclusive ? value >= 0 : value > 0;
+    }
+
+    @Override
+    boolean isValid(long value) {
+      return inclusive ? value >= 0 : value > 0;
+    }
   }
 
-  private static final class NegativeAdapter extends AbstractConstraintAdapter<Object> {
+  private static final class NegativeAdapter extends PrimitiveAdapter<Object> {
 
     private final boolean inclusive;
     private final String targetType;
@@ -296,9 +326,19 @@ public final class NumberAdapters {
       final int sign = NumberSignHelper.signum(targetType, value, GREATER_THAN);
       return !(inclusive ? sign > 0 : sign >= 0);
     }
+
+    @Override
+    boolean isValid(int value) {
+      return inclusive ? value <= 0 : value < 0;
+    }
+
+    @Override
+    boolean isValid(long value) {
+      return inclusive ? value <= 0 : value < 0;
+    }
   }
 
-  private static final class RangeAdapter extends PrimitiveAdapter {
+  private static final class RangeAdapter extends PrimitiveAdapter<Number> {
 
     private final NumberAdapter<Number> maxAdapter;
     private final NumberAdapter<Number> minAdapter;
@@ -333,7 +373,7 @@ public final class NumberAdapters {
     }
   }
 
-  private static abstract class PrimitiveAdapter extends AbstractConstraintAdapter<Number> implements ValidationAdapter.Primitive {
+  private static abstract class PrimitiveAdapter<T> extends AbstractConstraintAdapter<T> implements ValidationAdapter.Primitive {
 
     PrimitiveAdapter(AdapterCreateRequest request) {
       super(request);
