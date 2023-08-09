@@ -1,5 +1,6 @@
 package io.avaje.validation.generator;
 
+import static io.avaje.validation.generator.PrimitiveUtil.isPrimitiveValidationAnnotations;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 
@@ -80,7 +81,6 @@ public record ElementAnnotationContainer(
   }
 
   static boolean hasMetaConstraintAnnotation(Element element) {
-
     return ConstraintPrism.isPresent(element);
   }
 
@@ -89,7 +89,6 @@ public record ElementAnnotationContainer(
 
   static ElementAnnotationContainer create(VariableElement varElement) {
     final var asString = varElement.asType().toString();
-
     final var noGeneric = AnnotationUtil.splitString(asString, "<")[0];
 
     final var annotations =
@@ -125,4 +124,14 @@ public record ElementAnnotationContainer(
   boolean isEmpty() {
     return annotations.isEmpty() && typeUse1.isEmpty() && typeUse2.isEmpty();
   }
+
+  boolean supportsPrimitiveValidation() {
+    for (GenericType validationAnnotation : annotations.keySet()) {
+      if (!isPrimitiveValidationAnnotations(validationAnnotation.shortName())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 }

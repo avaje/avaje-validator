@@ -14,6 +14,7 @@ final class AdapterHelper {
   private final GenericType genericType;
   private final boolean classLevel;
   private final boolean crossParam;
+  private boolean usePrimitiveValidation;
 
   AdapterHelper(Append writer, ElementAnnotationContainer elementAnnotations, String indent) {
     this(writer, elementAnnotations, indent,"Object", null, false, false);
@@ -47,12 +48,21 @@ final class AdapterHelper {
     this.crossParam = crossParam;
   }
 
+  AdapterHelper usePrimitiveValidation(boolean usePrimitiveValidation) {
+    this.usePrimitiveValidation = usePrimitiveValidation;
+    return this;
+  }
+
   void write() {
     final var typeUse1 = elementAnnotations.typeUse1();
     final var typeUse2 = elementAnnotations.typeUse2();
     final var hasValid = elementAnnotations.hasValid();
     writeFirst(crossParam ? elementAnnotations.crossParam() : elementAnnotations.annotations());
     if (crossParam) {
+      return;
+    }
+    if (usePrimitiveValidation) {
+      writer.eol().append("%s    .primitive()", indent);
       return;
     }
 

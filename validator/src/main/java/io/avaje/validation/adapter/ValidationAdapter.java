@@ -35,6 +35,13 @@ public interface ValidationAdapter<T> {
   }
 
   /**
+   * Return a primitive adapter. Supports int, long with Range, Min, Max, Positive.
+   */
+  default Primitive primitive() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
    * Create an adapter for validating a list of values.
    *
    * @return The adapter for list validation
@@ -112,5 +119,21 @@ public interface ValidationAdapter<T> {
       }
     }
     return false;
+  }
+
+  /**
+   * Validation adapter that supports and uses the primitive type.
+   */
+  interface Primitive {
+
+    /**
+     * Validate using primitive int.
+     */
+    boolean validate(int value, ValidationRequest req, String propertyName);
+
+    /**
+     * Validate using primitive long.
+     */
+    boolean validate(long value, ValidationRequest req, String propertyName);
   }
 }

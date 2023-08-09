@@ -1,5 +1,6 @@
 package io.avaje.validation.generator;
 
+import static io.avaje.validation.generator.PrimitiveUtil.isPrimitiveValidationType;
 import static io.avaje.validation.generator.ProcessingContext.logError;
 
 import java.util.List;
@@ -9,8 +10,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 
 final class FieldReader {
-
-  static final Set<String> BASIC_TYPES = Set.of("java.lang.String", "java.math.BigDecimal");
 
   private final List<String> genericTypeParams;
   private final boolean publicField;
@@ -25,6 +24,7 @@ final class FieldReader {
   private final Element element;
   private final ElementAnnotationContainer elementAnnotations;
   private final boolean classLevel;
+  private final boolean usePrimitiveValidation;
 
   FieldReader(Element element, List<String> genericTypeParams) {
     this(element, genericTypeParams, false);
@@ -38,6 +38,7 @@ final class FieldReader {
     this.elementAnnotations = ElementAnnotationContainer.create(element, classLevel);
     this.genericType = elementAnnotations.genericType();
     final String shortType = genericType.shortType();
+    usePrimitiveValidation = isPrimitiveValidationType(shortType) && elementAnnotations.supportsPrimitiveValidation();
     adapterShortType = initAdapterShortType(shortType);
     adapterFieldName = initShortName();
     this.optionalValidation = Util.isNullable(element);
@@ -45,6 +46,9 @@ final class FieldReader {
   }
 
   private String initAdapterShortType(String shortType) {
+    if (usePrimitiveValidation) {
+      return "ValidationAdapter.Primitive";
+    }
     String typeWrapped = "ValidationAdapter<" + PrimitiveUtil.wrap(shortType) + ">";
     for (final String typeParam : genericTypeParams) {
       if (typeWrapped.contains("<" + typeParam + ">")) {
@@ -186,6 +190,7 @@ final class FieldReader {
             PrimitiveUtil.wrap(genericType.shortType()),
             genericType,
             classLevel)
+        .usePrimitiveValidation(usePrimitiveValidation)
         .write();
     writer.append(";").eol().eol();
   }
