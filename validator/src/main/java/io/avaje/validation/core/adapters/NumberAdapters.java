@@ -10,28 +10,29 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
+import io.avaje.validation.adapter.PrimitiveAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
-import io.avaje.validation.adapter.ValidationRequest;
 
 public final class NumberAdapters {
   private NumberAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
-    request -> switch (request.annotationType().getSimpleName()) {
-    case "Digits" -> new DigitsAdapter(request);
-    case "Positive" -> new PositiveAdapter(request, false);
-    case "PositiveOrZero" -> new PositiveAdapter(request, true);
-    case "Negative" -> new NegativeAdapter(request, false);
-    case "NegativeOrZero" -> new NegativeAdapter(request, true);
-    case "Max" -> max(request);
-    case "Min" -> min(request);
-    case "DecimalMax" -> new DecimalMaxAdapter(request);
-    case "DecimalMin" -> new DecimalMinAdapter(request);
-    case "Range" -> range(request);
-    default -> null;
-  };
+      request ->
+          switch (request.annotationType().getSimpleName()) {
+            case "Digits" -> new DigitsAdapter(request);
+            case "Positive" -> new PositiveAdapter(request, false);
+            case "PositiveOrZero" -> new PositiveAdapter(request, true);
+            case "Negative" -> new NegativeAdapter(request, false);
+            case "NegativeOrZero" -> new NegativeAdapter(request, true);
+            case "Max" -> max(request);
+            case "Min" -> min(request);
+            case "DecimalMax" -> new DecimalMaxAdapter(request);
+            case "DecimalMin" -> new DecimalMinAdapter(request);
+            case "Range" -> range(request);
+            default -> null;
+          };
 
   private static ValidationAdapter<?> range(AdapterCreateRequest request) {
     if ("String".equals(request.targetType())) {
@@ -78,7 +79,8 @@ public final class NumberAdapters {
       if (number == null) {
         return true;
       }
-      final int comparisonResult = NumberComparatorHelper.compareDecimal(targetType, number, value, LESS_THAN);
+      final int comparisonResult =
+          NumberComparatorHelper.compareDecimal(targetType, number, value, LESS_THAN);
       return !(inclusive ? comparisonResult > 0 : comparisonResult >= 0);
     }
   }
@@ -103,7 +105,8 @@ public final class NumberAdapters {
       if (number == null) {
         return true;
       }
-      final int comparisonResult = NumberComparatorHelper.compareDecimal(targetType, number, value, LESS_THAN);
+      final int comparisonResult =
+          NumberComparatorHelper.compareDecimal(targetType, number, value, LESS_THAN);
       return !(inclusive ? comparisonResult < 0 : comparisonResult <= 0);
     }
   }
@@ -112,7 +115,8 @@ public final class NumberAdapters {
     boolean isValid(T number);
   }
 
-  private static final class MaxAdapter extends PrimitiveAdapter<Number> implements NumberAdapter<Number> {
+  private static final class MaxAdapter extends PrimitiveAdapter<Number>
+      implements NumberAdapter<Number> {
 
     private final long max;
     private final String targetType;
@@ -124,16 +128,6 @@ public final class NumberAdapters {
     }
 
     @Override
-    boolean isValid(int value) {
-      return value <= max;
-    }
-
-    @Override
-    boolean isValid(long value) {
-      return value <= max;
-    }
-
-    @Override
     public boolean isValid(Number number) {
       // null values are valid
       if (number == null) {
@@ -141,14 +135,45 @@ public final class NumberAdapters {
       }
       return switch (targetType) {
         case "Integer", "Long", "Short", "Byte" -> number.longValue() <= max;
-        case "Double", "Number" -> compareDouble(number.doubleValue(), max, GREATER_THAN)  <= 0;
-        case "Float" -> compareFloat((Float)number, max, GREATER_THAN)  <= 0;
+        case "Double", "Number" -> compareDouble(number.doubleValue(), max, GREATER_THAN) <= 0;
+        case "Float" -> compareFloat((Float) number, max, GREATER_THAN) <= 0;
         default -> throw new IllegalStateException();
       };
     }
+
+    @Override
+    public boolean isValid(byte value) {
+      return value <= max;
+    }
+
+    @Override
+    public boolean isValid(double value) {
+      return value <= max;
+    }
+
+    @Override
+    public boolean isValid(float value) {
+      return value <= max;
+    }
+
+    @Override
+    public boolean isValid(int value) {
+      return value <= max;
+    }
+
+    @Override
+    public boolean isValid(long value) {
+      return value <= max;
+    }
+
+    @Override
+    public boolean isValid(short value) {
+      return value <= max;
+    }
   }
 
-  static final class MaxBigDecimal extends AbstractConstraintAdapter<BigDecimal> implements NumberAdapter<BigDecimal> {
+  static final class MaxBigDecimal extends AbstractConstraintAdapter<BigDecimal>
+      implements NumberAdapter<BigDecimal> {
 
     private final BigDecimal max;
 
@@ -163,7 +188,8 @@ public final class NumberAdapters {
     }
   }
 
-  static final class MaxBigInteger extends AbstractConstraintAdapter<BigInteger> implements NumberAdapter<BigInteger> {
+  static final class MaxBigInteger extends AbstractConstraintAdapter<BigInteger>
+      implements NumberAdapter<BigInteger> {
 
     private final BigInteger max;
 
@@ -178,7 +204,8 @@ public final class NumberAdapters {
     }
   }
 
-  private static final class MinAdapter extends PrimitiveAdapter<Number> implements NumberAdapter<Number> {
+  private static final class MinAdapter extends PrimitiveAdapter<Number>
+      implements NumberAdapter<Number> {
 
     private final long min;
     private final String targetType;
@@ -190,30 +217,51 @@ public final class NumberAdapters {
     }
 
     @Override
-    boolean isValid(int value) {
-      return value >= min;
-    }
-
-    @Override
-    boolean isValid(long value) {
-      return value >= min;
-    }
-
-    @Override
     public boolean isValid(Number number) {
       if (number == null) {
         return true;
       }
       return switch (targetType) {
         case "Integer", "Long", "Short", "Byte" -> number.longValue() >= min;
-        case "Double" -> compareDouble(number.doubleValue(), min, LESS_THAN)  >= 0;
-        case "Float" -> compareFloat((Float)number, min, LESS_THAN)  >= 0;
+        case "Double" -> compareDouble(number.doubleValue(), min, LESS_THAN) >= 0;
+        case "Float" -> compareFloat((Float) number, min, LESS_THAN) >= 0;
         default -> throw new IllegalStateException();
       };
     }
+
+    @Override
+    public boolean isValid(byte value) {
+      return value >= min;
+    }
+
+    @Override
+    public boolean isValid(double value) {
+      return value >= min;
+    }
+
+    @Override
+    public boolean isValid(float value) {
+      return value >= min;
+    }
+
+    @Override
+    public boolean isValid(int value) {
+      return value >= min;
+    }
+
+    @Override
+    public boolean isValid(long value) {
+      return value >= min;
+    }
+
+    @Override
+    public boolean isValid(short value) {
+      return value >= min;
+    }
   }
 
-  static final class MinBigDecimal extends AbstractConstraintAdapter<BigDecimal> implements NumberAdapter<BigDecimal> {
+  static final class MinBigDecimal extends AbstractConstraintAdapter<BigDecimal>
+      implements NumberAdapter<BigDecimal> {
 
     private final BigDecimal min;
 
@@ -228,7 +276,8 @@ public final class NumberAdapters {
     }
   }
 
-  static final class MinBigInteger extends AbstractConstraintAdapter<BigInteger> implements NumberAdapter<BigInteger> {
+  static final class MinBigInteger extends AbstractConstraintAdapter<BigInteger>
+      implements NumberAdapter<BigInteger> {
 
     private final BigInteger min;
 
@@ -296,12 +345,32 @@ public final class NumberAdapters {
     }
 
     @Override
-    boolean isValid(int value) {
+    public boolean isValid(byte value) {
       return inclusive ? value >= 0 : value > 0;
     }
 
     @Override
-    boolean isValid(long value) {
+    public boolean isValid(double value) {
+      return inclusive ? value >= 0 : value > 0;
+    }
+
+    @Override
+    public boolean isValid(float value) {
+      return inclusive ? value >= 0 : value > 0;
+    }
+
+    @Override
+    public boolean isValid(int value) {
+      return inclusive ? value >= 0 : value > 0;
+    }
+
+    @Override
+    public boolean isValid(long value) {
+      return inclusive ? value >= 0 : value > 0;
+    }
+
+    @Override
+    public boolean isValid(short value) {
       return inclusive ? value >= 0 : value > 0;
     }
   }
@@ -328,12 +397,32 @@ public final class NumberAdapters {
     }
 
     @Override
-    boolean isValid(int value) {
+    public boolean isValid(byte value) {
       return inclusive ? value <= 0 : value < 0;
     }
 
     @Override
-    boolean isValid(long value) {
+    public boolean isValid(double value) {
+      return inclusive ? value <= 0 : value < 0;
+    }
+
+    @Override
+    public boolean isValid(float value) {
+      return inclusive ? value <= 0 : value < 0;
+    }
+
+    @Override
+    public boolean isValid(int value) {
+      return inclusive ? value <= 0 : value < 0;
+    }
+
+    @Override
+    public boolean isValid(long value) {
+      return inclusive ? value <= 0 : value < 0;
+    }
+
+    @Override
+    public boolean isValid(short value) {
       return inclusive ? value <= 0 : value < 0;
     }
   }
@@ -355,12 +444,12 @@ public final class NumberAdapters {
     }
 
     @Override
-    boolean isValid(int value) {
+    public boolean isValid(int value) {
       return value >= min && value <= max;
     }
 
     @Override
-    boolean isValid(long value) {
+    public boolean isValid(long value) {
       return value >= min && value <= max;
     }
 
@@ -370,46 +459,6 @@ public final class NumberAdapters {
         return true;
       }
       return minAdapter.isValid(value) && maxAdapter.isValid(value);
-    }
-  }
-
-  private static abstract class PrimitiveAdapter<T> extends AbstractConstraintAdapter<T> implements ValidationAdapter.Primitive {
-
-    PrimitiveAdapter(AdapterCreateRequest request) {
-      super(request);
-    }
-
-    @Override
-    public final Primitive primitive() {
-      return this;
-    }
-
-    abstract boolean isValid(int value);
-
-    abstract boolean isValid(long value);
-
-    @Override
-    public final boolean validate(int value, ValidationRequest req, String propertyName) {
-      if (!checkGroups(groups, req)) {
-        return true;
-      }
-      if (!isValid(value)) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      return true;
-    }
-
-    @Override
-    public final boolean validate(long value, ValidationRequest req, String propertyName) {
-      if (!checkGroups(groups, req)) {
-        return true;
-      }
-      if (!isValid(value)) {
-        req.addViolation(message, propertyName);
-        return false;
-      }
-      return true;
     }
   }
 

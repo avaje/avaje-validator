@@ -34,9 +34,7 @@ public interface ValidationAdapter<T> {
     return validate(value, req, null);
   }
 
-  /**
-   * Return a primitive adapter. Supports int, long with Range, Min, Max, Positive.
-   */
+  /** Return a primitive adapter. Supports int, long with Range, Min, Max, Positive. */
   default Primitive primitive() {
     throw new UnsupportedOperationException();
   }
@@ -121,19 +119,31 @@ public interface ValidationAdapter<T> {
     return false;
   }
 
-  /**
-   * Validation adapter that supports and uses the primitive type.
-   */
+  /** Validation adapter that supports and uses the primitive type. */
   interface Primitive {
 
-    /**
-     * Validate using primitive int.
-     */
+    /** Validate using primitive boolean. */
+    boolean validate(boolean value, ValidationRequest req, String propertyName);
+
+    /** Validate using primitive byte. */
+    boolean validate(byte value, ValidationRequest req, String propertyName);
+
+    /** Validate using primitive char. */
+    boolean validate(char value, ValidationRequest req, String propertyName);
+
+    /** Validate using primitive double. */
+    boolean validate(double value, ValidationRequest req, String propertyName);
+
+    /** Validate using primitive float. */
+    boolean validate(float value, ValidationRequest req, String propertyName);
+
+    /** Validate using primitive int. */
     boolean validate(int value, ValidationRequest req, String propertyName);
 
-    /**
-     * Validate using primitive long.
-     */
+    /** Validate using primitive long. */
     boolean validate(long value, ValidationRequest req, String propertyName);
+
+    /** Validate using primitive short. */
+    boolean validate(short value, ValidationRequest req, String propertyName);
   }
 }

@@ -1,5 +1,8 @@
 package io.avaje.validation.generator;
 
+import java.util.Optional;
+
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
 import io.avaje.prism.GeneratePrism;
@@ -26,5 +29,18 @@ public interface ConstraintPrism {
         || JakartaConstraintPrism.isPresent(e)
         || JavaxConstraintPrism.isPresent(e)
         || CrossParamConstraintPrism.isPresent(e);
+  }
+
+  default Boolean unboxPrimitives() {
+    return false;
+  }
+
+  static Optional<ConstraintPrism> getOptionalOn(Element e) {
+
+    return Optional.<ConstraintPrism>empty()
+        .or(() -> AvajeConstraintPrism.getOptionalOn(e))
+        .or(() -> JakartaConstraintPrism.getOptionalOn(e))
+        .or(() -> JavaxConstraintPrism.getOptionalOn(e))
+        .or(() -> CrossParamConstraintPrism.getOptionalOn(e));
   }
 }

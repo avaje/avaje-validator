@@ -271,7 +271,10 @@ final class Util {
   static String baseTypeOfAdapter(TypeElement element) {
 
     return Optional.of(element.getSuperclass())
-        .filter(t -> t.toString().contains("io.avaje.validation.adapter.AbstractConstraintAdapter"))
+        .filter(
+            t ->
+                t.toString().contains("io.avaje.validation.adapter.AbstractConstraintAdapter")
+                    || t.toString().contains("io.avaje.validation.adapter.PrimitiveAdapter"))
         .or(validationAdapter(element))
         .map(Object::toString)
         .map(GenericType::parse)
@@ -286,10 +289,32 @@ final class Util {
             });
   }
 
+  static boolean isPrimitiveAdapter(TypeElement element) {
+
+    return Optional.of(element.getSuperclass())
+        .filter(t -> t.toString().contains("io.avaje.validation.adapter.PrimitiveAdapter"))
+        .or(primitiveAdapter(element))
+        .isPresent();
+  }
+
   private static Supplier<Optional<? extends TypeMirror>> validationAdapter(TypeElement element) {
     return () ->
         element.getInterfaces().stream()
-            .filter(t -> t.toString().contains("io.avaje.validation.adapter.ValidationAdapter"))
+            .filter(
+                t ->
+                    t.toString().contains("io.avaje.validation.adapter.ValidationAdapter")
+                        || t.toString()
+                            .contains("io.avaje.validation.adapter.ValidationAdapter.Primitive"))
+            .findFirst();
+  }
+
+  private static Supplier<Optional<? extends TypeMirror>> primitiveAdapter(TypeElement element) {
+    return () ->
+        element.getInterfaces().stream()
+            .filter(
+                t ->
+                    t.toString()
+                        .contains("io.avaje.validation.adapter.ValidationAdapter.Primitive"))
             .findFirst();
   }
 

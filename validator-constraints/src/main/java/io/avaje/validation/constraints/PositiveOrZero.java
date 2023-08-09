@@ -31,7 +31,7 @@ import io.avaje.validation.constraints.PositiveOrZero.List;
  * @author Gunnar Morling
  * @since 2.0
  */
-@Constraint
+@Constraint(unboxPrimitives = true)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 @Repeatable(List.class)
