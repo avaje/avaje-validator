@@ -18,7 +18,8 @@ final class NumberComparatorHelper {
       case "Float" -> compareFloat((Float) number, value, treatNanAs);
       case "BigDecimal" -> ((BigDecimal) number).compareTo(value);
       case "BigInteger" -> new BigDecimal((BigInteger) number).compareTo(value);
-      case "Byte", "Integer", "Long", "Short" -> BigDecimal.valueOf(((Number)number).longValue()).compareTo(value);
+      case "Byte", "Integer", "Long", "Short" -> BigDecimal.valueOf(((Number) number).longValue())
+          .compareTo(value);
       default -> compareDecimal(number, value, treatNanAs);
     };
   }
@@ -26,9 +27,8 @@ final class NumberComparatorHelper {
   private static int compareDecimal(Object number, BigDecimal value, OptionalInt treatNanAs) {
     if (number instanceof Number n) {
       return compareDouble(n.doubleValue(), value, treatNanAs);
-    } else {
-      return new BigDecimal(number.toString()).compareTo(value);
     }
+    return new BigDecimal(number.toString()).compareTo(value);
   }
 
   static int compareDouble(Double number, long value, OptionalInt treatNanAs) {

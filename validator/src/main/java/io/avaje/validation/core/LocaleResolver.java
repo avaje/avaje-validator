@@ -28,8 +28,7 @@ final class LocaleResolver {
   public Locale resolve(@Nullable Locale requestLocale) {
     if (requestLocale == null || !otherLocales.contains(requestLocale)) {
       return defaultLocale;
-    } else {
-      return requestLocale;
     }
+    return requestLocale;
   }
 }

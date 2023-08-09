@@ -11,4 +11,8 @@ import java.lang.annotation.Target;
  */
 @Retention(CLASS)
 @Target({ANNOTATION_TYPE})
-public @interface Constraint {}
+public @interface Constraint {
+
+  /** Determines if the constraint can validate primitives without boxing */
+  boolean unboxPrimitives() default false;
+}

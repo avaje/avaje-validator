@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
+import io.avaje.validation.adapter.PrimitiveAdapter;
 import io.avaje.validation.adapter.RegexFlag;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
@@ -22,8 +23,8 @@ public final class BasicAdapters {
             case "URI" -> new UriAdapter(request);
             case "Null" -> new NullableAdapter(request, true);
             case "NotNull", "NonNull" -> new NullableAdapter(request, false);
-            case "AssertTrue" -> new AssertBooleanAdapter(request, Boolean.TRUE);
-            case "AssertFalse" -> new AssertBooleanAdapter(request, Boolean.FALSE);
+            case "AssertTrue" -> new AssertBooleanAdapter(request, true);
+            case "AssertFalse" -> new AssertBooleanAdapter(request, false);
             case "NotBlank" -> new NotBlankAdapter(request);
             case "NotEmpty" -> new NotEmptyAdapter(request);
             case "Pattern" -> new PatternAdapter(request);
@@ -209,18 +210,23 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class AssertBooleanAdapter extends AbstractConstraintAdapter<Boolean> {
+  private static final class AssertBooleanAdapter extends PrimitiveAdapter<Boolean> {
 
-    private final Boolean assertBool;
+    private final boolean assertBool;
 
-    AssertBooleanAdapter(AdapterCreateRequest request, Boolean assertBool) {
+    AssertBooleanAdapter(AdapterCreateRequest request, boolean assertBool) {
       super(request);
       this.assertBool = assertBool;
     }
 
     @Override
     public boolean isValid(Boolean type) {
-      return !assertBool.booleanValue() && type == null || assertBool.equals(type);
+      return !assertBool && type == null || type != null && assertBool == type.booleanValue();
+    }
+
+    @Override
+    public boolean isValid(boolean type) {
+      return assertBool == type;
     }
   }
 

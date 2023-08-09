@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  *
  * @author Emmanuel Bernard
  */
-@Constraint
+@Constraint(unboxPrimitives = true)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Max.List.class)

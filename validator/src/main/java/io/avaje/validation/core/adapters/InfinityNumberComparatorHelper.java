@@ -2,9 +2,7 @@ package io.avaje.validation.core.adapters;
 
 import java.util.OptionalInt;
 
-/**
- * @author Marko Bekhta
- */
+/** @author Marko Bekhta */
 final class InfinityNumberComparatorHelper {
 
   static final OptionalInt LESS_THAN = OptionalInt.of(-1);

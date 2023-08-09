@@ -76,9 +76,10 @@ public final class ValidationProcessor extends AbstractProcessor {
     getElements(round, AvajeConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
     getElements(round, JavaxConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
     getElements(round, JakartaConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
-    getElements(round, CrossParamConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
+    getElements(round, CrossParamConstraintPrism.PRISM_TYPE)
+        .ifPresent(this::writeConstraintAdapters);
 
-    //register custom adapters
+    // register custom adapters
     getElements(round, ConstraintAdapterPrism.PRISM_TYPE).ifPresent(this::registerCustomAdapters);
 
     getElements(round, AvajeValidPrism.PRISM_TYPE).ifPresent(this::writeAdapters);
@@ -89,26 +90,41 @@ public final class ValidationProcessor extends AbstractProcessor {
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);
 
-    writeAdaptersForImported(round.getElementsAnnotatedWith(element(ImportValidPojoPrism.PRISM_TYPE)));
+    writeAdaptersForImported(
+        round.getElementsAnnotatedWith(element(ImportValidPojoPrism.PRISM_TYPE)));
     initialiseComponent();
     cascadeTypes();
-    customizerServiceWriter.writeMetaInf(round.getElementsAnnotatedWith(element(BuilderCustomizerPrism.PRISM_TYPE)));
+    customizerServiceWriter.writeMetaInf(
+        round.getElementsAnnotatedWith(element(BuilderCustomizerPrism.PRISM_TYPE)));
     writeComponent(round.processingOver());
     return false;
   }
 
   // Optional because these annotations are not guaranteed to exist
-  private Optional<? extends Set<? extends Element>> getElements(RoundEnvironment round, String name) {
+  private Optional<? extends Set<? extends Element>> getElements(
+      RoundEnvironment round, String name) {
     return Optional.ofNullable(element(name)).map(round::getElementsAnnotatedWith);
   }
 
   private void registerCustomAdapters(Set<? extends Element> elements) {
     for (final var typeElement : ElementFilter.typesIn(elements)) {
       final var type = Util.baseTypeOfAdapter(typeElement);
-
-      if (!CrossParamConstraintPrism.getAllOnMetaAnnotations(typeElement).isEmpty() && type.contains("Object[]")) {
+      final var targetAnnotation =
+          asElement(ConstraintAdapterPrism.getInstanceOn(typeElement).value());
+      if (!CrossParamConstraintPrism.getAllOnMetaAnnotations(typeElement).isEmpty()
+          && type.contains("Object[]")) {
         logError(typeElement, "Cross Parameter Adapters must accept type Object[]");
       }
+
+      ConstraintPrism.getOptionalOn(targetAnnotation)
+          .ifPresent(
+              p -> {
+                if (p.unboxPrimitives() && !Util.isPrimitiveAdapter(typeElement)) {
+                  logError(
+                      typeElement,
+                      "Adapters for Primitive Constraints must extend PrimitiveAdapter or implement ValidationAdapter.Primitive");
+                }
+              });
 
       ElementFilter.constructorsIn(typeElement.getEnclosedElements()).stream()
           .filter(m -> m.getModifiers().contains(Modifier.PUBLIC))
@@ -153,7 +169,9 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private boolean cascadeElement(TypeElement element) {
-    return element != null && element.getKind() != ElementKind.ENUM && !metaData.contains(adapterName(element));
+    return element != null
+        && element.getKind() != ElementKind.ENUM
+        && !metaData.contains(adapterName(element));
   }
 
   private String adapterName(TypeElement element) {
@@ -170,7 +188,8 @@ public final class ValidationProcessor extends AbstractProcessor {
   /** Elements that have a {@code @Valid.Import} annotation. */
   private void writeAdaptersForImported(Set<? extends Element> importedElements) {
     for (final var importedElement : ElementFilter.typesIn(importedElements)) {
-      for (final TypeMirror importType : ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
+      for (final TypeMirror importType :
+          ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
         // if imported by mixin annotation skip
         if (mixInImports.contains(importType.toString())) {
           continue;
@@ -230,9 +249,9 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private boolean isController(TypeElement typeElement) {
     return typeElement.getAnnotationMirrors().stream()
-      .map(AnnotationMirror::getAnnotationType)
-      .map(DeclaredType::toString)
-      .anyMatch(val -> val.endsWith(".Controller"));
+        .map(AnnotationMirror::getAnnotationType)
+        .map(DeclaredType::toString)
+        .anyMatch(val -> val.endsWith(".Controller"));
   }
 
   private void writeAdapterForConstraint(TypeElement typeElement) {
@@ -269,7 +288,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     for (final ExecutableElement executableElement : elements) {
       if (executableElement.getEnclosingElement().getAnnotationMirrors().stream()
           .map(m -> m.getAnnotationType().toString())
-          .noneMatch(annotationType -> isInjectableComponent(annotationType))) {
+          .noneMatch(ValidationProcessor::isInjectableComponent)) {
         logError(
             executableElement,
             "The ValidMethod Annotation can only be used with JSR-330 Injectable Classes");
@@ -280,9 +299,9 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private static boolean isInjectableComponent(String annotationType) {
     return annotationType.contains("Singleton")
-      || annotationType.contains("Component")
-      || annotationType.contains("Service")
-      || annotationType.contains("Controller");
+        || annotationType.contains("Component")
+        || annotationType.contains("Service")
+        || annotationType.contains("Controller");
   }
 
   private void writeParamProvider(ExecutableElement typeElement) {

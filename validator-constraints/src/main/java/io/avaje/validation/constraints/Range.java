@@ -21,7 +21,7 @@ import io.avaje.validation.constraints.Range.List;
  *
  * @author Hardy Ferentschik
  */
-@Constraint
+@Constraint(unboxPrimitives = true)
 @Documented
 @Retention(RUNTIME)
 @Repeatable(List.class)
