@@ -7,7 +7,6 @@ import java.util.Set;
 final class PrimitiveUtil {
   private PrimitiveUtil() {}
 
-  private static final Set<String> primitiveValidationTypes = Set.of("int", "long");
   private static final Set<String> primitiveValidationAnnotations =
       new HashSet<>(
           Set.of(
@@ -38,6 +37,7 @@ final class PrimitiveUtil {
           "Float",
           "boolean",
           "Boolean");
+  private static final Set<String> primitiveValidationTypes = wrapperMap.keySet();
 
   static String wrap(String shortName) {
     final String wrapped = wrapperMap.get(shortName);
