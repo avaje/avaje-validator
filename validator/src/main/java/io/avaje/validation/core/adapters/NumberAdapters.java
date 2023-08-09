@@ -13,6 +13,7 @@ import io.avaje.validation.adapter.AbstractConstraintAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
+import io.avaje.validation.adapter.ValidationRequest;
 
 public final class NumberAdapters {
   private NumberAdapters() {}
@@ -297,18 +298,30 @@ public final class NumberAdapters {
     }
   }
 
-  private static final class RangeAdapter extends AbstractConstraintAdapter<Number> {
+  private static final class RangeAdapter extends PrimitiveAdapter {
 
     private final NumberAdapter<Number> maxAdapter;
     private final NumberAdapter<Number> minAdapter;
+    private final long min;
+    private final long max;
 
     @SuppressWarnings("unchecked")
     RangeAdapter(AdapterCreateRequest request) {
       super(request);
-      final var min = (long) request.attribute("min");
-      final var max = (long) request.attribute("max");
+      this.min = (long) request.attribute("min");
+      this.max = (long) request.attribute("max");
       this.maxAdapter = (NumberAdapter<Number>) max(request.withValue(max));
       this.minAdapter = (NumberAdapter<Number>) min(request.withValue(min));
+    }
+
+    @Override
+    boolean isValid(int value) {
+      return value >= min && value <= max;
+    }
+
+    @Override
+    boolean isValid(long value) {
+      return value >= min && value <= max;
     }
 
     @Override
@@ -317,6 +330,46 @@ public final class NumberAdapters {
         return true;
       }
       return minAdapter.isValid(value) && maxAdapter.isValid(value);
+    }
+  }
+
+  private static abstract class PrimitiveAdapter extends AbstractConstraintAdapter<Number> implements ValidationAdapter.Primitive {
+
+    PrimitiveAdapter(AdapterCreateRequest request) {
+      super(request);
+    }
+
+    @Override
+    public final Primitive primitive() {
+      return this;
+    }
+
+    abstract boolean isValid(int value);
+
+    abstract boolean isValid(long value);
+
+    @Override
+    public final boolean validate(int value, ValidationRequest req, String propertyName) {
+      if (!checkGroups(groups, req)) {
+        return true;
+      }
+      if (!isValid(value)) {
+        req.addViolation(message, propertyName);
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public final boolean validate(long value, ValidationRequest req, String propertyName) {
+      if (!checkGroups(groups, req)) {
+        return true;
+      }
+      if (!isValid(value)) {
+        req.addViolation(message, propertyName);
+        return false;
+      }
+      return true;
     }
   }
 

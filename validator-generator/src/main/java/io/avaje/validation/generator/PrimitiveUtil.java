@@ -2,10 +2,13 @@ package io.avaje.validation.generator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 final class PrimitiveUtil {
 
-  static Map<String, String> wrapperMap = new HashMap<>();
+  private static final Set<String> primitiveValidationTypes = Set.of("int", "long");
+  private static final Set<String> primitiveValidationAnnotations = Set.of("Range");
+  private static final Map<String, String> wrapperMap = new HashMap<>();
 
   static {
     wrapperMap.put("char", "Character");
@@ -25,6 +28,14 @@ final class PrimitiveUtil {
 
   static boolean isPrimitive(String typeShortName) {
     return wrapperMap.containsKey(typeShortName);
+  }
+
+  static boolean isPrimitiveValidationType(String typeShortName) {
+    return primitiveValidationTypes.contains(typeShortName);
+  }
+
+  static boolean isPrimitiveValidationAnnotations(String annotationShortName) {
+    return primitiveValidationAnnotations.contains(annotationShortName);
   }
 
   static String defaultValue(String shortType) {
