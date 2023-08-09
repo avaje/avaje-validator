@@ -444,6 +444,29 @@ public final class NumberAdapters {
     }
 
     @Override
+    public boolean isValid(Number value) {
+      if (value == null) {
+        return true;
+      }
+      return minAdapter.isValid(value) && maxAdapter.isValid(value);
+    }
+
+    @Override
+    public boolean isValid(byte value) {
+      return value >= min && value <= max;
+    }
+
+    @Override
+    public boolean isValid(double value) {
+      return value >= min && value <= max;
+    }
+
+    @Override
+    public boolean isValid(float value) {
+      return value >= min && value <= max;
+    }
+
+    @Override
     public boolean isValid(int value) {
       return value >= min && value <= max;
     }
@@ -454,11 +477,8 @@ public final class NumberAdapters {
     }
 
     @Override
-    public boolean isValid(Number value) {
-      if (value == null) {
-        return true;
-      }
-      return minAdapter.isValid(value) && maxAdapter.isValid(value);
+    public boolean isValid(short value) {
+      return value >= min && value <= max;
     }
   }
 
