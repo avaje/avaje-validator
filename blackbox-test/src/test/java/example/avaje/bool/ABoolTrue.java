@@ -8,4 +8,12 @@ public record ABoolTrue(
   @AssertTrue boolean primitive,
   @AssertTrue Boolean object
 ) {
+
+  @AssertTrue public boolean primitiveMethod() {
+    return primitive;
+  }
+
+  @AssertTrue public Boolean objectMethod() {
+    return object;
+  }
 }
