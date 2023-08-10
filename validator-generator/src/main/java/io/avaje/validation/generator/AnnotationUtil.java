@@ -73,7 +73,7 @@ final class AnnotationUtil {
   private static final String[] NUMBER_TYPE_ONLY_ANNOTATIONS = {"Max", "Min", "Positive", "PositiveOrZero", "Negative", "NegativeOrZero"};
   private static final String[] BOOLEAN_TYPE_ONLY_ANNOTATIONS = {"AssertTrue", "AssertFalse"};
   private static final String[] STRING_TYPE_ONLY_ANNOTATIONS = {"NotBlank","Email"};
-  private static final String[] TEMPORAL_ONLY_ANNOTATIONS = {"Past", "PastOrPresent", "Future", "FutureOrPresent"};
+  private static final String[] TEMPORAL_ONLY_ANNOTATIONS = {"Past", "PastOrPresent", "Future", "FutureOrPresent", "DateRange"};
 
   private static final Handler defaultHandler = new StandardHandler();
 
