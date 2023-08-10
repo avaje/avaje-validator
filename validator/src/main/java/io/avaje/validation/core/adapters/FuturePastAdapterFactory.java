@@ -24,7 +24,7 @@ public final class FuturePastAdapterFactory implements AnnotationFactory {
   @Override
   public ValidationAdapter<?> create(AdapterCreateRequest request) {
     return switch (request.annotationType().getSimpleName()) {
-      case "DateRange" -> new DateRangeAdapter(request, clockSupplier.get());
+      case "DateRange" -> new DateRangeAdapter(request, clockSupplier.get(), tolerance);
       case "Past" -> new FuturePastAdapter(request, true, false, pastClock());
       case "PastOrPresent" -> new FuturePastAdapter(request, true, true, pastClock());
       case "Future" -> new FuturePastAdapter(request, false, false, futureClock());

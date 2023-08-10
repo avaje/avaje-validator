@@ -35,6 +35,26 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * </pre>
  *
+ * <h4>Use of 'now'</h4>
+ * <p> 'now' can be used for a min or max. When used with date + time types
+ * Instance, LocalDateTime, OffsetDateTime, and ZonedDateTime then the
+ * configured temporal tolerance is used.
+ *
+ * <p>Refer to {@code Validator.Builder#temporalTolerance(Duration) }
+ *
+ * <h4>Examples</h4>
+ * <pre>{@code
+ *
+ *   // between 120yrs and 3yrs old
+ *   @DateRange(min="-P120Y", max = "-P3Y")
+ *   LocalDate dateOfBirth;
+ *
+ *   // between (now - tolerance) and 3 months into the future
+ *   @DateRange(min="now, max = "P3M")
+ *   OffsetDateTime expectedDelivery;
+ *
+ * }</pre>
+ *
  * @see java.time.Period#parse(CharSequence)
  * @see java.time.Duration#parse(CharSequence)
  */

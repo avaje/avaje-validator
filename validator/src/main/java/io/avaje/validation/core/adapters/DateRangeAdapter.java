@@ -10,28 +10,44 @@ import java.time.temporal.TemporalAmount;
 final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
 
   private final Clock referenceClock;
+  private final Duration tolerance;
   private final String _type;
 
   private final TemporalAmount min;
   private final TemporalAmount max;
 
-  DateRangeAdapter(AdapterCreateRequest request, Clock referenceClock) {
+  DateRangeAdapter(AdapterCreateRequest request, Clock referenceClock, Duration tolerance) {
     super(request);
     this.referenceClock = referenceClock;
+    this.tolerance = tolerance;
     this._type = request.targetType();
-    min = parsePeriod((String) request.attribute("min"));
-    max = parsePeriod((String) request.attribute("max"));
+    min = parsePeriod((String) request.attribute("min"), true);
+    max = parsePeriod((String) request.attribute("max"), false);
   }
 
-  private TemporalAmount parsePeriod(String period) {
+  private TemporalAmount parsePeriod(String period, boolean negateTolerance) {
     if (period == null || period.isEmpty()) {
       return null;
+    }
+    if (period.equals("now")) {
+      return nowTolerance(negateTolerance);
     }
     try {
       return Period.parse(period);
     } catch (DateTimeParseException e) {
       return Duration.parse(period);
     }
+  }
+
+  private TemporalAmount nowTolerance(boolean negateTolerance) {
+    return switch (_type) {
+      case "Temporal.Instant",
+        "Temporal.LocalDateTime",
+        "Temporal.ZonedDateTime",
+        "Temporal.OffsetDateTime" -> negateTolerance ? tolerance.negated() : tolerance;
+
+      default -> Period.ZERO;
+    };
   }
 
   @Override
@@ -58,7 +74,7 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
     if (min != null && now.plus(min).isAfter(value)) {
       return false;
     }
-    return max == null || now.plus(max).isAfter(value);
+    return max == null || !now.plus(max).isBefore(value);
   }
 
   private boolean compare(LocalDateTime value) {
@@ -66,7 +82,7 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
     if (min != null && now.plus(min).isAfter(value)) {
       return false;
     }
-    return max == null || now.plus(max).isAfter(value);
+    return max == null || !now.plus(max).isBefore(value);
   }
 
   private boolean compare(LocalTime value) {
@@ -74,7 +90,7 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
     if (min != null && now.plus(min).isAfter(value)) {
       return false;
     }
-    return max == null || now.plus(max).isAfter(value);
+    return max == null || !now.plus(max).isBefore(value);
   }
 
   private boolean compare(Instant value) {
@@ -82,7 +98,7 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
     if (min != null && now.plus(min).isAfter(value)) {
       return false;
     }
-    return max == null || now.plus(max).isAfter(value);
+    return max == null || !now.plus(max).isBefore(value);
   }
 
   private boolean compare(ZonedDateTime value) {
@@ -90,7 +106,7 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
     if (min != null && now.plus(min).isAfter(value)) {
       return false;
     }
-    return max == null || now.plus(max).isAfter(value);
+    return max == null || !now.plus(max).isBefore(value);
   }
 
   private boolean compare(OffsetDateTime value) {
@@ -98,7 +114,7 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
     if (min != null && now.plus(min).isAfter(value)) {
       return false;
     }
-    return max == null || now.plus(max).isAfter(value);
+    return max == null || !now.plus(max).isBefore(value);
   }
 
   private boolean compare(OffsetTime value) {
@@ -106,7 +122,7 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
     if (min != null && now.plus(min).isAfter(value)) {
       return false;
     }
-    return max == null || now.plus(max).isAfter(value);
+    return max == null || !now.plus(max).isBefore(value);
   }
 
   private boolean compare(Year value) {
@@ -114,7 +130,7 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
     if (min != null && now.plus(min).isAfter(value)) {
       return false;
     }
-    return max == null || now.plus(max).isAfter(value);
+    return max == null || !now.plus(max).isBefore(value);
   }
 
   private boolean compare(YearMonth value) {
@@ -122,6 +138,6 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
     if (min != null && now.plus(min).isAfter(value)) {
       return false;
     }
-    return max == null || now.plus(max).isAfter(value);
+    return max == null || !now.plus(max).isBefore(value);
   }
 }
