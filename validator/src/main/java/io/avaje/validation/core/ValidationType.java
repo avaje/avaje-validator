@@ -9,6 +9,7 @@ import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
+import io.avaje.validation.adapter.ValidationRequest;
 
 final class ValidationType<T> {
 
@@ -22,14 +23,16 @@ final class ValidationType<T> {
 
   void validate(T object, @Nullable Locale locale, List<Class<?>> groups)
       throws ConstraintViolationException {
-    final var req = ctx.request(locale, groups);
-    adapter.validate(object, req);
-    req.throwWithViolations();
+    executeValidations(object, locale, groups).throwWithViolations();
   }
 
   Set<ConstraintViolation> check(T object, @Nullable Locale locale, List<Class<?>> groups) {
+    return executeValidations(object, locale, groups).violations();
+  }
+
+  private ValidationRequest executeValidations(T object, Locale locale, List<Class<?>> groups) {
     final var req = ctx.request(locale, groups);
     adapter.validate(object, req);
-    return req.violations();
+    return req;
   }
 }

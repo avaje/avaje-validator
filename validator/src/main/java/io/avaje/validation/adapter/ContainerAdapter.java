@@ -4,7 +4,7 @@ package io.avaje.validation.adapter;
  *
  * @param <T> the type we are validating
  */
-public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T> {
+public abstract class ContainerAdapter<T> implements ValidationAdapter<T> {
 
   /** Adapter placed on the container type */
   protected final ValidationAdapter<T> initalAdapter;
@@ -12,16 +12,16 @@ public abstract class AbstractContainerAdapter<T> implements ValidationAdapter<T
   protected ValidationAdapter<Object> multiAdapter;
 
   /** @param initialAdapter initial adapter that can be used to validate the container itself */
-  protected AbstractContainerAdapter(ValidationAdapter<T> initialAdapter) {
+  protected ContainerAdapter(ValidationAdapter<T> initialAdapter) {
     this.initalAdapter = initialAdapter;
   }
 
   /**
-   * Compose the given adapter with the multiAdapter of this AbstractContainerAdapter for validating
+   * Compose the given adapter with the multiAdapter of this ContainerAdapter for validating
    * multiple items.
    */
   @SuppressWarnings("unchecked")
-  public AbstractContainerAdapter<T> andThenMulti(ValidationAdapter<?> adapter) {
+  public ContainerAdapter<T> andThenMulti(ValidationAdapter<?> adapter) {
     this.multiAdapter =
         this.multiAdapter != null
             ? multiAdapter.andThen((ValidationAdapter<Object>) adapter)
