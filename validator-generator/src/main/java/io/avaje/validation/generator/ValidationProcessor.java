@@ -101,18 +101,15 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   // Optional because these annotations are not guaranteed to exist
-  private Optional<? extends Set<? extends Element>> getElements(
-      RoundEnvironment round, String name) {
+  private Optional<? extends Set<? extends Element>> getElements(RoundEnvironment round, String name) {
     return Optional.ofNullable(element(name)).map(round::getElementsAnnotatedWith);
   }
 
   private void registerCustomAdapters(Set<? extends Element> elements) {
     for (final var typeElement : ElementFilter.typesIn(elements)) {
       final var type = Util.baseTypeOfAdapter(typeElement);
-      final var targetAnnotation =
-          asElement(ConstraintAdapterPrism.getInstanceOn(typeElement).value());
-      if (!CrossParamConstraintPrism.getAllOnMetaAnnotations(typeElement).isEmpty()
-          && type.contains("Object[]")) {
+      final var targetAnnotation = asElement(ConstraintAdapterPrism.getInstanceOn(typeElement).value());
+      if (!CrossParamConstraintPrism.getAllOnMetaAnnotations(typeElement).isEmpty() && type.contains("Object[]")) {
         logError(typeElement, "Cross Parameter Adapters must accept type Object[]");
       }
 
@@ -120,17 +117,7 @@ public final class ValidationProcessor extends AbstractProcessor {
           .ifPresent(
               p -> {
                 if (p.unboxPrimitives() && !Util.isPrimitiveAdapter(typeElement)) {
-
-                  final var noPrimitive =
-                      ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
-                              .filter(
-                                  m ->
-                                      "isValid".equals(m.getSimpleName().toString())
-                                          || "validate".equals(m.getSimpleName().toString()))
-                              .toList()
-                              .size()
-                          < 2;
-                  if (noPrimitive) {
+                  if (noPrimitiveValidateMethods(typeElement)) {
                     logError(
                         typeElement,
                         "Adapters for Primitive Constraints must override a primitive \"isValid\" or \"validate\" method");
@@ -157,6 +144,17 @@ public final class ValidationProcessor extends AbstractProcessor {
 
       metaData.addAnnotationAdapter(typeElement);
     }
+  }
+
+  private static boolean noPrimitiveValidateMethods(TypeElement typeElement) {
+    return ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
+      .filter(
+        m ->
+          "isValid".equals(m.getSimpleName().toString())
+            || "validate".equals(m.getSimpleName().toString()))
+      .toList()
+      .size()
+      < 2;
   }
 
   private void cascadeTypes() {
