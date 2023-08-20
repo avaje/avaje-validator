@@ -44,7 +44,7 @@ public interface ValidationAdapter<T> {
    *
    * @return The adapter for list validation
    */
-  default AbstractContainerAdapter<T> list() {
+  default ContainerAdapter<T> list() {
     return new IterableValidationAdapter<>(this);
   }
 
@@ -53,7 +53,7 @@ public interface ValidationAdapter<T> {
    *
    * @return The adapter for map key validation
    */
-  default AbstractContainerAdapter<T> mapKeys() {
+  default ContainerAdapter<T> mapKeys() {
     return new MapValidationAdapter<>(this, true);
   }
 
@@ -62,7 +62,7 @@ public interface ValidationAdapter<T> {
    *
    * @return The adapter for map value validation
    */
-  default AbstractContainerAdapter<T> mapValues() {
+  default ContainerAdapter<T> mapValues() {
     return new MapValidationAdapter<>(this, false);
   }
 
@@ -71,7 +71,7 @@ public interface ValidationAdapter<T> {
    *
    * @return The adapter for array validation
    */
-  default AbstractContainerAdapter<T> array() {
+  default ContainerAdapter<T> array() {
     return new ArrayValidationAdapter<>(this);
   }
 
@@ -80,7 +80,7 @@ public interface ValidationAdapter<T> {
    *
    * @return The adapter for optional value validation
    */
-  default AbstractContainerAdapter<T> optional() {
+  default ContainerAdapter<T> optional() {
     return new OptionalValidationAdapter<>(this);
   }
 

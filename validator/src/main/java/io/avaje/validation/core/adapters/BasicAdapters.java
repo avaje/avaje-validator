@@ -13,6 +13,8 @@ import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 import io.avaje.validation.adapter.ValidationRequest;
 
 public final class BasicAdapters {
+  private static final String LENGTH_MAX = "{avaje.Length.max.message}";
+
   private BasicAdapters() {}
 
   public static final ValidationContext.AnnotationFactory FACTORY =
@@ -64,7 +66,6 @@ public final class BasicAdapters {
   private static final class SizeAdapter implements ValidationAdapter<Object> {
 
     private static final String LENGTH = "{avaje.Length.message}";
-    private static final String LENGTH_MAX = "{avaje.Length.max.message}";
     private static final String SIZE = "{avaje.Size.message}";
     private static final String SIZE_MAX = "{avaje.Size.max.message}";
     private final ValidationContext.Message message;
@@ -142,7 +143,7 @@ public final class BasicAdapters {
       this.message = request.message();
       this.maxLength = maxLength(request);
       if (maxLength > 0 && standardMessage(request)) {
-        maxLengthMessage = request.message("{avaje.Length.max.message}", "min", 1);
+        maxLengthMessage = request.message(LENGTH_MAX, "min", 1);
       } else {
         maxLengthMessage = null;
       }

@@ -5,7 +5,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-final class OptionalValidationAdapter<T> extends AbstractContainerAdapter<T> {
+final class OptionalValidationAdapter<T> extends ContainerAdapter<T> {
 
   OptionalValidationAdapter(ValidationAdapter<T> adapters) {
     super(adapters);

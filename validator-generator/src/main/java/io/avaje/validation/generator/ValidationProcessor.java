@@ -120,6 +120,21 @@ public final class ValidationProcessor extends AbstractProcessor {
           .ifPresent(
               p -> {
                 if (p.unboxPrimitives() && !Util.isPrimitiveAdapter(typeElement)) {
+
+                  final var noPrimitive =
+                      ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
+                              .filter(
+                                  m ->
+                                      "isValid".equals(m.getSimpleName().toString())
+                                          || "validate".equals(m.getSimpleName().toString()))
+                              .toList()
+                              .size()
+                          < 2;
+                  if (noPrimitive) {
+                    logError(
+                        typeElement,
+                        "Adapters for Primitive Constraints must override a primitive \"isValid\" or \"validate\" method");
+                  }
                   logError(
                       typeElement,
                       "Adapters for Primitive Constraints must extend PrimitiveAdapter or implement ValidationAdapter.Primitive");
