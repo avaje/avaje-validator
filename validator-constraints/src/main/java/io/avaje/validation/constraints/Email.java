@@ -8,11 +8,8 @@ import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import io.avaje.validation.constraints.Email.List;
 
 /**
  * The string has to be a well-formed email address. Exact semantics of what makes up a valid email
@@ -22,10 +19,9 @@ import io.avaje.validation.constraints.Email.List;
  * <p>{@code null} elements are considered valid.
  */
 @Constraint
-@Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
-@Retention(RUNTIME)
-@Repeatable(List.class)
 @Documented
+@Retention(RUNTIME)
+@Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 public @interface Email {
 
   String message() default "{avaje.Email.message}";
@@ -41,16 +37,4 @@ public @interface Email {
   /** Used in combination with {@link #regexp()} in order to specify a regular expression option */
   RegexFlag[] flags() default {};
 
-  /**
-   * Defines several {@link Email} annotations on the same element.
-   *
-   * @see Email
-   */
-  @Target({METHOD, FIELD})
-  @Retention(RUNTIME)
-  @Documented
-  @interface List {
-
-    Email[] value();
-  }
 }

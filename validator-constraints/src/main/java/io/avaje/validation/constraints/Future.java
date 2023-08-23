@@ -8,16 +8,15 @@ import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
  * The annotated element must be an instant, date or time in the future.
  *
- * <p><i>Now</i> is defined by the {@link ClockProvider} attached to the {@link Validator} or {@link
- * ValidatorFactory}. The default {@code clockProvider} defines the current time according to the
- * virtual machine, applying the current default time zone if needed.
+ * <p><i>Now</i> is defined by the {@link Clock} Supplier attached to the {@link Validator}. The
+ * default clock defines the current time according to the virtual machine, applying the current
+ * default time zone if needed.
  *
  * <p>Supported types are:
  *
@@ -40,20 +39,11 @@ import java.lang.annotation.Target;
  */
 @Constraint
 @Documented
-@Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
-@Repeatable(Future.List.class)
+@Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 public @interface Future {
 
   String message() default "{avaje.Future.message}";
 
   Class<?>[] groups() default {};
-
-  /** Defines several {@code @Future} constraints on the same element. */
-  @Target({METHOD, FIELD})
-  @Retention(RUNTIME)
-  @Documented
-  @interface List {
-    Future[] value();
-  }
 }

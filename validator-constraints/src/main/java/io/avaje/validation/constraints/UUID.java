@@ -17,16 +17,8 @@ import static java.lang.annotation.ElementType.*;
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(UUID.List.class)
 public @interface UUID {
   String message() default "{avaje.UUID.message}";
 
   Class<?>[] groups() default {};
-
-  @Target({ElementType.METHOD, ElementType.FIELD})
-  @Retention(RetentionPolicy.RUNTIME)
-  @Documented
-  public @interface List {
-    UUID[] value();
-  }
 }

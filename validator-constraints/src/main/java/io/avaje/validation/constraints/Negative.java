@@ -8,11 +8,8 @@ import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import io.avaje.validation.constraints.Negative.List;
 
 /**
  * The annotated element must be a strictly negative number (i.e. 0 is considered as an invalid
@@ -31,27 +28,14 @@ import io.avaje.validation.constraints.Negative.List;
  *
  * @author Gunnar Morling
  */
-@Constraint(unboxPrimitives = true)
-@Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
-@Retention(RUNTIME)
-@Repeatable(List.class)
 @Documented
+@Constraint(unboxPrimitives = true)
+@Retention(RUNTIME)
+@Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 public @interface Negative {
 
   String message() default "{avaje.Negative.message}";
 
   Class<?>[] groups() default {};
 
-  /**
-   * Defines several {@link Negative} constraints on the same element.
-   *
-   * @see Negative
-   */
-  @Target({METHOD, FIELD})
-  @Retention(RUNTIME)
-  @Documented
-  @interface List {
-
-    Negative[] value();
-  }
 }

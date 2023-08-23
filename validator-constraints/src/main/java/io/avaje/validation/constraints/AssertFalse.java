@@ -6,9 +6,6 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE_USE;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -23,16 +20,9 @@ import java.lang.annotation.Target;
 @Constraint(unboxPrimitives = true)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(AssertFalse.List.class)
 public @interface AssertFalse {
   String message() default "{avaje.AssertFalse.message}";
 
   Class<?>[] groups() default {};
 
-  @Target({ElementType.METHOD, ElementType.FIELD})
-  @Retention(RetentionPolicy.RUNTIME)
-  @Documented
-  @interface List {
-    AssertFalse[] value();
-  }
 }
