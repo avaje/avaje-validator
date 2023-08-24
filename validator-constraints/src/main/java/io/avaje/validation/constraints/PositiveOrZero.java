@@ -8,11 +8,8 @@ import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import io.avaje.validation.constraints.PositiveOrZero.List;
 
 /**
  * The annotated element must be a positive number or 0.
@@ -34,24 +31,10 @@ import io.avaje.validation.constraints.PositiveOrZero.List;
 @Constraint(unboxPrimitives = true)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
-@Repeatable(List.class)
 @Documented
 public @interface PositiveOrZero {
 
   String message() default "{avaje.PositiveOrZero.message}";
 
   Class<?>[] groups() default {};
-
-  /**
-   * Defines several {@link PositiveOrZero} constraints on the same element.
-   *
-   * @see PositiveOrZero
-   */
-  @Target({METHOD, FIELD})
-  @Retention(RUNTIME)
-  @Documented
-  @interface List {
-
-    PositiveOrZero[] value();
-  }
 }
