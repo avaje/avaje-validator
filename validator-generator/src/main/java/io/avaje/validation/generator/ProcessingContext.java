@@ -7,6 +7,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.Filer;
@@ -36,6 +37,8 @@ final class ProcessingContext {
     private final Types types;
     private final int jdkVersion;
     private final String diAnnotation;
+    private final boolean warnHttp;
+    private final boolean injectPresent;
     private ModuleElement module;
     private boolean validated;
 
@@ -47,12 +50,13 @@ final class ProcessingContext {
       this.types = env.getTypeUtils();
       this.jdkVersion = env.getSourceVersion().ordinal();
 
-      final var useComponent = elements.getTypeElement(Constants.COMPONENT) != null;
+      this.injectPresent = elements.getTypeElement(Constants.COMPONENT) != null;
+      this.warnHttp = elements.getTypeElement("io.avaje.http.api.Controller") != null;
 
       final var jakarta = elements.getTypeElement(Constants.SINGLETON_JAKARTA) != null;
 
       diAnnotation =
-          (useComponent
+          (injectPresent
               ? Constants.COMPONENT
               : jakarta ? Constants.SINGLETON_JAKARTA : Constants.SINGLETON_JAVAX);
     }
@@ -95,6 +99,10 @@ final class ProcessingContext {
 
   static void logWarn(String msg, Object... args) {
     CTX.get().messager.printMessage(Diagnostic.Kind.WARNING, msg.formatted(args));
+  }
+
+  static void logWarn(Element e, String msg, Object... args) {
+    CTX.get().messager.printMessage(Diagnostic.Kind.WARNING, msg.formatted(args), e);
   }
 
   static void logDebug(String msg, Object... args) {
@@ -144,6 +152,8 @@ final class ProcessingContext {
     if (module != null && !CTX.get().validated && !module.isUnnamed()) {
 
       CTX.get().validated = true;
+      var injectPresent = CTX.get().injectPresent;
+      var warnHttp = CTX.get().warnHttp;
       try {
         var resource =
             CTX.get()
@@ -153,13 +163,44 @@ final class ProcessingContext {
                 .toString();
         try (var inputStream = new URI(resource).toURL().openStream();
             var reader = new BufferedReader(new InputStreamReader(inputStream))) {
+        	 AtomicBoolean noInjectPlugin = new AtomicBoolean(injectPresent);
+        	 AtomicBoolean noHttpPlugin = new AtomicBoolean(warnHttp);
+          var noProvides =
+              reader
+                  .lines()
+                  .map(
+                      s -> {
+                        if (injectPresent
+                            && s.contains("io.avaje.validation.plugin")) {
+                          noInjectPlugin.set(false);
+                        }
 
-          var noProvides = reader.lines().noneMatch(s -> s.contains(fqn));
+                        if (injectPresent
+                            && s.contains("io.avaje.validation.http")) {
+                            noInjectPlugin.set(false);
+                            noHttpPlugin.set(false);
+                        }
+
+                        return s;
+                      })
+                  .noneMatch(s -> s.contains(fqn));
 
           if (noProvides) {
             logError(
                 module,
                 "Missing \"provides io.avaje.validation.Validator.GeneratedComponent with %s;\"",
+                fqn);
+          }
+
+          if (noHttpPlugin.get()) {
+            logWarn(
+                module,
+                "`requires io.avaje.validation.http` must be explicity added or else avaje-inject may fail to detect the default http validator, validator, and method AOP validator",
+                fqn);
+          } else if (noInjectPlugin.get()) {
+            logWarn(
+                module,
+                "`requires io.avaje.validation.plugin` must be explicity added or else avaje-inject may fail to detect the default validator and method AOP validator",
                 fqn);
           }
         }
