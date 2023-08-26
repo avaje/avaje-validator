@@ -97,4 +97,8 @@ final class ComponentMetaData {
 
     return packageImports;
   }
+
+  public boolean isEmpty() {
+    return allTypes.isEmpty() && factoryTypes.isEmpty() && annotationAdapters.isEmpty();
+  }
 }
