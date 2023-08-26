@@ -70,9 +70,8 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-
+    ProcessingContext.findModule(annotations, round);
     readModule();
-
     getElements(round, AvajeConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
     getElements(round, JavaxConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
     getElements(round, JakartaConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
