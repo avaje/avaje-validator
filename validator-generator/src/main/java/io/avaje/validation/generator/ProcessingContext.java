@@ -154,54 +154,54 @@ final class ProcessingContext {
       CTX.get().validated = true;
       var injectPresent = CTX.get().injectPresent;
       var warnHttp = CTX.get().warnHttp;
-      try {
-        var resource =
-            CTX.get()
-                .filer
-                .getResource(StandardLocation.SOURCE_PATH, "", "module-info.java")
-                .toUri()
-                .toString();
-        try (var inputStream = new URI(resource).toURL().openStream();
-            var reader = new BufferedReader(new InputStreamReader(inputStream))) {
-          AtomicBoolean noInjectPlugin = new AtomicBoolean(injectPresent);
-          AtomicBoolean noHttpPlugin = new AtomicBoolean(warnHttp);
-          var noProvides =
-              reader
-                  .lines()
-                  .map(
-                      s -> {
-                        if (injectPresent && s.contains("io.avaje.validation.plugin")) {
-                          noInjectPlugin.set(false);
-                        }
 
-                        if (injectPresent && warnHttp && s.contains("io.avaje.validation.http")) {
-                          noInjectPlugin.set(false);
-                          noHttpPlugin.set(false);
-                        }
+      try (var inputStream =
+              CTX.get()
+                  .filer
+                  .getResource(StandardLocation.SOURCE_PATH, "", "module-info.java")
+                  .toUri()
+                  .toURL()
+                  .openStream();
+          var reader = new BufferedReader(new InputStreamReader(inputStream))) {
+        AtomicBoolean noInjectPlugin = new AtomicBoolean(injectPresent);
+        AtomicBoolean noHttpPlugin = new AtomicBoolean(warnHttp);
+        var noProvides =
+            reader
+                .lines()
+                .map(
+                    s -> {
+                      if (injectPresent && s.contains("io.avaje.validation.plugin")) {
+                        noInjectPlugin.set(false);
+                      }
 
-                        return s;
-                      })
-                  .noneMatch(s -> s.contains(fqn));
+                      if (injectPresent && warnHttp && s.contains("io.avaje.validation.http")) {
+                        noInjectPlugin.set(false);
+                        noHttpPlugin.set(false);
+                      }
 
-          if (noProvides) {
-            logError(
-                module,
-                "Missing `provides io.avaje.validation.Validator.GeneratedComponent with %s;`",
-                fqn);
-          }
+                      return s;
+                    })
+                .noneMatch(s -> s.contains(fqn));
 
-          if (noHttpPlugin.get()) {
-            logWarn(
-                module,
-                "`requires io.avaje.validation.http` must be explicity added or else avaje-inject may fail to detect the default http validator, validator, and method AOP validator",
-                fqn);
-          } else if (noInjectPlugin.get()) {
-            logWarn(
-                module,
-                "`requires io.avaje.validation.plugin` must be explicity added or else avaje-inject may fail to detect the default validator and method AOP validator",
-                fqn);
-          }
+        if (noProvides) {
+          logError(
+              module,
+              "Missing `provides io.avaje.validation.Validator.GeneratedComponent with %s;`",
+              fqn);
         }
+
+        if (noHttpPlugin.get()) {
+          logWarn(
+              module,
+              "`requires io.avaje.validation.http` must be explicity added or else avaje-inject may fail to detect the default http validator, validator, and method AOP validator",
+              fqn);
+        } else if (noInjectPlugin.get()) {
+          logWarn(
+              module,
+              "`requires io.avaje.validation.plugin` must be explicity added or else avaje-inject may fail to detect the default validator and method AOP validator",
+              fqn);
+        }
+
       } catch (Exception e) {
         // can't read module
       }
