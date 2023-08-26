@@ -159,7 +159,7 @@ final class ProcessingContext {
           if (noProvides) {
             logError(
                 module,
-                "Missing \"provides io.avaje.validation.Validator.GeneratedComponent with %s\"",
+                "Missing \"provides io.avaje.validation.Validator.GeneratedComponent with %s;\"",
                 fqn);
           }
         }
