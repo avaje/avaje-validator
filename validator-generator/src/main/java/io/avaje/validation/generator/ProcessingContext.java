@@ -163,22 +163,20 @@ final class ProcessingContext {
                 .toString();
         try (var inputStream = new URI(resource).toURL().openStream();
             var reader = new BufferedReader(new InputStreamReader(inputStream))) {
-        	 AtomicBoolean noInjectPlugin = new AtomicBoolean(injectPresent);
-        	 AtomicBoolean noHttpPlugin = new AtomicBoolean(warnHttp);
+          AtomicBoolean noInjectPlugin = new AtomicBoolean(injectPresent);
+          AtomicBoolean noHttpPlugin = new AtomicBoolean(warnHttp);
           var noProvides =
               reader
                   .lines()
                   .map(
                       s -> {
-                        if (injectPresent
-                            && s.contains("io.avaje.validation.plugin")) {
+                        if (injectPresent && s.contains("io.avaje.validation.plugin")) {
                           noInjectPlugin.set(false);
                         }
 
-                        if (injectPresent
-                            && s.contains("io.avaje.validation.http")) {
-                            noInjectPlugin.set(false);
-                            noHttpPlugin.set(false);
+                        if (injectPresent && warnHttp && s.contains("io.avaje.validation.http")) {
+                          noInjectPlugin.set(false);
+                          noHttpPlugin.set(false);
                         }
 
                         return s;
