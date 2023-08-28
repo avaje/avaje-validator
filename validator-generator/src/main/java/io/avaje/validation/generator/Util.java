@@ -1,6 +1,6 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.ProcessingContext.element;
+import static io.avaje.validation.generator.APContext.typeElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
-import static io.avaje.validation.generator.ProcessingContext.logError;
+import static io.avaje.validation.generator.APContext.logError;
 
 final class Util {
 
@@ -261,7 +261,7 @@ final class Util {
 
   /** Return the base type given the ValidationAdapter type. */
   static String baseTypeOfAdapter(String adapterFullName) {
-    final var element = element(adapterFullName);
+    final var element = typeElement(adapterFullName);
     if (element == null) {
       throw new NullPointerException("Element not found for [" + adapterFullName + "]");
     }

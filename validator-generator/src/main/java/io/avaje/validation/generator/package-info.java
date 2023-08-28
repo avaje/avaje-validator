@@ -21,7 +21,6 @@
 @GeneratePrism(io.avaje.validation.spi.MetaData.AnnotationFactory.class)
 @GeneratePrism(io.avaje.validation.ValidMethod.class)
 @GeneratePrism(io.avaje.inject.Component.class)
-@GeneratePrism(io.avaje.validation.spi.BuilderCustomizer.class)
 package io.avaje.validation.generator;
 
 import io.avaje.prism.GeneratePrism;

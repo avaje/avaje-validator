@@ -1,6 +1,6 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.ProcessingContext.createWriter;
+import static io.avaje.validation.generator.APContext.createSourceFile;
 import static io.avaje.validation.generator.ProcessingContext.diAnnotation;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ final class SimpleParamBeanWriter {
   }
 
   private Writer createFileWriter() throws IOException {
-    final JavaFileObject jfo = createWriter(adapterFullName);
+    final JavaFileObject jfo = createSourceFile(adapterFullName);
     return jfo.openWriter();
   }
 

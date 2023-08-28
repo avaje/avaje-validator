@@ -1,7 +1,7 @@
 package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.PrimitiveUtil.isPrimitiveValidationAnnotations;
-import static io.avaje.validation.generator.ProcessingContext.element;
+import static io.avaje.validation.generator.APContext.typeElement;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 
@@ -129,7 +129,7 @@ public record ElementAnnotationContainer(
   boolean supportsPrimitiveValidation() {
     for (final GenericType validationAnnotation : annotations.keySet()) {
       final var type = validationAnnotation.topType();
-      ConstraintPrism.getOptionalOn(element(type))
+      ConstraintPrism.getOptionalOn(typeElement(type))
           .ifPresent(
               p -> {
                 if (p.unboxPrimitives()) {

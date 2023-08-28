@@ -1,8 +1,8 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.ProcessingContext.asElement;
-import static io.avaje.validation.generator.ProcessingContext.element;
-import static io.avaje.validation.generator.ProcessingContext.logError;
+import static io.avaje.validation.generator.APContext.asElement;
+import static io.avaje.validation.generator.APContext.typeElement;
+import static io.avaje.validation.generator.APContext.logError;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,9 +22,11 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
+import io.avaje.prism.GenerateAPContext;
+
+@GenerateAPContext
 @SupportedAnnotationTypes({
   AvajeValidPrism.PRISM_TYPE,
-  BuilderCustomizerPrism.PRISM_TYPE,
   ImportValidPojoPrism.PRISM_TYPE,
   HttpValidPrism.PRISM_TYPE,
   JavaxValidPrism.PRISM_TYPE,
@@ -44,7 +46,6 @@ public final class ValidationProcessor extends AbstractProcessor {
   private final Set<String> mixInImports = new HashSet<>();
   private SimpleComponentWriter componentWriter;
   private boolean readModuleInfo;
-  private CustomizerServiceWriter customizerServiceWriter;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -56,7 +57,6 @@ public final class ValidationProcessor extends AbstractProcessor {
     super.init(processingEnv);
     ProcessingContext.init(processingEnv);
     this.componentWriter = new SimpleComponentWriter(metaData);
-    this.customizerServiceWriter = new CustomizerServiceWriter();
   }
 
   /** Read the existing metadata from the generated component (if exists). */
@@ -70,7 +70,7 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-    ProcessingContext.findModule(annotations, round);
+	  APContext.setProjectModuleElement(annotations, round);
     readModule();
     getElements(round, AvajeConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
     getElements(round, JavaxConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
@@ -90,18 +90,16 @@ public final class ValidationProcessor extends AbstractProcessor {
         .ifPresent(this::writeParamProviderForMethod);
 
     writeAdaptersForImported(
-        round.getElementsAnnotatedWith(element(ImportValidPojoPrism.PRISM_TYPE)));
+        round.getElementsAnnotatedWith(typeElement(ImportValidPojoPrism.PRISM_TYPE)));
     initialiseComponent();
     cascadeTypes();
-    customizerServiceWriter.writeMetaInf(
-        round.getElementsAnnotatedWith(element(BuilderCustomizerPrism.PRISM_TYPE)));
     writeComponent(round.processingOver());
     return false;
   }
 
   // Optional because these annotations are not guaranteed to exist
   private Optional<? extends Set<? extends Element>> getElements(RoundEnvironment round, String name) {
-    return Optional.ofNullable(element(name)).map(round::getElementsAnnotatedWith);
+    return Optional.ofNullable(typeElement(name)).map(round::getElementsAnnotatedWith);
   }
 
   private void registerCustomAdapters(Set<? extends Element> elements) {
@@ -172,7 +170,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     }
     for (final String type : extraTypes) {
       if (!ignoreType(type)) {
-        final TypeElement element = element(type);
+        final TypeElement element = typeElement(type);
         if (cascadeElement(element)) {
           writeAdapterForType(element);
         }
@@ -223,7 +221,6 @@ public final class ValidationProcessor extends AbstractProcessor {
   private void writeComponent(boolean processingOver) {
     if (processingOver) {
       try {
-        customizerServiceWriter.close();
         componentWriter.write();
         componentWriter.writeMetaInf();
       } catch (final IOException e) {

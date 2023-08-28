@@ -1,7 +1,7 @@
 package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.PrimitiveUtil.isPrimitiveValidationType;
-import static io.avaje.validation.generator.ProcessingContext.logError;
+import static io.avaje.validation.generator.APContext.logError;
 
 import java.util.List;
 import java.util.Set;

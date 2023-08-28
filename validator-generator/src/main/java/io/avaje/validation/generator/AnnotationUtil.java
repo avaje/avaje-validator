@@ -1,8 +1,9 @@
 package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.ElementAnnotationContainer.hasMetaConstraintAnnotation;
-import static io.avaje.validation.generator.ProcessingContext.isAssignable2Interface;
-import static io.avaje.validation.generator.ProcessingContext.logError;
+import static io.avaje.validation.generator.APContext.isAssignable;
+import static io.avaje.validation.generator.APContext.logError;
+import static io.avaje.validation.generator.APContext.typeElement;
 import static io.avaje.validation.generator.Util.trimAnnotations;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
@@ -135,22 +136,22 @@ final class AnnotationUtil {
     if (val != null) {
       return val;
     }
-    if (isAssignable2Interface(rawType, "java.math.BigDecimal")) {
+    if (isAssignable(rawType, "java.math.BigDecimal")) {
       return "BigDecimal";
     }
-    if (isAssignable2Interface(rawType, "java.math.BigInteger")) {
+    if (isAssignable(rawType, "java.math.BigInteger")) {
       return "BigInteger";
     }
-    if (isAssignable2Interface(rawType, "java.lang.Number")) {
+    if (isAssignable(rawType, "java.lang.Number")) {
       return "Number";
     }
-    if (isAssignable2Interface(rawType, "java.lang.CharSequence")) {
+    if (isAssignable(rawType, "java.lang.CharSequence")) {
       return "CharSequence";
     }
-    if (isAssignable2Interface(rawType, "java.time.temporal.Temporal")) {
+    if (isAssignable(rawType, "java.time.temporal.Temporal")) {
       return "Temporal." + Util.shortName(rawType);
     }
-    if (isAssignable2Interface(rawType, "java.util.Date")) {
+    if (isAssignable(rawType, "java.util.Date")) {
       return "Temporal.Date";
     }
     if (rawType.contains("[]")) {
@@ -179,7 +180,7 @@ final class AnnotationUtil {
       result = annotationStr.substring(0, start);
       attributes = annotationStr.substring(start + 1, annotationStr.lastIndexOf(')'));
     }
-    final var element = ProcessingContext.element(result);
+    final var element = typeElement(result);
     final Map<String, Object> attributeMap =
         Arrays.stream(splitString(attributes, ","))
             .map(s -> splitString(s, "="))
