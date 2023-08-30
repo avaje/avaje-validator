@@ -1,6 +1,6 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.APContext.asElement;
+import static io.avaje.validation.generator.APContext.asTypeElement;
 import static io.avaje.validation.generator.APContext.logNote;
 import static io.avaje.validation.generator.APContext.logError;
 
@@ -215,6 +215,6 @@ final class TypeReader {
   }
 
   private TypeElement superOf(TypeElement element) {
-    return asElement(element.getSuperclass());
+    return asTypeElement(element.getSuperclass());
   }
 }
