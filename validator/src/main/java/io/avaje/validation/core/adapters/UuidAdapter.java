@@ -5,7 +5,7 @@ import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 
 import java.util.UUID;
 
-final class UuidAdapter extends AbstractConstraintAdapter {
+final class UuidAdapter extends AbstractConstraintAdapter<Object> {
 
   UuidAdapter(AdapterCreateRequest request) {
     super(request);

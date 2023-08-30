@@ -10,7 +10,7 @@ final class IterableValidationAdapter<T> extends ContainerAdapter<T> {
   @SuppressWarnings("unchecked")
   public boolean validate(T value, ValidationRequest req, String propertyName) {
     if (initalAdapter.validate(value, req, propertyName)) {
-      return validateAll((Iterable<Object>) value, req, propertyName);
+      validateAll((Iterable<Object>) value, req, propertyName);
     }
 
     return true;

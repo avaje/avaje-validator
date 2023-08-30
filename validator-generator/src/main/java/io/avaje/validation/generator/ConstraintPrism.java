@@ -2,7 +2,6 @@ package io.avaje.validation.generator;
 
 import java.util.Optional;
 
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
 import io.avaje.prism.GeneratePrism;

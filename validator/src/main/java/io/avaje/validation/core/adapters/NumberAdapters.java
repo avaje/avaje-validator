@@ -34,6 +34,8 @@ public final class NumberAdapters {
             default -> null;
           };
 
+  public static final String VALUE = "value";
+
   private static ValidationAdapter<?> range(AdapterCreateRequest request) {
     if ("String".equals(request.targetType())) {
       return new RangeStringAdapter(request);
@@ -67,7 +69,7 @@ public final class NumberAdapters {
     DecimalMaxAdapter(AdapterCreateRequest request) {
       super(request);
       final var attributes = request.attributes();
-      this.value = new BigDecimal((String) attributes.get("value"));
+      this.value = new BigDecimal((String) attributes.get(VALUE));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
       this.targetType = request.targetType();
     }
@@ -93,7 +95,7 @@ public final class NumberAdapters {
     DecimalMinAdapter(AdapterCreateRequest request) {
       super(request);
       final var attributes = request.attributes();
-      this.value = new BigDecimal((String) attributes.get("value"));
+      this.value = new BigDecimal((String) attributes.get(VALUE));
       this.inclusive = Optional.ofNullable((Boolean) attributes.get("inclusive")).orElse(true);
       this.targetType = request.targetType();
     }
@@ -123,7 +125,7 @@ public final class NumberAdapters {
     MaxAdapter(AdapterCreateRequest request) {
       super(request);
       this.targetType = request.targetType();
-      this.max = (long) request.attribute("value");
+      this.max = (long) request.attribute(VALUE);
     }
 
     @Override
@@ -178,7 +180,7 @@ public final class NumberAdapters {
 
     MaxBigDecimal(AdapterCreateRequest request) {
       super(request);
-      this.max = new BigDecimal(String.valueOf(request.attribute("value")));
+      this.max = new BigDecimal(String.valueOf(request.attribute(VALUE)));
     }
 
     @Override
@@ -194,7 +196,7 @@ public final class NumberAdapters {
 
     MaxBigInteger(AdapterCreateRequest request) {
       super(request);
-      this.max = new BigInteger(String.valueOf(request.attribute("value")));
+      this.max = new BigInteger(String.valueOf(request.attribute(VALUE)));
     }
 
     @Override
@@ -212,7 +214,7 @@ public final class NumberAdapters {
     MinAdapter(AdapterCreateRequest request) {
       super(request);
       this.targetType = request.targetType();
-      this.min = (long) request.attribute("value");
+      this.min = (long) request.attribute(VALUE);
     }
 
     @Override
@@ -266,7 +268,7 @@ public final class NumberAdapters {
 
     MinBigDecimal(AdapterCreateRequest request) {
       super(request);
-      this.min = new BigDecimal(String.valueOf(request.attribute("value")));
+      this.min = new BigDecimal(String.valueOf(request.attribute(VALUE)));
     }
 
     @Override
@@ -282,7 +284,7 @@ public final class NumberAdapters {
 
     MinBigInteger(AdapterCreateRequest request) {
       super(request);
-      this.min = new BigInteger(String.valueOf(request.attribute("value")));
+      this.min = new BigInteger(String.valueOf(request.attribute(VALUE)));
     }
 
     @Override
@@ -486,7 +488,6 @@ public final class NumberAdapters {
     private final BigDecimal min;
     private final BigDecimal max;
 
-    @SuppressWarnings("unchecked")
     RangeStringAdapter(AdapterCreateRequest request) {
       super(request);
       this.min = BigDecimal.valueOf((long) request.attribute("min"));
