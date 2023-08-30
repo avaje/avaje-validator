@@ -2,20 +2,16 @@ package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.APContext.filer;
 import static io.avaje.validation.generator.APContext.getModuleInfoReader;
+import static io.avaje.validation.generator.APContext.getProjectModuleElement;
 import static io.avaje.validation.generator.APContext.logError;
-import static io.avaje.validation.generator.APContext.*;
+import static io.avaje.validation.generator.APContext.logWarn;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ModuleElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 

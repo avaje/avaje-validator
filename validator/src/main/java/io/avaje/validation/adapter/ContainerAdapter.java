@@ -1,4 +1,5 @@
 package io.avaje.validation.adapter;
+
 /**
  * Adapter that validates container types.
  *
@@ -30,38 +31,38 @@ public abstract class ContainerAdapter<T> implements ValidationAdapter<T> {
   }
 
   /** Execute validations for all items in the given iterable */
-  protected boolean validateAll(Iterable<Object> value, ValidationRequest req, String propertyName) {
+  protected void validateAll(Iterable<Object> value, ValidationRequest req, String propertyName) {
     if (value == null || multiAdapter == null) {
-      return true;
+      return;
     }
     if (propertyName != null) {
       req.pushPath(propertyName);
     }
     int index = 0;
     for (final var element : value) {
-      multiAdapter.validate(element, req, "[" + index++);
+      multiAdapter.validate(element, req, "[" + index);
+      index++;
     }
     if (propertyName != null) {
       req.popPath();
     }
-    return true;
   }
 
   /** Execute validations for all items in the given array */
-  protected boolean validateArray(Object[] value, ValidationRequest req, String propertyName) {
+  protected void validateArray(Object[] value, ValidationRequest req, String propertyName) {
     if (value == null || multiAdapter == null) {
-      return true;
+      return;
     }
     if (propertyName != null) {
       req.pushPath(propertyName);
     }
     int index = 0;
     for (final Object element : value) {
-      multiAdapter.validate(element, req, "[" + index++);
+      multiAdapter.validate(element, req, "[" + index);
+      index++;
     }
     if (propertyName != null) {
       req.popPath();
     }
-    return true;
   }
 }

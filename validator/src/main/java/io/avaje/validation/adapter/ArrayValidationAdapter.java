@@ -10,7 +10,7 @@ final class ArrayValidationAdapter<T> extends ContainerAdapter<T> {
   public boolean validate(T value, ValidationRequest req, String propertyName) {
     if (initalAdapter.validate(value, req, propertyName)) {
 
-      return validateArray((Object[]) value, req, propertyName);
+      validateArray((Object[]) value, req, propertyName);
     }
     return true;
   }
