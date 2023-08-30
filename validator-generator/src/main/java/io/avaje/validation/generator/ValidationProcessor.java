@@ -1,9 +1,5 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.APContext.asElement;
-import static io.avaje.validation.generator.APContext.typeElement;
-import static io.avaje.validation.generator.APContext.logError;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +19,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import io.avaje.prism.GenerateAPContext;
+
+import static io.avaje.validation.generator.APContext.*;
 
 @GenerateAPContext
 @SupportedAnnotationTypes({
@@ -105,7 +103,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private void registerCustomAdapters(Set<? extends Element> elements) {
     for (final var typeElement : ElementFilter.typesIn(elements)) {
       final var type = Util.baseTypeOfAdapter(typeElement);
-      final var targetAnnotation = asElement(ConstraintAdapterPrism.getInstanceOn(typeElement).value());
+      final var targetAnnotation = asTypeElement(ConstraintAdapterPrism.getInstanceOn(typeElement).value());
       if (!CrossParamConstraintPrism.getAllOnMetaAnnotations(typeElement).isEmpty() && type.contains("Object[]")) {
         logError(typeElement, "Cross Parameter Adapters must accept type Object[]");
       }
@@ -204,7 +202,7 @@ public final class ValidationProcessor extends AbstractProcessor {
         if (mixInImports.contains(importType.toString())) {
           continue;
         }
-        writeAdapterForType(asElement(importType));
+        writeAdapterForType(asTypeElement(importType));
       }
     }
   }

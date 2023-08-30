@@ -54,7 +54,7 @@ final class ComponentReader {
 
       } else if (metaDataAnnotationFactory != null) {
         metaDataAnnotationFactory.value().stream()
-            .map(APContext::asElement)
+            .map(APContext::asTypeElement)
             .forEach(componentMetaData::addAnnotationAdapter);
       }
     }
