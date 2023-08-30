@@ -2,7 +2,7 @@ package io.avaje.validation.generator;
 
 import java.util.Map;
 
-import static io.avaje.validation.generator.ProcessingContext.isAssignable2Interface;
+import static io.avaje.validation.generator.APContext.isAssignable;
 
 final class AdapterHelper {
 
@@ -66,7 +66,7 @@ final class AdapterHelper {
       return;
     }
 
-    if (!typeUse1.isEmpty() && (isAssignable2Interface(genericType.topType(), "java.lang.Iterable"))) {
+    if (!typeUse1.isEmpty() && (isAssignable(genericType.topType(), "java.lang.Iterable"))) {
       writer.eol().append("%s    .list()", indent);
       writeTypeUse(genericType.firstParamType(), typeUse1);
 
@@ -119,7 +119,7 @@ final class AdapterHelper {
   }
 
   private boolean isTopTypeIterable() {
-    return topType != null && isAssignable2Interface(topType.topType(), "java.lang.Iterable");
+    return topType != null && isAssignable(topType.topType(), "java.lang.Iterable");
   }
 
   private void writeTypeUse(String firstParamType, Map<GenericType, String> typeUse12) {

@@ -1,9 +1,9 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.ProcessingContext.element;
-import static io.avaje.validation.generator.ProcessingContext.env;
-import static io.avaje.validation.generator.ProcessingContext.logDebug;
-import static io.avaje.validation.generator.ProcessingContext.logWarn;
+import static io.avaje.validation.generator.APContext.typeElement;
+import static io.avaje.validation.generator.APContext.filer;
+import static io.avaje.validation.generator.APContext.logNote;
+import static io.avaje.validation.generator.APContext.logWarn;
 
 import java.io.FileNotFoundException;
 import java.io.LineNumberReader;
@@ -31,7 +31,7 @@ final class ComponentReader {
   void read() {
     final String componentFullName = loadMetaInfServices();
     if (componentFullName != null) {
-      final TypeElement moduleType = element(componentFullName);
+      final TypeElement moduleType = typeElement(componentFullName);
       if (moduleType != null) {
         componentMetaData.setFullName(componentFullName);
         readMetaData(moduleType);
@@ -54,7 +54,7 @@ final class ComponentReader {
 
       } else if (metaDataAnnotationFactory != null) {
         metaDataAnnotationFactory.value().stream()
-            .map(ProcessingContext::asElement)
+            .map(APContext::asElement)
             .forEach(componentMetaData::addAnnotationAdapter);
       }
     }
@@ -68,8 +68,7 @@ final class ComponentReader {
   private List<String> loadMetaInf() {
     try {
       final FileObject fileObject =
-          env()
-              .getFiler()
+    		  filer()
               .getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT);
 
       if (fileObject != null) {
@@ -90,7 +89,7 @@ final class ComponentReader {
       // logDebug("no services file yet");
 
     } catch (final FilerException e) {
-      logDebug("FilerException reading services file");
+      logNote("FilerException reading services file");
 
     } catch (final Exception e) {
       e.printStackTrace();

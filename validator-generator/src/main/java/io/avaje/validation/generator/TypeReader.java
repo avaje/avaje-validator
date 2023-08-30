@@ -1,8 +1,8 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.ProcessingContext.asElement;
-import static io.avaje.validation.generator.ProcessingContext.logDebug;
-import static io.avaje.validation.generator.ProcessingContext.logError;
+import static io.avaje.validation.generator.APContext.asElement;
+import static io.avaje.validation.generator.APContext.logNote;
+import static io.avaje.validation.generator.APContext.logError;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -135,7 +135,7 @@ final class TypeReader {
                 + field.fieldName()
                 + " with no matching getter?");
       } else {
-        logDebug("Non accessible field " + baseType + " " + field.fieldName());
+        logNote("Non accessible field " + baseType + " " + field.fieldName());
       }
     }
   }
