@@ -94,6 +94,10 @@ public record ElementAnnotationContainer(
         uType, hasValid, annotations, typeUse1, typeUse2, crossParam);
   }
 
+  static ElementAnnotationContainer create(VariableElement element) {
+    return create(element, false);
+  }
+
   static boolean hasMetaConstraintAnnotation(AnnotationMirror m) {
     return hasMetaConstraintAnnotation(m.getAnnotationType().asElement());
   }
