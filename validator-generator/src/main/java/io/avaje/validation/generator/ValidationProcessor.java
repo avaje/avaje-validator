@@ -19,10 +19,12 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import io.avaje.prism.GenerateAPContext;
+import io.avaje.prism.GenerateUtils;
 
 import static io.avaje.validation.generator.APContext.*;
 
 @GenerateAPContext
+@GenerateUtils
 @SupportedAnnotationTypes({
   AvajeValidPrism.PRISM_TYPE,
   ImportValidPojoPrism.PRISM_TYPE,
