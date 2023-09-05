@@ -70,9 +70,9 @@ final class ValidMethodReader {
         Util.shortName(type), methodElement.getSimpleName());
     final var paramClasses =
         params.stream()
-            .map(p -> Util.trimAnnotations(p.asType().toString()))
-            .map(GenericType::parse)
-            .map(GenericType::topType)
+            .map(VariableElement::asType)
+            .map(UType::parse)
+            .map(UType::mainType)
             .map(Util::shortName)
             .map(s -> s + ".class")
             .collect(joining(","))

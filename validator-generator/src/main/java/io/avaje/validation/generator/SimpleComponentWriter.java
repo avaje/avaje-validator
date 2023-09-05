@@ -79,14 +79,14 @@ final class SimpleComponentWriter {
           adapter
               .getQualifiedName()
               .toString()
-              .transform(Util::shortType)
+              .transform(ProcessorUtils::shortType)
               .transform(this::typeShortName);
 
       final var target =
           ConstraintAdapterPrism.getInstanceOn(adapter)
               .value()
               .toString()
-              .transform(Util::shortType)
+              .transform(ProcessorUtils::shortType)
               .transform(this::typeShortName);
 
       writer.append("    builder.add(%s.class, %s::new);", target, typeShortName).eol();

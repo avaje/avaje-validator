@@ -192,7 +192,7 @@ final class TypeReader {
 
   void process() {
     final String base = baseType.getQualifiedName().toString();
-    if (!GenericType.isGeneric(base)) {
+    if (!base.contains("<")) {
       read(baseType);
     }
     final TypeElement superElement = superOf(baseType);
@@ -208,7 +208,7 @@ final class TypeReader {
 
   private void addSuperType(TypeElement element) {
     final String type = element.getQualifiedName().toString();
-    if (!JAVA_LANG_OBJECT.equals(type) && !GenericType.isGeneric(type)) {
+    if (!JAVA_LANG_OBJECT.equals(type) && !type.contains("<")) {
       read(element);
       addSuperType(superOf(element));
     }

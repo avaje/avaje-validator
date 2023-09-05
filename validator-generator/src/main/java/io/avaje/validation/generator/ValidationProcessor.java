@@ -129,7 +129,7 @@ public final class ValidationProcessor extends AbstractProcessor {
           .filter(m -> m.getModifiers().contains(Modifier.PUBLIC))
           .filter(m -> m.getParameters().size() == 1)
           .map(m -> m.getParameters().get(0).asType().toString())
-          .map(Util::trimAnnotations)
+          .map(ProcessorUtils::trimAnnotations)
           .filter("io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest"::equals)
           .findAny()
           .ifPresentOrElse(

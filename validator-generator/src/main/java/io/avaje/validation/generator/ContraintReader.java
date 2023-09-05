@@ -16,7 +16,7 @@ final class ContraintReader implements BeanReader {
   private final TypeElement beanType;
   private final String type;
   private final Set<String> importTypes = new TreeSet<>();
-  private final Map<GenericType, String> annotations;
+  private final Map<UType, String> annotations;
 
   ContraintReader(TypeElement element) {
     this.beanType = element;
@@ -37,7 +37,7 @@ final class ContraintReader implements BeanReader {
             .flatMap(m -> expand(m, new ArrayList<>()).stream())
             .collect(
                 toMap(
-                    a -> GenericType.parse(a.getAnnotationType().toString()),
+                    a -> UType.parse(a.getAnnotationType()),
                     a -> AnnotationUtil.annotationAttributeMap(a, element)));
   }
 
@@ -94,7 +94,7 @@ final class ContraintReader implements BeanReader {
       importTypes.add(type);
     }
 
-    annotations.keySet().forEach(t -> t.addImports(importTypes));
+    annotations.keySet().forEach(t -> importTypes.addAll(t.importTypes()));
     return importTypes;
   }
 
@@ -130,7 +130,7 @@ final class ContraintReader implements BeanReader {
     boolean first = true;
     for (final var a : new ArrayList<>(annotations.entrySet())) {
       if (first) {
-        writer.append("        ctx.adapter(%s.class, groups, message, %s)", a.getKey().shortName(), a.getValue());
+        writer.append("        ctx.adapter(%s.class, groups, message, %s)", a.getKey().shortWithoutAnnotations(), a.getValue());
         first = false;
         continue;
       }
@@ -138,7 +138,7 @@ final class ContraintReader implements BeanReader {
           .eol()
           .append(
               "            .andThen(ctx.adapter(%s.class, groups, message, %s))",
-              a.getKey().shortName(), a.getValue());
+              a.getKey().shortWithoutAnnotations(), a.getValue());
     }
     writer.append(";").eol();
   }

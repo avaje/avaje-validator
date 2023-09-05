@@ -3,7 +3,7 @@ package io.avaje.validation.generator;
 import static io.avaje.validation.generator.APContext.isAssignable;
 import static io.avaje.validation.generator.APContext.logError;
 import static io.avaje.validation.generator.ElementAnnotationContainer.hasMetaConstraintAnnotation;
-import static io.avaje.validation.generator.Util.trimAnnotations;
+import static io.avaje.validation.generator.ProcessorUtils.trimAnnotations;
 
 import java.util.HashMap;
 import java.util.HashSet;
