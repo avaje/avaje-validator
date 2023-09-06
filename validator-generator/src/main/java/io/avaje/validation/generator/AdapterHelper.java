@@ -10,8 +10,8 @@ final class AdapterHelper {
   private final ElementAnnotationContainer elementAnnotations;
   private final String indent;
   private final String type;
-  private final GenericType topType;
-  private final GenericType genericType;
+  private final UType mainType;
+  private final UType genericType;
   private final boolean classLevel;
   private final boolean crossParam;
   private boolean usePrimitiveValidation;
@@ -25,9 +25,9 @@ final class AdapterHelper {
       ElementAnnotationContainer elementAnnotations,
       String indent,
       String type,
-      GenericType topType,
+      UType mainType,
       boolean classLevel) {
-    this(writer, elementAnnotations, indent, type, topType, classLevel, false);
+    this(writer, elementAnnotations, indent, type, mainType, classLevel, false);
   }
 
   AdapterHelper(
@@ -35,14 +35,14 @@ final class AdapterHelper {
       ElementAnnotationContainer elementAnnotations,
       String indent,
       String type,
-      GenericType topType,
+      UType mainType,
       boolean classLevel,
       boolean crossParam) {
     this.writer = writer;
     this.elementAnnotations = elementAnnotations;
     this.indent = indent;
     this.type = type;
-    this.topType = topType;
+    this.mainType = mainType;
     this.genericType = elementAnnotations.genericType();
     this.classLevel = classLevel;
     this.crossParam = crossParam;
@@ -66,87 +66,85 @@ final class AdapterHelper {
       return;
     }
 
-    if (!typeUse1.isEmpty() && (isAssignable(genericType.topType(), "java.lang.Iterable"))) {
+    if (!typeUse1.isEmpty() && (isAssignable(genericType.mainType(), "java.lang.Iterable"))) {
       writer.eol().append("%s    .list()", indent);
-      writeTypeUse(genericType.firstParamType(), typeUse1);
+      writeTypeUse(genericType.param0(), typeUse1);
 
     } else if (isTopTypeIterable()) {
       writer.eol().append("%s    .list()", indent);
       if (hasValid) {
         // cascade validate
-        writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, Util.shortName(topType.firstParamType()));
+        writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, mainType.param0().shortType());
       }
 
     } else if (isMapType(typeUse1, typeUse2)) {
       writer.eol().append("%s    .mapKeys()", indent);
-      writeTypeUse(genericType.firstParamType(), typeUse1);
+      writeTypeUse(genericType.param0(), typeUse1);
 
       writer.eol().append("%s    .mapValues()", indent);
-      writeTypeUse(genericType.secondParamType(), typeUse2, false);
+      writeTypeUse(genericType.param1(), typeUse2, false);
 
-    } else if (hasValid && genericType.topType().contains("[]")) {
+    } else if (hasValid && genericType.mainType().contains("[]")) {
       writer.eol().append("%s    .array()", indent);
-      writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, topType.shortNameMinusArray());
+      writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, mainType.shortWithoutAnnotations().replace("[]",""));
 
     } else if (hasValid) {
       if (!classLevel) {
-        writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, Util.shortName(genericType.topType()));
+        writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, Util.shortName(genericType.mainType()));
       }
 
-    } else if (genericType.topType().contains("java.util.Optional")) {
+    } else if (genericType.mainType().contains("java.util.Optional")) {
       writer.eol().append("%s    .optional()", indent);
     }
   }
 
-  private void writeFirst(Map<GenericType, String> annotations) {
+  private void writeFirst(Map<UType, String> annotations) {
     boolean first = true;
     for (final var a : annotations.entrySet()) {
       if (first) {
-        writer.append("%sctx.<%s>adapter(%s.class, %s)", indent, type, a.getKey().shortName(), a.getValue());
+        writer.append("%sctx.<%s>adapter(%s.class, %s)", indent, type, a.getKey().shortWithoutAnnotations(), a.getValue());
         first = false;
         continue;
       }
-      writer.eol().append("%s    .andThen(ctx.adapter(%s.class,%s))", indent, a.getKey().shortName(), a.getValue());
+      writer.eol().append("%s    .andThen(ctx.adapter(%s.class,%s))", indent, a.getKey().shortWithoutAnnotations(), a.getValue());
     }
     if (annotations.isEmpty()) {
       writer.append("%sctx.<%s>noop()", indent, type);
     }
   }
 
-  private boolean isMapType(Map<GenericType, String> typeUse1, Map<GenericType, String> typeUse2) {
+  private boolean isMapType(Map<UType, String> typeUse1, Map<UType, String> typeUse2) {
     return (!typeUse1.isEmpty() || !typeUse2.isEmpty())
-      && "java.util.Map".equals(genericType.topType());
+      && "java.util.Map".equals(genericType.mainType());
   }
 
   private boolean isTopTypeIterable() {
-    return topType != null && isAssignable(topType.topType(), "java.lang.Iterable");
+    return mainType != null && isAssignable(mainType.mainType(), "java.lang.Iterable");
   }
 
-  private void writeTypeUse(String firstParamType, Map<GenericType, String> typeUse12) {
-    writeTypeUse(firstParamType, typeUse12, true);
+  private void writeTypeUse(UType uType, Map<UType, String> typeUse12) {
+    writeTypeUse(uType, typeUse12, true);
   }
 
-  private void writeTypeUse(String paramType, Map<GenericType, String> typeUseMap, boolean keys) {
+  private void writeTypeUse(UType uType, Map<UType, String> typeUseMap, boolean keys) {
     for (final var a : typeUseMap.entrySet()) {
-      if (Constants.VALID_ANNOTATIONS.contains(a.getKey().topType())) {
+
+      if (Constants.VALID_ANNOTATIONS.contains(a.getKey().mainType())) {
         continue;
       }
-      final var k = a.getKey().shortName();
+      final var k = a.getKey().shortType();
       final var v = a.getValue();
       writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class,%s))", indent, k, v);
     }
 
-    if (!Util.isBasicType(paramType)
+    if (!Util.isBasicType(uType.fullWithoutAnnotations())
         && typeUseMap.keySet().stream()
-            .map(GenericType::topType)
+            .map(UType::mainType)
             .anyMatch(Constants.VALID_ANNOTATIONS::contains)) {
-
+      var typeUse = keys ? genericType.param0() : genericType.param1();
       writer
           .eol()
-          .append(
-              "%s    .andThenMulti(ctx.adapter(%s.class))",
-              indent,
-              Util.shortName(keys ? genericType.firstParamType() : genericType.secondParamType()));
+          .append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, typeUse.shortWithoutAnnotations());
     }
   }
 }

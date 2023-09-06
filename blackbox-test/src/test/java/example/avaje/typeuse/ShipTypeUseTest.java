@@ -40,7 +40,7 @@ class ShipTypeUseTest {
   ConstraintViolation one(Object any) {
     try {
       validator.validate(any);
-      fail("not expected");
+      fail("not expected"+any);
       return null;
     } catch (final ConstraintViolationException e) {
       final var violations = new ArrayList<>(e.violations());

@@ -19,10 +19,12 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import io.avaje.prism.GenerateAPContext;
+import io.avaje.prism.GenerateUtils;
 
 import static io.avaje.validation.generator.APContext.*;
 
 @GenerateAPContext
+@GenerateUtils
 @SupportedAnnotationTypes({
   AvajeValidPrism.PRISM_TYPE,
   ImportValidPojoPrism.PRISM_TYPE,
@@ -127,7 +129,7 @@ public final class ValidationProcessor extends AbstractProcessor {
           .filter(m -> m.getModifiers().contains(Modifier.PUBLIC))
           .filter(m -> m.getParameters().size() == 1)
           .map(m -> m.getParameters().get(0).asType().toString())
-          .map(Util::trimAnnotations)
+          .map(ProcessorUtils::trimAnnotations)
           .filter("io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest"::equals)
           .findAny()
           .ifPresentOrElse(

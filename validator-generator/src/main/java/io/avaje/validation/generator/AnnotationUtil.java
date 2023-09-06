@@ -1,15 +1,16 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.ElementAnnotationContainer.hasMetaConstraintAnnotation;
 import static io.avaje.validation.generator.APContext.isAssignable;
 import static io.avaje.validation.generator.APContext.logError;
-import static io.avaje.validation.generator.APContext.typeElement;
-import static io.avaje.validation.generator.Util.trimAnnotations;
-import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toMap;
+import static io.avaje.validation.generator.ElementAnnotationContainer.hasMetaConstraintAnnotation;
+import static io.avaje.validation.generator.ProcessorUtils.trimAnnotations;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -17,9 +18,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
@@ -28,7 +27,6 @@ final class AnnotationUtil {
   interface Handler {
     String attributes(AnnotationMirror annotationMirror, Element element, Element target);
 
-    String attributes(Map<String, Object> attributeMap);
   }
 
   private static final Map<String,String> KNOWN_TYPES = new HashMap<>();
@@ -169,76 +167,6 @@ final class AnnotationUtil {
         .attributes(annotationMirror, element, target);
   }
 
-  static String annotationAttributeMap(String annotationStr) {
-    String result;
-    final var start = annotationStr.indexOf('(');
-    final String attributes;
-    if (start == -1) {
-      result = annotationStr;
-      attributes = "";
-    } else {
-      result = annotationStr.substring(0, start);
-      attributes = annotationStr.substring(start + 1, annotationStr.lastIndexOf(')'));
-    }
-    final var element = typeElement(result);
-    final Map<String, Object> attributeMap =
-        Arrays.stream(splitString(attributes, ","))
-            .map(s -> splitString(s, "="))
-            .filter(a -> a.length == 2)
-            .collect(toMap(a -> a[0], a -> a[1]));
-    convertTypeUse(element, attributeMap);
-
-    final Handler handler = handlers.get(result);
-    return Objects.requireNonNullElse(handler, defaultHandler).attributes(attributeMap);
-  }
-
-  private static void convertTypeUse(final TypeElement element, final Map<String, Object> attributeMap) {
-    // convert attribute map values into proper types
-    // and add default values if needed
-    for (final var e : ElementFilter.methodsIn(element.getEnclosedElements())) {
-
-      final var returnType = e.getReturnType();
-      attributeMap.compute(
-          e.getSimpleName().toString(),
-          (k, v) -> {
-            if (v == null) {
-              final var defaultVal = e.getDefaultValue().getValue();
-              if (defaultVal instanceof final List l) {
-                v = l.isEmpty() ? "{ }" : l;
-              } else {
-                return switchType(returnType.toString(), e.getDefaultValue().getValue().toString());
-              }
-            }
-            if (v instanceof final String s) {
-              if (returnType instanceof final ArrayType at) {
-                final var type = at.getComponentType().toString();
-
-                v =
-                    Arrays.stream(splitString(Util.stripBrackets(s), ","))
-                        .filter(not(String::isBlank))
-                        .map(ae -> switchType(type, ae))
-                        .toList();
-
-              } else {
-                v = switchType(returnType.toString(), s);
-              }
-            }
-            return v;
-          });
-    }
-  }
-
-  private static Object switchType(final String type, String value) {
-    return switch (type) {
-      case "long" -> Long.parseLong(value);
-      case "double" -> Double.parseDouble(value);
-      case "float" -> Float.parseFloat(value);
-      case "int" -> Integer.parseInt(value);
-      case "java.lang.String" -> value.startsWith("\"") && value.endsWith("\"") ? value : "\"" + value + "\"";
-      default -> value;
-    };
-  }
-
   static String[] splitString(String input, String delimiter) {
     final Pattern pattern = Pattern.compile(delimiter + "(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
     return pattern.split(input);
@@ -333,37 +261,6 @@ final class AnnotationUtil {
       }
       sb.append(")");
     }
-
-    @Override
-    public String attributes(Map<String, Object> attributes) {
-      sb.append("\"regexp\",\"").append(attributes.get("regexp")).append("\"");
-      final var message = attributes.get("message");
-      if (message != null) {
-        sb.append(", \"message\",\"").append(avajeKey((String) message)).append("\"");
-      }
-
-      var flags = (String) attributes.get("flags");
-      if (flags != null) {
-        flags = Util.stripBrackets(flags);
-        flags = Arrays.stream(flags.split(",")).map(Util::shortName).collect(joining(", "));
-
-        sb.append(", \"flags\",List.of(").append(flags).append(")");
-      }
-
-      String groups = (String) attributes.get("groups");
-      if (groups != null) {
-        groups = Util.stripBrackets(groups);
-        sb.append(", \"groups\",Set.of(").append(groups).append(")");
-      }
-
-      sb.append(")");
-      // for some reason it wasn't resetting, so manual reset of sb
-      final var result = sb.toString();
-      sb.setLength(0);
-      sb.append("Map.of(");
-      first = true;
-      return result;
-    }
   }
 
   static class StandardHandler extends BaseHandler {
@@ -439,22 +336,6 @@ final class AnnotationUtil {
         }
       }
       return null;
-    }
-
-    @Override
-    public String attributes(Map<String, Object> attributeMap) {
-      for (final var entry : attributeMap.entrySet()) {
-        writeAttributeKey(entry.getKey());
-        writeVal(sb, entry.getValue());
-      }
-      sb.append(")");
-
-      // for some reason it wasn't resetting, so manual reset of sb
-      final var result = sb.toString();
-      sb.setLength(0);
-      sb.append("Map.of(");
-      first = true;
-      return result;
     }
   }
 

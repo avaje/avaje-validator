@@ -11,10 +11,10 @@ final class AdapterName {
   AdapterName(TypeElement origin) {
     final String originName = origin.getQualifiedName().toString();
     final String name = origin.getSimpleName().toString();
-    String originPackage = Util.packageOf(originName);
+    String originPackage = ProcessorUtils.packageOf(originName);
     if (origin.getNestingKind().isNested()) {
       final String parent = Util.shortName(originPackage);
-      originPackage = Util.packageOf(originPackage);
+      originPackage = ProcessorUtils.packageOf(originPackage);
       shortName = parent + "$" + name;
     } else {
       shortName = name;

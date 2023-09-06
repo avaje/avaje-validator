@@ -13,7 +13,7 @@ final class FieldReader {
 
   private final List<String> genericTypeParams;
   private final boolean publicField;
-  private final GenericType genericType;
+  private final UType genericType;
   private final String adapterFieldName;
   private final String adapterShortType;
   private final String fieldName;
@@ -37,7 +37,7 @@ final class FieldReader {
     this.element = element;
     this.elementAnnotations = ElementAnnotationContainer.create(element, classLevel);
     this.genericType = elementAnnotations.genericType();
-    final String shortType = genericType.shortType();
+    final String shortType = genericType.shortWithoutAnnotations();
     usePrimitiveValidation = isPrimitiveValidationType(shortType) && elementAnnotations.supportsPrimitiveValidation();
     adapterShortType = initAdapterShortType(shortType);
     adapterFieldName = initShortName();
@@ -79,13 +79,13 @@ final class FieldReader {
   }
 
   boolean typeObjectBooleanWithIsPrefix() {
-    return nameHasIsPrefix() && "java.lang.Boolean".equals(genericType.topType());
+    return nameHasIsPrefix() && "java.lang.Boolean".equals(genericType.mainType());
   }
 
   boolean typeBooleanWithIsPrefix() {
     return nameHasIsPrefix()
-        && ("boolean".equals(genericType.topType())
-            || "java.lang.Boolean".equals(genericType.topType()));
+        && ("boolean".equals(genericType.mainType())
+            || "java.lang.Boolean".equals(genericType.mainType()));
   }
 
   private boolean nameHasIsPrefix() {
@@ -98,18 +98,18 @@ final class FieldReader {
     if (PatternPrism.isPresent(element)) {
       importTypes.add("static io.avaje.validation.adapter.RegexFlag.*");
     }
-    genericType.addImports(importTypes);
+    importTypes.addAll(genericType.importTypes());
     elementAnnotations.addImports(importTypes);
   }
 
   void cascadeTypes(Set<String> types) {
-    final String topType = genericType.topType();
-    if ("java.util.List".equals(topType) || "java.util.Set".equals(topType)) {
-      types.add(genericType.firstParamType());
-    } else if ("java.util.Map".equals(topType)) {
-      types.add(genericType.secondParamType());
+    final String mainType = genericType.mainType();
+    if ("java.util.List".equals(mainType) || "java.util.Set".equals(mainType)) {
+      types.add(genericType.param0().fullWithoutAnnotations());
+    } else if ("java.util.Map".equals(mainType)) {
+      types.add(genericType.param1().fullWithoutAnnotations());
     } else {
-      types.add(topType);
+      types.add(mainType);
     }
   }
 
@@ -124,7 +124,7 @@ final class FieldReader {
   }
 
   String adapterShortType() {
-    return genericType.shortType();
+    return genericType.shortWithoutAnnotations();
   }
 
   void writeField(Append writer) {
@@ -176,7 +176,7 @@ final class FieldReader {
     return fieldName;
   }
 
-  public GenericType type() {
+  public UType type() {
     return genericType;
   }
 
@@ -187,7 +187,7 @@ final class FieldReader {
             writer,
             elementAnnotations,
             "        ",
-            PrimitiveUtil.wrap(genericType.shortType()),
+            PrimitiveUtil.wrap(genericType.shortWithoutAnnotations()),
             genericType,
             classLevel)
         .usePrimitiveValidation(usePrimitiveValidation)

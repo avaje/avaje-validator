@@ -20,7 +20,7 @@ final class SimpleParamBeanWriter {
     this.beanReader = beanReader;
     final var method = beanReader.getBeanType();
 
-    this.adapterPackage = Util.packageOf(method.getEnclosingElement().asType().toString());
+    this.adapterPackage = ProcessorUtils.packageOf(method.getEnclosingElement().asType().toString());
     adapterFullName =
         adapterPackage
             + "."
