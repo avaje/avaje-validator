@@ -46,6 +46,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private final Set<String> mixInImports = new HashSet<>();
   private SimpleComponentWriter componentWriter;
   private boolean readModuleInfo;
+  private boolean processedAnything;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -210,6 +211,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private void initialiseComponent() {
+    if (!processedAnything) return;
     metaData.initialiseFullName();
     try {
       componentWriter.initialise();
@@ -219,7 +221,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private void writeComponent(boolean processingOver) {
-    if (processingOver) {
+    if (processingOver && processedAnything) {
       try {
         componentWriter.write();
         componentWriter.writeMetaInf();
@@ -273,6 +275,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private void writeAdapter(TypeElement typeElement, BeanReader beanReader) {
+    processedAnything = true;
     beanReader.read();
     if (beanReader.nonAccessibleField()) {
       if (beanReader.hasValidationAnnotation()) {
