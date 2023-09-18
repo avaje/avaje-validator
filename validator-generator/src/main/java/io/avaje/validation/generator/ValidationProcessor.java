@@ -44,6 +44,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private final List<BeanReader> allReaders = new ArrayList<>();
   private final Set<String> sourceTypes = new HashSet<>();
   private final Set<String> mixInImports = new HashSet<>();
+  private final Set<String> alreadyGenerated = new HashSet<>();
   private SimpleComponentWriter componentWriter;
   private boolean readModuleInfo;
   private boolean processedAnything;
@@ -249,7 +250,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private void writeAdapterForType(TypeElement typeElement) {
-    if (isController(typeElement)) {
+    if (isController(typeElement) || !alreadyGenerated.add(typeElement.getQualifiedName().toString())) {
       // @Valid on controller just indicating the controller request
       // payloads should be validated - ignore this one
       return;

@@ -2,7 +2,6 @@ package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.APContext.typeElement;
 import static io.avaje.validation.generator.PrimitiveUtil.isPrimitiveValidationAnnotations;
-import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.HashMap;
@@ -25,7 +24,7 @@ public record ElementAnnotationContainer(
     Map<UType, String> typeUse2,
     Map<UType, String> crossParam) {
 
-  static ElementAnnotationContainer create(Element element, boolean classLevel) {
+  static ElementAnnotationContainer create(Element element) {
     final var hasValid = ValidPrism.isPresent(element);
 
     Map<UType, String> typeUse1;
@@ -35,15 +34,6 @@ public record ElementAnnotationContainer(
     if (element instanceof final ExecutableElement executableElement) {
       uType = UType.parse(executableElement.getReturnType());
 
-      Optional.ofNullable(uType.param0()).map(UType::annotations).stream()
-          .flatMap(List::stream)
-          .filter(m -> !ValidPrism.isInstance(m))
-          .filter(m -> !classLevel || hasMetaConstraintAnnotation(m))
-          .collect(
-              toMap(
-                  a -> UType.parse(a.getAnnotationType()),
-                  a -> AnnotationUtil.annotationAttributeMap(a, element)));
-
     } else {
       uType = UType.parse(element.asType());
     }
@@ -51,7 +41,7 @@ public record ElementAnnotationContainer(
     typeUse1 =
         Optional.ofNullable(uType.param0()).map(UType::annotations).stream()
             .flatMap(List::stream)
-            .filter(m -> !classLevel || hasMetaConstraintAnnotation(m))
+            .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
             .collect(
                 toMap(
                     a -> UType.parse(a.getAnnotationType()),
@@ -60,7 +50,7 @@ public record ElementAnnotationContainer(
     typeUse2 =
         Optional.ofNullable(uType.param1()).map(UType::annotations).stream()
             .flatMap(List::stream)
-            .filter(m -> !classLevel || hasMetaConstraintAnnotation(m))
+            .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
             .collect(
                 toMap(
                     a -> UType.parse(a.getAnnotationType()),
@@ -69,7 +59,7 @@ public record ElementAnnotationContainer(
     final var annotations =
         element.getAnnotationMirrors().stream()
             .filter(m -> !ValidPrism.isInstance(m))
-            .filter(m -> !classLevel || hasMetaConstraintAnnotation(m))
+            .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
             .map(
                 a -> {
                   if (CrossParamConstraintPrism.isPresent(a.getAnnotationType().asElement())) {
@@ -91,7 +81,8 @@ public record ElementAnnotationContainer(
   }
 
   static boolean hasMetaConstraintAnnotation(AnnotationMirror m) {
-    return hasMetaConstraintAnnotation(m.getAnnotationType().asElement());
+    return hasMetaConstraintAnnotation(m.getAnnotationType().asElement())
+        || ValidPrism.isInstance(m);
   }
 
   static boolean hasMetaConstraintAnnotation(Element element) {
@@ -106,6 +97,7 @@ public record ElementAnnotationContainer(
     final var annotations =
         uType.annotations().stream()
             .filter(m -> !ValidPrism.isInstance(m))
+            .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
             .collect(
                 toMap(
                     a -> UType.parse(a.getAnnotationType()),
@@ -113,6 +105,7 @@ public record ElementAnnotationContainer(
     var typeUse1 =
         Optional.ofNullable(uType.param0()).map(UType::annotations).stream()
             .flatMap(List::stream)
+            .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
             .collect(
                 toMap(
                     a -> UType.parse(a.getAnnotationType()),
@@ -121,6 +114,7 @@ public record ElementAnnotationContainer(
     var typeUse2 =
         Optional.ofNullable(uType.param1()).map(UType::annotations).stream()
             .flatMap(List::stream)
+            .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
             .collect(
                 toMap(
                     a -> UType.parse(a.getAnnotationType()),

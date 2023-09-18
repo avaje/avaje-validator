@@ -35,7 +35,7 @@ final class FieldReader {
     this.fieldName = element.getSimpleName().toString();
     this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
     this.element = element;
-    this.elementAnnotations = ElementAnnotationContainer.create(element, classLevel);
+    this.elementAnnotations = ElementAnnotationContainer.create(element);
     this.genericType = elementAnnotations.genericType();
     final String shortType = genericType.shortWithoutAnnotations();
     usePrimitiveValidation = isPrimitiveValidationType(shortType) && elementAnnotations.supportsPrimitiveValidation();
