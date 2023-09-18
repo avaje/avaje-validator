@@ -24,7 +24,7 @@ public final class BasicAdapters {
             case "UUID" -> new UuidAdapter(request);
             case "URI" -> new UriAdapter(request);
             case "Null" -> new NullableAdapter(request, true);
-            case "NotNull" -> new NullableAdapter(request, false);
+            case "NotNull", "NonNull" -> new NullableAdapter(request, false);
             case "AssertTrue" -> new AssertBooleanAdapter(request, true);
             case "AssertFalse" -> new AssertBooleanAdapter(request, false);
             case "NotBlank" -> new NotBlankAdapter(request);
