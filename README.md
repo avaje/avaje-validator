@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
 [![Discord](https://img.shields.io/discord/1074074312421683250?color=%237289da&label=discord)](https://discord.gg/Qcqf9R27BR)
 
-Reflection-free pojo validation via apt source code generation. A light (~85kb + generated code) source code generation style alternative to Hibernate Validation. (code generation vs reflection)
+Reflection-free pojo validation via apt source code generation. A light (~120kb + generated code) source code generation style alternative to Hibernate Validation. (code generation vs reflection)
 
 - Annotate java classes with `@Valid` (or use `@ImportValidPojo` for types we "don't own" such as external dependencies)
 - `avaje-validator-generator` annotation processor generates Java source code to write validation classes
@@ -58,7 +58,7 @@ when it is started using a service loader mechanism.
 
 ```java
 @Valid
-public class Leyndell {
+public class Address {
   @NotBlank
   private String street;
 
