@@ -59,7 +59,7 @@ final class TypeReader {
     }
 
     final var classAdapter = new FieldReader(type, genericTypeParams, true);
-    if (classAdapter.hasAnnotations()) {
+    if (classAdapter.hasConstraints()) {
       localFields.add(classAdapter);
     }
 
@@ -72,7 +72,10 @@ final class TypeReader {
   private void readField(Element element, List<FieldReader> localFields) {
     if (includeField(element)) {
       seenFields.add(element.toString());
-      localFields.add(new FieldReader(element, genericTypeParams));
+      var reader = new FieldReader(element, genericTypeParams);
+      if (reader.hasConstraints() || ValidPrism.isPresent(element)) {
+        localFields.add(reader);
+      }
     }
   }
 
