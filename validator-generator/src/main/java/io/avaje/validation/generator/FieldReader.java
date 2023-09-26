@@ -199,7 +199,7 @@ final class FieldReader {
     return classLevel;
   }
 
-  public boolean hasAnnotations() {
+  public boolean hasConstraints() {
     return !elementAnnotations.isEmpty();
   }
 }
