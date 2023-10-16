@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import io.avaje.applog.AppLog;
 import io.avaje.lang.Nullable;
 
 final class ResourceBundleManager {
@@ -45,7 +46,7 @@ final class ResourceBundleManager {
       map.computeIfAbsent(locale, key -> new ArrayList<>()).add(getBundle(name, locale));
 
     } catch (MissingResourceException e) {
-      logger.log(Level.ERROR, "failed to load " + name + "With locale " + locale);
+      logger.log(Level.ERROR, "failed to load " + name + " with locale " + locale);
     }
   }
 
