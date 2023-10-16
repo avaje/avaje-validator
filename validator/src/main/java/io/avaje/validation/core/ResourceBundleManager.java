@@ -15,7 +15,7 @@ import io.avaje.lang.Nullable;
 
 final class ResourceBundleManager {
   private static final System.Logger logger =
-      System.getLogger("io.avaje.validation.core.ResourceBundleManager");
+      AppLog.getLogger(ResourceBundleManager.class);
   private final Map<Locale, List<ResourceBundle>> map = new HashMap<>();
   private static final List<ResourceBundle> EMPTY = List.of();
   private static final String DEFAULT_BUNDLE = "io.avaje.validation.Messages";
