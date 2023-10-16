@@ -113,7 +113,10 @@ public interface Validator {
     /** Add a AnnotationValidationAdapter to use for the given type. */
     <T> Builder add(Class<? extends Annotation> type, ValidationAdapter<T> adapter);
 
-    /** Lookup ResourceBundles with the given names for error message interpolation */
+    /**
+     * Lookup ResourceBundles with the given names for error message interpolation. This will
+     * attempt to load the bundles for every locale configured with this builder
+     */
     Builder addResourceBundles(String... bundleName);
 
     /** Add ResourceBundles for error message interpolation */
