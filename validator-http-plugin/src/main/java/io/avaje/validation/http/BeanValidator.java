@@ -29,7 +29,7 @@ public class BeanValidator implements io.avaje.http.api.Validator {
   }
 
   @PostConstruct
-  void setValidator(BeanScope scope) {
+  public void setValidator(BeanScope scope) {
     this.validator = scope.get(Validator.class);
   }
 
