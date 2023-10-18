@@ -1,5 +1,5 @@
 
-name: avaje-config EA
+name: JDK EA
 
 on:
   workflow_dispatch:
