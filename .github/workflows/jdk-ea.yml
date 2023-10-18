@@ -1,0 +1,39 @@
+
+name: avaje-config EA
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '48 0 * * 6'
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        java_version: [GA,EA]
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Java
+      uses: oracle-actions/setup-java@v1
+      with:
+        website: jdk.java.net
+        release: ${{ matrix.java_version }}
+    - name: Maven cache
+      uses: actions/cache@v3
+      env:
+        cache-name: maven-cache
+      with:
+        path:
+          ~/.m2
+        key: build-${{ env.cache-name }}
+    - name: Build with Maven
+      run: mvn clean test
+
