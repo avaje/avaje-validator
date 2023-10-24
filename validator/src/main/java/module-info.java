@@ -4,6 +4,7 @@ module io.avaje.validation {
   exports io.avaje.validation.spi;
 
   requires io.avaje.lang;
+  requires io.avaje.applog;
   requires static io.avaje.inject;
 
   uses io.avaje.validation.Validator.GeneratedComponent;

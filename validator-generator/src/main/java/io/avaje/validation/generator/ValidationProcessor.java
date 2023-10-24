@@ -90,9 +90,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     getElements(round, ValidMethodPrism.PRISM_TYPE)
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);
-
-    writeAdaptersForImported(
-        round.getElementsAnnotatedWith(typeElement(ImportValidPojoPrism.PRISM_TYPE)));
+    getElements(round, ImportValidPojoPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForImported);
     initialiseComponent();
     cascadeTypes();
     writeComponent(round.processingOver());

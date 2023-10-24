@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.avaje</groupId>
     <artifactId>java11-oss</artifactId>
-    <version>3.10</version>
+    <version>3.12</version>
   </parent>
 
   <groupId>io.avaje</groupId>
@@ -27,7 +27,7 @@
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
     <java.version>17</java.version>
     <java.release>17</java.release>
-    <inject.version>9.4-RC3</inject.version>
+    <inject.version>9.8</inject.version>
     <http.version>2.0-RC2</http.version>
   </properties>
 
