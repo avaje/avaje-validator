@@ -1,0 +1,7 @@
+{
+  "bundles": [
+    {
+      "name": "io.avaje.validation.Messages"
+    }
+  ]
+}
