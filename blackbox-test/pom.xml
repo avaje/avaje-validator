@@ -45,7 +45,7 @@
 
     <dependency>
       <groupId>io.avaje</groupId>
-      <artifactId>validator-constraints</artifactId>
+      <artifactId>avaje-validator-constraints</artifactId>
       <version>${project.version}</version>
     </dependency>
 

@@ -9,6 +9,8 @@
   </parent>
   <artifactId>avaje-validator-inject-plugin</artifactId>
   <name>validator-inject-plugin</name>
+  <description>plugin for avaje-inject to provide a default validator</description>
+
   <dependencies>
     <dependency>
       <groupId>io.avaje</groupId>
@@ -28,7 +30,7 @@
 
     <dependency>
       <groupId>io.avaje</groupId>
-      <artifactId>validator-constraints</artifactId>
+      <artifactId>avaje-validator-constraints</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

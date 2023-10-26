@@ -10,6 +10,7 @@
 
   <artifactId>avaje-validator</artifactId>
   <name>validator</name>
+  <description>validator for annotated pojos using constraint annotations and source code generation</description>
 
   <dependencies>
 
