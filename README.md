@@ -31,7 +31,7 @@ Reflection-free pojo validation via apt source code generation. A light (~120kb 
 <!-- Alternatively can use Jakarta/Javax Constraints-->
 <dependency>
   <groupId>io.avaje</groupId>
-  <artifactId>validator-constraints</artifactId>
+  <artifactId>avaje-validator-constraints</artifactId>
   <version>${avaje.validator.version}</version>
 </dependency>
 ```
