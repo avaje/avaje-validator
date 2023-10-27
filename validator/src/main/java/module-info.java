@@ -1,6 +1,7 @@
 module io.avaje.validation {
   exports io.avaje.validation;
   exports io.avaje.validation.adapter;
+  exports io.avaje.validation.groups;
   exports io.avaje.validation.spi;
 
   requires io.avaje.lang;
