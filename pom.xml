@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.avaje</groupId>
     <artifactId>java11-oss</artifactId>
-    <version>3.12</version>
+    <version>4.0</version>
   </parent>
 
   <groupId>io.avaje</groupId>
@@ -26,8 +26,7 @@
   <properties>
     <surefire.useModulePath>false</surefire.useModulePath>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
-    <java.version>17</java.version>
-    <java.release>17</java.release>
+    <maven.compiler.release>17</maven.compiler.release>
     <inject.version>9.9</inject.version>
     <http.version>2.0-RC2</http.version>
   </properties>

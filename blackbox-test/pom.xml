@@ -14,7 +14,7 @@
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
-    <java.release>17</java.release>
+    <maven.compiler.release>17</maven.compiler.release>
   </properties>
 
   <dependencies>
