@@ -65,24 +65,19 @@ final class ProcessingContext {
       var warnHttp = CTX.get().warnHttp;
 
       try (var reader = getModuleInfoReader()) {
-        AtomicBoolean noInjectPlugin = new AtomicBoolean(injectPresent);
-        AtomicBoolean noHttpPlugin = new AtomicBoolean(warnHttp);
+
+        var moduleInfo = new ModuleInfoReader(module, reader);
+        boolean noHttpPlugin =
+            injectPresent && warnHttp && !moduleInfo.containsOnModulePath("io.avaje.validation.http");
+
+        boolean noInjectPlugin =
+            noHttpPlugin
+                && injectPresent
+                && !moduleInfo.containsOnModulePath("io.avaje.validation.plugin");
+
         var noProvides =
-            reader
-                .lines()
-                .map(
-                    s -> {
-                      if (injectPresent && s.contains("io.avaje.validation.plugin")) {
-                        noInjectPlugin.set(false);
-                      }
-
-                      if (injectPresent && warnHttp && s.contains("io.avaje.validation.http")) {
-                        noInjectPlugin.set(false);
-                        noHttpPlugin.set(false);
-                      }
-
-                      return s;
-                    })
+            moduleInfo.provides().stream()
+                .flatMap(s -> s.implementations().stream())
                 .noneMatch(s -> s.contains(fqn));
 
         if (noProvides) {
@@ -92,12 +87,12 @@ final class ProcessingContext {
               fqn);
         }
 
-        if (noHttpPlugin.get()) {
+        if (noHttpPlugin) {
           logWarn(
               module,
               "`requires io.avaje.validation.http` must be explicity added or else avaje-inject may fail to detect the default http validator, validator, and method AOP validator",
               fqn);
-        } else if (noInjectPlugin.get()) {
+        } else if (noInjectPlugin) {
           logWarn(
               module,
               "`requires io.avaje.validation.plugin` must be explicity added or else avaje-inject may fail to detect the default validator and method AOP validator",
