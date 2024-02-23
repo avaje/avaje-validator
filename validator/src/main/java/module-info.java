@@ -1,3 +1,4 @@
+/** Avaje Validation Library */
 module io.avaje.validation {
   exports io.avaje.validation;
   exports io.avaje.validation.adapter;
