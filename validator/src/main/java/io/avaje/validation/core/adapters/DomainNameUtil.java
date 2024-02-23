@@ -3,7 +3,6 @@ package io.avaje.validation.core.adapters;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 import java.net.IDN;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -86,11 +85,6 @@ final class DomainNameUtil {
       return false;
     }
 
-    final Matcher matcher = pattern.matcher(domain);
-    if (!matcher.matches()) {
-      return false;
-    }
-
-    return true;
+    return pattern.matcher(domain).matches();
   }
 }

@@ -20,11 +20,11 @@ final class OptionalValidationAdapter<T> extends ContainerAdapter<T> {
     if (value instanceof final Optional<?> o) {
       o.ifPresent(v -> initalAdapter.validate((T) v, req, propertyName));
     } else if (value instanceof final OptionalInt i) {
-      i.ifPresent(v -> initalAdapter.validate((T) (Object) v, req, propertyName));
+      i.ifPresent(v -> initalAdapter.validate((T) (Integer) v, req, propertyName));
     } else if (value instanceof final OptionalLong l) {
-      l.ifPresent(v -> initalAdapter.validate((T) (Object) v, req, propertyName));
+      l.ifPresent(v -> initalAdapter.validate((T) (Long) v, req, propertyName));
     } else if (value instanceof final OptionalDouble d) {
-      d.ifPresent(v -> initalAdapter.validate((T) (Object) v, req, propertyName));
+      d.ifPresent(v -> initalAdapter.validate((T) (Double) v, req, propertyName));
     }
     return true;
   }
