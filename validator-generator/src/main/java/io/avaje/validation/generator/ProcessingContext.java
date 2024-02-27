@@ -5,15 +5,16 @@ import static io.avaje.validation.generator.APContext.getModuleInfoReader;
 import static io.avaje.validation.generator.APContext.getProjectModuleElement;
 import static io.avaje.validation.generator.APContext.logError;
 import static io.avaje.validation.generator.APContext.logWarn;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ModuleElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
+
+import io.avaje.validation.generator.ModuleInfoReader.Requires;
 
 final class ProcessingContext {
 
@@ -65,14 +66,24 @@ final class ProcessingContext {
       var warnHttp = CTX.get().warnHttp;
 
       try (var reader = getModuleInfoReader()) {
-
         var moduleInfo = new ModuleInfoReader(module, reader);
+        var buildPluginAvailable = buildPluginAvailable();
+        var requireSet =
+            moduleInfo.requires().stream()
+                .map(Requires::getDependency)
+                .map(m -> m.getQualifiedName().toString())
+                .collect(toSet());
+
         boolean noHttpPlugin =
-            injectPresent && warnHttp && !moduleInfo.containsOnModulePath("io.avaje.validation.http");
+            injectPresent
+                && (!buildPluginAvailable || !requireSet.contains("io.avaje.http.api"))
+                && warnHttp
+                && !moduleInfo.containsOnModulePath("io.avaje.validation.http");
 
         boolean noInjectPlugin =
             noHttpPlugin
                 && injectPresent
+                && (!buildPluginAvailable || !requireSet.contains("io.avaje.validation"))
                 && !moduleInfo.containsOnModulePath("io.avaje.validation.plugin");
 
         var noProvides =
@@ -80,7 +91,7 @@ final class ProcessingContext {
                 .flatMap(s -> s.implementations().stream())
                 .noneMatch(s -> s.contains(fqn));
 
-        if (noProvides) {
+        if (!buildPluginAvailable && noProvides) {
           logError(
               module,
               "Missing `provides io.avaje.validation.Validator.GeneratedComponent with %s;`",
@@ -105,11 +116,27 @@ final class ProcessingContext {
     }
   }
 
-  static ModuleElement getModuleElement(Element e) {
-    if (e == null || e instanceof ModuleElement) {
-      return (ModuleElement) e;
+  private static boolean buildPluginAvailable() {
+
+    return resource("target/avaje-plugin-exists.txt", "/target/classes")
+        || resource("build/avaje-plugin-exists.txt", "/build/classes/java/main");
+  }
+
+  private static boolean resource(String relativeName, String replace) {
+    try (var inputStream =
+        new URI(
+                filer()
+                    .getResource(StandardLocation.CLASS_OUTPUT, "", relativeName)
+                    .toUri()
+                    .toString()
+                    .replace(replace, ""))
+            .toURL()
+            .openStream()) {
+
+      return inputStream.available() > 0;
+    } catch (IOException | URISyntaxException e) {
+      return false;
     }
-    return getModuleElement(e.getEnclosingElement());
   }
 
   static void clear() {

@@ -4,7 +4,7 @@
 [![Build](https://github.com/avaje/avaje-validator/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-validator/actions/workflows/build.yml)
 [![native image build](https://github.com/avaje/avaje-validator/actions/workflows/native-image.yml/badge.svg)](https://github.com/avaje/avaje-validator/actions/workflows/native-image.yml)
 [![Maven Central : avaje-validator](https://img.shields.io/maven-central/v/io.avaje/avaje-validator.svg?label=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/io.avaje/avaje-validator)
-[![javadoc](https://javadoc.io/badge2/io.avaje/avaje-config/javadoc.svg?color=purple)](https://javadoc.io/doc/io.avaje/avaje-config/latest/io.avaje.config/io/avaje/config/package-summary.html)
+[![javadoc](https://javadoc.io/badge2/io.avaje/avaje-validator/javadoc.svg?color=purple)](https://javadoc.io/doc/io.avaje/avaje-validator/latest/io.avaje-validator/io/avaje/validator/package-summary.html)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
 Reflection-free pojo validation via apt source code generation. A light (~120kb + generated code) source code generation style alternative to Hibernate Validation. (code generation vs reflection)
 
