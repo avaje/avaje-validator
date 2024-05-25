@@ -269,7 +269,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private void writeAdapterForConstraint(TypeElement typeElement) {
     if (ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
         .noneMatch(m -> "message".equals(m.getSimpleName().toString()))) {
-      logError(typeElement, "Constraint annotations must contain a message method");
+      logError(typeElement, "Constraint annotations must contain a `String message()` method");
     }
     final ContraintReader beanReader = new ContraintReader(typeElement);
     writeAdapter(typeElement, beanReader);

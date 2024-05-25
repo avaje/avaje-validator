@@ -3,8 +3,6 @@ package io.avaje.validation.adapter;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import io.avaje.inject.aop.InvocationException;
-
 public interface MethodAdapterProvider {
 
   Method method() throws Exception;
@@ -23,7 +21,7 @@ public interface MethodAdapterProvider {
     try {
       return method();
     } catch (final Exception e) {
-      throw new InvocationException(e);
+      throw new IllegalStateException(e);
     }
   }
 }

@@ -30,12 +30,7 @@ public final class AOPMethodValidator implements AspectProvider<ValidMethod> {
   public MethodInterceptor interceptor(Method method, ValidMethod aspectAnnotation) {
 
     final var localeStr = aspectAnnotation.locale();
-    final Locale locale;
-    if (localeStr.isBlank()) {
-      locale = null;
-    } else {
-      locale = Locale.forLanguageTag(localeStr);
-    }
+    final Locale locale = localeStr.isBlank() ? null : Locale.forLanguageTag(localeStr);
     final var interceptor =
         new ParamInterceptor(locale, method, aspectAnnotation.throwOnParamFailure());
     consumers.add(interceptor::postConstruct);
