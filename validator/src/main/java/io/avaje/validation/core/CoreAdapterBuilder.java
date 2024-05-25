@@ -113,12 +113,13 @@ final class CoreAdapterBuilder {
 
     @Override
     public String targetType() {
-      return (String)attribute("_type");
+      return attribute("_type");
     }
 
     @Override
-    public Object attribute(String key) {
-      return attributes.get(key);
+    @SuppressWarnings("unchecked")
+    public <T> T attribute(String key) {
+      return (T) attributes.get(key);
     }
 
     @Override
