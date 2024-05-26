@@ -1,2 +1,2 @@
-io.avaje.validation.spring.aspect.MethodValidationAutoConfiguration
 io.avaje.validation.spring.validator.AvajeValidatorAutoConfiguration
+io.avaje.validation.spring.aspect.MethodValidationAutoConfiguration
