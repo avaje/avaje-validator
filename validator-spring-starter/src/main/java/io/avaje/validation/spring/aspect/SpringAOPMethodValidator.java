@@ -20,11 +20,9 @@ public class SpringAOPMethodValidator {
 
   private final Map<Method, ParamInterceptor> interceptorMap = new HashMap<>();
 
-  public SpringAOPMethodValidator(Validator validator, List<MethodAdapterProvider> providers)
-      throws Exception {
+  public SpringAOPMethodValidator(Validator validator, List<MethodAdapterProvider> providers) throws Exception {
     var ctx = validator.context();
     for (var provider : providers) {
-
       var method = provider.method();
       ValidMethod validMethod = method.getAnnotation(ValidMethod.class);
       final var localeStr = validMethod.locale();

@@ -15,8 +15,7 @@ import io.avaje.validation.adapter.MethodAdapterProvider;
 public class MethodValidationAutoConfiguration {
 
   @Bean
-  public SpringAOPMethodValidator methodValidator(
-      Validator validator, List<MethodAdapterProvider> providers) throws Exception {
+  public SpringAOPMethodValidator methodValidator(Validator validator, List<MethodAdapterProvider> providers) throws Exception {
     return new SpringAOPMethodValidator(validator, providers);
   }
 }

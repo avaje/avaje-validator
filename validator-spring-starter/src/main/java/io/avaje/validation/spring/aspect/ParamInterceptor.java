@@ -33,7 +33,6 @@ final class ParamInterceptor {
   }
 
   public void invoke(ProceedingJoinPoint invocation) throws Throwable {
-
     final var args = invocation.getArgs();
     final var req = ctx.request(locale, List.of());
     var i = 0;
