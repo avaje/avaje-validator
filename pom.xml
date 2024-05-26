@@ -37,6 +37,7 @@
     <module>validator-generator</module>
     <module>validator-http-plugin</module>
     <module>validator-inject-plugin</module>
+    <module>validator-spring-starter</module>
   </modules>
 
   <profiles>

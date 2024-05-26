@@ -25,7 +25,6 @@ final class ValidMethodReader {
     this.params = element.getParameters();
     importTypes.add(type);
     importTypes.add("java.util.List");
-    importTypes.add(diAnnotation());
     importTypes.add("java.util.Set");
     importTypes.add("java.util.Map");
     importTypes.add("io.avaje.validation.adapter.MethodAdapterProvider");
@@ -33,6 +32,9 @@ final class ValidMethodReader {
     importTypes.add("io.avaje.validation.adapter.ValidationContext");
     importTypes.add("io.avaje.validation.spi.Generated");
     importTypes.add("java.lang.reflect.Method");
+    final var diAnnotation = diAnnotation();
+    importTypes.add(diAnnotation);
+    importTypes.add(diAnnotation.contains("javax") ? "javax.inject.Named" : "jakarta.inject.Named");
     paramAnnotations = params.stream().map(ElementAnnotationContainer::create).toList();
     returnElementAnnotation = ElementAnnotationContainer.create(element);
   }

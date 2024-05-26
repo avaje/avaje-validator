@@ -28,6 +28,12 @@
 
     <dependency>
       <groupId>io.avaje</groupId>
+      <artifactId>avaje-validator-inject-plugin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.avaje</groupId>
       <artifactId>avaje-validator-http-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>

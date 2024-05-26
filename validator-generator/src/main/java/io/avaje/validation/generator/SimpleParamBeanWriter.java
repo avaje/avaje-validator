@@ -64,10 +64,10 @@ final class SimpleParamBeanWriter {
     writer
         .append(
             """
-    		@Generated
-    		@%s
-    		public final class %s implements MethodAdapterProvider {
-    		""",
+                @Generated("avaje-validator-generator")
+                @Named
+                @%s
+                public final class %s implements MethodAdapterProvider {""",
             Util.shortName(diAnnotation()), adapterShortName)
         .eol();
   }
