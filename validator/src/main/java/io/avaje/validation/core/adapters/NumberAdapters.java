@@ -125,7 +125,7 @@ public final class NumberAdapters {
     MaxAdapter(AdapterCreateRequest request) {
       super(request);
       this.targetType = request.targetType();
-      this.max = (long) request.attribute(VALUE);
+      this.max = request.attribute(VALUE);
     }
 
     @Override
@@ -180,7 +180,7 @@ public final class NumberAdapters {
 
     MaxBigDecimal(AdapterCreateRequest request) {
       super(request);
-      this.max = new BigDecimal(String.valueOf(request.attribute(VALUE)));
+      this.max = new BigDecimal(String.valueOf(request.<Object>attribute(VALUE)));
     }
 
     @Override
@@ -196,7 +196,7 @@ public final class NumberAdapters {
 
     MaxBigInteger(AdapterCreateRequest request) {
       super(request);
-      this.max = new BigInteger(String.valueOf(request.attribute(VALUE)));
+      this.max = new BigInteger(String.valueOf(request.<Object>attribute(VALUE)));
     }
 
     @Override
@@ -214,7 +214,7 @@ public final class NumberAdapters {
     MinAdapter(AdapterCreateRequest request) {
       super(request);
       this.targetType = request.targetType();
-      this.min = (long) request.attribute(VALUE);
+      this.min = request.attribute(VALUE);
     }
 
     @Override
@@ -268,7 +268,7 @@ public final class NumberAdapters {
 
     MinBigDecimal(AdapterCreateRequest request) {
       super(request);
-      this.min = new BigDecimal(String.valueOf(request.attribute(VALUE)));
+      this.min = new BigDecimal(String.valueOf(request.<Object>attribute(VALUE)));
     }
 
     @Override
@@ -284,7 +284,7 @@ public final class NumberAdapters {
 
     MinBigInteger(AdapterCreateRequest request) {
       super(request);
-      this.min = new BigInteger(String.valueOf(request.attribute(VALUE)));
+      this.min = new BigInteger(String.valueOf(request.<Object>attribute(VALUE)));
     }
 
     @Override
@@ -438,8 +438,8 @@ public final class NumberAdapters {
     @SuppressWarnings("unchecked")
     RangeAdapter(AdapterCreateRequest request) {
       super(request);
-      this.min = (long) request.attribute("min");
-      this.max = (long) request.attribute("max");
+      this.min = request.attribute("min");
+      this.max = request.attribute("max");
       this.maxAdapter = (NumberAdapter<Number>) max(request.withValue(max));
       this.minAdapter = (NumberAdapter<Number>) min(request.withValue(min));
     }
@@ -490,8 +490,8 @@ public final class NumberAdapters {
 
     RangeStringAdapter(AdapterCreateRequest request) {
       super(request);
-      this.min = BigDecimal.valueOf((long) request.attribute("min"));
-      this.max = BigDecimal.valueOf((long) request.attribute("max"));
+      this.min = BigDecimal.valueOf(request.attribute("min"));
+      this.max = BigDecimal.valueOf(request.attribute("max"));
     }
 
     @Override

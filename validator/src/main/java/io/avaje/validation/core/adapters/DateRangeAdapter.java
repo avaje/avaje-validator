@@ -21,15 +21,15 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
     this.referenceClock = referenceClock;
     this.tolerance = tolerance;
     this._type = request.targetType();
-    min = parsePeriod((String) request.attribute("min"), true);
-    max = parsePeriod((String) request.attribute("max"), false);
+    min = parsePeriod(request.attribute("min"), true);
+    max = parsePeriod(request.attribute("max"), false);
   }
 
   private TemporalAmount parsePeriod(String period, boolean negateTolerance) {
     if (period == null || period.isEmpty()) {
       return null;
     }
-    if (period.equals("now")) {
+    if ("now".equals(period)) {
       return nowTolerance(negateTolerance);
     }
     try {

@@ -162,7 +162,7 @@ public interface ValidationContext {
     Map<String, Object> attributes();
 
     /** Return the attribute for the given key. */
-    Object attribute(String key);
+   <T> T attribute(String key);
 
     /** Return the message to use */
     Message message();
