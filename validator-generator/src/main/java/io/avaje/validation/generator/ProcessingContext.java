@@ -3,7 +3,6 @@ package io.avaje.validation.generator;
 import static io.avaje.validation.generator.APContext.filer;
 import static io.avaje.validation.generator.APContext.getModuleInfoReader;
 import static io.avaje.validation.generator.APContext.getProjectModuleElement;
-import static io.avaje.validation.generator.APContext.logError;
 import static io.avaje.validation.generator.APContext.logWarn;
 import static java.util.stream.Collectors.toSet;
 
@@ -85,18 +84,6 @@ final class ProcessingContext {
                 && injectPresent
                 && (!buildPluginAvailable || !requireSet.contains("io.avaje.validation"))
                 && !moduleInfo.containsOnModulePath("io.avaje.validation.plugin");
-
-        var noProvides =
-            moduleInfo.provides().stream()
-                .flatMap(s -> s.implementations().stream())
-                .noneMatch(s -> s.contains(fqn));
-
-        if (!buildPluginAvailable && noProvides) {
-          logError(
-              module,
-              "Missing `provides io.avaje.validation.Validator.GeneratedComponent with %s;`",
-              fqn);
-        }
 
         if (noHttpPlugin) {
           logWarn(
