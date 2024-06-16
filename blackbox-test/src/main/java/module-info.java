@@ -5,5 +5,5 @@ module blackbox.test {
   requires jakarta.validation;
   requires jakarta.inject;
   provides io.avaje.validation.Validator.GeneratedComponent with example.avaje.valid.GeneratedValidatorComponent;
-  provides io.avaje.inject.spi.Module with example.avaje.AvajeModule;
+  provides io.avaje.inject.spi.InjectExtension with example.avaje.AvajeModule;
 }
