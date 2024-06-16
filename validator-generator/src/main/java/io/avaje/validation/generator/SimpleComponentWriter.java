@@ -142,7 +142,7 @@ final class SimpleComponentWriter {
   private void writeImports() {
     importTypes.add(Constants.VALIDATOR);
     importTypes.add(Constants.VALID_SPI);
-    importTypes.add("io.avaje.validation.Validator.GeneratedComponent");
+    importTypes.add("io.avaje.validation.spi.GeneratedComponent");
     importTypes.addAll(metaData.allImports());
 
     for (final String importType : importTypes) {

@@ -4,7 +4,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.time.Clock;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -15,6 +19,8 @@ import io.avaje.validation.core.adapters.BasicAdapters;
 import io.avaje.validation.core.adapters.FuturePastAdapterFactory;
 import io.avaje.validation.core.adapters.NumberAdapters;
 import io.avaje.validation.groups.Default;
+import io.avaje.validation.spi.AdapterFactory;
+import io.avaje.validation.spi.AnnotationFactory;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
 final class CoreAdapterBuilder {
@@ -23,14 +29,14 @@ final class CoreAdapterBuilder {
 
   private static final Set<Class<?>> DEFAULT_GROUP = Set.of(Default.class);
   private final DValidator context;
-  private final List<ValidationContext.AdapterFactory> factories = new ArrayList<>();
-  private final List<ValidationContext.AnnotationFactory> annotationFactories = new ArrayList<>();
+  private final List<AdapterFactory> factories = new ArrayList<>();
+  private final List<AnnotationFactory> annotationFactories = new ArrayList<>();
   private final Map<Object, ValidationAdapter<?>> adapterCache = new ConcurrentHashMap<>();
 
   CoreAdapterBuilder(
       DValidator context,
-      List<ValidationContext.AdapterFactory> userFactories,
-      List<ValidationContext.AnnotationFactory> userAnnotationFactories,
+      List<AdapterFactory> userFactories,
+      List<AnnotationFactory> userAnnotationFactories,
       Supplier<Clock> clockSupplier,
       Duration temporalTolerance) {
     this.context = context;
@@ -62,7 +68,7 @@ final class CoreAdapterBuilder {
   @SuppressWarnings("unchecked")
   <T> ValidationAdapter<T> build(Type type, Object cacheKey) {
     // Ask each factory to create the validation adapter.
-    for (final ValidationContext.AdapterFactory factory : factories) {
+    for (final AdapterFactory factory : factories) {
       final var result = (ValidationAdapter<T>) factory.create(type, context);
       if (result != null) {
         return result;

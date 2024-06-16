@@ -3,7 +3,7 @@ package io.avaje.validation.spi;
 import java.util.Map;
 
 /** Reads an Annotation's attributes and the message template and interpolates the message */
-public interface MessageInterpolator {
+public non-sealed interface MessageInterpolator extends ValidatorExtension {
 
   /**
    * Interpolate the given message with the annotation attributes

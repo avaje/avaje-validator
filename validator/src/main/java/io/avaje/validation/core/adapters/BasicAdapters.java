@@ -1,6 +1,10 @@
 package io.avaje.validation.core.adapters;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -11,13 +15,15 @@ import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 import io.avaje.validation.adapter.ValidationRequest;
+import io.avaje.validation.core.adapters.BasicAdapters.PatternAdapter;
+import io.avaje.validation.spi.AnnotationFactory;
 
 public final class BasicAdapters {
   private static final String LENGTH_MAX = "{avaje.Length.max.message}";
 
   private BasicAdapters() {}
 
-  public static final ValidationContext.AnnotationFactory FACTORY =
+  public static final AnnotationFactory FACTORY =
       request ->
           switch (request.annotationType().getSimpleName()) {
             case "Email" -> new EmailAdapter(request);

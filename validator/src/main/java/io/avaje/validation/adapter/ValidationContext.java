@@ -116,36 +116,6 @@ public interface ValidationContext {
      */
     String lookupkey();
   }
-
-  /** Factory for creating a ValidationAdapter for a given type. */
-  @FunctionalInterface
-  interface AdapterFactory {
-
-    /**
-     * Create and return a ValidationAdapter given the type and annotations or return null.
-     * Returning null means that the adapter could be created by another factory.
-     *
-     * @param type The type for which the adapter is being created
-     * @param ctx The validation context
-     * @return The created validation adapter or null if not applicable
-     */
-    ValidationAdapter<?> create(Type type, ValidationContext ctx);
-  }
-
-  /** Factory for creating an Annotation Adapter for a given annotation. */
-  @FunctionalInterface
-  interface AnnotationFactory {
-
-    /**
-     * Create and return a ValidationAdapter given the type and annotations or return null.
-     * Returning null means that the adapter could be created by another factory.
-     *
-     * @param request Holds the details used to create the adapter
-     * @return The created validation adapter or null if not applicable
-     */
-    ValidationAdapter<?> create(AdapterCreateRequest request);
-  }
-
   /** Request to create a Validation Adapter. */
   interface AdapterCreateRequest {
 
