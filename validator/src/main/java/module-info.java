@@ -8,6 +8,7 @@ module io.avaje.validation {
   requires io.avaje.lang;
   requires io.avaje.applog;
   requires static io.avaje.inject;
+  requires static io.avaje.inject.aop;
 
   uses io.avaje.validation.Validator.GeneratedComponent;
   uses io.avaje.validation.spi.MessageInterpolator;
