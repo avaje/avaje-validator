@@ -37,23 +37,23 @@ final class ExtensionLoader {
     }
   }
 
-  public Optional<MessageInterpolator> interpolator() {
+  Optional<MessageInterpolator> interpolator() {
     return interpolator;
   }
 
-  public List<GeneratedComponent> generatedComponents() {
+  List<GeneratedComponent> generatedComponents() {
     return generatedComponents;
   }
 
-  public List<ValidatorCustomizer> customizers() {
+  List<ValidatorCustomizer> customizers() {
     return customizers;
   }
 
-  public List<AdapterFactory> adapterFactories() {
+  List<AdapterFactory> adapterFactories() {
     return adapterFactories;
   }
 
-  public List<AnnotationFactory> annotationFactories() {
+  List<AnnotationFactory> annotationFactories() {
     return annotationFactories;
   }
 }
