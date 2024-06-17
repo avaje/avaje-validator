@@ -2,7 +2,7 @@ package io.avaje.validation.spi;
 
 import io.avaje.spi.Service;
 
-/** super interface for all Validation SPIs */
+/** Super interface for all validation SPIs */
 @Service
 public sealed interface ValidationExtension
     permits AdapterFactory,

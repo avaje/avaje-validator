@@ -36,7 +36,7 @@ import io.avaje.validation.spi.ValidatorCustomizer;
 /** Default implementation of Validator. */
 final class DValidator implements Validator, ValidationContext {
 
-  private static final DServiceLoader SPI_LOADER = new DServiceLoader();
+  private static final ExtensionLoader SPI_LOADER = new ExtensionLoader();
   private final CoreAdapterBuilder builder;
   private final Map<Type, ValidationType<?>> typeCache = new ConcurrentHashMap<>();
   private final MessageInterpolator interpolator;
@@ -289,7 +289,7 @@ final class DValidator implements Validator, ValidationContext {
       for (final ValidatorCustomizer next : SPI_LOADER.customizers()) {
         next.customize(this);
       }
-      for (final GeneratedComponent next : SPI_LOADER.components()) {
+      for (final GeneratedComponent next : SPI_LOADER.generatedComponents()) {
         next.customize(this);
       }
     }

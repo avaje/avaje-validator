@@ -13,18 +13,18 @@ import io.avaje.validation.spi.ValidatorCustomizer;
 import io.avaje.validation.spi.ValidationExtension;
 
 /** Load all the services using the common service interface. */
-final class DServiceLoader {
+final class ExtensionLoader {
 
-  private final List<GeneratedComponent> components = new ArrayList<>();
+  private final List<GeneratedComponent> generatedComponents = new ArrayList<>();
   private final List<ValidatorCustomizer> customizers = new ArrayList<>();
   private final List<AdapterFactory> adapterFactories = new ArrayList<>();
   private final List<AnnotationFactory> annotationFactories = new ArrayList<>();
   private Optional<MessageInterpolator> interpolator = Optional.empty();
 
-  DServiceLoader() {
+  ExtensionLoader() {
     for (var spi : ServiceLoader.load(ValidationExtension.class)) {
       if (spi instanceof GeneratedComponent gc) {
-        components.add(gc);
+        generatedComponents.add(gc);
       } else if (spi instanceof ValidatorCustomizer c) {
         customizers.add(c);
       } else if (spi instanceof MessageInterpolator m) {
@@ -41,8 +41,8 @@ final class DServiceLoader {
     return interpolator;
   }
 
-  public List<GeneratedComponent> components() {
-    return components;
+  public List<GeneratedComponent> generatedComponents() {
+    return generatedComponents;
   }
 
   public List<ValidatorCustomizer> customizers() {
