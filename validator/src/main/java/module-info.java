@@ -11,5 +11,5 @@ module io.avaje.validation {
   requires static io.avaje.inject.aop;
   requires static io.avaje.spi;
 
-  uses io.avaje.validation.spi.ValidatorExtension;
+  uses io.avaje.validation.spi.ValidationExtension;
 }

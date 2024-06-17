@@ -5,7 +5,7 @@ import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 
 /** Factory for creating an Annotation Adapter for a given annotation. */
 @FunctionalInterface
-public non-sealed interface AnnotationFactory extends ValidatorExtension {
+public non-sealed interface AnnotationFactory extends ValidationExtension {
 
   /**
    * Create and return a ValidationAdapter given the type and annotations or return null. Returning

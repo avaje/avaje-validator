@@ -10,7 +10,7 @@ import io.avaje.validation.spi.AnnotationFactory;
 import io.avaje.validation.spi.GeneratedComponent;
 import io.avaje.validation.spi.MessageInterpolator;
 import io.avaje.validation.spi.ValidatorCustomizer;
-import io.avaje.validation.spi.ValidatorExtension;
+import io.avaje.validation.spi.ValidationExtension;
 
 /** Load all the services using the common service interface. */
 final class DServiceLoader {
@@ -22,7 +22,7 @@ final class DServiceLoader {
   private Optional<MessageInterpolator> interpolator = Optional.empty();
 
   DServiceLoader() {
-    for (var spi : ServiceLoader.load(ValidatorExtension.class)) {
+    for (var spi : ServiceLoader.load(ValidationExtension.class)) {
       if (spi instanceof GeneratedComponent gc) {
         components.add(gc);
       } else if (spi instanceof ValidatorCustomizer c) {

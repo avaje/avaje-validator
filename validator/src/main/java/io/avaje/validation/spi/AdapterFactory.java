@@ -7,7 +7,7 @@ import io.avaje.validation.adapter.ValidationContext;
 
 /** Factory for creating a ValidationAdapter for a given type. */
 @FunctionalInterface
-public non-sealed interface AdapterFactory extends ValidatorExtension {
+public non-sealed interface AdapterFactory extends ValidationExtension {
 
   /**
    * Create and return a ValidationAdapter given the type and annotations or return null. Returning

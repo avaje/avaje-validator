@@ -10,7 +10,7 @@ import io.avaje.validation.Validator;
  * system.
  */
 @FunctionalInterface
-public non-sealed interface ValidatorCustomizer extends ValidatorExtension {
+public non-sealed interface ValidatorCustomizer extends ValidationExtension {
 
   /** Callback to customize a Validator.Builder instance. */
   void customize(Validator.Builder builder);
