@@ -1,6 +1,7 @@
 package io.avaje.validation.http;
 
 import io.avaje.inject.BeanScopeBuilder;
+import io.avaje.spi.ServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +10,8 @@ import java.util.Locale;
 /**
  * Plugin for avaje inject that provides a default Http Validator instance.
  */
-public final class HttpValidatorProvider implements io.avaje.inject.spi.Plugin {
+@ServiceProvider
+public final class HttpValidatorProvider implements io.avaje.inject.spi.InjectPlugin {
 
   private static final Class<?> VALIDATOR_HTTP_CLASS = avajeHttpOnClasspath();
 
@@ -33,7 +35,7 @@ public final class HttpValidatorProvider implements io.avaje.inject.spi.Plugin {
     }
 
     builder.provideDefault(null, VALIDATOR_HTTP_CLASS, () -> {
-      final var props = builder.propertyPlugin();
+      final var props = builder.configPlugin();
       final var locales = new ArrayList<Locale>();
 
       props.get("validation.locale.default")

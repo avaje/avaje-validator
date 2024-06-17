@@ -5,7 +5,7 @@ import java.util.Set;
 final class Constants {
 
   static final String META_INF_COMPONENT =
-      "META-INF/services/io.avaje.validation.Validator$GeneratedComponent";
+      "META-INF/services/io.avaje.validation.spi.ValidationExtension";
   static final String META_INF_CUSTOMIZER =
       "META-INF/services/io.avaje.validation.spi.ValidatorCustomizer";
   public static final String VALID_SPI = "io.avaje.validation.spi.*";

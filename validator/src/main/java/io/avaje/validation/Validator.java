@@ -14,6 +14,8 @@ import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 import io.avaje.validation.core.DefaultBootstrap;
+import io.avaje.validation.spi.AdapterFactory;
+import io.avaje.validation.spi.AnnotationFactory;
 import io.avaje.validation.spi.MessageInterpolator;
 import io.avaje.validation.spi.ValidatorCustomizer;
 
@@ -160,10 +162,10 @@ public interface Validator {
     Builder add(ValidatorCustomizer component);
 
     /** Add a ValidationAdapter.Factory which provides ValidationAdapters to use. */
-    Builder add(ValidationContext.AdapterFactory factory);
+    Builder add(AdapterFactory factory);
 
     /** Add a ValidationAdapter.Factory which provides ValidationAdapters to use. */
-    Builder add(ValidationContext.AnnotationFactory factory);
+    Builder add(AnnotationFactory factory);
 
     /**
      * Build and return the Validator instance with all the given adapters and factories registered.
@@ -186,14 +188,5 @@ public interface Validator {
 
     /** Create a ValidationAdapter given the Validator instance. */
     ValidationAdapter<?> build(AdapterCreateRequest request);
-  }
-
-  /** Components register ValidationAdapters with the Validator.Builder */
-  @FunctionalInterface
-  interface GeneratedComponent extends ValidatorCustomizer {
-
-    /** Customize the Builder with generated ValidationAdapters. */
-    @Override
-    void customize(Builder builder);
   }
 }

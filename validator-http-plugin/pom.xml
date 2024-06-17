@@ -22,6 +22,13 @@
 
     <dependency>
       <groupId>io.avaje</groupId>
+      <artifactId>avaje-spi-service</artifactId>
+      <version>${spi.version}</version>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>io.avaje</groupId>
       <artifactId>avaje-validator-inject-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>

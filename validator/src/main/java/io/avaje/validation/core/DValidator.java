@@ -17,7 +17,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -28,12 +27,16 @@ import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
+import io.avaje.validation.spi.AdapterFactory;
+import io.avaje.validation.spi.AnnotationFactory;
+import io.avaje.validation.spi.GeneratedComponent;
 import io.avaje.validation.spi.MessageInterpolator;
 import io.avaje.validation.spi.ValidatorCustomizer;
 
 /** Default implementation of Validator. */
 final class DValidator implements Validator, ValidationContext {
 
+  private static final ExtensionLoader SPI_LOADER = new ExtensionLoader();
   private final CoreAdapterBuilder builder;
   private final Map<Type, ValidationType<?>> typeCache = new ConcurrentHashMap<>();
   private final MessageInterpolator interpolator;
@@ -283,10 +286,10 @@ final class DValidator implements Validator, ValidationContext {
 
     private void registerComponents() {
       // first register all user defined ValidatorCustomizer
-      for (final ValidatorCustomizer next : ServiceLoader.load(ValidatorCustomizer.class)) {
+      for (final ValidatorCustomizer next : SPI_LOADER.customizers()) {
         next.customize(this);
       }
-      for (final GeneratedComponent next : ServiceLoader.load(GeneratedComponent.class)) {
+      for (final GeneratedComponent next : SPI_LOADER.generatedComponents()) {
         next.customize(this);
       }
     }
@@ -298,7 +301,7 @@ final class DValidator implements Validator, ValidationContext {
       final var localeResolver = new LocaleResolver(defaultLocale, otherLocales);
       final var interpolator =
           Optional.ofNullable(this.userInterpolator)
-              .or(() -> ServiceLoader.load(MessageInterpolator.class).findFirst())
+              .or(SPI_LOADER::interpolator)
               .orElseGet(BasicMessageInterpolator::new);
 
       return new DValidator(

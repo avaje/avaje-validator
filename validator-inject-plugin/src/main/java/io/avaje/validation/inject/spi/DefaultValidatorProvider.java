@@ -10,13 +10,16 @@ import java.util.Locale;
 import io.avaje.inject.BeanScopeBuilder;
 import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.spi.GenericType;
+import io.avaje.inject.spi.InjectPlugin;
+import io.avaje.spi.ServiceProvider;
 import io.avaje.validation.ValidMethod;
 import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.MethodAdapterProvider;
 import io.avaje.validation.inject.aspect.AOPMethodValidator;
 
-/** Plugin for avaje inject that provides a default Jsonb instance. */
-public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugin {
+/** Plugin for avaje inject that provides a default Validator instance. */
+@ServiceProvider
+public final class DefaultValidatorProvider implements InjectPlugin {
 
   @Override
   public Class<?>[] provides() {
@@ -39,7 +42,7 @@ public final class DefaultValidatorProvider implements io.avaje.inject.spi.Plugi
         null,
         Validator.class,
         () -> {
-          final var props = builder.propertyPlugin();
+          final var props = builder.configPlugin();
           final var validator =
               Validator.builder().failFast(props.equalTo("validation.failFast", "true"));
 

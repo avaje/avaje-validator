@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
-import io.avaje.validation.adapter.ValidationContext.AnnotationFactory;
+import io.avaje.validation.spi.AnnotationFactory;
 
 public final class FuturePastAdapterFactory implements AnnotationFactory {
 

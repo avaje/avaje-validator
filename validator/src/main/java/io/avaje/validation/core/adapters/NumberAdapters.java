@@ -12,13 +12,13 @@ import java.util.Optional;
 import io.avaje.validation.adapter.AbstractConstraintAdapter;
 import io.avaje.validation.adapter.PrimitiveAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
-import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
+import io.avaje.validation.spi.AnnotationFactory;
 
 public final class NumberAdapters {
   private NumberAdapters() {}
 
-  public static final ValidationContext.AnnotationFactory FACTORY =
+  public static final AnnotationFactory FACTORY =
       request ->
           switch (request.annotationType().getSimpleName()) {
             case "Digits" -> new DigitsAdapter(request);
