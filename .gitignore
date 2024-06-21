@@ -10,3 +10,4 @@ build/
 .DS_Store
 *.factorypath
 validator-generator/.factorypath
+validator-generator/io.avaje.validation.spi.ValidationExtension
