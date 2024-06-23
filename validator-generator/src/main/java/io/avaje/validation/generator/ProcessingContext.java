@@ -23,16 +23,16 @@ final class ProcessingContext {
     private final String diAnnotation;
     private final boolean warnHttp;
     private final boolean injectPresent;
+    private final boolean spiPresent;
     private boolean validated;
 
     Ctx(ProcessingEnvironment env) {
       var elements = env.getElementUtils();
-
       this.injectPresent = elements.getTypeElement(Constants.COMPONENT) != null;
       this.warnHttp = elements.getTypeElement("io.avaje.http.api.Controller") != null;
+      this.spiPresent = elements.getTypeElement("io.avaje.spi.internal.ServiceProcessor") != null;
 
       final var jakarta = elements.getTypeElement(Constants.SINGLETON_JAKARTA) != null;
-
       diAnnotation =
           (injectPresent
               ? Constants.COMPONENT
@@ -48,9 +48,13 @@ final class ProcessingContext {
   }
 
   static FileObject createMetaInfWriterFor(String interfaceType) throws IOException {
-    return filer().createResource(StandardLocation.CLASS_OUTPUT, "", interfaceType);
-  }
+    var serviceFile =
+        CTX.get().spiPresent
+            ? interfaceType.replace("META-INF/services/", "META-INF/generated-services/")
+            : interfaceType;
 
+    return filer().createResource(StandardLocation.CLASS_OUTPUT, "", serviceFile);
+  }
 
   static String diAnnotation() {
     return CTX.get().diAnnotation;
@@ -86,15 +90,9 @@ final class ProcessingContext {
                 && !moduleInfo.containsOnModulePath("io.avaje.validation.plugin");
 
         if (noHttpPlugin) {
-          logWarn(
-              module,
-              "`requires io.avaje.validation.http` must be explicity added or else avaje-inject may fail to detect the default http validator, validator, and method AOP validator",
-              fqn);
+          logWarn(module, "`requires io.avaje.validation.http` must be explicity added or else avaje-inject may fail to detect the default http validator, validator, and method AOP validator", fqn);
         } else if (noInjectPlugin) {
-          logWarn(
-              module,
-              "`requires io.avaje.validation.plugin` must be explicity added or else avaje-inject may fail to detect the default validator and method AOP validator",
-              fqn);
+          logWarn(module, "`requires io.avaje.validation.plugin` must be explicity added or else avaje-inject may fail to detect the default validator and method AOP validator", fqn);
         }
 
       } catch (Exception e) {
@@ -104,21 +102,18 @@ final class ProcessingContext {
   }
 
   private static boolean buildPluginAvailable() {
-
     return resource("target/avaje-plugin-exists.txt", "/target/classes")
         || resource("build/avaje-plugin-exists.txt", "/build/classes/java/main");
   }
 
   private static boolean resource(String relativeName, String replace) {
     try (var inputStream =
-        new URI(
-                filer()
-                    .getResource(StandardLocation.CLASS_OUTPUT, "", relativeName)
-                    .toUri()
-                    .toString()
-                    .replace(replace, ""))
-            .toURL()
-            .openStream()) {
+           new URI(filer().getResource(StandardLocation.CLASS_OUTPUT, "", relativeName)
+             .toUri()
+             .toString()
+             .replace(replace, ""))
+             .toURL()
+             .openStream()) {
 
       return inputStream.available() > 0;
     } catch (IOException | URISyntaxException e) {
