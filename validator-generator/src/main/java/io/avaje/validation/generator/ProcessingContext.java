@@ -23,6 +23,7 @@ final class ProcessingContext {
     private final String diAnnotation;
     private final boolean warnHttp;
     private final boolean injectPresent;
+    private final boolean spiPresent;
     private boolean validated;
 
     Ctx(ProcessingEnvironment env) {
@@ -30,6 +31,7 @@ final class ProcessingContext {
 
       this.injectPresent = elements.getTypeElement(Constants.COMPONENT) != null;
       this.warnHttp = elements.getTypeElement("io.avaje.http.api.Controller") != null;
+      this.spiPresent = elements.getTypeElement("io.avaje.spi.internal.ServiceProcessor") != null;
 
       final var jakarta = elements.getTypeElement(Constants.SINGLETON_JAKARTA) != null;
 
@@ -48,11 +50,13 @@ final class ProcessingContext {
   }
 
   static FileObject createMetaInfWriterFor(String interfaceType) throws IOException {
-    return filer()
-        .createResource(
-            StandardLocation.CLASS_OUTPUT,
-            "",
-            interfaceType.replace("META-INF/services/", "META-INF/generated-services/"));
+
+    var serviceFile =
+        CTX.get().spiPresent
+            ? interfaceType.replace("META-INF/services/", "META-INF/generated-services/")
+            : interfaceType;
+
+    return filer().createResource(StandardLocation.CLASS_OUTPUT, "", serviceFile);
   }
 
   static String diAnnotation() {
