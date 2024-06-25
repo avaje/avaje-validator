@@ -29,6 +29,7 @@ final class SimpleComponentWriter {
       fileObject = createSourceFile(name);
     }
     if (!metaData.isEmpty()) {
+      ProcessingContext.addValidatorSpi(name);
       ProcessingContext.validateModule();
     }
   }
