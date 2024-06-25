@@ -1,25 +1,10 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.APContext.typeElement;
-import static io.avaje.validation.generator.APContext.filer;
-import static io.avaje.validation.generator.APContext.logNote;
-import static io.avaje.validation.generator.APContext.logWarn;
-
-import java.io.FileNotFoundException;
-import java.io.LineNumberReader;
-import java.io.Reader;
-import java.nio.file.NoSuchFileException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.processing.FilerException;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 final class ComponentReader {
 
