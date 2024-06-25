@@ -29,7 +29,7 @@ final class SimpleComponentWriter {
       fileObject = createSourceFile(name);
     }
     if (!metaData.isEmpty()) {
-      ProcessingContext.validateModule(name);
+      ProcessingContext.validateModule();
     }
   }
 
@@ -48,10 +48,12 @@ final class SimpleComponentWriter {
   }
 
   void writeMetaInf() throws IOException {
+    var services = ProcessingContext.readExistingMetaInfServices();
     final FileObject fileObject = createMetaInfWriterFor(Constants.META_INF_COMPONENT);
     if (fileObject != null) {
       try (Writer writer = fileObject.openWriter()) {
-        writer.write(metaData.fullName());
+        services.add(metaData.fullName());
+        writer.write(String.join("\n", services));
       }
     }
   }

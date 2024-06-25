@@ -38,7 +38,8 @@ import static io.avaje.validation.generator.APContext.*;
   JakartaConstraintPrism.PRISM_TYPE,
   JavaxConstraintPrism.PRISM_TYPE,
   CrossParamConstraintPrism.PRISM_TYPE,
-  ValidMethodPrism.PRISM_TYPE
+  ValidMethodPrism.PRISM_TYPE,
+  "io.avaje.spi.ServiceProvider"
 })
 public final class ValidationProcessor extends AbstractProcessor {
 
@@ -74,7 +75,7 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-	  APContext.setProjectModuleElement(annotations, round);
+    APContext.setProjectModuleElement(annotations, round);
     readModule();
     getElements(round, AvajeConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
     getElements(round, JavaxConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
@@ -93,6 +94,8 @@ public final class ValidationProcessor extends AbstractProcessor {
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);
     getElements(round, ImportValidPojoPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForImported);
+    getElements(round, "io.avaje.spi.ServiceProvider").ifPresent(this::registerSPI);
+
     initialiseComponent();
     cascadeTypes();
     writeComponent(round.processingOver());
@@ -325,5 +328,17 @@ public final class ValidationProcessor extends AbstractProcessor {
     } catch (final IOException e) {
       logError("Error writing ValidationAdapter for %s %s", beanReader, e);
     }
+  }
+
+  private void registerSPI(Set<? extends Element> beans) {
+    ElementFilter.typesIn(beans).stream()
+        .filter(this::isExtension)
+        .map(TypeElement::getQualifiedName)
+        .map(Object::toString)
+        .forEach(ProcessingContext::addValidatorSpi);
+  }
+
+  private boolean isExtension(TypeElement te) {
+    return APContext.isAssignable(te, "io.avaje.validation.spi.ValidationExtension");
   }
 }
