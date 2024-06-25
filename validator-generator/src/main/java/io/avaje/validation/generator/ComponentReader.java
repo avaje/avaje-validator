@@ -16,18 +16,14 @@ final class ComponentReader {
 
   void read() {
     ProcessingContext.readExistingMetaInfServices().stream()
-        .map(APContext::typeElement)
-        .filter(Objects::nonNull)
-        .filter(
-            t -> "io.avaje.validation.spi.GeneratedComponent".equals(t.getSuperclass().toString()))
-        .findFirst()
-        .ifPresent(
-            moduleType -> {
-              if (moduleType != null) {
-                componentMetaData.setFullName(moduleType.getQualifiedName().toString());
-                readMetaData(moduleType);
-              }
-            });
+      .map(APContext::typeElement)
+      .filter(Objects::nonNull)
+      .filter(t -> "io.avaje.validation.spi.GeneratedComponent".equals(t.getSuperclass().toString()))
+      .findFirst()
+      .ifPresent(moduleType -> {
+        componentMetaData.setFullName(moduleType.getQualifiedName().toString());
+        readMetaData(moduleType);
+      });
   }
 
   /** Read the existing adapters from the MetaData annotation of the generated component. */
@@ -45,8 +41,8 @@ final class ComponentReader {
 
       } else if (metaDataAnnotationFactory != null) {
         metaDataAnnotationFactory.value().stream()
-            .map(APContext::asTypeElement)
-            .forEach(componentMetaData::addAnnotationAdapter);
+          .map(APContext::asTypeElement)
+          .forEach(componentMetaData::addAnnotationAdapter);
       }
     }
   }

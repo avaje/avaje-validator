@@ -332,10 +332,10 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private void registerSPI(Set<? extends Element> beans) {
     ElementFilter.typesIn(beans).stream()
-        .filter(this::isExtension)
-        .map(TypeElement::getQualifiedName)
-        .map(Object::toString)
-        .forEach(ProcessingContext::addValidatorSpi);
+      .filter(this::isExtension)
+      .map(TypeElement::getQualifiedName)
+      .map(Object::toString)
+      .forEach(ProcessingContext::addValidatorSpi);
   }
 
   private boolean isExtension(TypeElement te) {

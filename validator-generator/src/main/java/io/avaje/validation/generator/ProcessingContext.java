@@ -90,13 +90,9 @@ final class ProcessingContext {
                 && !moduleInfo.containsOnModulePath("io.avaje.validation.plugin");
 
         if (noHttpPlugin) {
-          logWarn(
-              module,
-              "`requires io.avaje.validation.http` must be explicity added or else avaje-inject may fail to detect the default http validator, validator, and method AOP validator");
+          logWarn(module, "`requires io.avaje.validation.http` must be explicity added or else avaje-inject may fail to detect the default http validator, validator, and method AOP validator");
         } else if (noInjectPlugin) {
-          logWarn(
-              module,
-              "`requires io.avaje.validation.plugin` must be explicity added or else avaje-inject may fail to detect the default validator and method AOP validator");
+          logWarn(module, "`requires io.avaje.validation.plugin` must be explicity added or else avaje-inject may fail to detect the default validator and method AOP validator");
         }
 
       } catch (Exception e) {
@@ -126,15 +122,14 @@ final class ProcessingContext {
   }
 
   static Set<String> readExistingMetaInfServices() {
-    System.out.println("GET GOIT" );
     var services = CTX.get().serviceSet;
     try (final var file =
-            APContext.filer()
-                .getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT)
-                .toUri()
-                .toURL()
-                .openStream();
-        final var buffer = new BufferedReader(new InputStreamReader(file)); ) {
+           APContext.filer()
+             .getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT)
+             .toUri()
+             .toURL()
+             .openStream();
+         final var buffer = new BufferedReader(new InputStreamReader(file));) {
 
       String line;
       while ((line = buffer.readLine()) != null) {
