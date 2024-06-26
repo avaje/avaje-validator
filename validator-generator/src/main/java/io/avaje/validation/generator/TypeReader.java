@@ -97,7 +97,7 @@ final class TypeReader {
 
   private void readMethod(Element element, TypeElement type, List<FieldReader> localFields) {
     final ExecutableElement methodElement = (ExecutableElement) element;
-    if (methodElement.getModifiers().contains(Modifier.PUBLIC)) {
+    if (Util.isPublic(methodElement)) {
       final List<? extends VariableElement> parameters = methodElement.getParameters();
       final String methodKey = methodElement.getSimpleName().toString();
       final MethodReader methodReader = new MethodReader(methodElement, type).read();

@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import io.avaje.validation.generator.ModuleInfoReader.Requires;
@@ -29,6 +31,7 @@ final class ProcessingContext {
     private final boolean warnHttp;
     private final boolean injectPresent;
     private final Set<String> serviceSet = new TreeSet<>();
+    private final Set<String> importedTypes = new HashSet<>();
 
     Ctx(ProcessingEnvironment env) {
       var elements = env.getElementUtils();
@@ -57,6 +60,14 @@ final class ProcessingContext {
 
   static String diAnnotation() {
     return CTX.get().diAnnotation;
+  }
+
+  static void addImportedType(TypeMirror mirror) {
+    CTX.get().importedTypes.add(mirror.toString());
+  }
+
+  static boolean isImported(TypeElement type) {
+    return CTX.get().importedTypes.contains(type.asType().toString());
   }
 
   static void validateModule() {
