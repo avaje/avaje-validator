@@ -167,11 +167,6 @@ final class Util {
       isImported = ProcessingContext.isImported((TypeElement) element.getEnclosingElement());
     }
 
-    if (element instanceof VariableElement) {
-
-      return !isImported && !mods.contains(Modifier.FINAL);
-    }
-
     return !isImported;
   }
 }
