@@ -205,7 +205,6 @@ public final class ValidationProcessor extends AbstractProcessor {
       for (final TypeMirror importType :
           ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
         writeAdapterForType(asTypeElement(importType));
-        ProcessingContext.addImportedType(importType);
       }
     }
   }

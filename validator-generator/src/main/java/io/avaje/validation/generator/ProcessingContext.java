@@ -11,15 +11,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
+import javax.lang.model.element.Element;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
+
 import io.avaje.validation.generator.ModuleInfoReader.Requires;
 
 final class ProcessingContext {
@@ -31,7 +30,6 @@ final class ProcessingContext {
     private final boolean warnHttp;
     private final boolean injectPresent;
     private final Set<String> serviceSet = new TreeSet<>();
-    private final Set<String> importedTypes = new HashSet<>();
 
     Ctx(ProcessingEnvironment env) {
       var elements = env.getElementUtils();
@@ -62,12 +60,9 @@ final class ProcessingContext {
     return CTX.get().diAnnotation;
   }
 
-  static void addImportedType(TypeMirror mirror) {
-    CTX.get().importedTypes.add(mirror.toString());
-  }
-
-  static boolean isImported(TypeElement type) {
-    return CTX.get().importedTypes.contains(type.asType().toString());
+  static boolean isImported(Element element) {
+    var moduleName = APContext.getProjectModuleElement().getQualifiedName();
+    return !APContext.elements().getModuleOf(element).getQualifiedName().contentEquals(moduleName);
   }
 
   static void validateModule() {
