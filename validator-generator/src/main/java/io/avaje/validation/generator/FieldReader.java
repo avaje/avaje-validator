@@ -33,7 +33,7 @@ final class FieldReader {
   FieldReader(Element element, List<String> genericTypeParams, boolean classLevel) {
     this.genericTypeParams = genericTypeParams;
     this.fieldName = element.getSimpleName().toString();
-    this.publicField = element.getModifiers().contains(Modifier.PUBLIC);
+    this.publicField = Util.isPublic(element);
     this.element = element;
     this.elementAnnotations = ElementAnnotationContainer.create(element);
     this.genericType = elementAnnotations.genericType();
@@ -141,7 +141,9 @@ final class FieldReader {
     } else {
       logError(
           element,
-          "Field" + fieldName + " is inaccessible. Add a getter or make the field public.");
+          "Field"
+              + fieldName
+              + " is inaccessible. Add a getter or make the field package-private/public.");
     }
   }
 

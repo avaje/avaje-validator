@@ -1,29 +1,21 @@
 package io.avaje.validation.generator;
 
+import static io.avaje.validation.generator.APContext.logError;
 import static io.avaje.validation.generator.APContext.typeElement;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
-import static io.avaje.validation.generator.APContext.logError;
-
 final class Util {
-
-  private static final Pattern WHITE_SPACE_REGEX =
-      Pattern.compile("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-  private static final Pattern COMMA_PATTERN =
-      Pattern.compile(", (?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
 
   static final Pattern mapSplitString = Pattern.compile("\\s[A-Za-z0-9]+,|,");
   static final Set<String> BASIC_TYPES = Set.of("java.lang.String", "java.math.BigDecimal");
@@ -156,5 +148,19 @@ final class Util {
     return BASIC_TYPES.contains(topType)
         || topType.startsWith("java.time.")
         || GenericTypeMap.typeOfRaw(topType) != null;
+  }
+
+  static boolean isPublic(Element element) {
+    var mods = element.getModifiers();
+
+    if (mods.contains(Modifier.PUBLIC)) {
+      return true;
+    }
+    if (mods.contains(Modifier.PRIVATE) || mods.contains(Modifier.PROTECTED)) {
+      return false;
+    }
+    var isImported = ProcessingContext.isImported(element);
+
+    return !isImported;
   }
 }

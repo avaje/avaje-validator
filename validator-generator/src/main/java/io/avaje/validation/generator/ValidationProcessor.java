@@ -46,7 +46,6 @@ public final class ValidationProcessor extends AbstractProcessor {
   private final ComponentMetaData metaData = new ComponentMetaData();
   private final List<BeanReader> allReaders = new ArrayList<>();
   private final Set<String> sourceTypes = new HashSet<>();
-  private final Set<String> mixInImports = new HashSet<>();
   private final Set<String> alreadyGenerated = new HashSet<>();
   private SimpleComponentWriter componentWriter;
   private boolean readModuleInfo;
@@ -205,10 +204,6 @@ public final class ValidationProcessor extends AbstractProcessor {
     for (final var importedElement : ElementFilter.typesIn(importedElements)) {
       for (final TypeMirror importType :
           ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
-        // if imported by mixin annotation skip
-        if (mixInImports.contains(importType.toString())) {
-          continue;
-        }
         writeAdapterForType(asTypeElement(importType));
       }
     }
