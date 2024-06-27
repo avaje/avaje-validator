@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.element.Modifier;
 
 final class FieldReader {
 
@@ -66,14 +65,6 @@ final class FieldReader {
     return Util.initLower(fieldName) + "ValidationAdapter";
   }
 
-  static String trimAnnotations(String type) {
-    final int pos = type.indexOf("@");
-    if (pos == -1) {
-      return type;
-    }
-    return type.substring(0, pos) + type.substring(type.lastIndexOf(' ') + 1);
-  }
-
   String fieldName() {
     return fieldName;
   }
@@ -82,16 +73,10 @@ final class FieldReader {
     return nameHasIsPrefix() && "java.lang.Boolean".equals(genericType.mainType());
   }
 
-  boolean typeBooleanWithIsPrefix() {
-    return nameHasIsPrefix()
-        && ("boolean".equals(genericType.mainType())
-            || "java.lang.Boolean".equals(genericType.mainType()));
-  }
-
   private boolean nameHasIsPrefix() {
     return fieldName.length() > 2
-        && fieldName.startsWith("is")
-        && Character.isUpperCase(fieldName.charAt(2));
+      && fieldName.startsWith("is")
+      && Character.isUpperCase(fieldName.charAt(2));
   }
 
   void addImports(Set<String> importTypes) {
@@ -123,10 +108,6 @@ final class FieldReader {
     return publicField;
   }
 
-  String adapterShortType() {
-    return genericType.shortWithoutAnnotations();
-  }
-
   void writeField(Append writer) {
     writer.append("  private final %s %s;", adapterShortType, adapterFieldName).eol();
   }
@@ -139,11 +120,7 @@ final class FieldReader {
     } else if (publicField) {
       writer.append("value.%s%s", fieldName, suffix);
     } else {
-      logError(
-          element,
-          "Field"
-              + fieldName
-              + " is inaccessible. Add a getter or make the field package-private/public.");
+      logError(element, "Field" + fieldName + " is inaccessible. Add a getter or make the field package-private/public.");
     }
   }
 
@@ -178,11 +155,7 @@ final class FieldReader {
     return fieldName;
   }
 
-  public UType type() {
-    return genericType;
-  }
-
-  public void writeConstructor(Append writer) {
+  void writeConstructor(Append writer) {
     writer.append("    this.%s = ", adapterFieldName).eol();
 
     new AdapterHelper(
@@ -197,11 +170,11 @@ final class FieldReader {
     writer.append(";").eol().eol();
   }
 
-  public boolean isClassLvl() {
+  boolean isClassLvl() {
     return classLevel;
   }
 
-  public boolean hasConstraints() {
+  boolean hasConstraints() {
     return !elementAnnotations.isEmpty();
   }
 }
