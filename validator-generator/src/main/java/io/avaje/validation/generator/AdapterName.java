@@ -1,6 +1,7 @@
 package io.avaje.validation.generator;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 
 final class AdapterName {
 
@@ -9,13 +10,19 @@ final class AdapterName {
   final String fullName;
 
   AdapterName(TypeElement origin) {
-    String originPackage = APContext.elements().getPackageOf(origin).toString().toString();
-    shortName = UType.parse(origin.asType()).shortWithoutAnnotations().replace(".", "$");
+    String originName = origin.getQualifiedName().toString();
+    String originPackage = ProcessorUtils.packageOf(originName);
+    var utype = UType.parse(origin.asType());
+    var sb = new StringBuilder(ProcessorUtils.shortType(utype.mainType()).replace(".", "$"));
+    utype.componentTypes().stream()
+        .filter(u -> u.kind() != TypeKind.TYPEVAR && u.kind() != TypeKind.WILDCARD)
+        .forEach(u -> sb.append(utype.shortType().replace(".", "$")));
+
+    shortName = sb.toString();
     if ("".equals(originPackage)) {
       this.adapterPackage = "valid";
     } else {
-      this.adapterPackage =
-          ProcessingContext.isImported(origin) ? originPackage + ".valid" : originPackage;
+      this.adapterPackage = ProcessingContext.isImported(origin) ? originPackage + ".valid" : originPackage;
     }
     this.fullName = adapterPackage + "." + shortName + "ValidationAdapter";
   }
