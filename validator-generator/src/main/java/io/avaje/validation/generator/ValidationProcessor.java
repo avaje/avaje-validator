@@ -17,7 +17,6 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-
 import io.avaje.prism.GenerateAPContext;
 import io.avaje.prism.GenerateModuleInfoReader;
 import io.avaje.prism.GenerateUtils;
@@ -47,6 +46,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private final List<BeanReader> allReaders = new ArrayList<>();
   private final Set<String> sourceTypes = new HashSet<>();
   private final Set<String> alreadyGenerated = new HashSet<>();
+  private final Set<String> mixInImports = new HashSet<>();
   private SimpleComponentWriter componentWriter;
   private boolean readModuleInfo;
   private boolean processedAnything;
@@ -92,6 +92,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     getElements(round, ValidMethodPrism.PRISM_TYPE)
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);
+    getElements(round, MixInPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForMixInTypes);
     getElements(round, ImportValidPojoPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForImported);
     getElements(round, "io.avaje.spi.ServiceProvider").ifPresent(this::registerSPI);
 
@@ -204,8 +205,23 @@ public final class ValidationProcessor extends AbstractProcessor {
     for (final var importedElement : ElementFilter.typesIn(importedElements)) {
       for (final TypeMirror importType :
           ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
+        // if imported by mixin annotation skip
+        if (mixInImports.contains(importType.toString())) {
+          continue;
+        }
         writeAdapterForType(asTypeElement(importType));
       }
+    }
+  }
+
+  /** Elements that have a {@code @MixIn} annotation. */
+  private void writeAdaptersForMixInTypes(Set<? extends Element> mixInElements) {
+    for (final Element mixin : mixInElements) {
+      final TypeMirror mirror = MixInPrism.getInstanceOn(mixin).value();
+      final String importType = mirror.toString();
+      final TypeElement element = asTypeElement(mirror);
+      mixInImports.add(importType);
+      writeAdapterForMixInType(element, typeElement(mixin.asType().toString()));
     }
   }
 
@@ -237,6 +253,10 @@ public final class ValidationProcessor extends AbstractProcessor {
     ElementFilter.typesIn(beans).forEach(this::writeAdapterForType);
   }
 
+  private void writeAdapterForMixInType(TypeElement typeElement, TypeElement mixin) {
+    final ClassReader beanReader = new ClassReader(typeElement, mixin);
+    writeAdapter(typeElement, beanReader);
+  }
   /** Read the beans that have changed. */
   private void writeConstraintAdapters(Set<? extends Element> beans) {
     ElementFilter.typesIn(beans).stream()

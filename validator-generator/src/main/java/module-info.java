@@ -1,7 +1,7 @@
 module io.avaje.validation.generator {
 
   requires java.compiler;
-  requires static io.avaje.validation.plugin;
+  requires static io.avaje.validation;
   requires static io.avaje.prism;
   requires static io.avaje.http.api;
   requires static io.avaje.validation.contraints;

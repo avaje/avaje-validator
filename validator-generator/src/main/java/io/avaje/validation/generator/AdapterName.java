@@ -9,20 +9,13 @@ final class AdapterName {
   final String fullName;
 
   AdapterName(TypeElement origin) {
-    String originName = origin.getQualifiedName().toString();
-    String name = origin.getSimpleName().toString();
-    String originPackage = ProcessorUtils.packageOf(originName);
-    if (origin.getNestingKind().isNested()) {
-      final String parent = Util.shortName(originPackage);
-      originPackage = ProcessorUtils.packageOf(originPackage);
-      shortName = parent + "$" + name;
-    } else {
-      shortName = name;
-    }
+    String originPackage = APContext.elements().getPackageOf(origin).toString().toString();
+    shortName = UType.parse(origin.asType()).shortWithoutAnnotations().replace(".", "$");
     if ("".equals(originPackage)) {
       this.adapterPackage = "valid";
     } else {
-      this.adapterPackage = ProcessingContext.isImported(origin) ? originPackage + ".valid" : originPackage;
+      this.adapterPackage =
+          ProcessingContext.isImported(origin) ? originPackage + ".valid" : originPackage;
     }
     this.fullName = adapterPackage + "." + shortName + "ValidationAdapter";
   }

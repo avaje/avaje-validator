@@ -5,12 +5,14 @@ import static io.avaje.validation.generator.APContext.logNote;
 import static io.avaje.validation.generator.APContext.logError;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,10 +39,24 @@ final class TypeReader {
   private boolean nonAccessibleField;
   private final List<String> genericTypeParams;
 
-  TypeReader(TypeElement baseType) {
+  private final Map<String, VariableElement> mixInFields = new HashMap<>();
+  private final Map<String, ExecutableElement> mixInMethods = new HashMap<>();
+
+  TypeReader(TypeElement baseType, TypeElement mixInType) {
     this.baseType = baseType;
     this.hasValidAnnotation = Util.isValid(baseType);
     this.genericTypeParams = initTypeParams(baseType);
+
+    Optional.ofNullable(mixInType).map(TypeElement::getEnclosedElements).stream()
+        .flatMap(Collection::stream)
+        .forEach(
+            e -> {
+              if (e instanceof VariableElement v) {
+                mixInFields.put(v.getSimpleName().toString(), v);
+              } else if (e instanceof ExecutableElement ex && ex.getParameters().isEmpty()) {
+                mixInMethods.put(ex.getSimpleName().toString(), ex);
+              }
+            });
   }
 
   void read(TypeElement type) {
@@ -70,6 +86,15 @@ final class TypeReader {
   }
 
   private void readField(Element element, List<FieldReader> localFields) {
+
+    final Element mixInField = mixInFields.get(element.getSimpleName().toString());
+    if (mixInField != null && APContext.types().isSameType(mixInField.asType(), element.asType())) {
+      if (!mixInField.getModifiers().equals(element.getModifiers())) {
+         logError(mixInField, "mixIn fields must have the same modifiers as the target class");
+      }
+      element = mixInField;
+    }
+
     if (includeField(element)) {
       seenFields.add(element.toString());
       var reader = new FieldReader(element, genericTypeParams);
@@ -96,7 +121,23 @@ final class TypeReader {
   }
 
   private void readMethod(Element element, TypeElement type, List<FieldReader> localFields) {
-    final ExecutableElement methodElement = (ExecutableElement) element;
+    ExecutableElement methodElement = (ExecutableElement) element;
+
+    final ExecutableElement mixinMethod =
+        mixInMethods.get(methodElement.getSimpleName().toString());
+    if (methodElement.getParameters().isEmpty()
+        && mixinMethod != null
+        && APContext.types().isSameType(mixinMethod.asType(), element.asType())) {
+      var mixinModifiers = new HashSet<>(mixinMethod.getModifiers());
+      mixinModifiers.remove(Modifier.ABSTRACT);
+      var modifiers = new HashSet<>(mixinMethod.getModifiers());
+      modifiers.remove(Modifier.ABSTRACT);
+      if (!modifiers.equals(mixinModifiers)) {
+        logError(mixinMethod, "mixIn methods must have the same modifiers as the target class");
+      }
+      methodElement = mixinMethod;
+    }
+
     if (Util.isPublic(methodElement)) {
       final List<? extends VariableElement> parameters = methodElement.getParameters();
       final String methodKey = methodElement.getSimpleName().toString();
@@ -106,10 +147,10 @@ final class TypeReader {
         allGetterMethods.put(methodKey.toLowerCase(), methodReader);
       }
       // for reading methods
-      if (includeField(element)
+      if (includeField(methodElement)
           && methodElement.getParameters().isEmpty()
-          && seenFields.add(element.getSimpleName().toString())) {
-        final var reader = new FieldReader(element, genericTypeParams);
+          && seenFields.add(methodElement.getSimpleName().toString())) {
+        final var reader = new FieldReader(methodElement, genericTypeParams);
         localFields.add(reader);
         reader.getterMethod(new MethodReader(methodElement, type));
       }
