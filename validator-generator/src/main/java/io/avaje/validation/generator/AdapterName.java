@@ -1,7 +1,6 @@
 package io.avaje.validation.generator;
 
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeKind;
 
 final class AdapterName {
 
@@ -10,23 +9,24 @@ final class AdapterName {
   final String fullName;
 
   AdapterName(TypeElement origin) {
-    String originName = origin.getQualifiedName().toString();
-    String originPackage = ProcessorUtils.packageOf(originName);
-    var utype = UType.parse(origin.asType());
-    var sb =
-        new StringBuilder(
-            ProcessorUtils.shortType(utype.mainType()).replace(".", "$").replace("[]", "Array"));
-    utype.componentTypes().stream()
-        .filter(u -> u.kind() != TypeKind.TYPEVAR && u.kind() != TypeKind.WILDCARD)
-        .forEach(u -> sb.append(utype.shortType().replace(".", "$").replace("[]", "Array")));
-
-    shortName = sb.toString();
+    String originPackage = APContext.elements().getPackageOf(origin).toString();
+    var name = shortName(origin);
+    shortName = name.substring(0, name.length() - 1);
     if ("".equals(originPackage)) {
       this.adapterPackage = "valid";
     } else {
-      this.adapterPackage = ProcessingContext.isImported(origin) ? originPackage + ".valid" : originPackage;
+      this.adapterPackage =
+          ProcessingContext.isImported(origin) ? originPackage + ".valid" : originPackage;
     }
     this.fullName = adapterPackage + "." + shortName + "ValidationAdapter";
+  }
+
+  private String shortName(TypeElement origin) {
+    var sb = new StringBuilder();
+    if (origin.getNestingKind().isNested()) {
+      sb.append(shortName((TypeElement) origin.getEnclosingElement()));
+    }
+    return sb.append(Util.shortName(origin.getSimpleName().toString())).append("$").toString();
   }
 
   String shortName() {
