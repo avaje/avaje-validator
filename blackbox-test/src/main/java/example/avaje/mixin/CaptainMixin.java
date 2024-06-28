@@ -1,10 +1,10 @@
-package io.avaje.validation.generator.models.valid;
+package example.avaje.mixin;
 
+import example.avaje.mixin.Captain.Bankai;
 import io.avaje.lang.Nullable;
 import io.avaje.validation.MixIn;
 import io.avaje.validation.constraints.NotBlank;
 import io.avaje.validation.constraints.Positive;
-import io.avaje.validation.generator.models.valid.Captain.Bankai;
 import jakarta.validation.Valid;
 
 @MixIn(Captain.class)
@@ -16,8 +16,9 @@ public abstract class CaptainMixin {
   private Bankai bankai;
 
   @Valid
+  @Nullable
   public abstract Bankai bankai();
 
   @MixIn(Bankai.class)
-  public record BankaiMixin(@NotBlank String name) {}
+  public record BankaiMixin(@NotBlank String name, @Positive int forceMultiplier) {}
 }

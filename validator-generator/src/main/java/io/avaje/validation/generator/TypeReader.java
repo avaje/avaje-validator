@@ -5,6 +5,7 @@ import static io.avaje.validation.generator.APContext.logNote;
 import static io.avaje.validation.generator.APContext.logError;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,8 +90,19 @@ final class TypeReader {
 
     final Element mixInField = mixInFields.get(element.getSimpleName().toString());
     if (mixInField != null && APContext.types().isSameType(mixInField.asType(), element.asType())) {
-      if (!mixInField.getModifiers().equals(element.getModifiers())) {
-         logError(mixInField, "mixIn fields must have the same modifiers as the target class");
+
+      var mixinModifiers = new HashSet<>(mixInField.getModifiers());
+      var modifiers = new HashSet<>(mixInField.getModifiers());
+
+      Arrays.stream(Modifier.values())
+          .filter(m -> m != Modifier.PRIVATE || m != Modifier.PROTECTED || m != Modifier.PUBLIC)
+          .forEach(
+              m -> {
+                modifiers.remove(m);
+                mixinModifiers.remove(m);
+              });
+      if (!modifiers.equals(mixinModifiers)) {
+        logError(mixInField, "mixIn fields must have the same modifiers as the target class");
       }
       element = mixInField;
     }
@@ -128,12 +140,20 @@ final class TypeReader {
     if (methodElement.getParameters().isEmpty()
         && mixinMethod != null
         && APContext.types().isSameType(mixinMethod.asType(), element.asType())) {
+
       var mixinModifiers = new HashSet<>(mixinMethod.getModifiers());
-      mixinModifiers.remove(Modifier.ABSTRACT);
       var modifiers = new HashSet<>(mixinMethod.getModifiers());
-      modifiers.remove(Modifier.ABSTRACT);
+
+      Arrays.stream(Modifier.values())
+          .filter(m -> m != Modifier.PRIVATE || m != Modifier.PROTECTED || m != Modifier.PUBLIC)
+          .forEach(
+              m -> {
+                modifiers.remove(m);
+                mixinModifiers.remove(m);
+              });
       if (!modifiers.equals(mixinModifiers)) {
-        logError(mixinMethod, "mixIn methods must have the same modifiers as the target class");
+        logError(
+            mixinMethod, "mixIn methods must have the same access modifiers as the target class");
       }
       methodElement = mixinMethod;
     }

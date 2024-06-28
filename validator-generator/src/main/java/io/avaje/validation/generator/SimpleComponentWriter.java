@@ -72,34 +72,24 @@ final class SimpleComponentWriter {
       final String typeName =
           adapterFullName
               .transform(Util::baseTypeOfAdapter)
-              .transform(Util::shortName)
-              .transform(this::typeShortName);
+              .transform(ProcessorUtils::shortType);
       writer.append("    builder.add(%s.class, %s::new);", typeName, adapterShortName).eol();
     }
 
     for (final var adapter : metaData.allAnnotationAdapters()) {
       final var typeShortName =
-          adapter
-              .getQualifiedName()
-              .toString()
-              .transform(ProcessorUtils::shortType)
-              .transform(this::typeShortName);
+          adapter.getQualifiedName().toString().transform(ProcessorUtils::shortType);
 
       final var target =
           ConstraintAdapterPrism.getInstanceOn(adapter)
               .value()
               .toString()
-              .transform(ProcessorUtils::shortType)
-              .transform(this::typeShortName);
+              .transform(ProcessorUtils::shortType);
 
       writer.append("    builder.add(%s.class, %s::new);", target, typeShortName).eol();
     }
 
     writer.append("  }").eol().eol();
-  }
-
-  private String typeShortName(String adapterShortName) {
-    return adapterShortName.replace("$", ".");
   }
 
   private void writeClassEnd() {
