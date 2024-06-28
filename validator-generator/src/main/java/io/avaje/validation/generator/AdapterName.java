@@ -13,10 +13,12 @@ final class AdapterName {
     String originName = origin.getQualifiedName().toString();
     String originPackage = ProcessorUtils.packageOf(originName);
     var utype = UType.parse(origin.asType());
-    var sb = new StringBuilder(ProcessorUtils.shortType(utype.mainType()).replace(".", "$"));
+    var sb =
+        new StringBuilder(
+            ProcessorUtils.shortType(utype.mainType()).replace(".", "$").replace("[]", "Array"));
     utype.componentTypes().stream()
         .filter(u -> u.kind() != TypeKind.TYPEVAR && u.kind() != TypeKind.WILDCARD)
-        .forEach(u -> sb.append(utype.shortType().replace(".", "$")));
+        .forEach(u -> sb.append(utype.shortType().replace(".", "$").replace("[]", "Array")));
 
     shortName = sb.toString();
     if ("".equals(originPackage)) {
