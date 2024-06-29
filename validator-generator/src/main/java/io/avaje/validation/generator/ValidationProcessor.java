@@ -1,12 +1,20 @@
 package io.avaje.validation.generator;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -61,6 +69,25 @@ public final class ValidationProcessor extends AbstractProcessor {
     super.init(processingEnv);
     ProcessingContext.init(processingEnv);
     this.componentWriter = new SimpleComponentWriter(metaData);
+
+    try {
+
+      var file = APContext.getBuildResource("avaje-processors.txt");
+      var addition = new StringBuilder();
+      if (file.toFile().exists()) {
+        var result =
+            Stream.concat(Files.lines(file), Stream.of("avaje-validator-generator"))
+                .distinct()
+                .collect(joining("\n"));
+        addition.append(result);
+      } else {
+        addition.append("avaje-validator-generator");
+      }
+      Files.writeString(file, addition, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+
+    } catch (IOException e) {
+      // not an issue worth failing over
+    }
   }
 
   /** Read the existing metadata from the generated component (if exists). */

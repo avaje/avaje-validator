@@ -19,6 +19,7 @@ import javax.lang.model.element.Element;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import io.avaje.jsonb.generator.APContext;
 import io.avaje.validation.generator.ModuleInfoReader.Requires;
 
 final class ProcessingContext {
@@ -108,21 +109,9 @@ final class ProcessingContext {
   }
 
   private static boolean buildPluginAvailable() {
-    return resource("target/avaje-plugin-exists.txt", "/target/classes")
-        || resource("build/avaje-plugin-exists.txt", "/build/classes/java/main");
-  }
-
-  private static boolean resource(String relativeName, String replace) {
-    try (var inputStream =
-           new URI(filer().getResource(StandardLocation.CLASS_OUTPUT, "", relativeName)
-             .toUri()
-             .toString()
-             .replace(replace, ""))
-             .toURL()
-             .openStream()) {
-
-      return inputStream.available() > 0;
-    } catch (IOException | URISyntaxException e) {
+    try {
+      return APContext.getBuildResource("avaje-plugin-exists.txt").toFile().exists();
+    } catch (final Exception e) {
       return false;
     }
   }
