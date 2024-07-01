@@ -11,3 +11,4 @@ build/
 *.factorypath
 validator-generator/.factorypath
 validator-generator/io.avaje.validation.spi.ValidationExtension
+validator-generator/avaje-processors.txt
