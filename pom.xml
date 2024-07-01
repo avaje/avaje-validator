@@ -29,7 +29,7 @@
     <maven.compiler.release>17</maven.compiler.release>
     <inject.version>10.0-RC9</inject.version>
     <http.version>2.0-RC2</http.version>
-    <spi.version>2.0</spi.version>
+    <spi.version>2.1</spi.version>
   </properties>
 
   <modules>
