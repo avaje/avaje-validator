@@ -19,7 +19,6 @@ import javax.lang.model.element.Element;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
-import io.avaje.jsonb.generator.APContext;
 import io.avaje.validation.generator.ModuleInfoReader.Requires;
 
 final class ProcessingContext {
