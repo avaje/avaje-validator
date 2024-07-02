@@ -80,9 +80,7 @@ final class ClassReader implements BeanReader {
   }
 
   private Set<String> importTypes() {
-    if (Util.validImportType(type)) {
-      importTypes.add(type);
-    }
+    importTypes.add(type);
     for (final FieldReader allField : allFields) {
       allField.addImports(importTypes);
     }
@@ -90,9 +88,9 @@ final class ClassReader implements BeanReader {
   }
 
   @Override
-  public void writeImports(Append writer) {
+  public void writeImports(Append writer, String adapterPackage) {
     for (final String importType : importTypes()) {
-      if (Util.validImportType(importType)) {
+      if (Util.validImportType(importType, adapterPackage)) {
         writer.append("import %s;", importType).eol();
       }
     }

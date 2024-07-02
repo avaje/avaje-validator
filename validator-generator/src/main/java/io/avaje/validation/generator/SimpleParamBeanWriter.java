@@ -53,7 +53,7 @@ final class SimpleParamBeanWriter {
   }
 
   private void writeImports() {
-    beanReader.writeImports(writer);
+    beanReader.writeImports(writer, adapterPackage);
   }
 
   private void writePackage() {

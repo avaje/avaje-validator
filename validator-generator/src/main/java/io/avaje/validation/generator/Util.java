@@ -37,10 +37,12 @@ final class Util {
     return false;
   }
 
-  static boolean validImportType(String type) {
-    return type.indexOf('.') > 0 && !type.startsWith("java.lang.")
-      || (type.startsWith("java.lang.")
-      && type.replace("java.lang.", "").transform(s -> s.contains(".")));
+  static boolean validImportType(String type, String adapterPackage) {
+    return type.indexOf('.') > -1
+            && !type.startsWith("java.lang.")
+            && type.replace(adapterPackage + ".", "").transform(s -> s.contains("."))
+        || (type.startsWith("java.lang.")
+            && type.replace("java.lang.", "").transform(s -> s.contains(".")));
   }
 
   static String shortName(String fullType) {

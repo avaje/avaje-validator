@@ -136,7 +136,7 @@ final class SimpleComponentWriter {
     importTypes.addAll(metaData.allImports());
 
     for (final String importType : importTypes) {
-      if (Util.validImportType(importType)) {
+      if (Util.validImportType(importType, metaData.packageName())) {
         writer.append("import %s;", importType).eol();
       }
     }
