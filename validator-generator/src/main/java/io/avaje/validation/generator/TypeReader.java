@@ -49,15 +49,14 @@ final class TypeReader {
     this.genericTypeParams = initTypeParams(baseType);
 
     Optional.ofNullable(mixInType).map(TypeElement::getEnclosedElements).stream()
-        .flatMap(Collection::stream)
-        .forEach(
-            e -> {
-              if (e instanceof VariableElement v) {
-                mixInFields.put(v.getSimpleName().toString(), v);
-              } else if (e instanceof ExecutableElement ex && ex.getParameters().isEmpty()) {
-                mixInMethods.put(ex.getSimpleName().toString(), ex);
-              }
-            });
+      .flatMap(Collection::stream)
+      .forEach(e -> {
+        if (e instanceof VariableElement v) {
+          mixInFields.put(v.getSimpleName().toString(), v);
+        } else if (e instanceof ExecutableElement ex && ex.getParameters().isEmpty()) {
+          mixInMethods.put(ex.getSimpleName().toString(), ex);
+        }
+      });
   }
 
   void read(TypeElement type) {
@@ -87,7 +86,6 @@ final class TypeReader {
   }
 
   private void readField(Element element, List<FieldReader> localFields) {
-
     final Element mixInField = mixInFields.get(element.getSimpleName().toString());
     if (mixInField != null && APContext.types().isSameType(mixInField.asType(), element.asType())) {
 
@@ -95,12 +93,11 @@ final class TypeReader {
       var modifiers = new HashSet<>(mixInField.getModifiers());
 
       Arrays.stream(Modifier.values())
-          .filter(m -> m != Modifier.PRIVATE || m != Modifier.PROTECTED || m != Modifier.PUBLIC)
-          .forEach(
-              m -> {
-                modifiers.remove(m);
-                mixinModifiers.remove(m);
-              });
+        .filter(m -> m != Modifier.PRIVATE || m != Modifier.PROTECTED || m != Modifier.PUBLIC)
+        .forEach(m -> {
+          modifiers.remove(m);
+          mixinModifiers.remove(m);
+        });
       if (!modifiers.equals(mixinModifiers)) {
         logError(mixInField, "mixIn fields must have the same modifiers as the target class");
       }
@@ -134,9 +131,7 @@ final class TypeReader {
 
   private void readMethod(Element element, TypeElement type, List<FieldReader> localFields) {
     ExecutableElement methodElement = (ExecutableElement) element;
-
-    final ExecutableElement mixinMethod =
-        mixInMethods.get(methodElement.getSimpleName().toString());
+    final ExecutableElement mixinMethod = mixInMethods.get(methodElement.getSimpleName().toString());
     if (methodElement.getParameters().isEmpty()
         && mixinMethod != null
         && APContext.types().isSameType(mixinMethod.asType(), element.asType())) {
@@ -145,15 +140,13 @@ final class TypeReader {
       var modifiers = new HashSet<>(mixinMethod.getModifiers());
 
       Arrays.stream(Modifier.values())
-          .filter(m -> m != Modifier.PRIVATE || m != Modifier.PROTECTED || m != Modifier.PUBLIC)
-          .forEach(
-              m -> {
-                modifiers.remove(m);
-                mixinModifiers.remove(m);
-              });
+        .filter(m -> m != Modifier.PRIVATE || m != Modifier.PROTECTED || m != Modifier.PUBLIC)
+        .forEach(m -> {
+          modifiers.remove(m);
+          mixinModifiers.remove(m);
+        });
       if (!modifiers.equals(mixinModifiers)) {
-        logError(
-            mixinMethod, "mixIn methods must have the same access modifiers as the target class");
+        logError(mixinMethod, "mixIn methods must have the same access modifiers as the target class");
       }
       methodElement = mixinMethod;
     }
@@ -192,12 +185,7 @@ final class TypeReader {
         && !field.isPublicField()) {
       nonAccessibleField = true;
       if (hasValidAnnotation) {
-        logError(
-            "Non accessible field "
-                + baseType
-                + " "
-                + field.fieldName()
-                + " with no matching getter?");
+        logError("Non accessible field " + baseType + " " + field.fieldName() + " with no matching getter?");
       } else {
         logNote("Non accessible field " + baseType + " " + field.fieldName());
       }

@@ -15,8 +15,7 @@ final class AdapterName {
     if ("".equals(originPackage)) {
       this.adapterPackage = "valid";
     } else {
-      this.adapterPackage =
-          ProcessingContext.isImported(origin) ? originPackage + ".valid" : originPackage;
+      this.adapterPackage = ProcessingContext.isImported(origin) ? originPackage + ".valid" : originPackage;
     }
     this.fullName = adapterPackage + "." + shortName + "ValidationAdapter";
   }
