@@ -44,17 +44,15 @@ final class ValidMethodReader {
   }
 
   private Set<String> importTypes() {
-    if (Util.validImportType(type)) {
-      importTypes.add(type);
-    }
+    importTypes.add(type);
     paramAnnotations.forEach(a -> a.addImports(importTypes));
     returnElementAnnotation.addImports(importTypes);
     return importTypes;
   }
 
-  public void writeImports(Append writer) {
+  public void writeImports(Append writer, String packageName) {
     for (final String importType : importTypes()) {
-      if (Util.validImportType(importType)) {
+      if (Util.validImportType(importType, packageName)) {
         writer.append("import %s;", importType).eol();
       }
     }

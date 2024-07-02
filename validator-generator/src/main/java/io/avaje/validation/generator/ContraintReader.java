@@ -90,18 +90,16 @@ final class ContraintReader implements BeanReader {
   public void read() {}
 
   private Set<String> importTypes() {
-    if (Util.validImportType(type)) {
-      importTypes.add(type);
-    }
+    importTypes.add(type);
 
     annotations.keySet().forEach(t -> importTypes.addAll(t.importTypes()));
     return importTypes;
   }
 
   @Override
-  public void writeImports(Append writer) {
+  public void writeImports(Append writer, String adapterPackage) {
     for (final String importType : importTypes()) {
-      if (Util.validImportType(importType)) {
+      if (Util.validImportType(importType, adapterPackage)) {
         writer.append("import %s;", importType).eol();
       }
     }

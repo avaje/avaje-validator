@@ -80,19 +80,20 @@ final class ComponentMetaData {
   Collection<String> allImports() {
     final Set<String> packageImports = new TreeSet<>();
     for (final String adapterFullName : allTypes) {
-      packageImports.add(ProcessorUtils.packageOf(adapterFullName) + ".*");
+      packageImports.add(adapterFullName);
       packageImports.add(ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
     }
 
     for (final var adapter : annotationAdapters) {
       final var adapterFullName = adapter.getQualifiedName().toString();
-      packageImports.add(ProcessorUtils.packageOf(adapterFullName) + ".*");
-      packageImports.add(ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
+      packageImports.add(adapterFullName);
+      packageImports.add(
+          ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
 
       ConstraintAdapterPrism.getInstanceOn(adapter)
-        .value()
-        .toString()
-        .transform(packageImports::add);
+          .value()
+          .toString()
+          .transform(packageImports::add);
     }
 
     return packageImports;

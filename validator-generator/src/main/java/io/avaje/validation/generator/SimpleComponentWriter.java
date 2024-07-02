@@ -131,12 +131,13 @@ final class SimpleComponentWriter {
 
   private void writeImports() {
     importTypes.add(Constants.VALIDATOR);
-    importTypes.add(Constants.VALID_SPI);
     importTypes.add("io.avaje.validation.spi.GeneratedComponent");
+    importTypes.add("io.avaje.validation.spi.MetaData");
+    importTypes.add("io.avaje.validation.spi.Generated");
     importTypes.addAll(metaData.allImports());
 
     for (final String importType : importTypes) {
-      if (Util.validImportType(importType)) {
+      if (Util.validImportType(importType, metaData.packageName())) {
         writer.append("import %s;", importType).eol();
       }
     }
