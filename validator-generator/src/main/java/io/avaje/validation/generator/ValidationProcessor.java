@@ -25,7 +25,6 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-
 import io.avaje.prism.GenerateAPContext;
 import io.avaje.prism.GenerateModuleInfoReader;
 import io.avaje.prism.GenerateUtils;
@@ -55,6 +54,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private final List<BeanReader> allReaders = new ArrayList<>();
   private final Set<String> sourceTypes = new HashSet<>();
   private final Set<String> alreadyGenerated = new HashSet<>();
+  private final Set<String> mixInImports = new HashSet<>();
   private SimpleComponentWriter componentWriter;
   private boolean readModuleInfo;
   private boolean processedAnything;
@@ -106,8 +106,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     getElements(round, AvajeConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
     getElements(round, JavaxConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
     getElements(round, JakartaConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
-    getElements(round, CrossParamConstraintPrism.PRISM_TYPE)
-        .ifPresent(this::writeConstraintAdapters);
+    getElements(round, CrossParamConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
 
     // register custom adapters
     getElements(round, ConstraintAdapterPrism.PRISM_TYPE).ifPresent(this::registerCustomAdapters);
@@ -119,6 +118,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     getElements(round, ValidMethodPrism.PRISM_TYPE)
         .map(ElementFilter::methodsIn)
         .ifPresent(this::writeParamProviderForMethod);
+    getElements(round, MixInPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForMixInTypes);
     getElements(round, ImportValidPojoPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForImported);
     getElements(round, "io.avaje.spi.ServiceProvider").ifPresent(this::registerSPI);
 
@@ -141,34 +141,25 @@ public final class ValidationProcessor extends AbstractProcessor {
         logError(typeElement, "Cross Parameter Adapters must accept type Object[]");
       }
 
-      ConstraintPrism.getOptionalOn(targetAnnotation)
-          .ifPresent(
-              p -> {
-                if (p.unboxPrimitives() && !Util.isPrimitiveAdapter(typeElement)) {
-                  if (noPrimitiveValidateMethods(typeElement)) {
-                    logError(
-                        typeElement,
-                        "Adapters for Primitive Constraints must override a primitive \"isValid\" or \"validate\" method");
-                  }
-                  logError(
-                      typeElement,
-                      "Adapters for Primitive Constraints must extend PrimitiveAdapter or implement ValidationAdapter.Primitive");
-                }
-              });
+      ConstraintPrism.getOptionalOn(targetAnnotation).ifPresent(p -> {
+        if (p.unboxPrimitives() && !Util.isPrimitiveAdapter(typeElement)) {
+          if (noPrimitiveValidateMethods(typeElement)) {
+            logError(typeElement, "Adapters for Primitive Constraints must override a primitive \"isValid\" or \"validate\" method");
+          }
+          logError(typeElement, "Adapters for Primitive Constraints must extend PrimitiveAdapter or implement ValidationAdapter.Primitive");
+        }
+      });
 
       ElementFilter.constructorsIn(typeElement.getEnclosedElements()).stream()
-          .filter(m -> m.getModifiers().contains(Modifier.PUBLIC))
-          .filter(m -> m.getParameters().size() == 1)
-          .map(m -> m.getParameters().get(0).asType().toString())
-          .map(ProcessorUtils::trimAnnotations)
-          .filter("io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest"::equals)
-          .findAny()
-          .ifPresentOrElse(
-              x -> {},
-              () ->
-                  logError(
-                      typeElement,
-                      "Custom Adapters must have a public constructor with a single AdapterCreateRequest parameter"));
+        .filter(m -> m.getModifiers().contains(Modifier.PUBLIC))
+        .filter(m -> m.getParameters().size() == 1)
+        .map(m -> m.getParameters().get(0).asType().toString())
+        .map(ProcessorUtils::trimAnnotations)
+        .filter("io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest"::equals)
+        .findAny()
+        .ifPresentOrElse(
+          x -> {},
+          () -> logError(typeElement, "Custom Adapters must have a public constructor with a single AdapterCreateRequest parameter"));
 
       metaData.addAnnotationAdapter(typeElement);
     }
@@ -176,13 +167,9 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private static boolean noPrimitiveValidateMethods(TypeElement typeElement) {
     return ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
-      .filter(
-        m ->
-          "isValid".equals(m.getSimpleName().toString())
-            || "validate".equals(m.getSimpleName().toString()))
+      .filter(m -> "isValid".equals(m.getSimpleName().toString()) || "validate".equals(m.getSimpleName().toString()))
       .toList()
-      .size()
-      < 2;
+      .size() < 2;
   }
 
   private void cascadeTypes() {
@@ -229,15 +216,31 @@ public final class ValidationProcessor extends AbstractProcessor {
   /** Elements that have a {@code @Valid.Import} annotation. */
   private void writeAdaptersForImported(Set<? extends Element> importedElements) {
     for (final var importedElement : ElementFilter.typesIn(importedElements)) {
-      for (final TypeMirror importType :
-          ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
+      for (final TypeMirror importType : ImportValidPojoPrism.getInstanceOn(importedElement).value()) {
+        // if imported by mixin annotation skip
+        if (mixInImports.contains(importType.toString())) {
+          continue;
+        }
         writeAdapterForType(asTypeElement(importType));
       }
     }
   }
 
+  /** Elements that have a {@code @MixIn} annotation. */
+  private void writeAdaptersForMixInTypes(Set<? extends Element> mixInElements) {
+    for (final Element mixin : mixInElements) {
+      final TypeMirror mirror = MixInPrism.getInstanceOn(mixin).value();
+      final String importType = mirror.toString();
+      final TypeElement element = asTypeElement(mirror);
+      mixInImports.add(importType);
+      writeAdapterForMixInType(element, typeElement(mixin.asType().toString()));
+    }
+  }
+
   private void initialiseComponent() {
-    if (!processedAnything) return;
+    if (!processedAnything) {
+      return;
+    }
     metaData.initialiseFullName();
     try {
       componentWriter.initialise();
@@ -264,14 +267,17 @@ public final class ValidationProcessor extends AbstractProcessor {
     ElementFilter.typesIn(beans).forEach(this::writeAdapterForType);
   }
 
+  private void writeAdapterForMixInType(TypeElement typeElement, TypeElement mixin) {
+    final ClassReader beanReader = new ClassReader(typeElement, mixin);
+    writeAdapter(typeElement, beanReader);
+  }
+
   /** Read the beans that have changed. */
   private void writeConstraintAdapters(Set<? extends Element> beans) {
     ElementFilter.typesIn(beans).stream()
-        .filter(
-            type ->
-                type.getAnnotationMirrors().stream()
-                    .anyMatch(m -> ConstraintPrism.isPresent(m.getAnnotationType().asElement())))
-        .forEach(this::writeAdapterForConstraint);
+      .filter(type -> type.getAnnotationMirrors().stream()
+        .anyMatch(m -> ConstraintPrism.isPresent(m.getAnnotationType().asElement())))
+      .forEach(this::writeAdapterForConstraint);
   }
 
   private void writeAdapterForType(TypeElement typeElement) {
@@ -286,9 +292,9 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private boolean isController(TypeElement typeElement) {
     return typeElement.getAnnotationMirrors().stream()
-        .map(AnnotationMirror::getAnnotationType)
-        .map(DeclaredType::toString)
-        .anyMatch(val -> val.endsWith(".Controller"));
+      .map(AnnotationMirror::getAnnotationType)
+      .map(DeclaredType::toString)
+      .anyMatch(val -> val.endsWith(".Controller"));
   }
 
   private void writeAdapterForConstraint(TypeElement typeElement) {
@@ -327,9 +333,7 @@ public final class ValidationProcessor extends AbstractProcessor {
       if (executableElement.getEnclosingElement().getAnnotationMirrors().stream()
           .map(m -> m.getAnnotationType().toString())
           .noneMatch(ValidationProcessor::isInjectableComponent)) {
-        logError(
-            executableElement,
-            "The ValidMethod Annotation can only be used with JSR-330 Injectable Classes");
+        logError(executableElement, "The ValidMethod Annotation can only be used with JSR-330 Injectable Classes");
       }
       writeParamProvider(executableElement);
     }

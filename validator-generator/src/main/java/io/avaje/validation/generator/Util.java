@@ -94,7 +94,6 @@ final class Util {
       .map(UType::parse)
       .map(UType::param0)
       .map(UType::fullWithoutAnnotations)
-      .map(ProcessorUtils::extractEnclosingFQN)
       .orElseGet(() -> {
         logError(element, "Custom Constraint adapters must extend AbstractConstraintAdapter or implement ValidationAdapter");
         return "Invalid";

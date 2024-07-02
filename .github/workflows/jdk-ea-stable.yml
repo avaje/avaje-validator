@@ -1,5 +1,5 @@
 
-name: JDK EA Stable
+name: avaje-validator EA stable
 
 on:
   push:

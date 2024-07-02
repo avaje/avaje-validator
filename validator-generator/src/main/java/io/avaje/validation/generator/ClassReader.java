@@ -17,10 +17,14 @@ final class ClassReader implements BeanReader {
   private final boolean nonAccessibleField;
 
   ClassReader(TypeElement beanType) {
+    this(beanType, null);
+  }
+
+  ClassReader(TypeElement beanType, TypeElement mixInElement) {
     this.beanType = beanType;
     this.type = beanType.getQualifiedName().toString();
-    this.shortName = shortName(beanType);
-    this.typeReader = new TypeReader(beanType);
+    this.shortName = UType.parse(beanType.asType()).shortWithoutAnnotations();
+    this.typeReader = new TypeReader(beanType, mixInElement);
     typeReader.process();
     this.nonAccessibleField = typeReader.nonAccessibleField();
     this.allFields = typeReader.allFields();

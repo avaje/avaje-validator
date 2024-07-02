@@ -90,7 +90,7 @@ final class AdapterHelper {
 
     } else if (hasValid) {
       if (!classLevel) {
-        writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, Util.shortName(genericType.mainType()));
+        writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, genericType.shortWithoutAnnotations());
       }
 
     } else if (genericType.mainType().contains("java.util.Optional")) {

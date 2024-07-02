@@ -9,22 +9,23 @@ final class AdapterName {
   final String fullName;
 
   AdapterName(TypeElement origin) {
-    String originName = origin.getQualifiedName().toString();
-    String name = origin.getSimpleName().toString();
-    String originPackage = ProcessorUtils.packageOf(originName);
-    if (origin.getNestingKind().isNested()) {
-      final String parent = Util.shortName(originPackage);
-      originPackage = ProcessorUtils.packageOf(originPackage);
-      shortName = parent + "$" + name;
-    } else {
-      shortName = name;
-    }
+    String originPackage = APContext.elements().getPackageOf(origin).toString();
+    var name = shortName(origin);
+    shortName = name.substring(0, name.length() - 1);
     if ("".equals(originPackage)) {
       this.adapterPackage = "valid";
     } else {
       this.adapterPackage = ProcessingContext.isImported(origin) ? originPackage + ".valid" : originPackage;
     }
     this.fullName = adapterPackage + "." + shortName + "ValidationAdapter";
+  }
+
+  private String shortName(TypeElement origin) {
+    var sb = new StringBuilder();
+    if (origin.getNestingKind().isNested()) {
+      sb.append(shortName((TypeElement) origin.getEnclosingElement()));
+    }
+    return sb.append(Util.shortName(origin.getSimpleName().toString())).append("$").toString();
   }
 
   String shortName() {

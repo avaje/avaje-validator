@@ -69,37 +69,25 @@ final class SimpleComponentWriter {
     }
     for (final String adapterFullName : metaData.all()) {
       final String adapterShortName = Util.shortName(adapterFullName);
-      final String typeName =
-          adapterFullName
-              .transform(Util::baseTypeOfAdapter)
-              .transform(Util::shortName)
-              .transform(this::typeShortName);
+      final String typeName = adapterFullName
+        .transform(Util::baseTypeOfAdapter)
+        .transform(ProcessorUtils::shortType);
       writer.append("    builder.add(%s.class, %s::new);", typeName, adapterShortName).eol();
     }
 
     for (final var adapter : metaData.allAnnotationAdapters()) {
-      final var typeShortName =
-          adapter
-              .getQualifiedName()
-              .toString()
-              .transform(ProcessorUtils::shortType)
-              .transform(this::typeShortName);
-
-      final var target =
-          ConstraintAdapterPrism.getInstanceOn(adapter)
-              .value()
-              .toString()
-              .transform(ProcessorUtils::shortType)
-              .transform(this::typeShortName);
+      final var typeShortName = adapter.getQualifiedName()
+        .toString()
+        .transform(ProcessorUtils::shortType);
+      final var target = ConstraintAdapterPrism.getInstanceOn(adapter)
+        .value()
+        .toString()
+        .transform(ProcessorUtils::shortType);
 
       writer.append("    builder.add(%s.class, %s::new);", target, typeShortName).eol();
     }
 
     writer.append("  }").eol().eol();
-  }
-
-  private String typeShortName(String adapterShortName) {
-    return adapterShortName.replace("$", ".");
   }
 
   private void writeClassEnd() {
@@ -111,10 +99,9 @@ final class SimpleComponentWriter {
     final String shortName = Util.shortName(fullName);
     writer.append("@Generated").eol();
     final List<String> factories = metaData.allFactories();
-    final List<String> annotationFactories =
-        metaData.allAnnotationAdapters().stream()
-            .map(s -> s.getQualifiedName().toString())
-            .toList();
+    final List<String> annotationFactories = metaData.allAnnotationAdapters().stream()
+      .map(s -> s.getQualifiedName().toString())
+      .toList();
     if (!factories.isEmpty()) {
       writer.append("@MetaData.Factory({");
       writeMetaDataEntry(annotationFactories);

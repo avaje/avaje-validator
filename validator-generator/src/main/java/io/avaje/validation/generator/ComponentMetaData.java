@@ -76,23 +76,23 @@ final class ComponentMetaData {
     return annotationAdapters;
   }
 
-  /** Return the package imports for the JsonAdapters and related types. */
+  /** Return the package imports for the ValidationAdapters and related types. */
   Collection<String> allImports() {
     final Set<String> packageImports = new TreeSet<>();
     for (final String adapterFullName : allTypes) {
       packageImports.add(ProcessorUtils.packageOf(adapterFullName) + ".*");
-      packageImports.add(Util.baseTypeOfAdapter(adapterFullName));
+      packageImports.add(ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
     }
 
     for (final var adapter : annotationAdapters) {
       final var adapterFullName = adapter.getQualifiedName().toString();
       packageImports.add(ProcessorUtils.packageOf(adapterFullName) + ".*");
-      packageImports.add(Util.baseTypeOfAdapter(adapterFullName));
+      packageImports.add(ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
 
       ConstraintAdapterPrism.getInstanceOn(adapter)
-          .value()
-          .toString()
-          .transform(packageImports::add);
+        .value()
+        .toString()
+        .transform(packageImports::add);
     }
 
     return packageImports;
