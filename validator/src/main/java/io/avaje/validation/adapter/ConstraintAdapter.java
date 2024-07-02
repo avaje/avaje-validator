@@ -1,8 +1,10 @@
 package io.avaje.validation.adapter;
 
 import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
@@ -40,6 +42,7 @@ import java.lang.annotation.Target;
  * }</pre>
  */
 @Target(TYPE)
+@Retention(SOURCE)
 public @interface ConstraintAdapter {
 
   /** The Annotation this validator targets */
