@@ -31,4 +31,18 @@ class UtilTest {
     assertEquals("url", Util.initLower("URL"));
     assertEquals("initCap", Util.initLower("InitCap"));
   }
+
+  @Test
+  void validImportType_expect_false() {
+    assertFalse(Util.validImportType("int", "org.foo"));
+    assertFalse(Util.validImportType("java.lang.Integer", "org.foo"));
+    assertFalse(Util.validImportType("org.foo.Bar", "org.foo"));
+  }
+
+  @Test
+  void validImportType_expect_true() {
+    assertTrue(Util.validImportType("java.lang.something.Foo", "org.foo"));
+    assertTrue(Util.validImportType("org.foo.some.Bar", "org.foo"));
+    assertTrue(Util.validImportType("org.other.Bar", "org.foo"));
+  }
 }

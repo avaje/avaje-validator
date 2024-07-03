@@ -1,19 +1,16 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.APContext.logError;
-import static io.avaje.validation.generator.APContext.typeElement;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.regex.Pattern;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
+
+import static io.avaje.validation.generator.APContext.logError;
+import static io.avaje.validation.generator.APContext.typeElement;
 
 final class Util {
 
@@ -27,7 +24,9 @@ final class Util {
       || JakartaValidPrism.isPresent(e);
   }
 
-  /** Return true if the element has a Nullable annotation. */
+  /**
+   * Return true if the element has a Nullable annotation.
+   */
   public static boolean isNullable(Element p) {
     for (final AnnotationMirror mirror : p.getAnnotationMirrors()) {
       if ("Nullable".equalsIgnoreCase(shortName(mirror.getAnnotationType().toString()))) {
@@ -37,12 +36,19 @@ final class Util {
     return false;
   }
 
-  static boolean validImportType(String type, String adapterPackage) {
+  static boolean validImportType(String type, String packageName) {
     return type.indexOf('.') > -1
-            && !type.startsWith("java.lang.")
-            && type.replace(adapterPackage + ".", "").transform(s -> s.contains("."))
-        || (type.startsWith("java.lang.")
-            && type.replace("java.lang.", "").transform(s -> s.contains(".")));
+      && !type.startsWith("java.lang.")
+      && importDifferentPackage(type, packageName)
+      || importJavaLangSubpackage(type);
+  }
+
+  private static boolean importDifferentPackage(String type, String packageName) {
+    return type.replace(packageName + '.', "").indexOf('.') > 0;
+  }
+
+  private static boolean importJavaLangSubpackage(String type) {
+    return type.startsWith("java.lang.") && importDifferentPackage(type, "java.lang");
   }
 
   static String shortName(String fullType) {
@@ -78,7 +84,9 @@ final class Util {
     return sb.toString();
   }
 
-  /** Return the base type given the ValidationAdapter type. */
+  /**
+   * Return the base type given the ValidationAdapter type.
+   */
   static String baseTypeOfAdapter(String adapterFullName) {
     final var element = typeElement(adapterFullName);
     if (element == null) {

@@ -87,13 +87,12 @@ final class ComponentMetaData {
     for (final var adapter : annotationAdapters) {
       final var adapterFullName = adapter.getQualifiedName().toString();
       packageImports.add(adapterFullName);
-      packageImports.add(
-          ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
+      packageImports.add(ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
 
       ConstraintAdapterPrism.getInstanceOn(adapter)
-          .value()
-          .toString()
-          .transform(packageImports::add);
+        .value()
+        .toString()
+        .transform(packageImports::add);
     }
 
     return packageImports;
