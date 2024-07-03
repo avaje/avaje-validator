@@ -9,8 +9,6 @@ import static java.util.stream.Collectors.toSet;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -33,7 +31,6 @@ final class ProcessingContext {
 
     Ctx(ProcessingEnvironment env) {
       var elements = env.getElementUtils();
-
       this.injectPresent = elements.getTypeElement(Constants.COMPONENT) != null;
       this.warnHttp = elements.getTypeElement("io.avaje.http.api.Controller") != null;
 
@@ -78,22 +75,22 @@ final class ProcessingContext {
 
         var buildPluginAvailable = buildPluginAvailable();
         var requireSet =
-            moduleInfo.requires().stream()
-                .map(Requires::getDependency)
-                .map(m -> m.getQualifiedName().toString())
-                .collect(toSet());
+          moduleInfo.requires().stream()
+            .map(Requires::getDependency)
+            .map(m -> m.getQualifiedName().toString())
+            .collect(toSet());
 
         boolean noHttpPlugin =
-            injectPresent
-                && (!buildPluginAvailable || !requireSet.contains("io.avaje.http.api"))
-                && warnHttp
-                && !moduleInfo.containsOnModulePath("io.avaje.validation.http");
+          injectPresent
+            && (!buildPluginAvailable || !requireSet.contains("io.avaje.http.api"))
+            && warnHttp
+            && !moduleInfo.containsOnModulePath("io.avaje.validation.http");
 
         boolean noInjectPlugin =
-            noHttpPlugin
-                && injectPresent
-                && (!buildPluginAvailable || !requireSet.contains("io.avaje.validation"))
-                && !moduleInfo.containsOnModulePath("io.avaje.validation.plugin");
+          noHttpPlugin
+            && injectPresent
+            && (!buildPluginAvailable || !requireSet.contains("io.avaje.validation"))
+            && !moduleInfo.containsOnModulePath("io.avaje.validation.plugin");
 
         if (noHttpPlugin) {
           logWarn(module, "`requires io.avaje.validation.http` must be explicity added or else avaje-inject may fail to detect the default http validator, validator, and method AOP validator");
