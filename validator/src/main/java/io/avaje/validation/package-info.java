@@ -9,7 +9,7 @@
  * @Valid
  * public class Address {
  *
- *   // annotate fields with contraints
+ *   // annotate fields with constraints
  *   @NotBlank
  *   private String street;
  *
