@@ -97,7 +97,7 @@ final class SimpleComponentWriter {
   private void writeClassStart() {
     final String fullName = metaData.fullName();
     final String shortName = Util.shortName(fullName);
-    writer.append("@Generated").eol();
+    writer.append("@Generated(\"avaje-validator-generator\")").eol();
     final List<String> factories = metaData.allFactories();
     final List<String> annotationFactories = metaData.allAnnotationAdapters().stream()
       .map(s -> s.getQualifiedName().toString())
