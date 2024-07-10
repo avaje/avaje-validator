@@ -1,12 +1,12 @@
 package io.avaje.validation.generator.models.valid;
 
-import io.avaje.lang.Nullable;
 import io.avaje.validation.MixIn;
 import io.avaje.validation.constraints.NotBlank;
-import io.avaje.validation.constraints.Positive;
 import io.avaje.validation.generator.models.valid.Captain.Bankai;
+import io.avaje.validation.generator.models.valid.typeconstraint.FraudWatch;
 import jakarta.validation.Valid;
 
+@FraudWatch
 @MixIn(Captain.class)
 public abstract class CaptainMixin {
 
