@@ -48,19 +48,14 @@ final class TypeReader {
     this.hasValidAnnotation = Util.isValid(baseType);
     this.genericTypeParams = initTypeParams(baseType);
     if (mixInType != null) {
-
       this.mixinClassAdapter = new FieldReader(baseType, mixInType, genericTypeParams);
-
-      mixInType
-          .getEnclosedElements()
-          .forEach(
-              e -> {
-                if (e instanceof VariableElement v) {
-                  mixInFields.put(v.getSimpleName().toString(), v);
-                } else if (e instanceof ExecutableElement ex && ex.getParameters().isEmpty()) {
-                  mixInMethods.put(ex.getSimpleName().toString(), ex);
-                }
-              });
+      mixInType.getEnclosedElements().forEach(e -> {
+        if (e instanceof VariableElement v) {
+          mixInFields.put(v.getSimpleName().toString(), v);
+        } else if (e instanceof ExecutableElement ex && ex.getParameters().isEmpty()) {
+          mixInMethods.put(ex.getSimpleName().toString(), ex);
+        }
+      });
     }
   }
 
