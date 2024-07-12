@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 
 final class FieldReader {
 
@@ -37,11 +38,26 @@ final class FieldReader {
     this.elementAnnotations = ElementAnnotationContainer.create(element);
     this.genericType = elementAnnotations.genericType();
     final String shortType = genericType.shortWithoutAnnotations();
-    usePrimitiveValidation = isPrimitiveValidationType(shortType) && elementAnnotations.supportsPrimitiveValidation();
-    adapterShortType = initAdapterShortType(shortType);
-    adapterFieldName = initShortName();
+    this.usePrimitiveValidation = isPrimitiveValidationType(shortType) && elementAnnotations.supportsPrimitiveValidation();
+    this.adapterShortType = initAdapterShortType(shortType);
+    this.adapterFieldName = initShortName();
     this.optionalValidation = Util.isNullable(element);
     this.classLevel = classLevel;
+  }
+
+  FieldReader(TypeElement baseType, TypeElement mixInType, List<String> genericTypeParams) {
+    this.genericTypeParams = genericTypeParams;
+    this.fieldName = baseType.getSimpleName().toString();
+    this.publicField = Util.isPublic(baseType);
+    this.element = baseType;
+    this.elementAnnotations = ElementAnnotationContainer.create(mixInType);
+    this.genericType = UType.parse(baseType.asType());
+    final String shortType = genericType.shortWithoutAnnotations();
+    this.usePrimitiveValidation = isPrimitiveValidationType(shortType) && elementAnnotations.supportsPrimitiveValidation();
+    this.adapterShortType = initAdapterShortType(shortType);
+    this.adapterFieldName = initShortName();
+    this.optionalValidation = Util.isNullable(mixInType);
+    this.classLevel = true;
   }
 
   private String initAdapterShortType(String shortType) {

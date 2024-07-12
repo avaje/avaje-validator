@@ -6,14 +6,12 @@ import static io.avaje.validation.generator.APContext.logError;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,20 +41,22 @@ final class TypeReader {
   private final Map<String, VariableElement> mixInFields = new HashMap<>();
   private final Map<String, ExecutableElement> mixInMethods = new HashMap<>();
 
+  private FieldReader mixinClassAdapter;
+
   TypeReader(TypeElement baseType, TypeElement mixInType) {
     this.baseType = baseType;
     this.hasValidAnnotation = Util.isValid(baseType);
     this.genericTypeParams = initTypeParams(baseType);
-
-    Optional.ofNullable(mixInType).map(TypeElement::getEnclosedElements).stream()
-      .flatMap(Collection::stream)
-      .forEach(e -> {
+    if (mixInType != null) {
+      this.mixinClassAdapter = new FieldReader(baseType, mixInType, genericTypeParams);
+      mixInType.getEnclosedElements().forEach(e -> {
         if (e instanceof VariableElement v) {
           mixInFields.put(v.getSimpleName().toString(), v);
         } else if (e instanceof ExecutableElement ex && ex.getParameters().isEmpty()) {
           mixInMethods.put(ex.getSimpleName().toString(), ex);
         }
       });
+    }
   }
 
   void read(TypeElement type) {
@@ -74,7 +74,10 @@ final class TypeReader {
       }
     }
 
-    final var classAdapter = new FieldReader(type, genericTypeParams, true);
+    final var classAdapter =
+        mixinClassAdapter != null
+            ? mixinClassAdapter
+            : new FieldReader(type, genericTypeParams, true);
     if (classAdapter.hasConstraints()) {
       localFields.add(classAdapter);
     }

@@ -87,7 +87,7 @@ final class SimpleAdapterWriter {
   }
 
   private void writeClassStart() {
-    writer.append("@Generated").eol();
+    writer.append("@Generated(\"avaje-validator-generator\")").eol();
     if (isContraint) {
       writer.append("@ConstraintAdapter(%s.class)", beanReader.contraintTarget()).eol();
     }

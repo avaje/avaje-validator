@@ -19,6 +19,17 @@ import io.avaje.validation.inject.aspect.AOPMethodValidator;
 /** Plugin for avaje inject that provides a default Validator instance. */
 public final class DefaultValidatorProvider implements InjectPlugin {
 
+  private static final boolean WIRE_ASPECTS = aspectsOnClasspath();
+
+  private static boolean aspectsOnClasspath() {
+    try {
+      Class.forName("io.avaje.inject.aop.Aspect");
+      return true;
+    } catch (ClassNotFoundException e) {
+      return false;
+    }
+  }
+
   @Override
   public Class<?>[] provides() {
     return new Class<?>[] {Validator.class};
@@ -26,13 +37,15 @@ public final class DefaultValidatorProvider implements InjectPlugin {
 
   @Override
   public Class<?>[] providesAspects() {
-    return new Class<?>[] {ValidMethod.class};
+    return WIRE_ASPECTS ? new Class<?>[] {ValidMethod.class} : new Class<?>[] {};
   }
 
   @Override
   public void apply(BeanScopeBuilder builder) {
     validator(builder);
-    paramAspect(builder);
+    if (WIRE_ASPECTS) {
+      paramAspect(builder);
+    }
   }
 
   private void validator(BeanScopeBuilder builder) {

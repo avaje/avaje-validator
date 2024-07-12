@@ -233,7 +233,7 @@ public final class ValidationProcessor extends AbstractProcessor {
       final String importType = mirror.toString();
       final TypeElement element = asTypeElement(mirror);
       mixInImports.add(importType);
-      writeAdapterForMixInType(element, typeElement(mixin.asType().toString()));
+      writeAdapterForMixInType(element, asTypeElement(mixin.asType()));
     }
   }
 
