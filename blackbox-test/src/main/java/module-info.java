@@ -1,6 +1,7 @@
 @io.avaje.inject.InjectModule(name="GeneratedModule")
 module blackbox.test {
 
+  requires io.avaje.inject.aop;
   requires io.avaje.validation.http;
   requires io.avaje.validation.contraints;
   requires jakarta.validation;
