@@ -2,9 +2,11 @@ package io.avaje.validation.generator;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -14,6 +16,7 @@ import static io.avaje.validation.generator.APContext.typeElement;
 
 final class Util {
 
+  private static final String NULLABLE = "Nullable";
   static final Set<String> BASIC_TYPES = Set.of("java.lang.String", "java.math.BigDecimal");
 
   private Util() {}
@@ -24,15 +27,24 @@ final class Util {
       || JakartaValidPrism.isPresent(e);
   }
 
-  /**
-   * Return true if the element has a Nullable annotation.
-   */
+  /** Return true if the element has a Nullable annotation. */
   public static boolean isNullable(Element p) {
-    for (final AnnotationMirror mirror : p.getAnnotationMirrors()) {
-      if ("Nullable".equalsIgnoreCase(shortName(mirror.getAnnotationType().toString()))) {
+
+    if (ProcessorUtils.hasAnnotationWithName(p, NULLABLE)) {
+      return true;
+    }
+
+    var type =
+        p instanceof ExecutableElement ex
+            ? UType.parse(ex.getReturnType())
+            : UType.parse(p.asType());
+
+    for (final AnnotationMirror mirror : type.annotations()) {
+      if (NULLABLE.equalsIgnoreCase(shortName(mirror.getAnnotationType().toString()))) {
         return true;
       }
     }
+
     return false;
   }
 
