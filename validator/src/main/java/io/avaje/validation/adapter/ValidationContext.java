@@ -7,7 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import io.avaje.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /** Context used to lookup validation adapters and create validation requests. */
 public interface ValidationContext {

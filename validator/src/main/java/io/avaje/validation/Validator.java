@@ -9,7 +9,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import io.avaje.lang.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;

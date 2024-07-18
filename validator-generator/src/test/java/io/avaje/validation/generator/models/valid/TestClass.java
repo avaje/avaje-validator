@@ -5,9 +5,10 @@ import java.util.List;
 import javax.validation.constraints.Negative;
 import javax.validation.constraints.NotEmpty;
 
-import io.avaje.lang.Nullable;
-import io.avaje.validation.constraints.RegexFlag;
+import org.jspecify.annotations.Nullable;
+
 import io.avaje.validation.constraints.Pattern;
+import io.avaje.validation.constraints.RegexFlag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

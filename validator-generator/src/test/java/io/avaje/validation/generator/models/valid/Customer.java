@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.avaje.lang.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import io.avaje.validation.constraints.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
