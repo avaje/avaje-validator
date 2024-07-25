@@ -1,13 +1,18 @@
 package io.avaje.validation.core;
 
-import io.avaje.lang.Nullable;
+import java.util.ArrayDeque;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import org.jspecify.annotations.Nullable;
+
 import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
 import io.avaje.validation.groups.Default;
-
-import java.util.*;
 
 final class DRequest implements ValidationRequest {
 
@@ -83,9 +88,9 @@ final class DRequest implements ValidationRequest {
   private String message() {
     final var msg = new StringBuilder(100);
     msg.append(violations.size()).append(" constraint violation(s) occurred.");
-    violations.stream().limit(10).forEach(cv -> {
-      msg.append("\n ").append(cv.path()).append(": ").append(cv.message());
-    });
+    violations.stream()
+        .limit(10)
+        .forEach(cv -> msg.append("\n ").append(cv.path()).append(": ").append(cv.message()));
     final int others = violations.size() - 10;
     if (others > 0) {
       msg.append("\n and ").append(others).append(" other error(s)");

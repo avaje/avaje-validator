@@ -1,6 +1,7 @@
 package example.avaje.nested;
 
-import io.avaje.lang.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

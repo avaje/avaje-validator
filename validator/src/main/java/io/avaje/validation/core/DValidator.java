@@ -21,7 +21,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import io.avaje.lang.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.Validator;
 import io.avaje.validation.adapter.ValidationAdapter;
