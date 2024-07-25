@@ -11,8 +11,9 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.jspecify.annotations.Nullable;
+
 import io.avaje.applog.AppLog;
-import io.avaje.lang.Nullable;
 
 final class ResourceBundleManager {
   private static final System.Logger logger = AppLog.getLogger(ResourceBundleManager.class);

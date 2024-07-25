@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import io.avaje.lang.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.adapter.ValidationAdapter;

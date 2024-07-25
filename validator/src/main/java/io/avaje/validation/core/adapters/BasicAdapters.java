@@ -15,7 +15,6 @@ import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 import io.avaje.validation.adapter.ValidationRequest;
-import io.avaje.validation.core.adapters.BasicAdapters.PatternAdapter;
 import io.avaje.validation.spi.AnnotationFactory;
 
 public final class BasicAdapters {

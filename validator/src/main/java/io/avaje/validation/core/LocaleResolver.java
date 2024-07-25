@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import io.avaje.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 final class LocaleResolver {
 
