@@ -17,7 +17,7 @@ import static io.avaje.validation.generator.APContext.typeElement;
 final class Util {
 
   private static final String NULLABLE = "Nullable";
-  static final Set<String> BASIC_TYPES = Set.of("java.lang.String", "java.math.BigDecimal");
+  private static final Set<String> BASIC_TYPES = Set.of("java.lang.String", "java.math.BigDecimal");
 
   private Util() {}
 
@@ -28,16 +28,14 @@ final class Util {
   }
 
   /** Return true if the element has a Nullable annotation. */
-  public static boolean isNullable(Element p) {
-
+  static boolean isNullable(Element p) {
     if (ProcessorUtils.hasAnnotationWithName(p, NULLABLE)) {
       return true;
     }
-
     var type =
-        p instanceof ExecutableElement ex
-            ? UType.parse(ex.getReturnType())
-            : UType.parse(p.asType());
+      p instanceof ExecutableElement ex
+        ? UType.parse(ex.getReturnType())
+        : UType.parse(p.asType());
 
     for (final AnnotationMirror mirror : type.annotations()) {
       if (NULLABLE.equalsIgnoreCase(shortName(mirror.getAnnotationType().toString()))) {
@@ -158,7 +156,6 @@ final class Util {
     if (mods.contains(Modifier.PRIVATE) || mods.contains(Modifier.PROTECTED)) {
       return false;
     }
-    var isImported = ProcessingContext.isImported(element);
-    return !isImported;
+    return !ProcessingContext.isImported(element);
   }
 }
