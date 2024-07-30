@@ -28,7 +28,7 @@
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
     <maven.compiler.release>17</maven.compiler.release>
     <inject.version>10.2</inject.version>
-    <spi.version>2.3</spi.version>
+    <spi.version>2.4</spi.version>
   </properties>
 
   <modules>
