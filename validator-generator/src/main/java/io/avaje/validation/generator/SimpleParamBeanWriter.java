@@ -67,8 +67,8 @@ final class SimpleParamBeanWriter {
                 @Generated("avaje-validator-generator")
                 @Named
                 @%s
-                public final class %s implements MethodAdapterProvider {""",
-            Util.shortName(diAnnotation()), adapterShortName)
+                public final %sclass %s implements MethodAdapterProvider {""",
+            Util.shortName(diAnnotation()), Util.valhalla(), adapterShortName)
         .eol();
   }
 

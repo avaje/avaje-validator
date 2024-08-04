@@ -117,7 +117,10 @@ final class SimpleComponentWriter {
     writeMetaDataEntry(all);
     writer.append("})").eol();
 
-    writer.append("public class %s implements GeneratedComponent {", shortName).eol().eol();
+    writer
+        .append("public %sclass %s implements GeneratedComponent {", Util.valhalla(), shortName)
+        .eol()
+        .eol();
   }
 
   private void writeMetaDataEntry(List<String> entries) {
