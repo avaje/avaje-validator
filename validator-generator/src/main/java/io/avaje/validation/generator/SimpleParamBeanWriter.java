@@ -19,22 +19,16 @@ final class SimpleParamBeanWriter {
   SimpleParamBeanWriter(ValidMethodReader beanReader) {
     this.beanReader = beanReader;
     final var method = beanReader.getBeanType();
-
     this.adapterPackage = ProcessorUtils.packageOf(method.getEnclosingElement().asType().toString());
-    adapterFullName =
-        adapterPackage
-            + "."
-            + method
-                .getSimpleName()
-                .toString()
-                .transform(str -> str.substring(0, 1).toUpperCase() + str.substring(1))
-            + "ParamProvider";
+    this.adapterFullName = adapterPackage
+      + "."
+      + method
+      .getSimpleName()
+      .toString()
+      .transform(str -> str.substring(0, 1).toUpperCase() + str.substring(1))
+      + "ParamProvider";
 
     this.adapterShortName = Util.shortName(adapterFullName);
-  }
-
-  String fullName() {
-    return adapterFullName;
   }
 
   private Writer createFileWriter() throws IOException {
@@ -62,14 +56,14 @@ final class SimpleParamBeanWriter {
 
   private void writeClassStart() {
     writer
-        .append(
-            """
-                @Generated("avaje-validator-generator")
-                @Named
-                @%s
-                public final class %s implements MethodAdapterProvider {""",
-            Util.shortName(diAnnotation()), adapterShortName)
-        .eol();
+      .append(
+        """
+          @Generated("avaje-validator-generator")
+          @Named
+          @%s
+          public final %sclass %s implements MethodAdapterProvider {""",
+        Util.shortName(diAnnotation()), Util.valhalla(), adapterShortName)
+      .eol();
   }
 
   private void writeMethods() {

@@ -92,7 +92,7 @@ final class SimpleAdapterWriter {
       writer.append("@ConstraintAdapter(%s.class)", beanReader.contraintTarget()).eol();
     }
 
-    writer.append("public final class %sValidationAdapter implements ValidationAdapter<%s> ", adapterShortName, beanReader.shortName());
+    writer.append("public final %sclass %sValidationAdapter implements ValidationAdapter<%s> ", Util.valhalla(), adapterShortName, beanReader.shortName());
     writer.append("{").eol().eol();
   }
 

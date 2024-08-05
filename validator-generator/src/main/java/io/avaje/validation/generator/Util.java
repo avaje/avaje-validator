@@ -158,4 +158,14 @@ final class Util {
     }
     return !ProcessingContext.isImported(element);
   }
+
+  static String valhalla() {
+    try {
+      if (Modifier.valueOf("VALUE") != null && APContext.previewEnabled()) return "value ";
+    } catch (IllegalArgumentException e) {
+      // no valhalla
+    }
+    return "";
+  }
+
 }
