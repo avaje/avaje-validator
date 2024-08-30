@@ -26,7 +26,6 @@ public record ElementAnnotationContainer(
 
   static ElementAnnotationContainer create(Element element) {
     final var hasValid = ValidPrism.isPresent(element);
-
     Map<UType, String> typeUse1;
     Map<UType, String> typeUse2;
     final Map<UType, String> crossParam = new HashMap<>();
@@ -76,6 +75,12 @@ public record ElementAnnotationContainer(
                     a -> UType.parse(a.getAnnotationType()),
                     a -> AnnotationUtil.annotationAttributeMap(a, element)));
 
+    if (Util.isNonNullable(element)) {
+      var nonNull = UType.parse(APContext.typeElement(NonNullPrism.PRISM_TYPE).asType());
+
+      annotations.put(nonNull, "Map.of(\"message\",\"{avaje.NotNull.message}\")");
+    }
+
     return new ElementAnnotationContainer(
         uType, hasValid, annotations, typeUse1, typeUse2, crossParam);
   }
@@ -89,7 +94,7 @@ public record ElementAnnotationContainer(
     return ConstraintPrism.isPresent(element);
   }
 
-  // it seems we cannot directly retrieve mirrors from var elements, for varElements needs special
+  // it seems we cannot directly retrieve mirrors from var elements, so var Elements needs special
   // handling
 
   static ElementAnnotationContainer create(VariableElement varElement) {
@@ -121,6 +126,12 @@ public record ElementAnnotationContainer(
                     a -> AnnotationUtil.annotationAttributeMap(a, varElement)));
 
     final boolean hasValid = uType.annotations().stream().anyMatch(ValidPrism::isInstance);
+
+    if (Util.isNonNullable(varElement)) {
+      var nonNull = UType.parse(APContext.typeElement(NonNullPrism.PRISM_TYPE).asType());
+
+      annotations.put(nonNull, "Map.of(\"message\",\"{avaje.NotNull.message}\")");
+    }
 
     return new ElementAnnotationContainer(
         uType, hasValid, annotations, typeUse1, typeUse2, Map.of());

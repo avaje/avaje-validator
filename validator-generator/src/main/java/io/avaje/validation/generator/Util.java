@@ -168,4 +168,32 @@ final class Util {
     return "";
   }
 
+  public static boolean isNonNullable(Element e) {
+    UType uType;
+    if (e instanceof final ExecutableElement executableElement) {
+      uType = UType.parse(executableElement.getReturnType());
+
+    } else {
+      uType = UType.parse(e.asType());
+    }
+
+    for (var mirror : uType.annotations()) {
+      if (mirror.getAnnotationType().toString().endsWith("Nullable")) {
+        return false;
+      } else if (NonNullPrism.isInstance(mirror)) {
+        return true;
+      }
+    }
+
+    return checkNullMarked(e);
+  }
+
+  private static boolean checkNullMarked(Element e) {
+    if (e == null || NullUnmarkedPrism.isPresent(e)) {
+      return false;
+    } else if (NullMarkedPrism.isPresent(e)) {
+      return true;
+    }
+    return checkNullMarked(e.getEnclosingElement());
+  }
 }
