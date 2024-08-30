@@ -15,9 +15,10 @@ final class AdapterHelper {
   private final boolean classLevel;
   private final boolean crossParam;
   private boolean usePrimitiveValidation;
+  private String recursiveType;
 
   AdapterHelper(Append writer, ElementAnnotationContainer elementAnnotations, String indent) {
-    this(writer, elementAnnotations, indent,"Object", null, false, false);
+    this(writer, elementAnnotations, indent, "Object", null, false, false);
   }
 
   AdapterHelper(
@@ -72,9 +73,24 @@ final class AdapterHelper {
 
     } else if (isTopTypeIterable()) {
       writer.eol().append("%s    .list()", indent);
+      // cascade validate
       if (hasValid) {
-        // cascade validate
-        writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, mainType.param0().shortType());
+        if (mainType.param0().fullWithoutAnnotations().equals(recursiveType)) {
+          // cascade validate
+          writer
+              .eol()
+              .append(
+                  "%s    .andThenMulti(this)",
+                  indent, mainType.param0().shortType());
+        } else {
+
+          // cascade validate
+          writer
+              .eol()
+              .append(
+                  "%s    .andThenMulti(ctx.adapter(%s.class))",
+                  indent, mainType.param0().shortType());
+        }
       }
 
     } else if (isMapType(typeUse1, typeUse2)) {
@@ -86,11 +102,30 @@ final class AdapterHelper {
 
     } else if (hasValid && genericType.mainType().contains("[]")) {
       writer.eol().append("%s    .array()", indent);
-      writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, mainType.shortWithoutAnnotations().replace("[]",""));
+
+      if (genericType.mainType().replace("[]", "").equals(recursiveType)) {
+
+        writer.eol().append("%s    .andThenMulti(this)", indent);
+
+      } else {
+        writer
+            .eol()
+            .append(
+                "%s    .andThenMulti(ctx.adapter(%s.class))",
+                indent, mainType.shortWithoutAnnotations().replace("[]", ""));
+      }
 
     } else if (hasValid) {
       if (!classLevel) {
-        writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, genericType.shortWithoutAnnotations());
+        if (genericType.mainType().equals(recursiveType)) {
+          writer.eol().append("%s    .andThen(this)", indent);
+        } else {
+          writer
+              .eol()
+              .append(
+                  "%s    .andThen(ctx.adapter(%s.class))",
+                  indent, genericType.shortWithoutAnnotations());
+        }
       }
 
     } else if (genericType.mainType().contains("java.util.Optional")) {
@@ -146,5 +181,10 @@ final class AdapterHelper {
           .eol()
           .append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, typeUse.shortWithoutAnnotations());
     }
+  }
+
+  public AdapterHelper withEnclosingType(UType recursive) {
+    this.recursiveType = recursive.fullWithoutAnnotations();
+    return this;
   }
 }
