@@ -107,7 +107,7 @@ final class TypeReader {
       element = mixInField;
     }
 
-    if (includeField(element)) {
+    if (includeField(element) || Util.isNonNullable(element)) {
       seenFields.add(element.toString());
       var reader = new FieldReader(element, genericTypeParams);
       if (reader.hasConstraints() || ValidPrism.isPresent(element)) {
@@ -129,9 +129,7 @@ final class TypeReader {
 
   private boolean includeField(Element element) {
     return !element.getModifiers().contains(Modifier.TRANSIENT)
-        && (!element.getAnnotationMirrors().isEmpty()
-            || element.asType().toString().contains("@")
-            || Util.isNonNullable(element));
+        && (!element.getAnnotationMirrors().isEmpty() || element.asType().toString().contains("@"));
   }
 
   private void readMethod(Element element, TypeElement type, List<FieldReader> localFields) {
