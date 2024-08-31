@@ -131,8 +131,7 @@ final class Util {
     return () -> element.getInterfaces().stream()
       .filter(t ->
         t.toString().contains("io.avaje.validation.adapter.ValidationAdapter")
-          || t.toString()
-          .contains("io.avaje.validation.adapter.ValidationAdapter.Primitive"))
+          || t.toString().contains("io.avaje.validation.adapter.ValidationAdapter.Primitive"))
       .findFirst();
   }
 
