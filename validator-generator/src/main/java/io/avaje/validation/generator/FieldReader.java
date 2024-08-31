@@ -176,19 +176,19 @@ final class FieldReader {
     writer.append("    this.%s = ", adapterFieldName).eol();
 
     var helper =
-        new AdapterHelper(
-                writer,
-                elementAnnotations,
-                "        ",
-                PrimitiveUtil.wrap(genericType.shortWithoutAnnotations()),
-                genericType,
-                classLevel)
-            .usePrimitiveValidation(usePrimitiveValidation);
+      new AdapterHelper(
+        writer,
+        elementAnnotations,
+        "        ",
+        PrimitiveUtil.wrap(genericType.shortWithoutAnnotations()),
+        genericType,
+        classLevel)
+        .usePrimitiveValidation(usePrimitiveValidation);
 
     Optional.of(element.getEnclosingElement())
-        .filter(TypeElement.class::isInstance)
-        .map(e -> UType.parse(e.asType()))
-        .ifPresent(helper::withEnclosingType);
+      .filter(TypeElement.class::isInstance)
+      .map(e -> UType.parse(e.asType()))
+      .ifPresent(helper::withEnclosingType);
 
     helper.write();
     writer.append(";").eol().eol();

@@ -77,42 +77,26 @@ final class AdapterHelper {
       if (hasValid) {
         if (mainType.param0().fullWithoutAnnotations().equals(recursiveType)) {
           // cascade validate
-          writer
-              .eol()
-              .append(
-                  "%s    .andThenMulti(this)",
-                  indent, mainType.param0().shortType());
+          writer.eol().append("%s    .andThenMulti(this)", indent, mainType.param0().shortType());
         } else {
-
           // cascade validate
-          writer
-              .eol()
-              .append(
-                  "%s    .andThenMulti(ctx.adapter(%s.class))",
-                  indent, mainType.param0().shortType());
+          writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, mainType.param0().shortType());
         }
       }
 
     } else if (isMapType(typeUse1, typeUse2)) {
       writer.eol().append("%s    .mapKeys()", indent);
       writeTypeUse(genericType.param0(), typeUse1);
-
       writer.eol().append("%s    .mapValues()", indent);
       writeTypeUse(genericType.param1(), typeUse2, false);
 
     } else if (hasValid && genericType.mainType().contains("[]")) {
       writer.eol().append("%s    .array()", indent);
-
       if (genericType.mainType().replace("[]", "").equals(recursiveType)) {
-
         writer.eol().append("%s    .andThenMulti(this)", indent);
-
       } else {
-        writer
-            .eol()
-            .append(
-                "%s    .andThenMulti(ctx.adapter(%s.class))",
-                indent, mainType.shortWithoutAnnotations().replace("[]", ""));
+        writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))",
+          indent, mainType.shortWithoutAnnotations().replace("[]", ""));
       }
 
     } else if (hasValid) {
@@ -120,11 +104,7 @@ final class AdapterHelper {
         if (genericType.mainType().equals(recursiveType)) {
           writer.eol().append("%s    .andThen(this)", indent);
         } else {
-          writer
-              .eol()
-              .append(
-                  "%s    .andThen(ctx.adapter(%s.class))",
-                  indent, genericType.shortWithoutAnnotations());
+          writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, genericType.shortWithoutAnnotations());
         }
       }
 
@@ -183,8 +163,7 @@ final class AdapterHelper {
     }
   }
 
-  public AdapterHelper withEnclosingType(UType recursive) {
+  void withEnclosingType(UType recursive) {
     this.recursiveType = recursive.fullWithoutAnnotations();
-    return this;
   }
 }
