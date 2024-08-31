@@ -1,9 +1,10 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.PrimitiveUtil.isPrimitiveValidationType;
 import static io.avaje.validation.generator.APContext.logError;
+import static io.avaje.validation.generator.PrimitiveUtil.isPrimitiveValidationType;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
@@ -174,15 +175,22 @@ final class FieldReader {
   void writeConstructor(Append writer) {
     writer.append("    this.%s = ", adapterFieldName).eol();
 
-    new AdapterHelper(
-            writer,
-            elementAnnotations,
-            "        ",
-            PrimitiveUtil.wrap(genericType.shortWithoutAnnotations()),
-            genericType,
-            classLevel)
-        .usePrimitiveValidation(usePrimitiveValidation)
-        .write();
+    var helper =
+      new AdapterHelper(
+        writer,
+        elementAnnotations,
+        "        ",
+        PrimitiveUtil.wrap(genericType.shortWithoutAnnotations()),
+        genericType,
+        classLevel)
+        .usePrimitiveValidation(usePrimitiveValidation);
+
+    Optional.of(element.getEnclosingElement())
+      .filter(TypeElement.class::isInstance)
+      .map(e -> UType.parse(e.asType()))
+      .ifPresent(helper::withEnclosingType);
+
+    helper.write();
     writer.append(";").eol().eol();
   }
 
