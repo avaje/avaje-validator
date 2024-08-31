@@ -129,7 +129,9 @@ final class TypeReader {
 
   private boolean includeField(Element element) {
     return !element.getModifiers().contains(Modifier.TRANSIENT)
-        && (!element.getAnnotationMirrors().isEmpty() || element.asType().toString().contains("@"));
+        && (!element.getAnnotationMirrors().isEmpty()
+            || element.asType().toString().contains("@")
+            || Util.isNonNullable(element));
   }
 
   private void readMethod(Element element, TypeElement type, List<FieldReader> localFields) {
