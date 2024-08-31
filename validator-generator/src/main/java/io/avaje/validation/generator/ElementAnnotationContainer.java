@@ -77,7 +77,6 @@ public record ElementAnnotationContainer(
 
     if (Util.isNonNullable(element)) {
       var nonNull = UType.parse(APContext.typeElement(NonNullPrism.PRISM_TYPE).asType());
-
       annotations.put(nonNull, "Map.of(\"message\",\"{avaje.NotNull.message}\")");
     }
 
@@ -129,7 +128,6 @@ public record ElementAnnotationContainer(
 
     if (Util.isNonNullable(varElement)) {
       var nonNull = UType.parse(APContext.typeElement(NonNullPrism.PRISM_TYPE).asType());
-
       annotations.put(nonNull, "Map.of(\"message\",\"{avaje.NotNull.message}\")");
     }
 

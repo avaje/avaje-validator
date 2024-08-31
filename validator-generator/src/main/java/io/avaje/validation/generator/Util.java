@@ -168,15 +168,13 @@ final class Util {
     return "";
   }
 
-  public static boolean isNonNullable(Element e) {
+  static boolean isNonNullable(Element e) {
     UType uType;
     if (e instanceof final ExecutableElement executableElement) {
       uType = UType.parse(executableElement.getReturnType());
-
     } else {
       uType = UType.parse(e.asType());
     }
-
     for (var mirror : uType.annotations()) {
       if (mirror.getAnnotationType().toString().endsWith("Nullable")) {
         return false;
@@ -184,7 +182,6 @@ final class Util {
         return true;
       }
     }
-
     return checkNullMarked(e);
   }
 
