@@ -129,7 +129,11 @@ final class TypeReader {
 
   private boolean includeField(Element element) {
     return !element.getModifiers().contains(Modifier.TRANSIENT)
-        && (!element.getAnnotationMirrors().isEmpty() || element.asType().toString().contains("@"));
+        && (element.getAnnotationMirrors().stream()
+                //filter lombok's suppress warnings and generated annotations
+                .filter(m -> !m.toString().contains("@java"))
+                .anyMatch(m -> !m.toString().contains("lombok"))
+            || element.asType().toString().contains("@"));
   }
 
   private void readMethod(Element element, TypeElement type, List<FieldReader> localFields) {
