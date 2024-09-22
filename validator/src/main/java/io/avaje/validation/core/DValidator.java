@@ -164,7 +164,7 @@ final class DValidator implements Validator, ValidationContext {
   @Override
   @SuppressWarnings("unchecked")
   public <T> ValidationAdapter<T> noop() {
-    return CoreAdapterBuilder.NOOP;
+    return NoOpValidator.INSTANCE;
   }
 
   @Override

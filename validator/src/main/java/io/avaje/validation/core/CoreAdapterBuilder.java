@@ -25,8 +25,6 @@ import io.avaje.validation.spi.AnnotationFactory;
 
 /** Builds and caches the ValidationAdapter adapters for DValidator. */
 final class CoreAdapterBuilder {
-  @SuppressWarnings("rawtypes")
-  public static final ValidationAdapter NOOP = (type, req, propertyName) -> true;
 
   private static final Set<Class<?>> DEFAULT_GROUP = Set.of(Default.class);
   private final DValidator context;
@@ -106,7 +104,7 @@ final class CoreAdapterBuilder {
       }
     }
     // unknown annotations have noop
-    return NOOP;
+    return NoOpValidator.INSTANCE;
   }
 
   record Request(
