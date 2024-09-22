@@ -3,7 +3,7 @@ package io.avaje.validation.core;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationRequest;
 
-class NoOpValidator implements ValidationAdapter, ValidationAdapter.Primitive {
+public class NoOpValidator implements ValidationAdapter, ValidationAdapter.Primitive {
 
   public static final NoOpValidator INSTANCE = new NoOpValidator();
 
