@@ -3,7 +3,7 @@
 [![Discord](https://img.shields.io/discord/1074074312421683250?color=%237289da&label=discord)](https://discord.gg/Qcqf9R27BR)
 [![Build](https://github.com/avaje/avaje-validator/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-validator/actions/workflows/build.yml)
 [![native image build](https://github.com/avaje/avaje-validator/actions/workflows/native-image.yml/badge.svg)](https://github.com/avaje/avaje-validator/actions/workflows/native-image.yml)
-[![Maven Central : avaje-validator](https://img.shields.io/maven-central/v/io.avaje/avaje-validator.svg?label=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/io.avaje/avaje-validator)
+[![Maven Central](https://img.shields.io/maven-central/v/io.avaje/avaje-validator.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/io.avaje/avaje-validator)
 [![javadoc](https://javadoc.io/badge2/io.avaje/avaje-validator/javadoc.svg?color=purple)](https://javadoc.io/doc/io.avaje/avaje-validator/latest/io.avaje-validator/io/avaje/validator/package-summary.html)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
 
