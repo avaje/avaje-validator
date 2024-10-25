@@ -32,5 +32,4 @@ jobs:
       - name: Build with Maven
         env:
           JAVA_VERSION: ${{ matrix.java_version }}
-        run:
-          mvn clean package
+        run: mvn clean install && mvn clean verify artifact:compare

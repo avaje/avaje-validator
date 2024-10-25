@@ -29,6 +29,7 @@
     <maven.compiler.release>17</maven.compiler.release>
     <inject.version>10.3</inject.version>
     <spi.version>2.5</spi.version>
+    <project.build.outputTimestamp>2024-10-25T04:21:12Z</project.build.outputTimestamp>
   </properties>
 
   <modules>
