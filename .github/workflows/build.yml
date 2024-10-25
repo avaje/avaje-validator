@@ -32,4 +32,4 @@ jobs:
       - name: Build with Maven
         env:
           JAVA_VERSION: ${{ matrix.java_version }}
-        run: mvn clean install && mvn clean package -DskipTests artifact:compare
+        run: mvn clean install && mvn clean verify artifact:compare
