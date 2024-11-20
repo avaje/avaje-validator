@@ -16,7 +16,7 @@ import static java.lang.annotation.ElementType.*;
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(Length.List.class)
+@Repeatable(Length.Lengths.class)
 public @interface Length {
 
   String message() default "{avaje.Length.message}";
@@ -30,7 +30,7 @@ public @interface Length {
   @Target({ElementType.METHOD, ElementType.FIELD})
   @Retention(RetentionPolicy.RUNTIME)
   @Documented
-  @interface List {
+  @interface Lengths {
     Length[] value();
   }
 }

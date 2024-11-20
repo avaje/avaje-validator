@@ -13,8 +13,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import io.avaje.validation.constraints.Range.List;
-
 /**
  * The annotated element has to be in the appropriate range. Apply on numeric values or string
  * representation of the numeric value.
@@ -24,7 +22,7 @@ import io.avaje.validation.constraints.Range.List;
 @Constraint(unboxPrimitives = true)
 @Documented
 @Retention(RUNTIME)
-@Repeatable(List.class)
+@Repeatable(Range.Ranges.class)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 public @interface Range {
   long min() default 0;
@@ -39,7 +37,7 @@ public @interface Range {
   @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
   @Retention(RUNTIME)
   @Documented
-  public @interface List {
+  public @interface Ranges {
     Range[] value();
   }
 }

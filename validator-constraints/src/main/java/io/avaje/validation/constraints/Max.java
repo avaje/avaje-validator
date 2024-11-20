@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
 @Constraint(unboxPrimitives = true)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(Max.List.class)
+@Repeatable(Max.Maxs.class)
 public @interface Max {
   String message() default "{avaje.Max.message}";
 
@@ -46,7 +46,7 @@ public @interface Max {
   @Target({ElementType.METHOD, ElementType.FIELD})
   @Retention(RetentionPolicy.RUNTIME)
   @Documented
-  @interface List {
+  @interface Maxs {
     Max[] value();
   }
 }
