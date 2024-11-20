@@ -17,8 +17,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import io.avaje.validation.constraints.DecimalMin.List;
-
 /**
  * The annotated element must be a number whose value must be higher or equal to the specified
  * minimum.
@@ -42,7 +40,7 @@ import io.avaje.validation.constraints.DecimalMin.List;
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
-@Repeatable(List.class)
+@Repeatable(DecimalMin.DecimalMins.class)
 public @interface DecimalMin {
 
   String message() default "{avaje.DecimalMin.message}";
@@ -73,7 +71,7 @@ public @interface DecimalMin {
    */
   @Target({METHOD, FIELD})
   @Retention(RUNTIME)
-  @interface List {
+  @interface DecimalMins {
 
     DecimalMin[] value();
   }

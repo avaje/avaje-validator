@@ -12,8 +12,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import io.avaje.validation.constraints.Positive.List;
-
 /**
  * The annotated element must be a strictly positive number (i.e. 0 is considered as an invalid
  * value).
@@ -34,7 +32,6 @@ import io.avaje.validation.constraints.Positive.List;
 @Constraint(unboxPrimitives = true)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
-@Repeatable(List.class)
 @Documented
 public @interface Positive {
 
@@ -42,16 +39,4 @@ public @interface Positive {
 
   Class<?>[] groups() default {};
 
-  /**
-   * Defines several {@link Positive} constraints on the same element.
-   *
-   * @see Positive
-   */
-  @Target({METHOD, FIELD})
-  @Retention(RUNTIME)
-  @Documented
-  @interface List {
-
-    Positive[] value();
-  }
 }

@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(Size.List.class)
+@Repeatable(Size.Sizes.class)
 public @interface Size {
   String message() default "{avaje.Size.message}";
 
@@ -45,7 +45,7 @@ public @interface Size {
   @Target({ElementType.METHOD, ElementType.FIELD})
   @Retention(RetentionPolicy.RUNTIME)
   @Documented
-  @interface List {
+  @interface Sizes {
     Size[] value();
   }
 }

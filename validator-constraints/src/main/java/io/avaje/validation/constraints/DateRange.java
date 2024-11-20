@@ -61,7 +61,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(unboxPrimitives = true)
 @Documented
 @Retention(RUNTIME)
-@Repeatable(DateRange.List.class)
+@Repeatable(DateRange.DateRanges.class)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 public @interface DateRange {
 
@@ -79,7 +79,7 @@ public @interface DateRange {
   @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
   @Retention(RUNTIME)
   @Documented
-  @interface List {
+  @interface DateRanges {
     DateRange[] value();
   }
 }

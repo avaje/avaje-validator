@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
 @Constraint(unboxPrimitives = true)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(Min.List.class)
+@Repeatable(Min.Mins.class)
 public @interface Min {
   String message() default "{avaje.Min.message}";
 
@@ -46,7 +46,7 @@ public @interface Min {
   @Target({ElementType.METHOD, ElementType.FIELD})
   @Retention(RetentionPolicy.RUNTIME)
   @Documented
-  @interface List {
+  @interface Mins {
     Min[] value();
   }
 }

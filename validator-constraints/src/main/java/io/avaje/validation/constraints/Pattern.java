@@ -12,8 +12,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import io.avaje.validation.constraints.Pattern.List;
-
 /**
  * The annotated {@code CharSequence} must match the specified regular expression. The regular
  * expression follows the Java regular expression conventions see {@link java.util.regex.Pattern}.
@@ -25,7 +23,7 @@ import io.avaje.validation.constraints.Pattern.List;
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
-@Repeatable(List.class)
+@Repeatable(Pattern.Patterns.class)
 @Documented
 public @interface Pattern {
 
@@ -49,7 +47,7 @@ public @interface Pattern {
   @Target({METHOD, FIELD})
   @Retention(RUNTIME)
   @Documented
-  @interface List {
+  @interface Patterns {
 
     Pattern[] value();
   }

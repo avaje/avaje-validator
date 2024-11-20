@@ -11,8 +11,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import io.avaje.validation.constraints.DecimalMax.List;
-
 /**
  * The annotated element must be a number whose value must be lower or equal to the specified
  * maximum.
@@ -36,7 +34,7 @@ import io.avaje.validation.constraints.DecimalMax.List;
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
-@Repeatable(List.class)
+@Repeatable(DecimalMax.DecimalMaxs.class)
 public @interface DecimalMax {
 
   String message() default "{avaje.DecimalMax.message}";
@@ -67,7 +65,7 @@ public @interface DecimalMax {
    */
   @Target({METHOD, FIELD})
   @Retention(RUNTIME)
-  @interface List {
+  @interface DecimalMaxs {
 
     DecimalMax[] value();
   }

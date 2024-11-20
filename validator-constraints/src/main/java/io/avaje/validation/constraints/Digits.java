@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 @Constraint
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(Digits.List.class)
+@Repeatable(Digits.Digitses.class)
 public @interface Digits {
   String message() default "{avaje.Digits.message}";
 
@@ -45,7 +45,7 @@ public @interface Digits {
   @Target({ElementType.METHOD, ElementType.FIELD})
   @Retention(RetentionPolicy.RUNTIME)
   @Documented
-  public @interface List {
+  public @interface Digitses {
     Digits[] value();
   }
 }
