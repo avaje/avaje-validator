@@ -103,7 +103,7 @@ final class SimpleComponentWriter {
       .map(s -> s.getQualifiedName().toString())
       .toList();
     if (!factories.isEmpty()) {
-      writer.append("@MetaData.Factory({");
+      writer.append("@MetaData.ValidFactory({");
       writeMetaDataEntry(annotationFactories);
       writer.append("})").eol();
     }
