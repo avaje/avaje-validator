@@ -1,8 +1,9 @@
 package io.avaje.validation.generator;
 
-import java.util.Map;
-
 import static io.avaje.validation.generator.APContext.isAssignable;
+
+import java.util.List;
+import java.util.Map.Entry;
 
 final class AdapterHelper {
 
@@ -113,9 +114,9 @@ final class AdapterHelper {
     }
   }
 
-  private void writeFirst(Map<UType, String> annotations) {
+  private void writeFirst( List<Entry<UType, String>> annotations) {
     boolean first = true;
-    for (final var a : annotations.entrySet()) {
+    for (final var a : annotations) {
       if (first) {
         writer.append("%sctx.<%s>adapter(%s.class, %s)", indent, type, a.getKey().shortWithoutAnnotations(), a.getValue());
         first = false;
@@ -128,7 +129,7 @@ final class AdapterHelper {
     }
   }
 
-  private boolean isMapType(Map<UType, String> typeUse1, Map<UType, String> typeUse2) {
+  private boolean isMapType(List<Entry<UType, String>> typeUse1, List<Entry<UType, String>> typeUse2) {
     return (!typeUse1.isEmpty() || !typeUse2.isEmpty())
       && "java.util.Map".equals(genericType.mainType());
   }
@@ -137,12 +138,12 @@ final class AdapterHelper {
     return mainType != null && isAssignable(mainType.mainType(), "java.lang.Iterable");
   }
 
-  private void writeTypeUse(UType uType, Map<UType, String> typeUse12) {
-    writeTypeUse(uType, typeUse12, true);
+  private void writeTypeUse(UType uType, List<Entry<UType, String>> typeUse1) {
+    writeTypeUse(uType, typeUse1, true);
   }
 
-  private void writeTypeUse(UType uType, Map<UType, String> typeUseMap, boolean keys) {
-    for (final var a : typeUseMap.entrySet()) {
+  private void writeTypeUse(UType uType, List<Entry<UType, String>> typeUse1, boolean keys) {
+    for (final var a : typeUse1) {
 
       if (Constants.VALID_ANNOTATIONS.contains(a.getKey().mainType())) {
         continue;
@@ -153,7 +154,7 @@ final class AdapterHelper {
     }
 
     if (!Util.isBasicType(uType.fullWithoutAnnotations())
-        && typeUseMap.keySet().stream()
+        && typeUse1.stream().map(Entry::getKey)
             .map(UType::mainType)
             .anyMatch(Constants.VALID_ANNOTATIONS::contains)) {
       var typeUse = keys ? genericType.param0() : genericType.param1();
