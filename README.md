@@ -20,6 +20,14 @@ Reflection-free pojo validation via apt source code generation. A light (~120kb 
 - Getter Validation
 - Method parameter validation (requires a DI container to retrieve the generated MethodAdapter classes)
 
+# Documentation
+
+Goto [https://avaje.io/validator/](https://avaje.io/validator/) for full documentation.
+
+# Requires Java 17+
+
+Avaje Validator requires Java 17 or higher.
+
 # Quick Start
 
 ## Step 1 - Add dependencies
