@@ -35,7 +35,6 @@ final class ComponentReader {
 
       if (metaData != null) {
         metaData.value().stream().map(TypeMirror::toString).forEach(componentMetaData::add);
-
       } else if (metaDataFactory != null) {
         metaDataFactory.value().stream().map(TypeMirror::toString).forEach(componentMetaData::add);
 

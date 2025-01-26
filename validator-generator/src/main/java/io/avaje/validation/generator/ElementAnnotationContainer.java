@@ -2,33 +2,30 @@ package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.APContext.typeElement;
 import static io.avaje.validation.generator.PrimitiveUtil.isPrimitiveValidationAnnotations;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toList;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
 
 record ElementAnnotationContainer(
     UType genericType,
     boolean hasValid,
-    Map<UType, String> annotations,
-    Map<UType, String> typeUse1,
-    Map<UType, String> typeUse2,
-    Map<UType, String> crossParam) {
+    List<Entry<UType, String>> annotations,
+    List<Entry<UType, String>> typeUse1,
+    List<Entry<UType, String>> typeUse2,
+    List<Entry<UType, String>> crossParam) {
 
   static ElementAnnotationContainer create(Element element) {
-    final var hasValid = ValidPrism.isPresent(element);
-    Map<UType, String> typeUse1;
-    Map<UType, String> typeUse2;
-    final Map<UType, String> crossParam = new HashMap<>();
     UType uType;
     if (element instanceof final ExecutableElement executableElement) {
       uType = UType.parse(executableElement.getReturnType());
@@ -36,106 +33,72 @@ record ElementAnnotationContainer(
       uType = UType.parse(element.asType());
     }
 
-    typeUse1 =
-      Optional.ofNullable(uType.param0()).map(UType::annotations).stream()
-        .flatMap(List::stream)
-        .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
-        .collect(
-          toMap(
-            a -> UType.parse(a.getAnnotationType()),
-            a -> AnnotationUtil.annotationAttributeMap(a, element)));
+    final var hasValid =
+      ValidPrism.isPresent(element)
+        || uType.annotations().stream().anyMatch(ValidPrism::isInstance);
 
-    typeUse2 =
-      Optional.ofNullable(uType.param1()).map(UType::annotations).stream()
-        .flatMap(List::stream)
-        .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
-        .collect(
-          toMap(
-            a -> UType.parse(a.getAnnotationType()),
-            a -> AnnotationUtil.annotationAttributeMap(a, element)));
+    List<Entry<UType, String>> typeUse1 = typeUseFor(uType.param0(), element);
+    List<Entry<UType, String>> typeUse2 = typeUseFor(uType.param1(), element);
 
-    final var annotations =
-      element.getAnnotationMirrors().stream()
-        .filter(m -> !ValidPrism.isInstance(m))
-        .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
-        .map(a -> {
-          if (CrossParamConstraintPrism.isPresent(a.getAnnotationType().asElement())) {
-            crossParam.put(
-              UType.parse(a.getAnnotationType()),
-              AnnotationUtil.annotationAttributeMap(a, element));
-            return null;
-          }
-          return a;
-        })
-        .filter(Objects::nonNull)
-        .collect(
-          toMap(
-            a -> UType.parse(a.getAnnotationType()),
-            a -> AnnotationUtil.annotationAttributeMap(a, element)));
+    final List<Entry<UType, String>> crossParam = new ArrayList<>();
+    final var annotations = annotations(element, uType, crossParam);
 
     if (Util.isNonNullable(element)) {
       var nonNull = UType.parse(APContext.typeElement(NonNullPrism.PRISM_TYPE).asType());
-      annotations.put(nonNull, "Map.of(\"message\",\"{avaje.NotNull.message}\")");
+      annotations.add(Map.entry(nonNull, "Map.of(\"message\",\"{avaje.NotNull.message}\")"));
     }
 
     return new ElementAnnotationContainer(uType, hasValid, annotations, typeUse1, typeUse2, crossParam);
   }
 
+  private static List<Entry<UType, String>> annotations(Element element, UType uType, List<Entry<UType, String>> crossParam) {
+    return Stream.concat(element.getAnnotationMirrors().stream(), uType.annotations().stream())
+      .filter(m -> !ValidPrism.isInstance(m))
+      .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
+      .map(a -> {
+        if (CrossParamConstraintPrism.isPresent(a.getAnnotationType().asElement())) {
+          crossParam.add(
+            Map.entry(
+              UType.parse(a.getAnnotationType()),
+              AnnotationUtil.annotationAttributeMap(a, element)));
+          return null;
+        }
+        return a;
+      })
+      .filter(Objects::nonNull)
+      .map(a ->
+        Map.entry(
+          UType.parse(a.getAnnotationType()),
+          AnnotationUtil.annotationAttributeMap(a, element)))
+      .distinct()
+      .collect(toList());
+  }
+
+  private static List<Entry<UType, String>> typeUseFor(UType uType, Element element) {
+    return Optional.ofNullable(uType).map(UType::annotations).stream()
+      .flatMap(List::stream)
+      .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
+      .map(a ->
+        Map.entry(
+          UType.parse(a.getAnnotationType()),
+          AnnotationUtil.annotationAttributeMap(a, element)))
+      .toList();
+  }
+
   static boolean hasMetaConstraintAnnotation(AnnotationMirror m) {
     return hasMetaConstraintAnnotation(m.getAnnotationType().asElement())
-      || ValidPrism.isInstance(m);
+        || ValidPrism.isInstance(m);
   }
 
   static boolean hasMetaConstraintAnnotation(Element element) {
     return ConstraintPrism.isPresent(element);
   }
 
-  // it seems we cannot directly retrieve mirrors from var elements, so var Elements needs special handling
-
-  static ElementAnnotationContainer create(VariableElement varElement) {
-    var uType = UType.parse(varElement.asType());
-    final var annotations =
-      uType.annotations().stream()
-        .filter(m -> !ValidPrism.isInstance(m))
-        .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
-        .collect(
-          toMap(
-            a -> UType.parse(a.getAnnotationType()),
-            a -> AnnotationUtil.annotationAttributeMap(a, varElement)));
-
-    var typeUse1 =
-      Optional.ofNullable(uType.param0()).map(UType::annotations).stream()
-        .flatMap(List::stream)
-        .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
-        .collect(
-          toMap(
-            a -> UType.parse(a.getAnnotationType()),
-            a -> AnnotationUtil.annotationAttributeMap(a, varElement)));
-
-    var typeUse2 =
-      Optional.ofNullable(uType.param1()).map(UType::annotations).stream()
-        .flatMap(List::stream)
-        .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
-        .collect(
-          toMap(
-            a -> UType.parse(a.getAnnotationType()),
-            a -> AnnotationUtil.annotationAttributeMap(a, varElement)));
-
-    final boolean hasValid = uType.annotations().stream().anyMatch(ValidPrism::isInstance);
-
-    if (Util.isNonNullable(varElement)) {
-      var nonNull = UType.parse(APContext.typeElement(NonNullPrism.PRISM_TYPE).asType());
-      annotations.put(nonNull, "Map.of(\"message\",\"{avaje.NotNull.message}\")");
-    }
-
-    return new ElementAnnotationContainer(uType, hasValid, annotations, typeUse1, typeUse2, Map.of());
-  }
-
   public void addImports(Set<String> importTypes) {
     importTypes.addAll(genericType.importTypes());
-    annotations.keySet().forEach(t -> importTypes.addAll(t.importTypes()));
-    typeUse1.keySet().forEach(t -> importTypes.addAll(t.importTypes()));
-    typeUse2.keySet().forEach(t -> importTypes.addAll(t.importTypes()));
+    annotations.forEach(t -> importTypes.addAll(t.getKey().importTypes()));
+    typeUse1.forEach(t -> importTypes.addAll(t.getKey().importTypes()));
+    typeUse2.forEach(t -> importTypes.addAll(t.getKey().importTypes()));
   }
 
   boolean isEmpty() {
@@ -143,7 +106,8 @@ record ElementAnnotationContainer(
   }
 
   boolean supportsPrimitiveValidation() {
-    for (final var validationAnnotation : annotations.keySet()) {
+    for (final var entry : annotations) {
+      var validationAnnotation = entry.getKey();
       ConstraintPrism.getOptionalOn(typeElement(validationAnnotation.full()))
         .ifPresent(p -> {
           if (p.unboxPrimitives()) {
