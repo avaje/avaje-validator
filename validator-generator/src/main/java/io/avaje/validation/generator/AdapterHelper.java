@@ -114,7 +114,7 @@ final class AdapterHelper {
     }
   }
 
-  private void writeFirst( List<Entry<UType, String>> annotations) {
+  private void writeFirst(List<Entry<UType, String>> annotations) {
     boolean first = true;
     for (final var a : annotations) {
       if (first) {
