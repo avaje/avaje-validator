@@ -1,5 +1,5 @@
 # [Avaje Validator](https://avaje.io/validator/)
-
+![Supported JVM Versions](https://img.shields.io/badge/JVM-17+-brightgreen.svg?&logo=openjdk)
 [![Discord](https://img.shields.io/discord/1074074312421683250?color=%237289da&label=discord)](https://discord.gg/Qcqf9R27BR)
 [![Build](https://github.com/avaje/avaje-validator/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-validator/actions/workflows/build.yml)
 [![native image build](https://github.com/avaje/avaje-validator/actions/workflows/native-image.yml/badge.svg)](https://github.com/avaje/avaje-validator/actions/workflows/native-image.yml)
