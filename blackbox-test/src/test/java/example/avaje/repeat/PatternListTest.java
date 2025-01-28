@@ -54,15 +54,5 @@ public class PatternListTest {
     }
 
     assertEquals(5, exceptions.violations().size());
-
-    /*
-    Test Output:
-
-    Violation: ConstraintViolation[path=field, field=field, message=Missing ABCD]
-    Violation: ConstraintViolation[path=field, field=field, message=Missing B]
-    Violation: ConstraintViolation[path=field, field=field, message=Missing D]
-
-    org.opentest4j.AssertionFailedError: expected: <5> but was: <3>
-    */
   }
 }
