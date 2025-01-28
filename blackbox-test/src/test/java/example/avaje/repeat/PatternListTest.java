@@ -1,13 +1,15 @@
-package example.hibernate;
+package example.avaje.repeat;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
 
 public class PatternListTest {
 
@@ -24,7 +26,6 @@ public class PatternListTest {
 
   private final Validator validator =
       Validator.builder()
-          .add(PatternListTest.Bean.class, PatternListTest$BeanValidationAdapter::new)
           .build();
 
   @Test

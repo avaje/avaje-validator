@@ -14,19 +14,22 @@ import static org.assertj.core.api.Assertions.fail;
 
 class SignupRequestTest {
 
-  final Validator validator = Validator.builder()
-    .addResourceBundles("example.avaje.CustomMessages")
-    .build();
+  final Validator validator =
+      Validator.builder()
+          .add(SignupRequest.class, SignupRequestValidationAdapter::new)
+          .addResourceBundles("example.avaje.CustomMessages")
+          .build();
 
   @Test
   void lowercaseNoSpecial() {
     SignupRequest req = new SignupRequest("foo");
 
     var violations = all(req, Locale.ENGLISH);
-    assertThat(violations).hasSize(3);
+    assertThat(violations).hasSize(4);
     assertThat(violations.get(0).message()).isEqualTo("Signup password size error");
     assertThat(violations.get(1).message()).isEqualTo("Signup must have at least 1 upper case");
-    assertThat(violations.get(2).message()).isEqualTo("Signup special character");
+    assertThat(violations.get(2).message()).isEqualTo("Signup digit");
+    assertThat(violations.get(3).message()).isEqualTo("Signup special character");
   }
 
   @Test
