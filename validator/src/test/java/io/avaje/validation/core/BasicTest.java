@@ -3,6 +3,7 @@ package io.avaje.validation.core;
 import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 
 import java.time.Duration;
@@ -39,5 +40,12 @@ public abstract class BasicTest {
       assertThat(violations).hasSize(1);
       return violations.get(0);
     }
+  }
+
+  protected boolean isValid(ValidationAdapter<Object> adapter, Object obj) {
+
+    var req = new DRequest((DValidator) validator, false, null, List.of());
+    adapter.validate(obj, req);
+    return !req.hasViolations();
   }
 }

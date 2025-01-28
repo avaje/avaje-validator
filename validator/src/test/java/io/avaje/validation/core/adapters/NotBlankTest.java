@@ -21,17 +21,17 @@ class NotBlankTest extends BasicTest {
 
   @Test
   void testNull() {
-    assertThat(notBlankAdapter.validate(null, request)).isFalse();
+    assertThat(isValid(notBlankAdapter, null)).isFalse();
   }
 
   @Test
   void testNotBlank() {
-    assertThat(notBlankAdapter.validate("something", request)).isTrue();
+    assertThat(isValid(notBlankAdapter, "something")).isTrue();
   }
 
   @Test
   void testBlank() {
-    assertThat(notBlankAdapter.validate("", request)).isFalse();
-    assertThat(notBlankAdapter.validate("                    ", request)).isFalse();
+    assertThat(isValid(notBlankAdapter, "")).isFalse();
+    assertThat(isValid(notBlankAdapter, "                    ")).isFalse();
   }
 }

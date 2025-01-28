@@ -31,22 +31,22 @@ class PatternTest extends BasicTest {
 
   @Test
   void testNull() {
-    assertThat(patternAdapter.validate(null, request)).isTrue();
+    assertThat(isValid(patternAdapter, null)).isTrue();
   }
 
   @Test
   void testValid() {
-    assertThat(patternAdapter.validate("¯\\_(ツ)_/¯", request)).isTrue();
+    assertThat(isValid(patternAdapter, "¯\\_(ツ)_/¯")).isTrue();
   }
 
   @Test
   void testBlank() {
-    assertThat(patternAdapter.validate("", request)).isFalse();
-    assertThat(patternAdapter.validate("                    ", request)).isFalse();
+    assertThat(isValid(patternAdapter, "")).isFalse();
+    assertThat(isValid(patternAdapter, "                    ")).isFalse();
   }
 
   @Test
   void testInvalid() {
-    assertThat(patternAdapter.validate("notAnEmail", request)).isFalse();
+    assertThat(isValid(patternAdapter, "notAnEmail")).isFalse();
   }
 }
