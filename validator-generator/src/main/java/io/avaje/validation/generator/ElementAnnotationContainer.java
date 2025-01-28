@@ -26,9 +26,6 @@ record ElementAnnotationContainer(
     List<Entry<UType, String>> crossParam) {
 
   static ElementAnnotationContainer create(Element element) {
-    List<Entry<UType, String>> typeUse1;
-    List<Entry<UType, String>> typeUse2;
-    final List<Entry<UType, String>> crossParam = new ArrayList<>();
     UType uType;
     if (element instanceof final ExecutableElement executableElement) {
       uType = UType.parse(executableElement.getReturnType());
@@ -37,62 +34,55 @@ record ElementAnnotationContainer(
     }
 
     final var hasValid =
-        ValidPrism.isPresent(element)
-            || uType.annotations().stream().anyMatch(ValidPrism::isInstance);
+      ValidPrism.isPresent(element)
+        || uType.annotations().stream().anyMatch(ValidPrism::isInstance);
 
-    typeUse1 =
-        Optional.ofNullable(uType.param0()).map(UType::annotations).stream()
-            .flatMap(List::stream)
-            .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
-            .map(
-                a ->
-                    Map.entry(
-                        UType.parse(a.getAnnotationType()),
-                        AnnotationUtil.annotationAttributeMap(a, element)))
-            .toList();
+    List<Entry<UType, String>> typeUse1 = typeUseFor(uType.param0(), element);
+    List<Entry<UType, String>> typeUse2 = typeUseFor(uType.param1(), element);
 
-    typeUse2 =
-        Optional.ofNullable(uType.param1()).map(UType::annotations).stream()
-            .flatMap(List::stream)
-            .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
-            .map(
-                a ->
-                    Map.entry(
-                        UType.parse(a.getAnnotationType()),
-                        AnnotationUtil.annotationAttributeMap(a, element)))
-            .toList();
-
-    final var annotations =
-        Stream.concat(element.getAnnotationMirrors().stream(), uType.annotations().stream())
-            .filter(m -> !ValidPrism.isInstance(m))
-            .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
-            .map(
-                a -> {
-                  if (CrossParamConstraintPrism.isPresent(a.getAnnotationType().asElement())) {
-                    crossParam.add(
-                        Map.entry(
-                            UType.parse(a.getAnnotationType()),
-                            AnnotationUtil.annotationAttributeMap(a, element)));
-                    return null;
-                  }
-                  return a;
-                })
-            .filter(Objects::nonNull)
-            .map(
-                a ->
-                    Map.entry(
-                        UType.parse(a.getAnnotationType()),
-                        AnnotationUtil.annotationAttributeMap(a, element)))
-            .distinct()
-            .collect(toList());
+    final List<Entry<UType, String>> crossParam = new ArrayList<>();
+    final var annotations = annotations(element, uType, crossParam);
 
     if (Util.isNonNullable(element)) {
       var nonNull = UType.parse(APContext.typeElement(NonNullPrism.PRISM_TYPE).asType());
       annotations.add(Map.entry(nonNull, "Map.of(\"message\",\"{avaje.NotNull.message}\")"));
     }
 
-    return new ElementAnnotationContainer(
-        uType, hasValid, annotations, typeUse1, typeUse2, crossParam);
+    return new ElementAnnotationContainer(uType, hasValid, annotations, typeUse1, typeUse2, crossParam);
+  }
+
+  private static List<Entry<UType, String>> annotations(Element element, UType uType, List<Entry<UType, String>> crossParam) {
+    return Stream.concat(element.getAnnotationMirrors().stream(), uType.annotations().stream())
+      .filter(m -> !ValidPrism.isInstance(m))
+      .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
+      .map(a -> {
+        if (CrossParamConstraintPrism.isPresent(a.getAnnotationType().asElement())) {
+          crossParam.add(
+            Map.entry(
+              UType.parse(a.getAnnotationType()),
+              AnnotationUtil.annotationAttributeMap(a, element)));
+          return null;
+        }
+        return a;
+      })
+      .filter(Objects::nonNull)
+      .map(a ->
+        Map.entry(
+          UType.parse(a.getAnnotationType()),
+          AnnotationUtil.annotationAttributeMap(a, element)))
+      .distinct()
+      .collect(toList());
+  }
+
+  private static List<Entry<UType, String>> typeUseFor(UType uType, Element element) {
+    return Optional.ofNullable(uType).map(UType::annotations).stream()
+      .flatMap(List::stream)
+      .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
+      .map(a ->
+        Map.entry(
+          UType.parse(a.getAnnotationType()),
+          AnnotationUtil.annotationAttributeMap(a, element)))
+      .toList();
   }
 
   static boolean hasMetaConstraintAnnotation(AnnotationMirror m) {
@@ -119,14 +109,13 @@ record ElementAnnotationContainer(
     for (final var entry : annotations) {
       var validationAnnotation = entry.getKey();
       ConstraintPrism.getOptionalOn(typeElement(validationAnnotation.full()))
-          .ifPresent(
-              p -> {
-                if (p.unboxPrimitives()) {
-                  validationAnnotation
-                      .shortType()
-                      .transform(PrimitiveUtil::addPrimitiveValidationAnnotation);
-                }
-              });
+        .ifPresent(p -> {
+          if (p.unboxPrimitives()) {
+            validationAnnotation
+              .shortType()
+              .transform(PrimitiveUtil::addPrimitiveValidationAnnotation);
+          }
+        });
 
       if (!isPrimitiveValidationAnnotations(validationAnnotation.shortType())) {
         return false;
