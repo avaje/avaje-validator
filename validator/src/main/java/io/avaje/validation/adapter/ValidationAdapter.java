@@ -97,16 +97,6 @@ public interface ValidationAdapter<T> {
   }
 
   /**
-   * Return a null safe version of this adapter.
-   */
-  default ValidationAdapter<T> nullSafe() {
-    if (this instanceof NullSafeAdapter) {
-      return this;
-    }
-    return new NullSafeAdapter<>(this);
-  }
-
-  /**
    * Check if the validation request groups are empty or match any of the adapter's configured
    * groups.
    *

@@ -125,6 +125,11 @@ final class ClassReader implements BeanReader {
     writer.eol();
     writer.append("  @Override").eol();
     writer.append("  public boolean validate(%s value, ValidationRequest request, String field) {", shortName).eol();
+
+    writer.append("    if (value == null) {").eol();
+    writer.append("      return false;").eol();
+    writer.append("    }").eol();
+
     writer.append("    if (field != null) {").eol();
     writer.append("      request.pushPath(field);").eol();
     writer.append("    }").eol();

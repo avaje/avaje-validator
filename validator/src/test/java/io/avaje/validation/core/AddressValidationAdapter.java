@@ -21,6 +21,9 @@ public final class AddressValidationAdapter implements ValidationAdapter<Address
 
   @Override
   public boolean validate(Address pojo, ValidationRequest request, String propertyName) {
+    if (pojo == null) {
+      return false;
+    }
     if (propertyName != null) {
       request.pushPath(propertyName);
     }
