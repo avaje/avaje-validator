@@ -130,7 +130,7 @@ final class DValidator implements Validator, ValidationContext {
     if (result != null) {
       return result;
     }
-    return builder.build(cacheKey);
+    return builder.<T>build(cacheKey).nullSafe();
   }
 
   @Override
@@ -158,7 +158,7 @@ final class DValidator implements Validator, ValidationContext {
     if (result != null) {
       return result;
     }
-    return builder.build(type, cacheKey);
+    return builder.<T>build(type, cacheKey).nullSafe();
   }
 
   @Override

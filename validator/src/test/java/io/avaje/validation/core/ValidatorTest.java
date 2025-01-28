@@ -29,7 +29,7 @@ class ValidatorTest {
       fail("");
     } catch (ConstraintViolationException e) {
       Set<ConstraintViolation> violations = e.violations();
-      assertThat(violations).hasSize(3);
+      assertThat(violations).hasSize(4);
     }
   }
 
@@ -67,10 +67,10 @@ class ValidatorTest {
       fail("");
     } catch (ConstraintViolationException e) {
       Set<ConstraintViolation> violations = e.violations();
-      assertThat(violations).hasSize(6);
+      assertThat(violations).hasSize(9);
       List<ConstraintViolation> asList = new ArrayList<>(violations);
 
-      var last = asList.get(violations.size() - 1);
+      var last = asList.get(violations.size() - 2);
       assertThat(last.path()).isEqualTo("contacts[1].address.line1");
       assertThat(last.field()).isEqualTo("line1");
       assertThat(last.message()).isEqualTo("myCustomNullMessage");

@@ -93,12 +93,17 @@ public interface ValidationAdapter<T> {
    */
   default ValidationAdapter<T> andThen(ValidationAdapter<? super T> after) {
     Objects.requireNonNull(after, "after cannot be null");
-    return (value, req, propertyName) -> {
-      if (validate(value, req, propertyName)) {
-        return after.validate(value, req, propertyName);
-      }
-      return true;
-    };
+    return (value, req, propertyName) -> validate(value, req, propertyName) && after.validate(value, req, propertyName);
+  }
+
+  /**
+   * Return a null safe version of this adapter.
+   */
+  default ValidationAdapter<T> nullSafe() {
+    if (this instanceof NullSafeAdapter) {
+      return this;
+    }
+    return new NullSafeAdapter<>(this);
   }
 
   /**
