@@ -27,6 +27,9 @@ public final class ContactValidationAdapter implements ValidationAdapter<Contact
 
   @Override
   public boolean validate(Contact pojo, ValidationRequest request, String propertyName) {
+
+    if (pojo == null) return false;
+
     if (propertyName != null) {
       request.pushPath(propertyName);
     }

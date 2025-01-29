@@ -30,9 +30,6 @@ final class UriAdapter extends AbstractConstraintAdapter<Object> {
 
   @Override
   protected boolean isValid(Object value) {
-    if (value == null) {
-      return true;
-    }
     try {
       final var stringValue = String.valueOf(value);
       final var uri = URI.create(stringValue);

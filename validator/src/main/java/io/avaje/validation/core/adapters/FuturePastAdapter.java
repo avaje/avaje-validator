@@ -28,9 +28,7 @@ final class FuturePastAdapter extends AbstractConstraintAdapter<Object> {
 
   @Override
   public boolean isValid(Object obj) {
-    if (obj == null) {
-      return true;
-    }
+
     return switch (_type) {
       case "Temporal.Date" -> compare(((Date) obj).getTime(), Clock::millis);
       case "Temporal.Instant" -> compare((Instant) obj, Instant::now);

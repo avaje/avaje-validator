@@ -76,10 +76,6 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(Object number) {
-      // null values are valid
-      if (number == null) {
-        return true;
-      }
       final int comparisonResult =
           NumberComparatorHelper.compareDecimal(targetType, number, value, LESS_THAN);
       return !(inclusive ? comparisonResult > 0 : comparisonResult >= 0);
@@ -102,10 +98,6 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(Object number) {
-      // null values are valid
-      if (number == null) {
-        return true;
-      }
       final int comparisonResult =
           NumberComparatorHelper.compareDecimal(targetType, number, value, LESS_THAN);
       return !(inclusive ? comparisonResult < 0 : comparisonResult <= 0);
@@ -130,10 +122,6 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(Number number) {
-      // null values are valid
-      if (number == null) {
-        return true;
-      }
       return switch (targetType) {
         case "Integer", "Long", "Short", "Byte" -> number.longValue() <= max;
         case "Double", "Number" -> compareDouble(number.doubleValue(), max, GREATER_THAN) <= 0;
@@ -185,7 +173,7 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(BigDecimal number) {
-      return number == null || number.compareTo(max) <= 0;
+      return number.compareTo(max) <= 0;
     }
   }
 
@@ -201,7 +189,7 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(BigInteger number) {
-      return number == null || number.compareTo(max) <= 0;
+      return number.compareTo(max) <= 0;
     }
   }
 
@@ -219,9 +207,6 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(Number number) {
-      if (number == null) {
-        return true;
-      }
       return switch (targetType) {
         case "Integer", "Long", "Short", "Byte" -> number.longValue() >= min;
         case "Double" -> compareDouble(number.doubleValue(), min, LESS_THAN) >= 0;
@@ -273,7 +258,7 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(BigDecimal number) {
-      return number == null || number.compareTo(min) >= 0;
+      return number.compareTo(min) >= 0;
     }
   }
 
@@ -289,7 +274,7 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(BigInteger number) {
-      return number == null || number.compareTo(min) >= 0;
+      return number.compareTo(min) >= 0;
     }
   }
 
@@ -306,10 +291,6 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(Object value) {
-      // null values are valid
-      if (value == null) {
-        return true;
-      }
 
       BigDecimal bigNum;
       if (value instanceof final BigDecimal bd) {
@@ -337,10 +318,6 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(Object value) {
-      // null values are valid
-      if (value == null) {
-        return true;
-      }
       final int sign = NumberSignHelper.signum(targetType, value, LESS_THAN);
       return !(inclusive ? sign < 0 : sign <= 0);
     }
@@ -389,10 +366,6 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(Object value) {
-      // null values are valid
-      if (value == null) {
-        return true;
-      }
       final int sign = NumberSignHelper.signum(targetType, value, GREATER_THAN);
       return !(inclusive ? sign > 0 : sign >= 0);
     }
@@ -446,9 +419,6 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(Number value) {
-      if (value == null) {
-        return true;
-      }
       return minAdapter.isValid(value) && maxAdapter.isValid(value);
     }
 
@@ -496,9 +466,6 @@ public final class NumberAdapters {
 
     @Override
     public boolean isValid(Object value) {
-      if (value == null) {
-        return true;
-      }
       final var decimal = new BigDecimal(value.toString());
       return min.compareTo(decimal) <= 0 && max.compareTo(decimal) >= 0;
     }
