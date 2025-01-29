@@ -24,6 +24,12 @@ class NullableAdapterTest extends BasicTest {
       ctx.adapter(NonNull.class, Map.of("message", "Non be null"));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    assertThat(nulladapter.validate(0, request, "foo")).isFalse();
+    assertThat(notNulladapter.validate(null, request, "foo")).isFalse();
+  }
+
+  @Test
   void testNull() {
     assertThat(nulladapter.validate(null, request)).isTrue();
     assertThat(notNulladapter.validate(null, request)).isFalse();

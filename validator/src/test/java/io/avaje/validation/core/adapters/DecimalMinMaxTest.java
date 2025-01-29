@@ -24,6 +24,13 @@ class DecimalMinMaxTest extends BasicTest {
       ctx.adapter(DecimalMax.class, Map.of("message", "maxwell", "value", "69", "_type", "Number"));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    //BUG: This should really return true? - should continue validation !!
+    assertThat(minAdapter.validate(BigDecimal.valueOf(-100), request, "foo")).isFalse();
+    assertThat(maxAdapter.validate(BigDecimal.valueOf(100), request, "foo")).isFalse();
+  }
+
+  @Test
   void testNull() {
     assertThat(minAdapter.validate(null, request)).isTrue();
     assertThat(maxAdapter.validate(null, request)).isTrue();

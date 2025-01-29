@@ -32,6 +32,13 @@ class FuturePastAdapterTest extends BasicTest {
       ctx.adapter(FutureOrPresent.class, Map.of("message", "wimey", "_type", "Temporal.Instant"));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    //BUG: This should really return true? - should continue validation !!
+    assertThat(pastAdapter.validate(Instant.now().plusSeconds(100), request, "foo")).isFalse();
+    assertThat(futureAdapter.validate(Instant.now().minusSeconds(100), request, "foo")).isFalse();
+  }
+
+  @Test
   void testNull() {
     assertThat(pastAdapter.validate(null, request)).isTrue();
     assertThat(pastOrPresentAdapter.validate(null, request)).isTrue();

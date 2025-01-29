@@ -27,6 +27,11 @@ class PositiveTest extends BasicTest {
   ValidationAdapter<Object> positiveOrZeroString =
     ctx.adapter(PositiveOrZero.class, Map.of("message", "-tuate the positive", "_type", "String"));
 
+  @Test
+  void continueOnInvalid_expect_false() {
+    //BUG: Should continue validation? - return true!!
+    assertThat(positiveAdapter.validate(-1, request, "foo")).isFalse();
+  }
 
   @Test
   void testNull() {

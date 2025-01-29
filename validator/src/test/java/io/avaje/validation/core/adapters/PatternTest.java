@@ -30,6 +30,12 @@ class PatternTest extends BasicTest {
               List.of(RegexFlag.CANON_EQ)));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    //BUG: Should continue validation - return true!!
+    assertThat(patternAdapter.validate("NotValid", request, "foo")).isFalse();
+  }
+
+  @Test
   void testNull() {
     assertThat(patternAdapter.validate(null, request)).isTrue();
   }

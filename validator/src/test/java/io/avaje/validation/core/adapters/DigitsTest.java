@@ -19,6 +19,12 @@ class DigitsTest extends BasicTest {
       ctx.adapter(Digits.class, Map.of("message", "digimon", "integer", 5, "fraction", 5));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    //BUG: This should really return true? - should continue validation !!
+    assertThat(digitAdapter.validate(BigDecimal.valueOf(0.123456789), request, "foo")).isFalse();
+  }
+
+  @Test
   void testNull() {
     assertThat(digitAdapter.validate(null, request)).isTrue();
   }

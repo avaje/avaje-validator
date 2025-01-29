@@ -19,6 +19,19 @@ class NotBlankTest extends BasicTest {
   ValidationAdapter<Object> notBlankAdapter =
       ctx.adapter(NotBlank.class, Map.of("message", "blank?"));
 
+  ValidationAdapter<Object> notBlankMaxAdapter =
+    ctx.adapter(NotBlank.class, Map.of("message", "blank?", "max", 3));
+
+  @Test
+  void continueOnInvalid_expect_false() {
+    assertThat(notBlankAdapter.validate(null, request, "foo")).isFalse();
+    assertThat(notBlankAdapter.validate("", request, "foo")).isFalse();
+
+    assertThat(notBlankMaxAdapter.validate(null, request, "foo")).isFalse();
+    assertThat(notBlankMaxAdapter.validate("", request, "foo")).isFalse();
+    assertThat(notBlankMaxAdapter.validate("01234", request, "foo")).isFalse();
+  }
+
   @Test
   void testNull() {
     assertThat(notBlankAdapter.validate(null, request)).isFalse();

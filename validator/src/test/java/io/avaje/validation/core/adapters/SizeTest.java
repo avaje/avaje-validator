@@ -22,6 +22,26 @@ class SizeTest extends BasicTest {
       ctx.adapter(Size.class, Map.of("message", "blank?", "min", 2, "max", 3));
 
   @Test
+  void continueOnInvalid_expect_false_when_string() {
+    //BUG?: Should it continue validation? Prevents further pattern validations
+    assertThat(sizeAdapter.validate("a", request, "foo")).isFalse();
+    assertThat(sizeAdapter.validate("abcde", request, "foo")).isFalse();
+  }
+
+  @Test
+  void continueOnInvalid_expect_true_when_collection() {
+    assertThat(sizeAdapter.validate(List.of(1), request, "foo")).isTrue();
+    assertThat(sizeAdapter.validate(List.of(1, 2, 3, 4), request, "foo")).isTrue();
+  }
+
+  @Test
+  void continueOnInvalid_expect_false_when_collectionEmpty() {
+    assertThat(sizeAdapter.validate(List.of(), request, "foo")).isFalse();
+    assertThat(sizeAdapter.validate(Map.of(), request, "foo")).isFalse();
+    assertThat(sizeAdapter.validate(new int[]{}, request, "foo")).isFalse();
+  }
+
+  @Test
   void testNull() {
     // null elements are considered valid.
     assertThat(sizeAdapter.validate(null, request)).isTrue();

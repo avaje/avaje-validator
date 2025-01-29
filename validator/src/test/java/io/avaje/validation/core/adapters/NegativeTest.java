@@ -36,6 +36,11 @@ class NegativeTest extends BasicTest {
   ValidationAdapter<Object> negativeOrZeroBI =
     ctx.adapter(NegativeOrZero.class, Map.of("message", "-anate the negative", "_type", "BigInteger"));
 
+  @Test
+  void continueOnInvalid_expect_false() {
+    //BUG: This should really return true? - should continue validation !!
+    assertThat(negativeAdapter.validate(1, request, "foo")).isFalse();
+  }
 
   @Test
   void testNull() {

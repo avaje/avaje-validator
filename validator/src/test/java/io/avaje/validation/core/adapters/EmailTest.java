@@ -19,6 +19,12 @@ class EmailTest extends BasicTest {
   ValidationAdapter<Object> emailAdapter = ctx.adapter(Email.class, Map.of("message", "email"));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    //BUG: This should really return true? - should continue validation !!
+    assertThat(emailAdapter.validate("notAnEmail", request, "foo")).isFalse();
+  }
+
+  @Test
   void testNull() {
     assertThat(emailAdapter.validate(null, request)).isTrue();
   }

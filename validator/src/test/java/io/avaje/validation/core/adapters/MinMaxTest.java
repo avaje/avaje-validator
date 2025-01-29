@@ -45,6 +45,12 @@ class MinMaxTest extends BasicTest {
   ValidationAdapter<Object> maxDouble =
     ctx.adapter(Max.class, Map.of("message", "maxwell", "value", 69L, "_type", "Double"));
 
+  @Test
+  void continueOnInvalid_expect_false() {
+    //BUG: This should really return true? - should continue validation !!
+    assertThat(maxLong.validate(100L, request, "foo")).isFalse();
+    assertThat(minLong.validate(-100L, request, "foo")).isFalse();
+  }
 
   @Test
   void testNull() {

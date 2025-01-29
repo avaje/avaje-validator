@@ -22,6 +22,15 @@ class NotEmptyTest extends BasicTest {
       ctx.adapter(NotEmpty.class, Map.of("message", "this can empty. *chucks it*"));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    assertThat(notEmptyAdapter.validate(null, request, "foo")).isFalse();
+    assertThat(notEmptyAdapter.validate("", request, "foo")).isFalse();
+    assertThat(notEmptyAdapter.validate(List.of(), request, "foo")).isFalse();
+    assertThat(notEmptyAdapter.validate(Map.of(), request, "foo")).isFalse();
+    assertThat(notEmptyAdapter.validate(new int[]{}, request, "foo")).isFalse();
+  }
+
+  @Test
   void testNull() {
     assertThat(notEmptyAdapter.validate(null, request)).isFalse();
   }

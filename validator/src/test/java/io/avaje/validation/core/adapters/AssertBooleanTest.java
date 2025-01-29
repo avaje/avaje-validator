@@ -24,6 +24,13 @@ class AssertBooleanTest extends BasicTest {
       ctx.adapter(AssertFalse.class, Map.of("message", "is false"));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    // does not matter if it continues or not really
+    assertThat(trueAdapter.validate(false, request, "foo")).isFalse();
+    assertThat(falseAdapter.validate(true, request, "foo")).isFalse();
+  }
+
+  @Test
   void testNull() {
     assertThat(trueAdapter.validate(null, request)).isTrue();
     assertThat(falseAdapter.validate(null, request)).isTrue();
