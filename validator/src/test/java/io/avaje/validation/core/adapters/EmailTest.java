@@ -19,23 +19,28 @@ class EmailTest extends BasicTest {
   ValidationAdapter<Object> emailAdapter = ctx.adapter(Email.class, Map.of("message", "email"));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    assertThat(emailAdapter.validate("notAnEmail", request, "foo")).isTrue();
+  }
+
+  @Test
   void testNull() {
-    assertThat(emailAdapter.validate(null, request)).isTrue();
+    assertThat(isValid(emailAdapter, null)).isTrue();
   }
 
   @Test
   void testValid() {
-    assertThat(emailAdapter.validate("someEmail@gmail.com", request)).isTrue();
+    assertThat(isValid(emailAdapter, "someEmail@gmail.com")).isTrue();
   }
 
   @Test
   void testBlank() {
-    assertThat(emailAdapter.validate("", request)).isTrue();
-    assertThat(emailAdapter.validate("                    ", request)).isFalse();
+    assertThat(isValid(emailAdapter, "")).isTrue();
+    assertThat(isValid(emailAdapter, "                    ")).isFalse();
   }
 
   @Test
   void testInvalid() {
-    assertThat(emailAdapter.validate("notAnEmail", request)).isFalse();
+    assertThat(isValid(emailAdapter, "notAnEmail")).isFalse();
   }
 }

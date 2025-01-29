@@ -27,93 +27,96 @@ class PositiveTest extends BasicTest {
   ValidationAdapter<Object> positiveOrZeroString =
     ctx.adapter(PositiveOrZero.class, Map.of("message", "-tuate the positive", "_type", "String"));
 
+  @Test
+  void continueOnInvalid_expect_false() {
+    assertThat(positiveAdapter.validate(-1, request, "foo")).isTrue();
+  }
 
   @Test
   void testNull() {
-    assertThat(positiveAdapter.validate(null, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(null, request)).isTrue();
+    assertThat(isValid(positiveAdapter, null)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, null)).isTrue();
   }
 
   @Test
   void testInfinity() {
-    assertThat(positiveAdapter.validate(Float.POSITIVE_INFINITY, request)).isTrue();
-    assertThat(positiveAdapter.validate(Double.POSITIVE_INFINITY, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(Float.POSITIVE_INFINITY, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(Double.POSITIVE_INFINITY, request)).isTrue();
+    assertThat(isValid(positiveAdapter, Float.POSITIVE_INFINITY)).isTrue();
+    assertThat(isValid(positiveAdapter, Double.POSITIVE_INFINITY)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, Float.POSITIVE_INFINITY)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, Double.POSITIVE_INFINITY)).isTrue();
 
-    assertThat(positiveAdapter.validate(Float.NEGATIVE_INFINITY, request)).isFalse();
-    assertThat(positiveAdapter.validate(Double.NEGATIVE_INFINITY, request)).isFalse();
-    assertThat(positiveOrZeroAdapter.validate(Float.NEGATIVE_INFINITY, request)).isFalse();
-    assertThat(positiveOrZeroAdapter.validate(Double.NEGATIVE_INFINITY, request)).isFalse();
+    assertThat(isValid(positiveAdapter, Float.NEGATIVE_INFINITY)).isFalse();
+    assertThat(isValid(positiveAdapter, Double.NEGATIVE_INFINITY)).isFalse();
+    assertThat(isValid(positiveOrZeroAdapter, Float.NEGATIVE_INFINITY)).isFalse();
+    assertThat(isValid(positiveOrZeroAdapter, Double.NEGATIVE_INFINITY)).isFalse();
   }
 
   @Test
   void testPositive() {
-    assertThat(positiveString.validate("1", request)).isTrue();
-    assertThat(positiveAdapter.validate(1, request)).isTrue();
-    assertThat(positiveAdapter.validate(1f, request)).isTrue();
-    assertThat(positiveAdapter.validate(1D, request)).isTrue();
-    assertThat(positiveAdapter.validate(1L, request)).isTrue();
-    assertThat(positiveAdapter.validate((short) 1, request)).isTrue();
-    assertThat(positiveAdapter.validate((byte) 1, request)).isTrue();
-    assertThat(positiveAdapter.validate(BigInteger.ONE, request)).isTrue();
-    assertThat(positiveAdapter.validate(BigDecimal.ONE, request)).isTrue();
+    assertThat(isValid(positiveString, "1")).isTrue();
+    assertThat(isValid(positiveAdapter, 1)).isTrue();
+    assertThat(isValid(positiveAdapter, 1f)).isTrue();
+    assertThat(isValid(positiveAdapter, 1D)).isTrue();
+    assertThat(isValid(positiveAdapter, 1L)).isTrue();
+    assertThat(isValid(positiveAdapter, (short) 1)).isTrue();
+    assertThat(isValid(positiveAdapter, (byte) 1)).isTrue();
+    assertThat(isValid(positiveAdapter, BigInteger.ONE)).isTrue();
+    assertThat(isValid(positiveAdapter, BigDecimal.ONE)).isTrue();
 
-    assertThat(positiveOrZeroString.validate("1", request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(1, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(1f, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(1D, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(1L, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate((short) 1, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate((byte) 1, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(BigInteger.ONE, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(BigDecimal.ONE, request)).isTrue();
+    assertThat(isValid(positiveOrZeroString, "1")).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, 1)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, 1f)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, 1D)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, 1L)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, (short) 1)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, (byte) 1)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, BigInteger.ONE)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, BigDecimal.ONE)).isTrue();
   }
 
   @Test
   void testNegative() {
+    assertThat(isValid(positiveString, "-1")).isFalse();
+    assertThat(isValid(positiveAdapter, -1)).isFalse();
+    assertThat(isValid(positiveAdapter, -1f)).isFalse();
+    assertThat(isValid(positiveAdapter, -1D)).isFalse();
+    assertThat(isValid(positiveAdapter, -1L)).isFalse();
+    assertThat(isValid(positiveAdapter, (short) -1)).isFalse();
+    assertThat(isValid(positiveAdapter, (byte) -1)).isFalse();
+    assertThat(isValid(positiveAdapter, BigInteger.valueOf(-1))).isFalse();
+    assertThat(isValid(positiveAdapter, BigDecimal.valueOf(-1))).isFalse();
 
-    assertThat(positiveString.validate("-1", request)).isFalse();
-    assertThat(positiveAdapter.validate(-1, request)).isFalse();
-    assertThat(positiveAdapter.validate(-1f, request)).isFalse();
-    assertThat(positiveAdapter.validate(-1D, request)).isFalse();
-    assertThat(positiveAdapter.validate(-1L, request)).isFalse();
-    assertThat(positiveAdapter.validate((short) -1, request)).isFalse();
-    assertThat(positiveAdapter.validate((byte) -1, request)).isFalse();
-    assertThat(positiveAdapter.validate(BigInteger.valueOf(-1), request)).isFalse();
-    assertThat(positiveAdapter.validate(BigDecimal.valueOf(-1), request)).isFalse();
-
-    assertThat(positiveOrZeroString.validate("-1", request)).isFalse();
-    assertThat(positiveOrZeroAdapter.validate(-1, request)).isFalse();
-    assertThat(positiveOrZeroAdapter.validate(-1f, request)).isFalse();
-    assertThat(positiveOrZeroAdapter.validate(-1D, request)).isFalse();
-    assertThat(positiveOrZeroAdapter.validate(-1L, request)).isFalse();
-    assertThat(positiveOrZeroAdapter.validate((short) -1, request)).isFalse();
-    assertThat(positiveOrZeroAdapter.validate((byte) -1, request)).isFalse();
-    assertThat(positiveOrZeroAdapter.validate(BigInteger.valueOf(-1), request)).isFalse();
-    assertThat(positiveOrZeroAdapter.validate(BigDecimal.valueOf(-1), request)).isFalse();
+    assertThat(isValid(positiveOrZeroString, "-1")).isFalse();
+    assertThat(isValid(positiveOrZeroAdapter, -1)).isFalse();
+    assertThat(isValid(positiveOrZeroAdapter, -1f)).isFalse();
+    assertThat(isValid(positiveOrZeroAdapter, -1D)).isFalse();
+    assertThat(isValid(positiveOrZeroAdapter, -1L)).isFalse();
+    assertThat(isValid(positiveOrZeroAdapter, (short) -1)).isFalse();
+    assertThat(isValid(positiveOrZeroAdapter, (byte) -1)).isFalse();
+    assertThat(isValid(positiveOrZeroAdapter, BigInteger.valueOf(-1))).isFalse();
+    assertThat(isValid(positiveOrZeroAdapter, BigDecimal.valueOf(-1))).isFalse();
   }
 
   @Test
   void testZero() {
-    assertThat(positiveString.validate("0", request)).isFalse();
-    assertThat(positiveAdapter.validate(0, request)).isFalse();
-    assertThat(positiveAdapter.validate(0f, request)).isFalse();
-    assertThat(positiveAdapter.validate(0D, request)).isFalse();
-    assertThat(positiveAdapter.validate(0L, request)).isFalse();
-    assertThat(positiveAdapter.validate((short) 0, request)).isFalse();
-    assertThat(positiveAdapter.validate((byte) 0, request)).isFalse();
-    assertThat(positiveAdapter.validate(BigInteger.ZERO, request)).isFalse();
-    assertThat(positiveAdapter.validate(BigDecimal.ZERO, request)).isFalse();
+    assertThat(isValid(positiveString, "0")).isFalse();
+    assertThat(isValid(positiveAdapter, 0)).isFalse();
+    assertThat(isValid(positiveAdapter, 0f)).isFalse();
+    assertThat(isValid(positiveAdapter, 0D)).isFalse();
+    assertThat(isValid(positiveAdapter, 0L)).isFalse();
+    assertThat(isValid(positiveAdapter, (short) 0)).isFalse();
+    assertThat(isValid(positiveAdapter, (byte) 0)).isFalse();
+    assertThat(isValid(positiveAdapter, BigInteger.ZERO)).isFalse();
+    assertThat(isValid(positiveAdapter, BigDecimal.ZERO)).isFalse();
 
-    assertThat(positiveOrZeroString.validate("0", request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(0, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(0f, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(0D, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(0L, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate((short) 0, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate((byte) 0, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(BigInteger.ZERO, request)).isTrue();
-    assertThat(positiveOrZeroAdapter.validate(BigDecimal.ZERO, request)).isTrue();
+    assertThat(isValid(positiveOrZeroString, "0")).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, 0)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, 0f)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, 0D)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, 0L)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, (short) 0)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, (byte) 0)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, BigInteger.ZERO)).isTrue();
+    assertThat(isValid(positiveOrZeroAdapter, BigDecimal.ZERO)).isTrue();
   }
 }

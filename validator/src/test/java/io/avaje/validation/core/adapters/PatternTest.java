@@ -30,6 +30,11 @@ class PatternTest extends BasicTest {
               List.of(RegexFlag.CANON_EQ)));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    assertThat(patternAdapter.validate("NotValid", request, "foo")).isTrue();
+  }
+
+  @Test
   void testNull() {
     assertThat(patternAdapter.validate(null, request)).isTrue();
   }
@@ -41,12 +46,12 @@ class PatternTest extends BasicTest {
 
   @Test
   void testBlank() {
-    assertThat(patternAdapter.validate("", request)).isFalse();
-    assertThat(patternAdapter.validate("                    ", request)).isFalse();
+    assertThat(isValid(patternAdapter,"")).isFalse();
+    assertThat(isValid(patternAdapter,"                    ")).isFalse();
   }
 
   @Test
   void testInvalid() {
-    assertThat(patternAdapter.validate("notAnEmail", request)).isFalse();
+    assertThat(isValid(patternAdapter,"notAnEmail")).isFalse();
   }
 }

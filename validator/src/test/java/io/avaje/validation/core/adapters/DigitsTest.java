@@ -19,38 +19,43 @@ class DigitsTest extends BasicTest {
       ctx.adapter(Digits.class, Map.of("message", "digimon", "integer", 5, "fraction", 5));
 
   @Test
+  void continueOnInvalid_expect_false() {
+    assertThat(digitAdapter.validate(BigDecimal.valueOf(0.123456789), request, "foo")).isTrue();
+  }
+
+  @Test
   void testNull() {
-    assertThat(digitAdapter.validate(null, request)).isTrue();
+    assertThat(isValid(digitAdapter, null)).isTrue();
   }
 
   @Test
   void testValid() {
-    assertThat(digitAdapter.validate(0, request)).isTrue();
-    assertThat(digitAdapter.validate(0f, request)).isTrue();
-    assertThat(digitAdapter.validate(0D, request)).isTrue();
-    assertThat(digitAdapter.validate(0L, request)).isTrue();
-    assertThat(digitAdapter.validate((short) 0, request)).isTrue();
-    assertThat(digitAdapter.validate((byte) 0, request)).isTrue();
-    assertThat(digitAdapter.validate(BigInteger.ZERO, request)).isTrue();
-    assertThat(digitAdapter.validate(BigDecimal.ZERO, request)).isTrue();
+    assertThat(isValid(digitAdapter, 0)).isTrue();
+    assertThat(isValid(digitAdapter, 0f)).isTrue();
+    assertThat(isValid(digitAdapter, 0D)).isTrue();
+    assertThat(isValid(digitAdapter, 0L)).isTrue();
+    assertThat(isValid(digitAdapter, (short) 0)).isTrue();
+    assertThat(isValid(digitAdapter, (byte) 0)).isTrue();
+    assertThat(isValid(digitAdapter, BigInteger.ZERO)).isTrue();
+    assertThat(isValid(digitAdapter, BigDecimal.ZERO)).isTrue();
   }
 
   @Test
   void testInValid() {
-    assertThat(digitAdapter.validate(01234, request)).isTrue();
-    assertThat(digitAdapter.validate(01234f, request)).isTrue();
-    assertThat(digitAdapter.validate(01234D, request)).isTrue();
-    assertThat(digitAdapter.validate(01234L, request)).isTrue();
-    assertThat(digitAdapter.validate((short) 01234, request)).isTrue();
-    assertThat(digitAdapter.validate((byte) 01234, request)).isTrue();
-    assertThat(digitAdapter.validate(BigInteger.valueOf(01234), request)).isTrue();
-    assertThat(digitAdapter.validate(BigDecimal.valueOf(01234), request)).isTrue();
+    assertThat(isValid(digitAdapter, 01234)).isTrue();
+    assertThat(isValid(digitAdapter, 01234f)).isTrue();
+    assertThat(isValid(digitAdapter, 01234D)).isTrue();
+    assertThat(isValid(digitAdapter, 01234L)).isTrue();
+    assertThat(isValid(digitAdapter, (short) 01234)).isTrue();
+    assertThat(isValid(digitAdapter, (byte) 01234)).isTrue();
+    assertThat(isValid(digitAdapter, BigInteger.valueOf(01234))).isTrue();
+    assertThat(isValid(digitAdapter, BigDecimal.valueOf(01234))).isTrue();
   }
 
   @Test
   void testInValidFraction() {
-    assertThat(digitAdapter.validate(0.12345f, request)).isTrue();
-    assertThat(digitAdapter.validate(0.12345D, request)).isTrue();
-    assertThat(digitAdapter.validate(BigDecimal.valueOf(0.12345), request)).isTrue();
+    assertThat(isValid(digitAdapter, 0.12345f)).isTrue();
+    assertThat(isValid(digitAdapter, 0.12345D)).isTrue();
+    assertThat(isValid(digitAdapter, BigDecimal.valueOf(0.12345))).isTrue();
   }
 }
