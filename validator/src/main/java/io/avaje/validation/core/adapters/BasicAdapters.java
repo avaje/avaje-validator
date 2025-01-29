@@ -110,7 +110,6 @@ public final class BasicAdapters {
         final var len = sequence.length();
         if (len > max || len < min) {
           req.addViolation(message, propertyName);
-          return false;
         }
       } else if (value instanceof final Collection<?> col) {
         final var len = col.size();
@@ -173,7 +172,6 @@ public final class BasicAdapters {
       }
       if (maxLength > 0 && value.length() > maxLength) {
         req.addViolation(maxLengthMessage != null ? maxLengthMessage : message, propertyName);
-        return false;
       }
       return true;
     }

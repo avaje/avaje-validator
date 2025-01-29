@@ -23,9 +23,8 @@ class SizeTest extends BasicTest {
 
   @Test
   void continueOnInvalid_expect_false_when_string() {
-    //BUG?: Should it continue validation? Prevents further pattern validations
-    assertThat(sizeAdapter.validate("a", request, "foo")).isFalse();
-    assertThat(sizeAdapter.validate("abcde", request, "foo")).isFalse();
+    assertThat(sizeAdapter.validate("a", request, "foo")).isTrue();
+    assertThat(sizeAdapter.validate("abcde", request, "foo")).isTrue();
   }
 
   @Test

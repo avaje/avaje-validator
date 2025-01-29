@@ -29,7 +29,10 @@ class NotBlankTest extends BasicTest {
 
     assertThat(notBlankMaxAdapter.validate(null, request, "foo")).isFalse();
     assertThat(notBlankMaxAdapter.validate("", request, "foo")).isFalse();
-    assertThat(notBlankMaxAdapter.validate("01234", request, "foo")).isFalse();
+  }
+  @Test
+  void continueOnInvalid_expect_true_when_maxExceeded() {
+    assertThat(notBlankMaxAdapter.validate("01234", request, "foo")).isTrue();
   }
 
   @Test
