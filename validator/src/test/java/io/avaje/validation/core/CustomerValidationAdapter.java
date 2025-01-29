@@ -55,6 +55,9 @@ public final class CustomerValidationAdapter implements ValidationAdapter<Custom
 
   @Override
   public boolean validate(Customer value, ValidationRequest request, String propertyName) {
+
+    if (value == null) return false;
+
     activeAdapter.validate(value.active, request, "active");
     nameAdapter.validate(value.name, request, "name");
     activeDateAdapter.validate(value.activeDate, request, "activeDate");

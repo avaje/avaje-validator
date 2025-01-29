@@ -5,6 +5,8 @@ import io.avaje.validation.adapter.ValidationContext.Message;
 
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+
 /** Abstract Adapter that validates objects based on Constraint Annotations. */
 public abstract class AbstractConstraintAdapter<T> implements ValidationAdapter<T> {
 
@@ -23,11 +25,11 @@ public abstract class AbstractConstraintAdapter<T> implements ValidationAdapter<
    * @param value the object to validate
    * @return false if a violation error should be added
    */
-  protected abstract boolean isValid(T value);
+  protected abstract boolean isValid(@NonNull T value);
 
   @Override
   public final boolean validate(T value, ValidationRequest req, String propertyName) {
-    if (!checkGroups(groups, req)) {
+    if (value == null || !checkGroups(groups, req)) {
       return true;
     }
     if (!isValid(value)) {

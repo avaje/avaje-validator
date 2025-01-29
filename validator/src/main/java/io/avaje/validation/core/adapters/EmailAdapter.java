@@ -42,7 +42,7 @@ final class EmailAdapter extends PatternAdapter {
 
   @Override
   public boolean isValid(CharSequence value) {
-    if (value == null || value.length() == 0) {
+    if (value.length() == 0) {
       return true;
     }
 

@@ -13,9 +13,6 @@ final class UuidAdapter extends AbstractConstraintAdapter<Object> {
 
   @Override
   protected boolean isValid(Object value) {
-    if (value == null) {
-      return true;
-    }
     try {
       UUID.fromString(String.valueOf(value));
       return true;

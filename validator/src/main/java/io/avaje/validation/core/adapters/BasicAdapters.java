@@ -63,7 +63,7 @@ public final class BasicAdapters {
 
     @Override
     public boolean isValid(CharSequence value) {
-      return value == null || !pattern.test(value.toString());
+      return !pattern.test(value.toString());
     }
   }
 
@@ -239,7 +239,7 @@ public final class BasicAdapters {
 
     @Override
     public boolean isValid(Boolean value) {
-      return value == null || assertBool == value;
+      return assertBool == value;
     }
 
     @Override

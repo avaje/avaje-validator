@@ -52,9 +52,6 @@ final class DateRangeAdapter extends AbstractConstraintAdapter<Object> {
 
   @Override
   protected boolean isValid(Object value) {
-    if (value == null) {
-      return true;
-    }
     return switch (_type) {
       case "Temporal.Instant" -> compare((Instant) value);
       case "Temporal.LocalDate" -> compare((LocalDate) value);
