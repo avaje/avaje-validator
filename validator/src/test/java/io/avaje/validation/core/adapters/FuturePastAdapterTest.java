@@ -40,10 +40,10 @@ class FuturePastAdapterTest extends BasicTest {
 
   @Test
   void testNull() {
-    assertThat(pastAdapter.validate(null, request)).isTrue();
-    assertThat(pastOrPresentAdapter.validate(null, request)).isTrue();
-    assertThat(futureAdapter.validate(null, request)).isTrue();
-    assertThat(futureOrPresentAdapter.validate(null, request)).isTrue();
+    assertThat(isValid(pastAdapter, null)).isTrue();
+    assertThat(isValid(pastOrPresentAdapter, null)).isTrue();
+    assertThat(isValid(futureAdapter, null)).isTrue();
+    assertThat(isValid(futureOrPresentAdapter, null)).isTrue();
   }
 
   @Test
@@ -71,21 +71,21 @@ class FuturePastAdapterTest extends BasicTest {
   }
 
   private void assertPast(Object value) {
-    assertThat(pastAdapter.validate(value, request)).isTrue();
-    assertThat(pastOrPresentAdapter.validate(value, request)).isTrue();
-    assertThat(futureAdapter.validate(value, request)).isFalse();
-    assertThat(futureOrPresentAdapter.validate(value, request)).isFalse();
+    assertThat(isValid(pastAdapter, value)).isTrue();
+    assertThat(isValid(pastOrPresentAdapter, value)).isTrue();
+    assertThat(isValid(futureAdapter, value)).isFalse();
+    assertThat(isValid(futureOrPresentAdapter, value)).isFalse();
   }
 
   private void assertFuture(Object value) {
-    assertThat(pastAdapter.validate(value, request)).isFalse();
-    assertThat(pastOrPresentAdapter.validate(value, request)).isFalse();
-    assertThat(futureAdapter.validate(value, request)).isTrue();
-    assertThat(futureOrPresentAdapter.validate(value, request)).isTrue();
+    assertThat(isValid(pastAdapter, value)).isFalse();
+    assertThat(isValid(pastOrPresentAdapter, value)).isFalse();
+    assertThat(isValid(futureAdapter, value)).isTrue();
+    assertThat(isValid(futureOrPresentAdapter, value)).isTrue();
   }
 
   private void assertPresent(Object value) {
-    assertThat(pastOrPresentAdapter.validate(value, request)).isTrue();
-    assertThat(futureOrPresentAdapter.validate(value, request)).isTrue();
+    assertThat(isValid(pastOrPresentAdapter, value)).isTrue();
+    assertThat(isValid(futureOrPresentAdapter, value)).isTrue();
    }
 }

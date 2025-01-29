@@ -31,15 +31,15 @@ class NullableAdapterTest extends BasicTest {
 
   @Test
   void testNull() {
-    assertThat(nulladapter.validate(null, request)).isTrue();
-    assertThat(notNulladapter.validate(null, request)).isFalse();
-    assertThat(nonNulladapter.validate(null, request)).isFalse();
+    assertThat(isValid(nulladapter, null)).isTrue();
+    assertThat(isValid(notNulladapter, null)).isFalse();
+    assertThat(isValid(nonNulladapter, null)).isFalse();
   }
 
   @Test
   void testNotNull() {
-    assertThat(nulladapter.validate(0, request)).isFalse();
-    assertThat(notNulladapter.validate(0, request)).isTrue();
-    assertThat(nonNulladapter.validate(0, request)).isTrue();
+    assertThat(isValid(nulladapter, 0)).isFalse();
+    assertThat(isValid(notNulladapter, 0)).isTrue();
+    assertThat(isValid(nonNulladapter, 0)).isTrue();
   }
 }

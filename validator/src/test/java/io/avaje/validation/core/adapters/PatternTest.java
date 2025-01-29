@@ -47,12 +47,12 @@ class PatternTest extends BasicTest {
 
   @Test
   void testBlank() {
-    assertThat(patternAdapter.validate("", request)).isFalse();
-    assertThat(patternAdapter.validate("                    ", request)).isFalse();
+    assertThat(isValid(patternAdapter,"")).isFalse();
+    assertThat(isValid(patternAdapter,"                    ")).isFalse();
   }
 
   @Test
   void testInvalid() {
-    assertThat(patternAdapter.validate("notAnEmail", request)).isFalse();
+    assertThat(isValid(patternAdapter,"notAnEmail")).isFalse();
   }
 }

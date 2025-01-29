@@ -32,19 +32,19 @@ class AssertBooleanTest extends BasicTest {
 
   @Test
   void testNull() {
-    assertThat(trueAdapter.validate(null, request)).isTrue();
-    assertThat(falseAdapter.validate(null, request)).isTrue();
+    assertThat(isValid(trueAdapter, null)).isTrue();
+    assertThat(isValid(falseAdapter, null)).isTrue();
   }
 
   @Test
   void testTrue() {
-    assertThat(trueAdapter.validate(true, request)).isTrue();
-    assertThat(falseAdapter.validate(true, request)).isFalse();
+    assertThat(isValid(trueAdapter, true)).isTrue();
+    assertThat(isValid(falseAdapter, true)).isFalse();
   }
 
   @Test
   void testFalse() {
-    assertThat(trueAdapter.validate(false, request)).isFalse();
-    assertThat(falseAdapter.validate(false, request)).isTrue();
+    assertThat(isValid(trueAdapter, false)).isFalse();
+    assertThat(isValid(falseAdapter, false)).isTrue();
   }
 }

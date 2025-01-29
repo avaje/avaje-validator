@@ -44,44 +44,44 @@ class SizeTest extends BasicTest {
   @Test
   void testNull() {
     // null elements are considered valid.
-    assertThat(sizeAdapter.validate(null, request)).isTrue();
+    assertThat(isValid(sizeAdapter, null)).isTrue();
   }
 
   @Test
   void testWithinSize() {
-    assertThat(sizeAdapter.validate(Map.of(1, 2,3,4), request)).isTrue();
-    assertThat(sizeAdapter.validate(List.of(1, 2), request)).isTrue();
-    assertThat(sizeAdapter.validate(Set.of(1, 2), request)).isTrue();
-    assertThat(sizeAdapter.validate(new int[] {1, 2,}, request)).isTrue();
-    assertThat(sizeAdapter.validate("12", request)).isTrue();
+    assertThat(isValid(sizeAdapter, Map.of(1, 2,3,4))).isTrue();
+    assertThat(isValid(sizeAdapter, List.of(1, 2))).isTrue();
+    assertThat(isValid(sizeAdapter, Set.of(1, 2))).isTrue();
+    assertThat(isValid(sizeAdapter, new int[] {1, 2,})).isTrue();
+    assertThat(isValid(sizeAdapter, "12")).isTrue();
   }
 
   @Test
   void testSmallerSize() {
-    assertThat(sizeAdapter.validate("1", request)).isFalse();
+    assertThat(isValid(sizeAdapter, "1")).isFalse();
     // if greater than 0 continue validation
-    assertThat(sizeAdapter.validate(Map.of(1, 2), request)).isTrue();
-    assertThat(sizeAdapter.validate(List.of(1), request)).isTrue();
-    assertThat(sizeAdapter.validate(Set.of(1), request)).isTrue();
-    assertThat(sizeAdapter.validate(new int[] {1}, request)).isTrue();
+    assertThat(isValid(sizeAdapter, Map.of(1, 2))).isFalse();
+    assertThat(isValid(sizeAdapter, List.of(1))).isFalse();
+    assertThat(isValid(sizeAdapter, Set.of(1))).isFalse();
+    assertThat(isValid(sizeAdapter, new int[] {1})).isFalse();
   }
 
   @Test
   void test0Size() {
-    assertThat(sizeAdapter.validate(Map.of(), request)).isFalse();
-    assertThat(sizeAdapter.validate(List.of(), request)).isFalse();
-    assertThat(sizeAdapter.validate(Set.of(), request)).isFalse();
-    assertThat(sizeAdapter.validate(new int[] {}, request)).isFalse();
-    assertThat(sizeAdapter.validate("", request)).isFalse();
+    assertThat(isValid(sizeAdapter, Map.of())).isFalse();
+    assertThat(isValid(sizeAdapter, List.of())).isFalse();
+    assertThat(isValid(sizeAdapter, Set.of())).isFalse();
+    assertThat(isValid(sizeAdapter, new int[] {})).isFalse();
+    assertThat(isValid(sizeAdapter, "")).isFalse();
   }
 
   @Test
   void testBiggerSize() {
-    assertThat(sizeAdapter.validate("it's too big", request)).isFalse();
+    assertThat(isValid(sizeAdapter, "it's too big")).isFalse();
     // if greater than 0 continue validation
-    assertThat(sizeAdapter.validate(Map.of(1, 2, 3, 4, 5, 6, 7, 8), request)).isTrue();
-    assertThat(sizeAdapter.validate(List.of(1, 2, 3, 4), request)).isTrue();
-    assertThat(sizeAdapter.validate(Set.of(1, 2, 3, 4), request)).isTrue();
-    assertThat(sizeAdapter.validate(new int[] {1, 2, 3, 4}, request)).isTrue();
+    assertThat(isValid(sizeAdapter, Map.of(1, 2, 3, 4, 5, 6, 7, 8))).isFalse();
+    assertThat(isValid(sizeAdapter, List.of(1, 2, 3, 4))).isFalse();
+    assertThat(isValid(sizeAdapter, Set.of(1, 2, 3, 4))).isFalse();
+    assertThat(isValid(sizeAdapter, new int[] {1, 2, 3, 4})).isFalse();
   }
 }

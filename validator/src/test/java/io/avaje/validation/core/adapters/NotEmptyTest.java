@@ -32,39 +32,39 @@ class NotEmptyTest extends BasicTest {
 
   @Test
   void testNull() {
-    assertThat(notEmptyAdapter.validate(null, request)).isFalse();
+    assertThat(isValid(notEmptyAdapter, null)).isFalse();
   }
 
   @Test
   void testNotEmpty() {
-    assertThat(notEmptyAdapter.validate("something", request)).isTrue();
+    assertThat(isValid(notEmptyAdapter, "something")).isTrue();
     // length of characters, not whitespace
-    assertThat(notEmptyAdapter.validate("                    ", request)).isTrue();
-    assertThat(notEmptyAdapter.validate(Map.of(1, 2), request)).isTrue();
-    assertThat(notEmptyAdapter.validate(List.of(1), request)).isTrue();
-    assertThat(notEmptyAdapter.validate(Set.of(1), request)).isTrue();
-    assertThat(notEmptyAdapter.validate(new int[] {1}, request)).isTrue();
+    assertThat(isValid(notEmptyAdapter, "                    ")).isTrue();
+    assertThat(isValid(notEmptyAdapter, Map.of(1, 2))).isTrue();
+    assertThat(isValid(notEmptyAdapter, List.of(1))).isTrue();
+    assertThat(isValid(notEmptyAdapter, Set.of(1))).isTrue();
+    assertThat(isValid(notEmptyAdapter, new int[] {1})).isTrue();
   }
 
   @Test
   void testEmpty() {
-    assertThat(notEmptyAdapter.validate(Map.of(), request)).isFalse();
-    assertThat(notEmptyAdapter.validate(List.of(), request)).isFalse();
-    assertThat(notEmptyAdapter.validate(Set.of(), request)).isFalse();
-    assertThat(notEmptyAdapter.validate(new int[] {}, request)).isFalse();
-    assertThat(notEmptyAdapter.validate("", request)).isFalse();
+    assertThat(isValid(notEmptyAdapter, Map.of())).isFalse();
+    assertThat(isValid(notEmptyAdapter, List.of())).isFalse();
+    assertThat(isValid(notEmptyAdapter, Set.of())).isFalse();
+    assertThat(isValid(notEmptyAdapter, new int[] {})).isFalse();
+    assertThat(isValid(notEmptyAdapter, "")).isFalse();
   }
 
   @Test
   void testArrays() {
-    assertThat(notEmptyAdapter.validate(new int[] {1}, request)).isTrue();
-    assertThat(notEmptyAdapter.validate(new byte[] {1}, request)).isTrue();
-    assertThat(notEmptyAdapter.validate(new boolean[] {true}, request)).isTrue();
-    assertThat(notEmptyAdapter.validate(new char[] {'d'}, request)).isTrue();
-    assertThat(notEmptyAdapter.validate(new float[] {1}, request)).isTrue();
-    assertThat(notEmptyAdapter.validate(new short[] {1}, request)).isTrue();
-    assertThat(notEmptyAdapter.validate(new double[] {1}, request)).isTrue();
-    assertThat(notEmptyAdapter.validate(new long[] {1}, request)).isTrue();
-    assertThat(notEmptyAdapter.validate(new String[] {""}, request)).isTrue();
+    assertThat(isValid(notEmptyAdapter, new int[] {1})).isTrue();
+    assertThat(isValid(notEmptyAdapter, new byte[] {1})).isTrue();
+    assertThat(isValid(notEmptyAdapter, new boolean[] {true})).isTrue();
+    assertThat(isValid(notEmptyAdapter, new char[] {'d'})).isTrue();
+    assertThat(isValid(notEmptyAdapter, new float[] {1})).isTrue();
+    assertThat(isValid(notEmptyAdapter, new short[] {1})).isTrue();
+    assertThat(isValid(notEmptyAdapter, new double[] {1})).isTrue();
+    assertThat(isValid(notEmptyAdapter, new long[] {1})).isTrue();
+    assertThat(isValid(notEmptyAdapter, new String[] {""})).isTrue();
   }
 }
