@@ -20,8 +20,7 @@ class EmailTest extends BasicTest {
 
   @Test
   void continueOnInvalid_expect_false() {
-    //BUG: This should really return true? - should continue validation !!
-    assertThat(emailAdapter.validate("notAnEmail", request, "foo")).isFalse();
+    assertThat(emailAdapter.validate("notAnEmail", request, "foo")).isTrue();
   }
 
   @Test

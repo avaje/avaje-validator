@@ -25,9 +25,8 @@ class DecimalMinMaxTest extends BasicTest {
 
   @Test
   void continueOnInvalid_expect_false() {
-    //BUG: This should really return true? - should continue validation !!
-    assertThat(minAdapter.validate(BigDecimal.valueOf(-100), request, "foo")).isFalse();
-    assertThat(maxAdapter.validate(BigDecimal.valueOf(100), request, "foo")).isFalse();
+    assertThat(minAdapter.validate(BigDecimal.valueOf(-100), request, "foo")).isTrue();
+    assertThat(maxAdapter.validate(BigDecimal.valueOf(100), request, "foo")).isTrue();
   }
 
   @Test

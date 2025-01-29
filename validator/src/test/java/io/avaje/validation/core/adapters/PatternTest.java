@@ -31,8 +31,7 @@ class PatternTest extends BasicTest {
 
   @Test
   void continueOnInvalid_expect_false() {
-    //BUG: Should continue validation - return true!!
-    assertThat(patternAdapter.validate("NotValid", request, "foo")).isFalse();
+    assertThat(patternAdapter.validate("NotValid", request, "foo")).isTrue();
   }
 
   @Test

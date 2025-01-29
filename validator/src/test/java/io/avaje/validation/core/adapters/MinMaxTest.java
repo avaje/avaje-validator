@@ -47,9 +47,8 @@ class MinMaxTest extends BasicTest {
 
   @Test
   void continueOnInvalid_expect_false() {
-    //BUG: This should really return true? - should continue validation !!
-    assertThat(maxLong.validate(100L, request, "foo")).isFalse();
-    assertThat(minLong.validate(-100L, request, "foo")).isFalse();
+    assertThat(maxLong.validate(100L, request, "foo")).isTrue();
+    assertThat(minLong.validate(-100L, request, "foo")).isTrue();
   }
 
   @Test

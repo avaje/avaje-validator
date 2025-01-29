@@ -192,26 +192,41 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class NotEmptyAdapter extends AbstractConstraintAdapter<Object> {
+  private static final class NotEmptyAdapter implements ValidationAdapter<Object> {
+
+    private final ValidationContext.Message message;
+    private final Set<Class<?>> groups;
 
     NotEmptyAdapter(AdapterCreateRequest request) {
-      super(request);
+      this.groups = request.groups();
+      this.message = request.message();
     }
 
     @Override
-    public boolean isValid(Object value) {
-      if (value == null) {
+    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+      if (!checkGroups(groups, req)) {
+        return true;
+      }
+      if (invalid(value)) {
+        req.addViolation(message, propertyName);
         return false;
-      } else if (value instanceof final Collection<?> col) {
-        return !col.isEmpty();
-      } else if (value instanceof final Map<?, ?> map) {
-        return !map.isEmpty();
-      } else if (value instanceof final CharSequence sequence) {
-        return sequence.length() != 0;
-      } else if (value.getClass().isArray()) {
-        return arrayLength(value) != 0;
       }
       return true;
+    }
+
+    private boolean invalid(Object value) {
+      if (value == null) {
+        return true;
+      } else if (value instanceof final Collection<?> col) {
+        return col.isEmpty();
+      } else if (value instanceof final Map<?, ?> map) {
+        return map.isEmpty();
+      } else if (value instanceof final CharSequence sequence) {
+        return sequence.length() == 0;
+      } else if (value.getClass().isArray()) {
+        return arrayLength(value) == 0;
+      }
+      return false;
     }
   }
 
@@ -235,18 +250,28 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class NullableAdapter extends AbstractConstraintAdapter<Object> {
+  private static final class NullableAdapter implements ValidationAdapter<Object> {
 
     private final boolean shouldBeNull;
+    private final ValidationContext.Message message;
+    private final Set<Class<?>> groups;
 
     NullableAdapter(AdapterCreateRequest request, boolean shouldBeNull) {
-      super(request);
       this.shouldBeNull = shouldBeNull;
+      this.groups = request.groups();
+      this.message = request.message();
     }
 
     @Override
-    public boolean isValid(Object value) {
-      return (value == null) == shouldBeNull;
+    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+      if (!checkGroups(groups, req)) {
+        return true;
+      }
+      if ((value == null) != shouldBeNull) {
+        req.addViolation(message, propertyName);
+        return false;
+      }
+      return true;
     }
   }
 

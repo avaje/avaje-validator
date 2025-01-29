@@ -26,8 +26,8 @@ class AssertBooleanTest extends BasicTest {
   @Test
   void continueOnInvalid_expect_false() {
     // does not matter if it continues or not really
-    assertThat(trueAdapter.validate(false, request, "foo")).isFalse();
-    assertThat(falseAdapter.validate(true, request, "foo")).isFalse();
+    assertThat(trueAdapter.validate(false, request, "foo")).isTrue();
+    assertThat(falseAdapter.validate(true, request, "foo")).isTrue();
   }
 
   @Test

@@ -20,8 +20,7 @@ class DigitsTest extends BasicTest {
 
   @Test
   void continueOnInvalid_expect_false() {
-    //BUG: This should really return true? - should continue validation !!
-    assertThat(digitAdapter.validate(BigDecimal.valueOf(0.123456789), request, "foo")).isFalse();
+    assertThat(digitAdapter.validate(BigDecimal.valueOf(0.123456789), request, "foo")).isTrue();
   }
 
   @Test

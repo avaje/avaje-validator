@@ -38,8 +38,7 @@ class NegativeTest extends BasicTest {
 
   @Test
   void continueOnInvalid_expect_false() {
-    //BUG: This should really return true? - should continue validation !!
-    assertThat(negativeAdapter.validate(1, request, "foo")).isFalse();
+    assertThat(negativeAdapter.validate(1, request, "foo")).isTrue();
   }
 
   @Test

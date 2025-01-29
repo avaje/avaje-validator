@@ -32,7 +32,6 @@ public abstract class AbstractConstraintAdapter<T> implements ValidationAdapter<
     }
     if (!isValid(value)) {
       req.addViolation(message, propertyName);
-      return false;
     }
     return true;
   }

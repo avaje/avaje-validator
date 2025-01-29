@@ -33,9 +33,8 @@ class FuturePastAdapterTest extends BasicTest {
 
   @Test
   void continueOnInvalid_expect_false() {
-    //BUG: This should really return true? - should continue validation !!
-    assertThat(pastAdapter.validate(Instant.now().plusSeconds(100), request, "foo")).isFalse();
-    assertThat(futureAdapter.validate(Instant.now().minusSeconds(100), request, "foo")).isFalse();
+    assertThat(pastAdapter.validate(Instant.now().plusSeconds(100), request, "foo")).isTrue();
+    assertThat(futureAdapter.validate(Instant.now().minusSeconds(100), request, "foo")).isTrue();
   }
 
   @Test

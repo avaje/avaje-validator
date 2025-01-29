@@ -29,8 +29,7 @@ class PositiveTest extends BasicTest {
 
   @Test
   void continueOnInvalid_expect_false() {
-    //BUG: Should continue validation? - return true!!
-    assertThat(positiveAdapter.validate(-1, request, "foo")).isFalse();
+    assertThat(positiveAdapter.validate(-1, request, "foo")).isTrue();
   }
 
   @Test
