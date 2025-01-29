@@ -233,18 +233,28 @@ public final class BasicAdapters {
     }
   }
 
-  private static final class NullableAdapter extends AbstractConstraintAdapter<Object> {
+  private static final class NullableAdapter implements ValidationAdapter<Object> {
 
     private final boolean shouldBeNull;
+    private final ValidationContext.Message message;
+    private final Set<Class<?>> groups;
 
     NullableAdapter(AdapterCreateRequest request, boolean shouldBeNull) {
-      super(request);
       this.shouldBeNull = shouldBeNull;
+      this.groups = request.groups();
+      this.message = request.message();
     }
 
     @Override
-    public boolean isValid(Object value) {
-      return (value == null) == shouldBeNull;
+    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+      if (!checkGroups(groups, req)) {
+        return true;
+      }
+      if ((value == null) != shouldBeNull) {
+        req.addViolation(message, propertyName);
+        return false;
+      }
+      return true;
     }
   }
 
