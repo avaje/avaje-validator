@@ -220,7 +220,7 @@ public final class BasicAdapters {
       } else if (value instanceof final Map<?, ?> map) {
         return map.isEmpty();
       } else if (value instanceof final CharSequence sequence) {
-        return sequence.length() == 0;
+        return sequence.isEmpty();
       } else if (value.getClass().isArray()) {
         return arrayLength(value) == 0;
       }
@@ -239,7 +239,7 @@ public final class BasicAdapters {
 
     @Override
     public boolean isValid(Boolean value) {
-      return value == null || assertBool == value.booleanValue();
+      return value == null || assertBool == value;
     }
 
     @Override
