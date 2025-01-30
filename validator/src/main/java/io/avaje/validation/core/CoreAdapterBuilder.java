@@ -54,18 +54,6 @@ final class CoreAdapterBuilder {
 
   /** Build for the simple non-annotated type case. */
   <T> ValidationAdapter<T> build(Type type) {
-    return build(type, type);
-  }
-
-  <T> ValidationAdapter<T> annotationAdapter(
-      Class<? extends Annotation> cls, Map<String, Object> attributes, Set<Class<?>> groups) {
-    return buildAnnotation(cls, attributes, groups);
-  }
-
-  /** Build given type and annotations. */
-  // TODO understand that lookup chain stuff
-  @SuppressWarnings("unchecked")
-  <T> ValidationAdapter<T> build(Type type, Object cacheKey) {
     // Ask each factory to create the validation adapter.
     for (final AdapterFactory factory : factories) {
       final var result = (ValidationAdapter<T>) factory.create(type, context);
@@ -74,6 +62,11 @@ final class CoreAdapterBuilder {
       }
     }
     throw new IllegalArgumentException("No ValidationAdapter for " + type + ". Perhaps needs @Valid or @Valid.Import?");
+  }
+
+  <T> ValidationAdapter<T> annotationAdapter(
+      Class<? extends Annotation> cls, Map<String, Object> attributes, Set<Class<?>> groups) {
+    return buildAnnotation(cls, attributes, groups);
   }
 
   /**

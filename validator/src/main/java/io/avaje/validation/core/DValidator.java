@@ -152,13 +152,12 @@ final class DValidator implements Validator, ValidationContext {
 
   @Override
   public <T> ValidationAdapter<T> adapter(Type type) {
-    type = removeSubtypeWildcard(canonicalize(requireNonNull(type)));
-    final Object cacheKey = type;
+    final Type cacheKey = removeSubtypeWildcard(canonicalize(requireNonNull(type)));
     final ValidationAdapter<T> result = builder.get(cacheKey);
     if (result != null) {
       return result;
     }
-    return builder.build(type, cacheKey);
+    return builder.build(cacheKey);
   }
 
   @Override
