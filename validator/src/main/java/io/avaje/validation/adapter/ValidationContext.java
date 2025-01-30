@@ -116,6 +116,7 @@ public interface ValidationContext {
      */
     String lookupkey();
   }
+
   /** Request to create a Validation Adapter. */
   interface AdapterCreateRequest {
 
@@ -132,7 +133,7 @@ public interface ValidationContext {
     Map<String, Object> attributes();
 
     /** Return the attribute for the given key. */
-   <T> T attribute(String key);
+    <T> T attribute(String key);
 
     /** Return the message to use */
     Message message();
@@ -143,7 +144,19 @@ public interface ValidationContext {
     /** Return the target type */
     String targetType();
 
+    /** Return true if the groups is ONLY the default group */
+    boolean isDefaultGroupOnly();
+
     /** Clone and return the request with a new value attribute */
     AdapterCreateRequest withValue(long value);
+  }
+
+  /** Used to build default ValidationAdapters with the default group and message. */
+  interface RequestBuilder {
+
+    /**
+     * Build a default AdapterCreateRequest with the appropriate default message.
+     */
+    AdapterCreateRequest defaultRequest(String defaultMessage);
   }
 }

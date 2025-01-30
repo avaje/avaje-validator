@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import io.avaje.validation.adapter.ConstraintAdapter;
+import io.avaje.validation.groups.Default;
 import org.jspecify.annotations.Nullable;
 
 import io.avaje.validation.adapter.ValidationAdapter;
@@ -19,7 +21,6 @@ import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.core.adapters.BasicAdapters;
 import io.avaje.validation.core.adapters.FuturePastAdapterFactory;
 import io.avaje.validation.core.adapters.NumberAdapters;
-import io.avaje.validation.groups.Default;
 import io.avaje.validation.spi.AdapterFactory;
 import io.avaje.validation.spi.AnnotationFactory;
 
@@ -41,7 +42,10 @@ final class CoreAdapterBuilder {
     this.context = context;
     this.factories.addAll(userFactories);
     this.annotationFactories.addAll(userAnnotationFactories);
-    this.annotationFactories.add(BasicAdapters.FACTORY);
+    // bootstrap the builtin factories potentially with default adapters
+    // that use the default group and default message
+    var requestBuilder = new RequestBuilder(context);
+    this.annotationFactories.add(BasicAdapters.factory(requestBuilder));
     this.annotationFactories.add(NumberAdapters.FACTORY);
     this.annotationFactories.add(new FuturePastAdapterFactory(clockSupplier, temporalTolerance));
   }
@@ -107,7 +111,22 @@ final class CoreAdapterBuilder {
     return NoOpValidator.INSTANCE;
   }
 
-  record Request(
+  private static final class RequestBuilder implements ValidationContext.RequestBuilder {
+
+    private final DValidator context;
+
+    private RequestBuilder(DValidator context) {
+      this.context = context;
+    }
+
+    @Override
+    public ValidationContext.AdapterCreateRequest defaultRequest(String defaultMessage) {
+      // ConstraintAdapter.class is just a placeholder and not meaningful
+      return new Request(context, ConstraintAdapter.class, DEFAULT_GROUP, Map.of("message", defaultMessage));
+    }
+  }
+
+  private record Request(
 
     ValidationContext ctx,
     Class<? extends Annotation> annotationType,
@@ -115,6 +134,11 @@ final class CoreAdapterBuilder {
     Map<String, Object> attributes
 
   ) implements ValidationContext.AdapterCreateRequest {
+
+    @Override
+    public boolean isDefaultGroupOnly() {
+      return DEFAULT_GROUP.equals(groups);
+    }
 
     @Override
     public String targetType() {
