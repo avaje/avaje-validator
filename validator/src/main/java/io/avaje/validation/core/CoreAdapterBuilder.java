@@ -31,7 +31,7 @@ final class CoreAdapterBuilder {
   private final DValidator context;
   private final List<AdapterFactory> factories = new ArrayList<>();
   private final List<AnnotationFactory> annotationFactories = new ArrayList<>();
-  private final Map<Object, ValidationAdapter<?>> adapterCache = new ConcurrentHashMap<>();
+  private final Map<Type, ValidationAdapter<?>> adapterCache = new ConcurrentHashMap<>();
 
   CoreAdapterBuilder(
       DValidator context,
@@ -50,26 +50,21 @@ final class CoreAdapterBuilder {
     this.annotationFactories.add(new FuturePastAdapterFactory(clockSupplier, temporalTolerance));
   }
 
-  /** Return the adapter from cache if exists else return null. */
+  /** Return the adapter from cache if exists creating the adapter if required. */
   @SuppressWarnings("unchecked")
-  <T> ValidationAdapter<T> get(Object cacheKey) {
-    return (ValidationAdapter<T>) adapterCache.get(cacheKey);
+  <T> ValidationAdapter<T> build(Type type) {
+    var adapter = adapterCache.get(type);
+    if (adapter != null) {
+      return (ValidationAdapter<T>)adapter;
+    }
+    ValidationAdapter<T> newValidator = buildForType(type);
+    adapterCache.put(type, newValidator);
+    return newValidator;
   }
 
   /** Build for the simple non-annotated type case. */
-  <T> ValidationAdapter<T> build(Type type) {
-    return build(type, type);
-  }
-
-  <T> ValidationAdapter<T> annotationAdapter(
-      Class<? extends Annotation> cls, Map<String, Object> attributes, Set<Class<?>> groups) {
-    return buildAnnotation(cls, attributes, groups);
-  }
-
-  /** Build given type and annotations. */
-  // TODO understand that lookup chain stuff
   @SuppressWarnings("unchecked")
-  <T> ValidationAdapter<T> build(Type type, Object cacheKey) {
+  private <T> ValidationAdapter<T> buildForType(Type type) {
     // Ask each factory to create the validation adapter.
     for (final AdapterFactory factory : factories) {
       final var result = (ValidationAdapter<T>) factory.create(type, context);
@@ -78,6 +73,11 @@ final class CoreAdapterBuilder {
       }
     }
     throw new IllegalArgumentException("No ValidationAdapter for " + type + ". Perhaps needs @Valid or @Valid.Import?");
+  }
+
+  <T> ValidationAdapter<T> annotationAdapter(
+      Class<? extends Annotation> cls, Map<String, Object> attributes, Set<Class<?>> groups) {
+    return buildAnnotation(cls, attributes, groups);
   }
 
   /**
