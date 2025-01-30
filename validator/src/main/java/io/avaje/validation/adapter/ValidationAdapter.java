@@ -97,7 +97,7 @@ public interface ValidationAdapter<T> {
       if (validate(value, req, propertyName)) {
         return after.validate(value, req, propertyName);
       }
-      return true;
+      return false;
     };
   }
 

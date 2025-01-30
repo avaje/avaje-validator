@@ -30,6 +30,18 @@ class NullableAdapterTest extends BasicTest {
   }
 
   @Test
+  void andThenContinue_expect_false() {
+    ValidationAdapter<Object> otherAdapter =
+      ctx.adapter(SizeTest.Size.class, Map.of("message", "blank?", "min", 2, "max", 3));
+
+    var combinedAndThen =
+       ctx.<String>adapter(NotNull.class, Map.of("message", "myCustomNullMessage"))
+      .andThen(otherAdapter);
+
+    assertThat(combinedAndThen.validate(null, request, "foo")).isFalse();
+  }
+
+  @Test
   void testNull() {
     assertThat(isValid(nulladapter, null)).isTrue();
     assertThat(isValid(notNulladapter, null)).isFalse();
