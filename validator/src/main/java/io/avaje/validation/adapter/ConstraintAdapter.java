@@ -38,7 +38,7 @@ import java.lang.annotation.Target;
  *
  *     return isValid;
  *   }
- *
+ *}
  * }</pre>
  */
 @Target(TYPE)
