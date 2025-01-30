@@ -36,6 +36,7 @@ public final class BasicAdapters {
             case "NotEmpty" -> new NotEmptyAdapter(request);
             case "Pattern" -> new PatternAdapter(request);
             case "Size", "Length" -> new SizeAdapter(request);
+            case "Valid" -> new ValidAdapter(request);
             default -> null;
           };
 
@@ -270,6 +271,20 @@ public final class BasicAdapters {
         return false;
       }
       return true;
+    }
+  }
+
+  private static final class ValidAdapter implements ValidationAdapter<Object> {
+
+    private final Set<Class<?>> groups;
+
+    ValidAdapter(AdapterCreateRequest request) {
+      this.groups = request.groups();
+    }
+
+    @Override
+    public boolean validate(Object value, ValidationRequest req, String propertyName) {
+      return checkGroups(groups, req);
     }
   }
 

@@ -122,7 +122,7 @@ final class AdapterHelper {
         first = false;
         continue;
       }
-      writer.eol().append("%s    .andThen(ctx.adapter(%s.class,%s))", indent, a.getKey().shortWithoutAnnotations(), a.getValue());
+      writer.eol().append("%s    .andThen(ctx.adapter(%s.class, %s))", indent, a.getKey().shortWithoutAnnotations(), a.getValue());
     }
     if (annotations.isEmpty()) {
       writer.append("%sctx.<%s>noop()", indent, type);
@@ -150,7 +150,7 @@ final class AdapterHelper {
       }
       final var k = a.getKey().shortType();
       final var v = a.getValue();
-      writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class,%s))", indent, k, v);
+      writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class, %s))", indent, k, v);
     }
 
     if (!Util.isBasicType(uType.fullWithoutAnnotations())
