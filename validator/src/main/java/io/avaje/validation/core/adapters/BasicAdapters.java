@@ -14,31 +14,75 @@ import io.avaje.validation.adapter.RegexFlag;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
+import io.avaje.validation.adapter.ValidationContext.RequestBuilder;
 import io.avaje.validation.adapter.ValidationRequest;
 import io.avaje.validation.spi.AnnotationFactory;
 
 public final class BasicAdapters {
   private static final String LENGTH_MAX = "{avaje.Length.max.message}";
+  private static final String NOT_NULL_MESSAGE = "{avaje.NotNull.message}";
+  private static final String NULL_MESSAGE = "{avaje.Null.message}";
+  private static final String NOT_BLANK_MESSAGE = "{avaje.NotBlank.message}";
 
   private BasicAdapters() {}
 
-  public static final AnnotationFactory FACTORY =
-      request ->
-          switch (request.annotationType().getSimpleName()) {
-            case "Email" -> new EmailAdapter(request);
-            case "UUID" -> new UuidAdapter(request);
-            case "URI" -> new UriAdapter(request);
-            case "Null" -> new NullableAdapter(request, true);
-            case "NotNull", "NonNull" -> new NullableAdapter(request, false);
-            case "AssertTrue" -> new AssertBooleanAdapter(request, true);
-            case "AssertFalse" -> new AssertBooleanAdapter(request, false);
-            case "NotBlank" -> new NotBlankAdapter(request);
-            case "NotEmpty" -> new NotEmptyAdapter(request);
-            case "Pattern" -> new PatternAdapter(request);
-            case "Size", "Length" -> new SizeAdapter(request);
-            case "Valid" -> new ValidAdapter(request);
-            default -> null;
-          };
+  public static AnnotationFactory factory(RequestBuilder requestBuilder) {
+    return new Factory(requestBuilder);
+  }
+
+  private static final class Factory implements AnnotationFactory {
+
+    private final NullableAdapter defaultNotNullAdapter;
+    private final NullableAdapter defaultNullAdapter;
+    private final NotBlankAdapter defaultNotBlankAdapter;
+
+    Factory(RequestBuilder reqBuilder) {
+      // create default adapters that will be shared instances (when no groups or message customisation)
+      this.defaultNotNullAdapter = new NullableAdapter(reqBuilder.defaultRequest(NOT_NULL_MESSAGE), false);
+      this.defaultNullAdapter = new NullableAdapter(reqBuilder.defaultRequest(NULL_MESSAGE), true);
+      this.defaultNotBlankAdapter = new NotBlankAdapter(reqBuilder.defaultRequest(NOT_BLANK_MESSAGE));
+    }
+
+    @Override
+    public ValidationAdapter<?> create(AdapterCreateRequest request) {
+      return switch (request.annotationType().getSimpleName()) {
+          case "Email" -> new EmailAdapter(request);
+          case "UUID" -> new UuidAdapter(request);
+          case "URI" -> new UriAdapter(request);
+          case "Null" -> nullable(request);
+          case "NotNull", "NonNull" -> notNull(request);
+          case "AssertTrue" -> new AssertBooleanAdapter(request, true);
+          case "AssertFalse" -> new AssertBooleanAdapter(request, false);
+          case "NotBlank" -> notBlank(request);
+          case "NotEmpty" -> new NotEmptyAdapter(request);
+          case "Pattern" -> new PatternAdapter(request);
+          case "Size", "Length" -> new SizeAdapter(request);
+          case "Valid" -> new ValidAdapter(request);
+          default -> null;
+        };
+    }
+
+    private ValidationAdapter<?> notBlank(AdapterCreateRequest request) {
+      if (NotBlankAdapter.isDefault(request)) {
+        return defaultNotBlankAdapter;
+      }
+      return new NotBlankAdapter(request);
+    }
+
+    private ValidationAdapter<?> notNull(AdapterCreateRequest request) {
+      if (request.isDefaultGroupOnly() && NOT_NULL_MESSAGE.equals(request.attribute("message"))) {
+        return defaultNotNullAdapter;
+      }
+      return new NullableAdapter(request, false);
+    }
+
+    private ValidationAdapter<?> nullable(AdapterCreateRequest request) {
+      if (request.isDefaultGroupOnly() && NULL_MESSAGE.equals(request.attribute("message"))) {
+        return defaultNullAdapter;
+      }
+      return new NullableAdapter(request, true);
+    }
+  }
 
   static sealed class PatternAdapter extends AbstractConstraintAdapter<CharSequence>
       permits EmailAdapter {
@@ -151,6 +195,12 @@ public final class BasicAdapters {
       } else {
         maxLengthMessage = null;
       }
+    }
+
+    private static boolean isDefault(AdapterCreateRequest request) {
+      return request.isDefaultGroupOnly()
+        && standardMessage(request)
+        && maxLength(request) == 0;
     }
 
     private static int maxLength(AdapterCreateRequest request) {
