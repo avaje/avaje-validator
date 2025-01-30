@@ -5,6 +5,7 @@ import static io.avaje.validation.generator.PrimitiveUtil.isPrimitiveValidationA
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 
 record ElementAnnotationContainer(
     UType genericType,
@@ -53,7 +55,7 @@ record ElementAnnotationContainer(
 
   private static List<Entry<UType, String>> annotations(Element element, UType uType, List<Entry<UType, String>> crossParam) {
     return Stream.concat(element.getAnnotationMirrors().stream(), uType.annotations().stream())
-      .filter(m -> !ValidPrism.isInstance(m))
+      .filter(m -> !ValidPrism.isInstance(m) || !ValidPrism.instance(m).groups().isEmpty() && !(element instanceof TypeElement))
       .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
       .map(a -> {
         if (CrossParamConstraintPrism.isPresent(a.getAnnotationType().asElement())) {
@@ -71,6 +73,10 @@ record ElementAnnotationContainer(
           UType.parse(a.getAnnotationType()),
           AnnotationUtil.annotationAttributeMap(a, element)))
       .distinct()
+      // valid annotation goes last
+      .sorted(Comparator.comparing(
+          e -> e.getKey().shortType(),
+          Comparator.comparing("Valid"::equals)))
       .collect(toList());
   }
 

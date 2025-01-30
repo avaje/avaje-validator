@@ -1,7 +1,11 @@
 package io.avaje.validation.generator;
 
+import java.util.List;
+import java.util.Optional;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeMirror;
 
 import io.avaje.prism.GeneratePrism;
 
@@ -35,5 +39,19 @@ public interface ValidPrism {
         || JakartaValidPrism.getInstance(e) != null
         || JavaxValidPrism.getInstance(e) != null
         || HttpValidPrism.getInstance(e) != null;
+  }
+
+  static ValidPrism instance(AnnotationMirror e) {
+
+    return Optional.<ValidPrism>empty()
+        .or(() -> AvajeValidPrism.getOptional(e))
+        .or(() -> JakartaValidPrism.getOptional(e))
+        .or(() -> JavaxValidPrism.getOptional(e))
+        .or(() -> HttpValidPrism.getOptional(e))
+        .orElse(null);
+  }
+
+  default List<TypeMirror> groups() {
+    return List.of();
   }
 }
