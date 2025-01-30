@@ -30,7 +30,7 @@ final class CoreAdapterBuilder {
   private final DValidator context;
   private final List<AdapterFactory> factories = new ArrayList<>();
   private final List<AnnotationFactory> annotationFactories = new ArrayList<>();
-  private final Map<Object, ValidationAdapter<?>> adapterCache = new ConcurrentHashMap<>();
+  private final Map<Type, ValidationAdapter<?>> adapterCache = new ConcurrentHashMap<>();
 
   CoreAdapterBuilder(
       DValidator context,
@@ -48,11 +48,12 @@ final class CoreAdapterBuilder {
 
   /** Return the adapter from cache if exists else return null. */
   @SuppressWarnings("unchecked")
-  <T> ValidationAdapter<T> get(Object cacheKey) {
+  <T> ValidationAdapter<T> get(Type cacheKey) {
     return (ValidationAdapter<T>) adapterCache.get(cacheKey);
   }
 
   /** Build for the simple non-annotated type case. */
+  @SuppressWarnings("unchecked")
   <T> ValidationAdapter<T> build(Type type) {
     // Ask each factory to create the validation adapter.
     for (final AdapterFactory factory : factories) {
