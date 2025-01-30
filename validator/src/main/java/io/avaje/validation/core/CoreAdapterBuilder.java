@@ -46,15 +46,21 @@ final class CoreAdapterBuilder {
     this.annotationFactories.add(new FuturePastAdapterFactory(clockSupplier, temporalTolerance));
   }
 
-  /** Return the adapter from cache if exists else return null. */
+  /** Return the adapter from cache if exists creating the adapter if required. */
   @SuppressWarnings("unchecked")
-  <T> ValidationAdapter<T> get(Type cacheKey) {
-    return (ValidationAdapter<T>) adapterCache.get(cacheKey);
+  <T> ValidationAdapter<T> build(Type type) {
+    var adapter = adapterCache.get(type);
+    if (adapter != null) {
+      return (ValidationAdapter<T>)adapter;
+    }
+    ValidationAdapter<T> newValidator = buildForType(type);
+    adapterCache.put(type, newValidator);
+    return newValidator;
   }
 
   /** Build for the simple non-annotated type case. */
   @SuppressWarnings("unchecked")
-  <T> ValidationAdapter<T> build(Type type) {
+  private <T> ValidationAdapter<T> buildForType(Type type) {
     // Ask each factory to create the validation adapter.
     for (final AdapterFactory factory : factories) {
       final var result = (ValidationAdapter<T>) factory.create(type, context);

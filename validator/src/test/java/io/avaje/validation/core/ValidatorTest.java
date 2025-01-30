@@ -3,6 +3,8 @@ package io.avaje.validation.core;
 import io.avaje.validation.ConstraintViolation;
 import io.avaje.validation.ConstraintViolationException;
 import io.avaje.validation.Validator;
+import io.avaje.validation.adapter.ValidationAdapter;
+import io.avaje.validation.adapter.ValidationContext;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -21,6 +23,15 @@ class ValidatorTest {
               .add(Address.class, AddressValidationAdapter::new)
               .add(Contact.class, ContactValidationAdapter::new)
               .build();
+
+  @Test
+  void cacheForType() {
+    ValidationContext ctx = (ValidationContext) validator;
+
+    ValidationAdapter<Customer> adapter0 = ctx.adapter(Customer.class);
+    ValidationAdapter<Customer> adapter1 = ctx.adapter(Customer.class);
+    assertThat(adapter0).isSameAs(adapter1);
+  }
 
   @Test
   void testAllFail() {
