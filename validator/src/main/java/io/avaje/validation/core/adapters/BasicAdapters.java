@@ -284,7 +284,6 @@ public final class BasicAdapters {
 
     @Override
     public boolean validate(Object value, ValidationRequest req, String propertyName) {
-
       return checkGroups(groups, req);
     }
   }

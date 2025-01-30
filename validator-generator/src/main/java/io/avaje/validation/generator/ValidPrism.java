@@ -42,7 +42,6 @@ public interface ValidPrism {
   }
 
   static ValidPrism instance(AnnotationMirror e) {
-
     return Optional.<ValidPrism>empty()
         .or(() -> AvajeValidPrism.getOptional(e))
         .or(() -> JakartaValidPrism.getOptional(e))

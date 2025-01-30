@@ -55,7 +55,7 @@ record ElementAnnotationContainer(
 
   private static List<Entry<UType, String>> annotations(Element element, UType uType, List<Entry<UType, String>> crossParam) {
     return Stream.concat(element.getAnnotationMirrors().stream(), uType.annotations().stream())
-      .filter(m -> !ValidPrism.isInstance(m) || !ValidPrism.instance(m).groups().isEmpty() && !(element instanceof TypeElement))
+      .filter(a -> excludePlainValid(a, element))
       .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
       .map(a -> {
         if (CrossParamConstraintPrism.isPresent(a.getAnnotationType().asElement())) {
@@ -78,6 +78,11 @@ record ElementAnnotationContainer(
           e -> e.getKey().shortType(),
           Comparator.comparing("Valid"::equals)))
       .collect(toList());
+  }
+
+  /** Only include Valid with groups defined */
+  private static boolean excludePlainValid(AnnotationMirror a, Element element) {
+    return !ValidPrism.isInstance(a) || !ValidPrism.instance(a).groups().isEmpty() && !(element instanceof TypeElement);
   }
 
   private static List<Entry<UType, String>> typeUseFor(UType uType, Element element) {
