@@ -19,4 +19,9 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  */
 @Retention(CLASS)
 @Target({TYPE, TYPE_USE, FIELD})
-public @interface Valid {}
+public @interface Valid {
+
+  /** Validation groups to use */
+  Class<?>[] groups() default {};
+
+}
