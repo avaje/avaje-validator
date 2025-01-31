@@ -34,7 +34,7 @@ public interface ValidationAdapter<T> {
     return validate(value, req, null);
   }
 
-  /** Return a primitive adapter. Supports int, long with Range, Min, Max, Positive. */
+  /** Return primitive-handling version of this adapter. */
   default Primitive primitive() {
     throw new UnsupportedOperationException();
   }
@@ -114,7 +114,7 @@ public interface ValidationAdapter<T> {
     return false;
   }
 
-  /** Validation adapter that supports and uses the primitive type. */
+  /** Validation adapter that supports and uses the primitive types. */
   interface Primitive {
 
     /** Validate using primitive boolean. */

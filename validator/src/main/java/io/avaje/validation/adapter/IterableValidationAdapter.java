@@ -12,7 +12,6 @@ final class IterableValidationAdapter<T> extends ContainerAdapter<T> {
     if (initalAdapter.validate(value, req, propertyName)) {
       validateAll((Iterable<Object>) value, req, propertyName);
     }
-
     return true;
   }
 }
