@@ -20,7 +20,7 @@ public abstract class AbstractConstraintAdapter<T> implements ValidationAdapter<
   }
 
   /**
-   * Execute Constraint validations for the given object.
+   * Execute constraint validations for the given object.
    *
    * @param value the object to validate
    * @return false if a violation error should be added
