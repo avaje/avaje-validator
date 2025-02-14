@@ -3,10 +3,7 @@ package io.avaje.validation.generator;
 import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,7 +25,6 @@ import javax.lang.model.util.ElementFilter;
 import io.avaje.prism.GenerateAPContext;
 import io.avaje.prism.GenerateModuleInfoReader;
 import io.avaje.prism.GenerateUtils;
-
 import static io.avaje.validation.generator.APContext.*;
 
 @GenerateUtils
@@ -46,6 +42,7 @@ import static io.avaje.validation.generator.APContext.*;
   JavaxConstraintPrism.PRISM_TYPE,
   CrossParamConstraintPrism.PRISM_TYPE,
   ValidMethodPrism.PRISM_TYPE,
+  SubTypesPrism.PRISM_TYPE,
   "io.avaje.spi.ServiceProvider"
 })
 public final class ValidationProcessor extends AbstractProcessor {
@@ -121,6 +118,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     getElements(round, MixInPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForMixInTypes);
     getElements(round, ImportValidPojoPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForImported);
     getElements(round, "io.avaje.spi.ServiceProvider").ifPresent(this::registerSPI);
+    getElements(round, SubTypesPrism.PRISM_TYPE).ifPresent(this::writeSubTypeAdaptersForImported);
 
     initialiseComponent();
     cascadeTypes();
@@ -211,6 +209,29 @@ public final class ValidationProcessor extends AbstractProcessor {
         || type.startsWith("java.")
         || type.startsWith("javax.")
         || sourceTypes.contains(type);
+  }
+
+  /** Elements that have a {@code @SubTypes} annotation. */
+  private void writeSubTypeAdaptersForImported(Set<? extends Element> subtypeElements) {
+    for (final var element : ElementFilter.typesIn(subtypeElements)) {
+      var prism = SubTypesPrism.getInstanceOn(element);
+      var subtypes = new ArrayList<>(prism.value());
+      subtypes.addAll(element.getPermittedSubclasses());
+
+      var seen = new HashSet<>();
+      subtypes.removeIf(s -> !seen.add(s.toString()));
+      var writer = new SubTypeWriter(element, subtypes);
+      writer.write();
+      metaData.add(writer.fullName());
+      // cascade types
+      for (final TypeMirror importType : subtypes) {
+        // if imported by mixin annotation skip
+        if (mixInImports.contains(importType.toString())) {
+          continue;
+        }
+        writeAdapterForType(asTypeElement(importType));
+      }
+    }
   }
 
   /** Elements that have a {@code @Valid.Import} annotation. */

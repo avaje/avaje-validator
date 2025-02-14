@@ -1,5 +1,6 @@
 @GeneratePrism(io.avaje.validation.adapter.ConstraintAdapter.class)
 @GeneratePrism(io.avaje.validation.ImportValidPojo.class)
+@GeneratePrism(io.avaje.validation.SubTypes.class)
 @GeneratePrism(io.avaje.validation.spi.MetaData.class)
 @GeneratePrism(io.avaje.validation.spi.MetaData.ValidFactory.class)
 @GeneratePrism(io.avaje.validation.spi.MetaData.AnnotationFactory.class)
