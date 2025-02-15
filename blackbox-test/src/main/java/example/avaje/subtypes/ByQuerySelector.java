@@ -1,4 +1,4 @@
-package io.avaje.validation.generator.models.valid.subtypes;
+package example.avaje.subtypes;
 
 import io.avaje.validation.constraints.NotBlank;
 

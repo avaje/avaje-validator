@@ -8,15 +8,15 @@ import org.junit.jupiter.api.Test;
 
 import io.avaje.http.api.ValidationException;
 import io.avaje.http.api.Validator;
+import io.avaje.inject.spi.AvajeModule;
 import io.avaje.inject.spi.Builder;
-import io.avaje.inject.spi.Module;
 import io.avaje.inject.test.InjectTest;
 import jakarta.inject.Inject;
 
 @InjectTest
 class DefaultValidatorProviderTest {
-  Module mod =
-      new Module() {
+  AvajeModule mod =
+      new AvajeModule() {
 
         @Override
         public Class<?>[] classes() {
