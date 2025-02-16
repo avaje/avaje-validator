@@ -55,9 +55,8 @@ public class SubTypeWriter {
       var validation =
           APContext.jdkVersion() > 17
               ? new SwitchValidation(
-                      subtypeStrings, element.getModifiers().contains(Modifier.SEALED))
-                  .render()
-              : new IfValidation(subtypeStrings).render();
+                  subtypeStrings, element.getModifiers().contains(Modifier.SEALED))
+              : new IfValidation(subtypeStrings);
 
       var template =
           new SubTemplate(
@@ -99,7 +98,7 @@ public class SubTypeWriter {
 
         @Override
         public boolean validate({{shortType}} value, ValidationRequest request, String field) {
-      {{validation}}
+      {{validation.render}}
         }
       }
       """)
@@ -109,7 +108,7 @@ public class SubTypeWriter {
       String shortName,
       String shortType,
       List<String> subtypes,
-      String validation) {
+      Template validation) {
     String render() {
       return SubTemplateRenderer.of().execute(this);
     }
@@ -125,8 +124,9 @@ public class SubTypeWriter {
         {{/subtypes}}
         return true;
     """)
-  public record IfValidation(List<String> subtypes) {
-    String render() {
+  public record IfValidation(List<String> subtypes) implements Template {
+    @Override
+    public String render() {
       return IfValidationRenderer.of().execute(this);
     }
   }
@@ -144,9 +144,14 @@ public class SubTypeWriter {
     {{/sealed}}
     };
 """)
-  public record SwitchValidation(List<String> subtypes, boolean sealed) {
-    String render() {
+  public record SwitchValidation(List<String> subtypes, boolean sealed) implements Template {
+    @Override
+    public String render() {
       return SwitchValidationRenderer.of().execute(this);
     }
+  }
+
+  interface Template {
+    String render();
   }
 }
