@@ -15,7 +15,10 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheConfig;
+import io.jstach.jstache.JStacheType;
 
+@JStacheConfig(type = JStacheType.STACHE)
 public class SubTypeWriter {
 
   TypeElement element;
@@ -52,15 +55,16 @@ public class SubTypeWriter {
     Append writer;
     try {
       writer = new Append(createFileWriter());
-      var validation =
-          APContext.jdkVersion() > 17
-              ? new SwitchValidation(
-                  subtypeStrings, element.getModifiers().contains(Modifier.SEALED))
-              : new IfValidation(subtypeStrings);
 
       var template =
           new SubTemplate(
-                  adapterPackage, importTypes, shortName, shortType, subtypeStrings, validation)
+                  adapterPackage,
+                  importTypes,
+                  shortName,
+                  shortType,
+                  subtypeStrings,
+                  APContext.jdkVersion() > 17,
+                  element.getModifiers().contains(Modifier.SEALED))
               .render();
 
       writer.append(template).close();
@@ -98,7 +102,25 @@ public class SubTypeWriter {
 
         @Override
         public boolean validate({{shortType}} value, ValidationRequest request, String field) {
-      {{validation.render}}
+      {{#switchValid}}
+          return switch(value) {
+            case null -> true;
+          {{#subtypes}}
+            case {{.}} val -> subAdapter{{@index}}.validate(val, request, field);
+          {{/subtypes}}
+          {{^sealed}}
+            default -> true;
+          {{/sealed}}
+          };
+      {{/switchValid}}
+      {{^switchValid}}
+      {{#subtypes}}
+          if (value instanceof {{.}} val) {
+            return subAdapter{{@index}}.validate(val, request, field);
+          }
+      {{/subtypes}}
+          return true;
+      {{/switchValid}}
         }
       }
       """)
@@ -108,50 +130,10 @@ public class SubTypeWriter {
       String shortName,
       String shortType,
       List<String> subtypes,
-      Template validation) {
+      boolean switchValid,
+      boolean sealed) {
     String render() {
       return SubTemplateRenderer.of().execute(this);
     }
-  }
-
-  @JStache(
-      template =
-          """
-        {{#subtypes}}
-        if (value instanceof {{.}} val) {
-          return subAdapter{{@index}}.validate(val, request, field);
-        }
-        {{/subtypes}}
-        return true;
-    """)
-  public record IfValidation(List<String> subtypes) implements Template {
-    @Override
-    public String render() {
-      return IfValidationRenderer.of().execute(this);
-    }
-  }
-
-  @JStache(
-      template =
-          """
-    return switch(value) {
-      case null -> true;
-    {{#subtypes}}
-      case {{.}} val -> subAdapter{{@index}}.validate(val, request, field);
-    {{/subtypes}}
-    {{^sealed}}
-      default -> true;
-    {{/sealed}}
-    };
-""")
-  public record SwitchValidation(List<String> subtypes, boolean sealed) implements Template {
-    @Override
-    public String render() {
-      return SwitchValidationRenderer.of().execute(this);
-    }
-  }
-
-  interface Template {
-    String render();
   }
 }
