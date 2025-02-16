@@ -1,6 +1,6 @@
 package example.avaje.subtypes;
 
-import io.avaje.validation.SubTypes;
+import io.avaje.validation.ValidSubTypes;
 
-@SubTypes({ByQuerySelector.class, ByIdSelector.class})
+@ValidSubTypes({ByQuerySelector.class, ByIdSelector.class})
 public interface EntitySelector {}

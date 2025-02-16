@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  *
  * <pre>{@code
  *
- *   @SubTypes(Car.class, Truck.class)
+ *   @ValidSubTypes(Car.class, Truck.class)
  *   public abstract class Vehicle {
  *    ...
  *
@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  *
  * <pre>{@code
  *
- *   @SubTypes(Car.class, Truck.class)
+ *   @ValidSubTypes(Car.class, Truck.class)
  *   public abstract class Vehicle {
  *    ...
  *
@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
  */
 @Target(TYPE)
 @Retention(SOURCE)
-public @interface SubTypes {
+public @interface ValidSubTypes {
 
   /** Subclasses of the current type. Not needed for sealed classes */
   Class<?>[] value() default {};

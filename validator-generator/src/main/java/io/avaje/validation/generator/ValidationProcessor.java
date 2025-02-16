@@ -42,7 +42,7 @@ import static io.avaje.validation.generator.APContext.*;
   JavaxConstraintPrism.PRISM_TYPE,
   CrossParamConstraintPrism.PRISM_TYPE,
   ValidMethodPrism.PRISM_TYPE,
-  SubTypesPrism.PRISM_TYPE,
+  ValidSubTypesPrism.PRISM_TYPE,
   "io.avaje.spi.ServiceProvider"
 })
 public final class ValidationProcessor extends AbstractProcessor {
@@ -118,7 +118,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     getElements(round, MixInPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForMixInTypes);
     getElements(round, ImportValidPojoPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForImported);
     getElements(round, "io.avaje.spi.ServiceProvider").ifPresent(this::registerSPI);
-    getElements(round, SubTypesPrism.PRISM_TYPE).ifPresent(this::writeSubTypeAdaptersForImported);
+    getElements(round, ValidSubTypesPrism.PRISM_TYPE).ifPresent(this::writeSubTypeAdaptersForImported);
 
     initialiseComponent();
     cascadeTypes();
@@ -211,10 +211,10 @@ public final class ValidationProcessor extends AbstractProcessor {
         || sourceTypes.contains(type);
   }
 
-  /** Elements that have a {@code @SubTypes} annotation. */
+  /** Elements that have a {@code @ValidSubTypes} annotation. */
   private void writeSubTypeAdaptersForImported(Set<? extends Element> subtypeElements) {
     for (final var element : ElementFilter.typesIn(subtypeElements)) {
-      var prism = SubTypesPrism.getInstanceOn(element);
+      var prism = ValidSubTypesPrism.getInstanceOn(element);
       var subtypes = new ArrayList<>(prism.value());
       subtypes.addAll(element.getPermittedSubclasses());
 
