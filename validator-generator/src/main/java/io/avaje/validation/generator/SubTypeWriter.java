@@ -15,10 +15,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 
 import io.jstach.jstache.JStache;
-import io.jstach.jstache.JStacheConfig;
-import io.jstach.jstache.JStacheType;
 
-@JStacheConfig(type = JStacheType.STACHE)
 public class SubTypeWriter {
 
   TypeElement element;
