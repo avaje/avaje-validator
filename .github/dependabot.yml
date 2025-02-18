@@ -10,7 +10,7 @@ updates:
         - "*"
     labels:
       - "dependencies"
-    target-branch: "master"
+    target-branch: "main"
 
 
   - package-ecosystem: "github-actions"
