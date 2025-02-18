@@ -4,7 +4,6 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-    open-pull-requests-limit: 10
     groups:
       dependencies:
         patterns:
@@ -18,7 +17,6 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
     commit-message:
       prefix: "[workflow]"
     labels:
