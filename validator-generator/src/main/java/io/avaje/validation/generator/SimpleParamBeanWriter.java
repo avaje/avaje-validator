@@ -20,18 +20,14 @@ final class SimpleParamBeanWriter {
   SimpleParamBeanWriter(ValidMethodReader beanReader) {
     this.beanReader = beanReader;
     final var method = beanReader.getBeanType();
-    this.adapterPackage =
-        ProcessorUtils.packageOf(
-            ((TypeElement) method.getEnclosingElement()).getQualifiedName().toString());
-    this.adapterFullName =
-        adapterPackage
-            + "."
-            + method
-                .getSimpleName()
-                .toString()
-                .transform(str -> str.substring(0, 1).toUpperCase() + str.substring(1))
-            + "ParamProvider";
-
+    this.adapterPackage = ProcessorUtils.packageOf(((TypeElement) method.getEnclosingElement()).getQualifiedName().toString());
+    this.adapterFullName = adapterPackage
+      + "."
+      + method
+      .getSimpleName()
+      .toString()
+      .transform(str -> str.substring(0, 1).toUpperCase() + str.substring(1))
+      + "ParamProvider";
     this.adapterShortName = Util.shortName(adapterFullName);
   }
 
