@@ -161,8 +161,8 @@ final class AnnotationUtil {
   private AnnotationUtil() {}
 
   static String annotationAttributeMap(AnnotationMirror annotationMirror, Element target) {
-    final Element element = annotationMirror.getAnnotationType().asElement();
-    final Handler handler = handlers.get(element.toString());
+    final var element = APContext.asTypeElement(annotationMirror.getAnnotationType());
+    final Handler handler = handlers.get(element.getQualifiedName().toString());
     return Objects.requireNonNullElse(handler, defaultHandler)
         .attributes(annotationMirror, element, target);
   }
@@ -381,7 +381,7 @@ final class AnnotationUtil {
     @Override
     public boolean isSupported(Element target, String _type) {
       boolean isMetaConstraint = hasMetaConstraintAnnotation(target);
-      return isMetaConstraint || (allowUnknown && _type == null) || (_type != null && supportedTypes.contains(_type));
+      return isMetaConstraint || allowUnknown && _type == null || _type != null && supportedTypes.contains(_type);
     }
   }
 
@@ -463,7 +463,7 @@ final class AnnotationUtil {
     @Override
     String messageKey(AnnotationValue defaultValue) {
       final AnnotationValue inclusiveValue = memberValue("inclusive");
-      final boolean inclusive = (inclusiveValue == null || "true".equals(inclusiveValue.toString()));
+      final boolean inclusive = inclusiveValue == null || "true".equals(inclusiveValue.toString());
       String messageKey = super.messageKey(defaultValue);
       if (!inclusive) {
         messageKey = messageKey.replace(".message", ".exclusive.message");

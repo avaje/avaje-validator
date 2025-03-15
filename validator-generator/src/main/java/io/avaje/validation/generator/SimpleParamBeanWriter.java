@@ -6,6 +6,7 @@ import static io.avaje.validation.generator.ProcessingContext.diAnnotation;
 import java.io.IOException;
 import java.io.Writer;
 
+import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 
 final class SimpleParamBeanWriter {
@@ -19,7 +20,7 @@ final class SimpleParamBeanWriter {
   SimpleParamBeanWriter(ValidMethodReader beanReader) {
     this.beanReader = beanReader;
     final var method = beanReader.getBeanType();
-    this.adapterPackage = ProcessorUtils.packageOf(method.getEnclosingElement().asType().toString());
+    this.adapterPackage = ProcessorUtils.packageOf(((TypeElement) method.getEnclosingElement()).getQualifiedName().toString());
     this.adapterFullName = adapterPackage
       + "."
       + method
@@ -27,7 +28,6 @@ final class SimpleParamBeanWriter {
       .toString()
       .transform(str -> str.substring(0, 1).toUpperCase() + str.substring(1))
       + "ParamProvider";
-
     this.adapterShortName = Util.shortName(adapterFullName);
   }
 

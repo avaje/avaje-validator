@@ -1,8 +1,8 @@
 package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.APContext.asTypeElement;
-import static io.avaje.validation.generator.APContext.logNote;
 import static io.avaje.validation.generator.APContext.logError;
+import static io.avaje.validation.generator.APContext.logNote;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,8 +83,9 @@ final class TypeReader {
     }
 
     for (final FieldReader localField : localFields) {
-      allFields.add(localField);
-      allFieldMap.put(localField.fieldName(), localField);
+      if (allFieldMap.put(localField.fieldName(), localField) == null) {
+        allFields.add(localField);
+      }
     }
   }
 
