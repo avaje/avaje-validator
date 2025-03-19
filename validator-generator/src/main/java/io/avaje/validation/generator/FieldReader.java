@@ -44,6 +44,9 @@ final class FieldReader {
     this.adapterFieldName = initShortName();
     this.optionalValidation = Util.isNullable(element);
     this.classLevel = classLevel;
+    if (classLevel) {
+      elementAnnotations.annotations().removeIf(e -> e.getKey().shortType().contains("NonNull"));
+    }
   }
 
   FieldReader(TypeElement baseType, TypeElement mixInType, List<String> genericTypeParams) {
