@@ -45,7 +45,12 @@ final class FieldReader {
     this.optionalValidation = Util.isNullable(element);
     this.classLevel = classLevel;
     if (classLevel) {
-      elementAnnotations.annotations().removeIf(e -> e.getKey().shortType().contains("NonNull"));
+      elementAnnotations
+          .annotations()
+          .removeIf(
+              e ->
+                  "NonNull".equals(e.getKey().shortType())
+                      || "NonNull".equals(e.getKey().shortType()));
     }
   }
 
