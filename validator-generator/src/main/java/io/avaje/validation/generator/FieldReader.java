@@ -50,7 +50,7 @@ final class FieldReader {
           .removeIf(
               e ->
                   "NonNull".equals(e.getKey().shortType())
-                      || "NonNull".equals(e.getKey().shortType()));
+                      || "NotNull".equals(e.getKey().shortType()));
     }
   }
 
