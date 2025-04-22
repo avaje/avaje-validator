@@ -180,8 +180,8 @@ final class DValidator implements Validator, ValidationContext {
   /** Implementation of Validator.Builder. */
   static final class DBuilder implements Validator.Builder {
 
-    private static Validator DEFAULT = Validator.builder().build();
-    private static Supplier<Clock> DEFAULT_CLOCK = Clock::systemDefaultZone;
+    private static final Validator DEFAULT = Validator.builder().build();
+    private static final Supplier<Clock> DEFAULT_CLOCK = Clock::systemDefaultZone;
 
     private final List<AdapterFactory> factories = new ArrayList<>();
     private final List<AnnotationFactory> afactories = new ArrayList<>();
