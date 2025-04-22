@@ -3,6 +3,7 @@ package io.avaje.validation.core;
 import static io.avaje.validation.core.Util.canonicalize;
 import static io.avaje.validation.core.Util.canonicalizeClass;
 import static io.avaje.validation.core.Util.removeSubtypeWildcard;
+import static java.time.Duration.ZERO;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
@@ -179,14 +180,17 @@ final class DValidator implements Validator, ValidationContext {
   /** Implementation of Validator.Builder. */
   static final class DBuilder implements Validator.Builder {
 
+    private static Validator DEFAULT = Validator.builder().build();
+    private static Supplier<Clock> DEFAULT_CLOCK = Clock::systemDefaultZone;
+
     private final List<AdapterFactory> factories = new ArrayList<>();
     private final List<AnnotationFactory> afactories = new ArrayList<>();
     private final List<String> bundleNames = new ArrayList<>();
     private final List<ResourceBundle> bundles = new ArrayList<>();
     private final List<Locale> otherLocales = new ArrayList<>();
     private Locale defaultLocale = Locale.getDefault();
-    private Supplier<Clock> clockSupplier = Clock::systemDefaultZone;
-    private Duration temporalTolerance = Duration.ZERO;
+    private Supplier<Clock> clockSupplier = DEFAULT_CLOCK;
+    private Duration temporalTolerance = ZERO;
     private boolean failfast;
     private MessageInterpolator userInterpolator;
 
@@ -287,7 +291,12 @@ final class DValidator implements Validator, ValidationContext {
     }
 
     @Override
-    public DValidator build() {
+    public Validator build() {
+
+      if (!hasCustomizations()) {
+        return DEFAULT;
+      }
+
       registerComponents();
 
       final var localeResolver = new LocaleResolver(defaultLocale, otherLocales);
@@ -306,6 +315,20 @@ final class DValidator implements Validator, ValidationContext {
           clockSupplier,
           temporalTolerance,
           failfast);
+    }
+
+    private boolean hasCustomizations() {
+      return DEFAULT == null
+          || failfast
+          || userInterpolator != null
+          || !otherLocales.isEmpty()
+          || !Locale.getDefault().equals(defaultLocale)
+          || !bundleNames.isEmpty()
+          || !bundles.isEmpty()
+          || !DEFAULT_CLOCK.equals(clockSupplier)
+          || !ZERO.equals(temporalTolerance)
+          || !factories.isEmpty()
+          || !afactories.isEmpty();
     }
 
     private static <T> AnnotationFactory newAnnotationAdapterFactory(
