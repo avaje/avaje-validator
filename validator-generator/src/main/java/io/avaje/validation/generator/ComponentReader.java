@@ -30,7 +30,7 @@ final class ComponentReader {
 
       if (isGeneratedComponent(moduleType)) {
 
-        if (hasPkgPrivate(moduleType)) {
+        if (!hasPkgPrivate(moduleType)) {
           componentMetaData.setFullName(fqn);
           readMetaData(moduleType, componentMetaData);
 
