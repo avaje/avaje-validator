@@ -1,4 +1,4 @@
-package io.avaje.validation.generator.models.valid;
+package io.avaje.validation.generator.models.valid.pkg_private;
 
 import java.util.List;
 
