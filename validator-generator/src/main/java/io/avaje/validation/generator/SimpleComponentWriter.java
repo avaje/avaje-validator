@@ -1,6 +1,5 @@
 package io.avaje.validation.generator;
 
-import static io.avaje.validation.generator.ProcessingContext.createMetaInfWriterFor;
 import static io.avaje.validation.generator.APContext.createSourceFile;
 
 import java.io.IOException;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 
 final class SimpleComponentWriter {
@@ -18,19 +16,21 @@ final class SimpleComponentWriter {
   private final Set<String> importTypes = new TreeSet<>();
   private Append writer;
   private JavaFileObject fileObject;
+  private String fullName;
+  private String packageName;
 
   SimpleComponentWriter(ComponentMetaData metaData) {
     this.metaData = metaData;
   }
 
-  void initialise() throws IOException {
-    var name = metaData.fullName();
+  void initialise(boolean pkgPrivate) throws IOException {
+    fullName = metaData.fullName(pkgPrivate);
+    packageName = ProcessorUtils.packageOf(fullName);
     if (fileObject == null) {
-      fileObject = createSourceFile(name);
+      fileObject = createSourceFile(fullName);
     }
     if (!metaData.isEmpty()) {
-      ProcessingContext.addValidatorSpi(name);
-      ProcessingContext.validateModule();
+      ProcessingContext.addValidatorSpi(fullName);
     }
   }
 
@@ -46,17 +46,6 @@ final class SimpleComponentWriter {
     writeRegister();
     writeClassEnd();
     writer.close();
-  }
-
-  void writeMetaInf() throws IOException {
-    var services = ProcessingContext.readExistingMetaInfServices();
-    final FileObject fileObject = createMetaInfWriterFor(Constants.META_INF_COMPONENT);
-    if (fileObject != null) {
-      try (Writer writer = fileObject.openWriter()) {
-        services.add(metaData.fullName());
-        writer.write(String.join("\n", services));
-      }
-    }
   }
 
   private void writeRegister() {
@@ -95,7 +84,6 @@ final class SimpleComponentWriter {
   }
 
   private void writeClassStart() {
-    final String fullName = metaData.fullName();
     final String shortName = Util.shortName(fullName);
     writer.append("@Generated(\"avaje-validator-generator\")").eol();
     final List<String> factories = metaData.allFactories();
@@ -137,7 +125,7 @@ final class SimpleComponentWriter {
     importTypes.addAll(metaData.allImports());
 
     for (final String importType : importTypes) {
-      if (Util.validImportType(importType, metaData.packageName())) {
+      if (Util.validImportType(importType, packageName)) {
         writer.append("import %s;", importType).eol();
       }
     }
@@ -145,7 +133,6 @@ final class SimpleComponentWriter {
   }
 
   private void writePackage() {
-    final String packageName = metaData.packageName();
     if (packageName != null && !packageName.isEmpty()) {
       writer.append("package %s;", packageName).eol().eol();
     }

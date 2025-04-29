@@ -72,7 +72,7 @@ final class ContraintReader implements BeanReader {
   }
 
   @Override
-  public TypeElement getBeanType() {
+  public TypeElement beanType() {
     return beanType;
   }
 

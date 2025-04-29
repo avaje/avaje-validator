@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 final class ClassReader implements BeanReader {
@@ -15,6 +16,7 @@ final class ClassReader implements BeanReader {
   private final Set<String> importTypes = new TreeSet<>();
   private final TypeReader typeReader;
   private final boolean nonAccessibleField;
+  private final boolean pkgPrivate;
 
   ClassReader(TypeElement beanType) {
     this(beanType, null);
@@ -28,6 +30,7 @@ final class ClassReader implements BeanReader {
     typeReader.process();
     this.nonAccessibleField = typeReader.nonAccessibleField();
     this.allFields = typeReader.allFields();
+    this.pkgPrivate = !beanType.getModifiers().contains(Modifier.PUBLIC);
     importTypes.add("java.util.List");
     importTypes.add("java.util.Set");
     importTypes.add("java.util.Map");
@@ -54,7 +57,7 @@ final class ClassReader implements BeanReader {
   }
 
   @Override
-  public TypeElement getBeanType() {
+  public TypeElement beanType() {
     return beanType;
   }
 
@@ -136,5 +139,10 @@ final class ClassReader implements BeanReader {
     writer.append("    }").eol();
     writer.append("    return true;", shortName).eol();
     writer.append("  }").eol();
+  }
+
+  @Override
+  public boolean isPkgPrivate() {
+    return pkgPrivate;
   }
 }
