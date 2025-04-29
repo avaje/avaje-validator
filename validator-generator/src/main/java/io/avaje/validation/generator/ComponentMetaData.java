@@ -106,7 +106,7 @@ final class ComponentMetaData {
     if (pos > -1) {
       name = name.substring(pos + 1);
     }
-    return camelCase(name).replaceFirst("Jsonb", "Generated");
+    return camelCase(name).replaceFirst("Valid", "Generated");
   }
 
   private static String camelCase(String name) {
