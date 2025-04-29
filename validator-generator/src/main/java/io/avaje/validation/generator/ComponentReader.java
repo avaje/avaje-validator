@@ -1,5 +1,6 @@
 package io.avaje.validation.generator;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -28,12 +29,8 @@ final class ComponentReader {
       final TypeElement moduleType = APContext.typeElement(fqn);
 
       if (isGeneratedComponent(moduleType)) {
-        var adapters =
-            MetaDataPrism.getInstanceOn(moduleType).value().stream()
-                .map(APContext::asTypeElement)
-                .toList();
 
-        if (adapters.get(0).getModifiers().contains(Modifier.PUBLIC)) {
+        if (hasPkgPrivate(moduleType)) {
           componentMetaData.setFullName(fqn);
           readMetaData(moduleType, componentMetaData);
 
@@ -46,6 +43,29 @@ final class ComponentReader {
         }
       }
     }
+  }
+
+  private boolean hasPkgPrivate(final TypeElement moduleType) {
+    return MetaDataPrism.getOptionalOn(moduleType).map(MetaDataPrism::value).stream()
+        .flatMap(List::stream)
+        .map(APContext::asTypeElement)
+        .findAny()
+        .or(
+            () ->
+                ValidFactoryPrism.getOptionalOn(moduleType).map(ValidFactoryPrism::value).stream()
+                    .flatMap(List::stream)
+                    .map(APContext::asTypeElement)
+                    .findAny())
+        .or(
+            () ->
+                AnnotationFactoryPrism.getOptionalOn(moduleType)
+                    .map(AnnotationFactoryPrism::value)
+                    .stream()
+                    .flatMap(List::stream)
+                    .map(APContext::asTypeElement)
+                    .findAny())
+        .filter(t -> t.getModifiers().contains(Modifier.PUBLIC))
+        .isEmpty();
   }
 
   /**
