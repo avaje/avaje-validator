@@ -14,7 +14,8 @@ final class SimpleAdapterWriter {
   private final String adapterPackage;
   private final String adapterFullName;
   private final int genericParamsCount;
-  private final boolean isContraint;  private final String pkgPrivate;
+  private final boolean isContraint;
+  private final String pkgPrivate;
 
   private Append writer;
 
