@@ -1,13 +1,20 @@
 package io.avaje.validation.generator;
 
+import static io.avaje.validation.generator.APContext.asTypeElement;
+import static io.avaje.validation.generator.APContext.logError;
+import static io.avaje.validation.generator.APContext.typeElement;
+import static io.avaje.validation.generator.ProcessingContext.createMetaInfWriterFor;
 import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -18,14 +25,20 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.*;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.tools.FileObject;
+
 import io.avaje.prism.GenerateAPContext;
 import io.avaje.prism.GenerateModuleInfoReader;
 import io.avaje.prism.GenerateUtils;
-import static io.avaje.validation.generator.APContext.*;
 
 @GenerateUtils
 @GenerateAPContext
@@ -48,11 +61,12 @@ import static io.avaje.validation.generator.APContext.*;
 public final class ValidationProcessor extends AbstractProcessor {
 
   private final ComponentMetaData metaData = new ComponentMetaData();
+  private final Map<String, ComponentMetaData> privateMetaData = new HashMap<>();
   private final List<BeanReader> allReaders = new ArrayList<>();
   private final Set<String> sourceTypes = new HashSet<>();
   private final Set<String> alreadyGenerated = new HashSet<>();
   private final Set<String> mixInImports = new HashSet<>();
-  private SimpleComponentWriter componentWriter;
+  private final SimpleComponentWriter componentWriter = new SimpleComponentWriter(metaData);
   private boolean readModuleInfo;
   private boolean processedAnything;
 
@@ -65,7 +79,6 @@ public final class ValidationProcessor extends AbstractProcessor {
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     ProcessingContext.init(processingEnv);
-    this.componentWriter = new SimpleComponentWriter(metaData);
 
     try {
 
@@ -93,7 +106,7 @@ public final class ValidationProcessor extends AbstractProcessor {
       return;
     }
     readModuleInfo = true;
-    new ComponentReader(metaData).read();
+    new ComponentReader(metaData, privateMetaData).read();
   }
 
   @Override
@@ -123,7 +136,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     getElements(round, "io.avaje.spi.ServiceProvider").ifPresent(this::registerSPI);
     getElements(round, ValidSubTypesPrism.PRISM_TYPE).ifPresent(this::writeSubTypeAdaptersForImported);
 
-    initialiseComponent();
+    metaData.fullName(false);
     cascadeTypes();
     writeComponent(round.processingOver());
     return false;
@@ -200,11 +213,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   private boolean cascadeElement(TypeElement element) {
     return element != null
         && element.getKind() != ElementKind.ENUM
-        && !metaData.contains(adapterName(element));
-  }
-
-  private String adapterName(TypeElement element) {
-    return new AdapterName(element).fullName();
+        && !alreadyGenerated.contains(element.toString());
   }
 
   private boolean ignoreType(String type) {
@@ -224,6 +233,9 @@ public final class ValidationProcessor extends AbstractProcessor {
       var seen = new HashSet<>();
       subtypes.removeIf(s -> !seen.add(s.toString()));
       var writer = new SubTypeWriter(element, subtypes);
+      if (!alreadyGenerated.add(element.getQualifiedName().toString())) {
+        continue;
+      }
       writer.write();
       metaData.add(writer.fullName());
       // cascade types
@@ -261,23 +273,24 @@ public final class ValidationProcessor extends AbstractProcessor {
     }
   }
 
-  private void initialiseComponent() {
-    if (!processedAnything) {
-      return;
-    }
-    metaData.initialiseFullName();
-    try {
-      componentWriter.initialise();
-    } catch (final IOException e) {
-      logError("Error creating writer for ValidationComponent", e);
-    }
-  }
-
   private void writeComponent(boolean processingOver) {
     if (processingOver && processedAnything) {
       try {
-        componentWriter.write();
-        componentWriter.writeMetaInf();
+        if (!metaData.all().isEmpty()) {
+          componentWriter.initialise(false);
+          componentWriter.write();
+        }
+
+        for (var meta : privateMetaData.values()) {
+          if (meta.all().isEmpty()) {
+            continue;
+          }
+          var writer = new SimpleComponentWriter(meta);
+          writer.initialise(true);
+          writer.write();
+        }
+        writeMetaInf();
+        ProcessingContext.validateModule();
       } catch (final IOException e) {
         logError("Error writing component", e);
       } finally {
@@ -305,13 +318,7 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private void writeAdapterForType(TypeElement typeElement) {
-    if (isController(typeElement) || !alreadyGenerated.add(typeElement.getQualifiedName().toString())) {
-      // @Valid on controller just indicating the controller request
-      // payloads should be validated - ignore this one
-      return;
-    }
-    final ClassReader beanReader = new ClassReader(typeElement);
-    writeAdapter(typeElement, beanReader);
+    writeAdapter(typeElement, new ClassReader(typeElement));
   }
 
   private boolean isController(TypeElement typeElement) {
@@ -331,6 +338,12 @@ public final class ValidationProcessor extends AbstractProcessor {
   }
 
   private void writeAdapter(TypeElement typeElement, BeanReader beanReader) {
+    if (isController(typeElement)
+        || !alreadyGenerated.add(typeElement.getQualifiedName().toString())) {
+      // @Valid on controller just indicating the controller request
+      // payloads should be validated - ignore this one
+      return;
+    }
     processedAnything = true;
     beanReader.read();
     if (beanReader.nonAccessibleField()) {
@@ -342,13 +355,25 @@ public final class ValidationProcessor extends AbstractProcessor {
     try {
       final SimpleAdapterWriter beanWriter = new SimpleAdapterWriter(beanReader);
       if (beanReader instanceof ClassReader) {
-        metaData.add(beanWriter.fullName());
+        writeMeta(typeElement, beanReader, beanWriter);
       }
       beanWriter.write();
       allReaders.add(beanReader);
       sourceTypes.add(typeElement.getSimpleName().toString());
     } catch (final IOException e) {
       logError("Error writing ValidationAdapter for %s %s", beanReader, e);
+    }
+  }
+
+  private void writeMeta(
+      TypeElement typeElement, BeanReader beanReader, final SimpleAdapterWriter beanWriter) {
+    if (beanReader.isPkgPrivate()) {
+      var packageName =
+          APContext.elements().getPackageOf(typeElement).getQualifiedName().toString();
+      var meta = privateMetaData.computeIfAbsent(packageName, k -> new ComponentMetaData());
+      meta.add(beanWriter.fullName());
+    } else {
+      metaData.add(beanWriter.fullName());
     }
   }
 
@@ -374,6 +399,9 @@ public final class ValidationProcessor extends AbstractProcessor {
     final ValidMethodReader beanReader = new ValidMethodReader(typeElement);
     try {
       final var beanWriter = new SimpleParamBeanWriter(beanReader);
+      if (!alreadyGenerated.add(typeElement.getSimpleName().toString())) {
+        return;
+      }
       beanWriter.write();
     } catch (final IOException e) {
       logError("Error writing ValidationAdapter for %s %s", beanReader, e);
@@ -390,5 +418,15 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private boolean isExtension(TypeElement te) {
     return APContext.isAssignable(te, "io.avaje.validation.spi.ValidationExtension");
+  }
+
+  private void writeMetaInf() throws IOException {
+    var services = ProcessingContext.readExistingMetaInfServices();
+    final FileObject fileObject = createMetaInfWriterFor(Constants.META_INF_COMPONENT);
+    if (fileObject != null) {
+      final Writer writer = fileObject.openWriter();
+      writer.write(String.join("\n", services));
+      writer.close();
+    }
   }
 }

@@ -20,11 +20,6 @@ final class ComponentMetaData {
     return allTypes.toString();
   }
 
-  /** Ensure the component name has been initialised. */
-  void initialiseFullName() {
-    fullName();
-  }
-
   boolean contains(String type) {
     return allTypes.contains(type);
   }
@@ -45,23 +40,22 @@ final class ComponentMetaData {
     this.fullName = fullName;
   }
 
-  String fullName() {
+  String fullName(boolean pkgPrivate) {
     if (fullName == null) {
       final List<String> types = new ArrayList<>(allTypes);
       for (final var adapter : annotationAdapters) {
         adapter.getQualifiedName().toString().transform(types::add);
       }
       String topPackage = TopPackage.of(types);
-      if (!topPackage.endsWith(".valid")) {
+      if (!topPackage.endsWith(".valid") && !pkgPrivate) {
         topPackage += ".valid";
       }
-      fullName = topPackage + ".GeneratedValidatorComponent";
+      fullName =
+          pkgPrivate
+              ? topPackage + "." + name(topPackage) + "ValidatorComponent"
+              : topPackage + ".GeneratedValidatorComponent";
     }
     return fullName;
-  }
-
-  String packageName() {
-    return ProcessorUtils.packageOf(fullName());
   }
 
   List<String> all() {
@@ -81,18 +75,20 @@ final class ComponentMetaData {
     final Set<String> packageImports = new TreeSet<>();
     for (final String adapterFullName : allTypes) {
       packageImports.add(adapterFullName);
-      packageImports.add(ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
+      packageImports.add(
+          ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
     }
 
     for (final var adapter : annotationAdapters) {
       final var adapterFullName = adapter.getQualifiedName().toString();
       packageImports.add(adapterFullName);
-      packageImports.add(ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
+      packageImports.add(
+          ProcessorUtils.extractEnclosingFQN(Util.baseTypeOfAdapter(adapterFullName)));
 
       ConstraintAdapterPrism.getInstanceOn(adapter)
-        .value()
-        .toString()
-        .transform(packageImports::add);
+          .value()
+          .toString()
+          .transform(packageImports::add);
     }
 
     return packageImports;
@@ -100,5 +96,37 @@ final class ComponentMetaData {
 
   public boolean isEmpty() {
     return allTypes.isEmpty() && factoryTypes.isEmpty() && annotationAdapters.isEmpty();
+  }
+
+  static String name(String name) {
+    if (name == null) {
+      return null;
+    }
+    final int pos = name.lastIndexOf('.');
+    if (pos > -1) {
+      name = name.substring(pos + 1);
+    }
+    return camelCase(name).replaceFirst("Valid", "Generated");
+  }
+
+  private static String camelCase(String name) {
+    StringBuilder sb = new StringBuilder(name.length());
+    boolean upper = true;
+    for (char aChar : name.toCharArray()) {
+      if (Character.isLetterOrDigit(aChar)) {
+        if (upper) {
+          aChar = Character.toUpperCase(aChar);
+          upper = false;
+        }
+        sb.append(aChar);
+      } else if (toUpperOn(aChar)) {
+        upper = true;
+      }
+    }
+    return sb.toString();
+  }
+
+  private static boolean toUpperOn(char aChar) {
+    return aChar == ' ' || aChar == '-' || aChar == '_';
   }
 }

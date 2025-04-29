@@ -15,17 +15,19 @@ final class SimpleAdapterWriter {
   private final String adapterFullName;
   private final int genericParamsCount;
   private final boolean isContraint;
+  private final String pkgPrivate;
 
   private Append writer;
 
   SimpleAdapterWriter(BeanReader beanReader) {
     this.beanReader = beanReader;
-    final AdapterName adapterName = new AdapterName(beanReader.getBeanType());
+    final AdapterName adapterName = new AdapterName(beanReader);
     this.adapterShortName = adapterName.shortName();
     this.adapterPackage = adapterName.adapterPackage();
     this.adapterFullName = adapterName.fullName();
     this.genericParamsCount = beanReader.genericTypeParamsCount();
     this.isContraint = beanReader instanceof ContraintReader;
+    this.pkgPrivate = beanReader.isPkgPrivate() ? "" : "public ";
   }
 
   String fullName() {
@@ -52,9 +54,9 @@ final class SimpleAdapterWriter {
   private void writeConstructor() {
 
     if (isContraint) {
-      writer.append("  public %sValidationAdapter(AdapterCreateRequest req", adapterShortName);
+      writer.append("  %s%sValidationAdapter(AdapterCreateRequest req", pkgPrivate, adapterShortName);
     } else {
-      writer.append("  public %sValidationAdapter(ValidationContext ctx", adapterShortName);
+      writer.append("  %s%sValidationAdapter(ValidationContext ctx", pkgPrivate, adapterShortName);
       for (int i = 0; i < genericParamsCount; i++) {
         writer.append(", Type param%d", i);
       }
@@ -68,7 +70,7 @@ final class SimpleAdapterWriter {
       writer.append("  /**").eol();
       writer.append("   * Construct using Object for generic type parameters.").eol();
       writer.append("   */").eol();
-      writer.append("  public %sValidationAdapter(ValidationContext ctx) {", adapterShortName).eol();
+      writer.append("  %s%sValidationAdapter(ValidationContext ctx) {", pkgPrivate, adapterShortName).eol();
       writer.append("    this(ctx");
       for (int i = 0; i < genericParamsCount; i++) {
         writer.append(", Object.class");
@@ -92,7 +94,7 @@ final class SimpleAdapterWriter {
       writer.append("@ConstraintAdapter(%s.class)", beanReader.contraintTarget()).eol();
     }
 
-    writer.append("public final %sclass %sValidationAdapter implements ValidationAdapter<%s> ", Util.valhalla(), adapterShortName, beanReader.shortName());
+    writer.append("%sfinal %sclass %sValidationAdapter implements ValidationAdapter<%s> ", pkgPrivate, Util.valhalla(), adapterShortName, beanReader.shortName());
     writer.append("{").eol().eol();
   }
 

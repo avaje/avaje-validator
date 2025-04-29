@@ -17,6 +17,10 @@ interface BeanReader {
 
   void writeValidatorMethod(Append writer);
 
+  default boolean isPkgPrivate() {
+    return false;
+  }
+
   String shortName();
 
   /** Return the short name of the element. */
@@ -28,7 +32,7 @@ interface BeanReader {
     return 0;
   }
 
-  TypeElement getBeanType();
+  TypeElement beanType();
 
   void cascadeTypes(Set<String> extraTypes);
 

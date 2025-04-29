@@ -8,14 +8,25 @@ final class AdapterName {
   final String adapterPackage;
   final String fullName;
 
-  AdapterName(TypeElement origin) {
-    String originPackage = APContext.elements().getPackageOf(origin).getQualifiedName().toString();
-    var name = shortName(origin);
+  AdapterName(TypeElement type) {
+    this(type, false);
+  }
+
+  AdapterName(BeanReader beanReader) {
+    this(beanReader.beanType(), beanReader.isPkgPrivate());
+  }
+
+  AdapterName(TypeElement type, boolean pkgPrivate) {
+    String originPackage = APContext.elements().getPackageOf(type).getQualifiedName().toString();
+    var name = shortName(type);
     shortName = name.substring(0, name.length() - 1);
-    if ("".equals(originPackage)) {
+    if (pkgPrivate) {
+      this.adapterPackage = originPackage;
+    } else if ("".equals(originPackage)) {
       this.adapterPackage = "valid";
     } else {
-      this.adapterPackage = ProcessingContext.isImported(origin) ? originPackage + ".valid" : originPackage;
+      this.adapterPackage =
+          ProcessingContext.isImported(type) ? originPackage + ".valid" : originPackage;
     }
     this.fullName = adapterPackage + "." + shortName + "ValidationAdapter";
   }
