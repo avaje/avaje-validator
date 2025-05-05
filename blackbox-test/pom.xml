@@ -79,7 +79,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>3.2</version>
+      <version>3.3</version>
     </dependency>
 
     <!-- test dependencies -->
@@ -112,7 +112,7 @@
 			<plugin>
 				<groupId>io.avaje</groupId>
 				<artifactId>avaje-inject-maven-plugin</artifactId>
-				<version>11.4</version>
+				<version>11.5</version>
 				<executions>
 					<execution>
 						<phase>process-sources</phase>
