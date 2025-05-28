@@ -9,20 +9,20 @@ import io.avaje.validation.spi.AdapterFactory;
 import io.avaje.validation.spi.AnnotationFactory;
 import io.avaje.validation.spi.GeneratedComponent;
 import io.avaje.validation.spi.MessageInterpolator;
-import io.avaje.validation.spi.ValidatorCustomizer;
 import io.avaje.validation.spi.ValidationExtension;
+import io.avaje.validation.spi.ValidatorCustomizer;
 
 /** Load all the services using the common service interface. */
 final class ExtensionLoader {
 
-  private final List<GeneratedComponent> generatedComponents = new ArrayList<>();
-  private final List<ValidatorCustomizer> customizers = new ArrayList<>();
-  private final List<AdapterFactory> adapterFactories = new ArrayList<>();
-  private final List<AnnotationFactory> annotationFactories = new ArrayList<>();
-  private Optional<MessageInterpolator> interpolator = Optional.empty();
+  private static final List<GeneratedComponent> generatedComponents = new ArrayList<>();
+  private static final List<ValidatorCustomizer> customizers = new ArrayList<>();
+  private static final List<AdapterFactory> adapterFactories = new ArrayList<>();
+  private static final List<AnnotationFactory> annotationFactories = new ArrayList<>();
+  private static Optional<MessageInterpolator> interpolator = Optional.empty();
 
-  ExtensionLoader() {
-    for (var spi : ServiceLoader.load(ValidationExtension.class)) {
+  static void init(ClassLoader classLoader) {
+    for (var spi : ServiceLoader.load(ValidationExtension.class, classLoader)) {
       if (spi instanceof GeneratedComponent gc) {
         generatedComponents.add(gc);
       } else if (spi instanceof ValidatorCustomizer c) {
@@ -37,23 +37,23 @@ final class ExtensionLoader {
     }
   }
 
-  Optional<MessageInterpolator> interpolator() {
+  static Optional<MessageInterpolator> interpolator() {
     return interpolator;
   }
 
-  List<GeneratedComponent> generatedComponents() {
+  static List<GeneratedComponent> generatedComponents() {
     return generatedComponents;
   }
 
-  List<ValidatorCustomizer> customizers() {
+  static List<ValidatorCustomizer> customizers() {
     return customizers;
   }
 
-  List<AdapterFactory> adapterFactories() {
+  static List<AdapterFactory> adapterFactories() {
     return adapterFactories;
   }
 
-  List<AnnotationFactory> annotationFactories() {
+  static List<AnnotationFactory> annotationFactories() {
     return annotationFactories;
   }
 }

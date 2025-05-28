@@ -131,6 +131,9 @@ public interface Validator {
     /** Adds additional Locales for this validator */
     Builder addLocales(Locale... locales);
 
+    /** Set the ClassLoader to use when loading adapters. */
+    Builder classLoader(ClassLoader classLoader);
+
     /**
      * Contract for obtaining the Clock used as the reference for now when validating the
      * {@code @Future} and {@code @Past} constraints.
@@ -172,7 +175,6 @@ public interface Validator {
      * Build and return the Validator instance with all the given adapters and factories registered.
      */
     Validator build();
-
   }
 
   /** Function to build a ValidationAdapter from a Validation Context */
