@@ -15,13 +15,13 @@ import io.avaje.validation.spi.ValidatorCustomizer;
 /** Load all the services using the common service interface. */
 final class ExtensionLoader {
 
-  private static final List<GeneratedComponent> generatedComponents = new ArrayList<>();
-  private static final List<ValidatorCustomizer> customizers = new ArrayList<>();
-  private static final List<AdapterFactory> adapterFactories = new ArrayList<>();
-  private static final List<AnnotationFactory> annotationFactories = new ArrayList<>();
-  private static Optional<MessageInterpolator> interpolator = Optional.empty();
+  private final List<GeneratedComponent> generatedComponents = new ArrayList<>();
+  private final List<ValidatorCustomizer> customizers = new ArrayList<>();
+  private final List<AdapterFactory> adapterFactories = new ArrayList<>();
+  private final List<AnnotationFactory> annotationFactories = new ArrayList<>();
+  private Optional<MessageInterpolator> interpolator = Optional.empty();
 
-  static void init(ClassLoader classLoader) {
+  ExtensionLoader(ClassLoader classLoader) {
     for (var spi : ServiceLoader.load(ValidationExtension.class, classLoader)) {
       if (spi instanceof GeneratedComponent gc) {
         generatedComponents.add(gc);
@@ -37,23 +37,23 @@ final class ExtensionLoader {
     }
   }
 
-  static Optional<MessageInterpolator> interpolator() {
+  Optional<MessageInterpolator> interpolator() {
     return interpolator;
   }
 
-  static List<GeneratedComponent> generatedComponents() {
+  List<GeneratedComponent> generatedComponents() {
     return generatedComponents;
   }
 
-  static List<ValidatorCustomizer> customizers() {
+  List<ValidatorCustomizer> customizers() {
     return customizers;
   }
 
-  static List<AdapterFactory> adapterFactories() {
+  List<AdapterFactory> adapterFactories() {
     return adapterFactories;
   }
 
-  static List<AnnotationFactory> annotationFactories() {
+  List<AnnotationFactory> annotationFactories() {
     return annotationFactories;
   }
 }

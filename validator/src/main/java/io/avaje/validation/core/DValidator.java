@@ -286,13 +286,12 @@ final class DValidator implements Validator, ValidationContext {
       return this;
     }
 
-    private void registerComponents() {
-      ExtensionLoader.init(classLoader);
+    private void registerComponents(ExtensionLoader loader) {
       // first register all user defined ValidatorCustomizer
-      for (final ValidatorCustomizer next : ExtensionLoader.customizers()) {
+      for (final ValidatorCustomizer next : loader.customizers()) {
         next.customize(this);
       }
-      for (final GeneratedComponent next : ExtensionLoader.generatedComponents()) {
+      for (final GeneratedComponent next : loader.generatedComponents()) {
         next.customize(this);
       }
     }
@@ -304,12 +303,13 @@ final class DValidator implements Validator, ValidationContext {
         return DEFAULT;
       }
 
-      registerComponents();
+      final var loader = new ExtensionLoader(classLoader);
+      registerComponents(loader);
 
       final var localeResolver = new LocaleResolver(defaultLocale, otherLocales);
       final var interpolator =
           Optional.ofNullable(this.userInterpolator)
-              .or(ExtensionLoader::interpolator)
+              .or(loader::interpolator)
               .orElseGet(BasicMessageInterpolator::new);
 
       return new DValidator(
