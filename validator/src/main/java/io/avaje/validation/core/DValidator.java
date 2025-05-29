@@ -288,11 +288,17 @@ final class DValidator implements Validator, ValidationContext {
 
     private void registerComponents(ExtensionLoader loader) {
       // first register all user defined ValidatorCustomizer
-      for (final ValidatorCustomizer next : loader.customizers()) {
+      for (final var next : loader.customizers()) {
         next.customize(this);
       }
-      for (final GeneratedComponent next : loader.generatedComponents()) {
+      for (final var next : loader.generatedComponents()) {
         next.customize(this);
+      }
+      for (final var adapterFactory : loader.adapterFactories()) {
+        add(adapterFactory);
+      }
+      for (final var annotationFactory : loader.annotationFactories()) {
+        add(annotationFactory);
       }
     }
 
