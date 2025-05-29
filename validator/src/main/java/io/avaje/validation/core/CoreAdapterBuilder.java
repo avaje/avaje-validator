@@ -12,15 +12,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import io.avaje.validation.adapter.ConstraintAdapter;
-import io.avaje.validation.groups.Default;
 import org.jspecify.annotations.Nullable;
 
+import io.avaje.validation.adapter.ConstraintAdapter;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.core.adapters.BasicAdapters;
 import io.avaje.validation.core.adapters.FuturePastAdapterFactory;
 import io.avaje.validation.core.adapters.NumberAdapters;
+import io.avaje.validation.groups.Default;
 import io.avaje.validation.spi.AdapterFactory;
 import io.avaje.validation.spi.AnnotationFactory;
 
@@ -72,7 +72,12 @@ final class CoreAdapterBuilder {
         return result;
       }
     }
-    throw new IllegalArgumentException("No ValidationAdapter for " + type + ". Perhaps needs @Valid or @Valid.Import?");
+    throw new IllegalArgumentException(
+        "No ValidationAdapter for "
+            + type
+            + "\nPossible Causes: \n"
+            + "1. Missing @Valid or @Valid.Import annotation.\n"
+            + "2. The avaje-validator-generator dependency was not present during compilation\n");
   }
 
   <T> ValidationAdapter<T> annotationAdapter(
