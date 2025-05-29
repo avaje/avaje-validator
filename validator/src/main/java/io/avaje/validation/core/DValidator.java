@@ -38,7 +38,6 @@ import io.avaje.validation.spi.ValidatorCustomizer;
 /** Default implementation of Validator. */
 final class DValidator implements Validator, ValidationContext {
 
-  private static final ExtensionLoader SPI_LOADER = new ExtensionLoader();
   private final CoreAdapterBuilder builder;
   private final Map<Type, ValidationType<?>> typeCache = new ConcurrentHashMap<>();
   private final MessageInterpolator interpolator;
@@ -188,6 +187,7 @@ final class DValidator implements Validator, ValidationContext {
     private final List<String> bundleNames = new ArrayList<>();
     private final List<ResourceBundle> bundles = new ArrayList<>();
     private final List<Locale> otherLocales = new ArrayList<>();
+    private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private Locale defaultLocale = Locale.getDefault();
     private Supplier<Clock> clockSupplier = DEFAULT_CLOCK;
     private Duration temporalTolerance = ZERO;
@@ -257,6 +257,12 @@ final class DValidator implements Validator, ValidationContext {
     }
 
     @Override
+    public Builder classLoader(ClassLoader classLoader) {
+      this.classLoader = classLoader;
+      return this;
+    }
+
+    @Override
     public Builder clockProvider(Supplier<Clock> clockSupplier) {
       this.clockSupplier = clockSupplier;
       return this;
@@ -281,11 +287,12 @@ final class DValidator implements Validator, ValidationContext {
     }
 
     private void registerComponents() {
+      ExtensionLoader.init(classLoader);
       // first register all user defined ValidatorCustomizer
-      for (final ValidatorCustomizer next : SPI_LOADER.customizers()) {
+      for (final ValidatorCustomizer next : ExtensionLoader.customizers()) {
         next.customize(this);
       }
-      for (final GeneratedComponent next : SPI_LOADER.generatedComponents()) {
+      for (final GeneratedComponent next : ExtensionLoader.generatedComponents()) {
         next.customize(this);
       }
     }
@@ -302,7 +309,7 @@ final class DValidator implements Validator, ValidationContext {
       final var localeResolver = new LocaleResolver(defaultLocale, otherLocales);
       final var interpolator =
           Optional.ofNullable(this.userInterpolator)
-              .or(SPI_LOADER::interpolator)
+              .or(ExtensionLoader::interpolator)
               .orElseGet(BasicMessageInterpolator::new);
 
       return new DValidator(
