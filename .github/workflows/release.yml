@@ -50,9 +50,9 @@ jobs:
       uses: peter-evans/create-pull-request@v6
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: "Bump version to ${{ github.event.inputs.new_version }} and update workflow description"
+        commit-message: "Version ${{ github.event.inputs.new_version }}"
         branch: "release/${{ github.event.inputs.new_version }}"
-        title: "Release: Bump version to ${{ github.event.inputs.new_version }}"
+        title: "Release: Version ${{ github.event.inputs.new_version }}"
         body: |
-          Bump the project version to the deployed `${{ github.event.inputs.new_version }}`.
+          Release version `${{ github.event.inputs.new_version }}` to be deployed.
         base: main
