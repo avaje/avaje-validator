@@ -1,0 +1,58 @@
+name: Release Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_version:
+        description: 'New version to set (e.g., 1.0-RC1, 1.0)'
+        default: 2.11
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # Protection rules for this environment are set in the repository settings.
+    environment: maven
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Java and Maven
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'zulu'
+        server-id: central
+        server-username: ${{ secrets.MAVEN_USERNAME }}
+        server-password: ${{ secrets.MAVEN_PASSWORD }}
+        # GPG Key setup for signing artifacts
+        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+        gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+    - name: Maven cache
+      uses: actions/cache@v4
+      env:
+        cache-name: maven-cache
+      with:
+        path: ~/.m2
+        key: build-${{ env.cache-name }}
+
+    - name: Bump version in pom.xml
+      run: mvn versions:set -DnewVersion=${{ github.event.inputs.new_version }} -DgenerateBackupPoms=false
+
+    - name: Deploy JAR to Maven Central
+      run: mvn clean deploy -Pcentral
+
+    - name: Create Pull Request for Version Bump
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "Version ${{ github.event.inputs.new_version }}"
+        branch: "release/${{ github.event.inputs.new_version }}"
+        title: "Release: Version ${{ github.event.inputs.new_version }}"
+        body: |
+          Release version `${{ github.event.inputs.new_version }}` to be deployed.
+        base: main
