@@ -5,7 +5,7 @@ on:
     inputs:
       new_version:
         description: 'New version to set (e.g., 1.0-RC1, 1.0)'
-        default: 2.11
+        default: 2.12-RC1
         required: true
         type: string
 
@@ -20,6 +20,14 @@ jobs:
     environment: maven
     steps:
     - uses: actions/checkout@v4
+
+    - name: Maven cache
+      uses: actions/cache@v4
+      env:
+        cache-name: maven-cache
+      with:
+        path: ~/.m2
+        key: build-${{ env.cache-name }}
     - name: Set up Java and Maven
       uses: actions/setup-java@v4
       with:
@@ -32,19 +40,21 @@ jobs:
         gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
         gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
-    - name: Maven cache
-      uses: actions/cache@v4
-      env:
-        cache-name: maven-cache
-      with:
-        path: ~/.m2
-        key: build-${{ env.cache-name }}
-
-    - name: Bump version in pom.xml
+    - name: Print Maven Settings.xml for Debugging
+        # This step helps debug by printing the effective Maven settings.xml
+        # It will show if the 'central' server configuration is correctly added.
+      run: |
+          cat ~/.m2/settings.xml
+      shell: bash
+    - name: Bump version in pom.xml && Deploy JAR to Maven Central
       run: mvn versions:set -DnewVersion=${{ github.event.inputs.new_version }} -DgenerateBackupPoms=false
 
     - name: Deploy JAR to Maven Central
       run: mvn clean deploy -Pcentral
+      env:
+        MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
     - name: Create Pull Request for Version Bump
       uses: peter-evans/create-pull-request@v6
