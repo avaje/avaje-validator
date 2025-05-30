@@ -34,19 +34,13 @@ jobs:
         java-version: '17'
         distribution: 'zulu'
         server-id: central
-        server-username: ${{ secrets.MAVEN_USERNAME }}
-        server-password: ${{ secrets.MAVEN_PASSWORD }}
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_PASSWORD
         # GPG Key setup for signing artifacts
         gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-        gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        gpg-passphrase: GPG_PASSPHRASE
 
-    - name: Print Maven Settings.xml for Debugging
-        # This step helps debug by printing the effective Maven settings.xml
-        # It will show if the 'central' server configuration is correctly added.
-      run: |
-          cat ~/.m2/settings.xml
-      shell: bash
-    - name: Bump version in pom.xml && Deploy JAR to Maven Central
+    - name: Bump version in pom.xml
       run: mvn versions:set -DnewVersion=${{ github.event.inputs.new_version }} -DgenerateBackupPoms=false
 
     - name: Deploy JAR to Maven Central
