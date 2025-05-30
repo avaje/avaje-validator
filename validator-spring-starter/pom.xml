@@ -8,6 +8,8 @@
     <version>2.11</version>
   </parent>
   <artifactId>avaje-validator-spring-starter</artifactId>
+  <name>avaje-validator-spring-starter</name>
+  <description>Avaje Validation Spring Starter</description>
 
   <dependencyManagement>
     <dependencies>
