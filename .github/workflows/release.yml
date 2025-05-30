@@ -1,0 +1,52 @@
+# This workflow is named 'Release Workflow' and will be triggered manually
+name: Release Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_version:
+        description: 'New version to set (e.g., 1.0.1, 2.0.0-RC1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Define a single job named 'release'
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    # Protection rules for this environment are set in the repository settings.
+    environment: maven
+
+    # Define the steps for the 'release' job
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Java and Maven
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'azul'
+        server-id: central
+        server-username: ${{ secrets.MAVEN_USERNAME }}
+        server-password: ${{ secrets.MAVEN_PASSWORD }}
+        # GPG Key setup for signing artifacts
+        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+        gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+    - name: Bump version in pom.xml
+      run: mvn versions:set -DnewVersion=${{ github.event.inputs.new_version }} -DgenerateBackupPoms=false
+
+    - name: Deploy JAR to Maven Central
+      run: mvn clean deploy -Pcentral
+
+      # Push the changes back to the 'master' branch.
+    - name: Commit and push version change
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Bump version to ${{ github.event.inputs.new_version }}"
+        git push
