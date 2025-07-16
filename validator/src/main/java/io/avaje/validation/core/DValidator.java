@@ -31,7 +31,6 @@ import io.avaje.validation.adapter.ValidationContext;
 import io.avaje.validation.adapter.ValidationRequest;
 import io.avaje.validation.spi.AdapterFactory;
 import io.avaje.validation.spi.AnnotationFactory;
-import io.avaje.validation.spi.GeneratedComponent;
 import io.avaje.validation.spi.MessageInterpolator;
 import io.avaje.validation.spi.ValidatorCustomizer;
 
@@ -180,7 +179,7 @@ final class DValidator implements Validator, ValidationContext {
   static final class DBuilder implements Validator.Builder {
 
     private static final Supplier<Clock> DEFAULT_CLOCK = Clock::systemDefaultZone;
-    private static final Validator DEFAULT = Validator.builder().build();
+    static final Validator DEFAULT = Validator.builder().build();
 
     private final List<AdapterFactory> factories = new ArrayList<>();
     private final List<AnnotationFactory> afactories = new ArrayList<>();

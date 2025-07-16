@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 class AShipTest {
 
-  Validator validator = Validator.builder().build();
+  Validator validator = Validator.instance();
 
   @Test
   void valid() {

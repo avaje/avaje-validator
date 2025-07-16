@@ -10,4 +10,8 @@ public final class DefaultBootstrap {
   public static Validator.Builder builder() {
     return new DValidator.DBuilder();
   }
+
+  public static Validator instance() {
+    return DValidator.DBuilder.DEFAULT;
+  }
 }
