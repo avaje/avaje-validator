@@ -107,6 +107,16 @@ public interface Validator {
     return DefaultBootstrap.builder();
   }
 
+  /**
+   * Get the default Validator instance with all generated adapters configured.
+   *
+   * <p>This is a faster alternative to {@code Validator.builder().build()} that will return the
+   * same singleton instance.
+   */
+  static Validator instance() {
+    return DefaultBootstrap.instance();
+  }
+
   /** Build the Validator instance adding ValidationAdapter, Factory or AdapterBuilder. */
   interface Builder {
 
