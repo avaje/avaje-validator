@@ -99,7 +99,7 @@ For types we cannot annotate with `@Valid` we can place `@ImportValidPojo` on an
 
 ```java
 // build using defaults
-Validator validator = Validator.builder().build();
+Validator validator = Validator.instance();
 
 Customer customer = ...;
 
