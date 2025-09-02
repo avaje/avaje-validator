@@ -108,7 +108,9 @@ final class TypeReader {
       element = mixInField;
     }
 
-    if (includeField(element) || Util.isNonNullable(element)) {
+    if (includeField(element)
+        || !element.getModifiers().contains(Modifier.STATIC)
+            && Util.isNonNullable(element)) {
       seenFields.add(element.toString());
       var reader = new FieldReader(element, genericTypeParams);
       if (reader.hasConstraints() || ValidPrism.isPresent(element)) {
