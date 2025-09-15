@@ -12,8 +12,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * The annotated element must not be {@code null} and must contain at least one non-whitespace
- * character. Accepts {@code CharSequence}.
+ * The annotated element must not be {@code null} and must contain at least one
+ * non-whitespace character. Accepts {@code CharSequence}.
  *
  * @author Hardy Ferentschik
  * @see Character#isWhitespace(char)

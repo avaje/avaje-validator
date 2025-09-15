@@ -1,27 +1,21 @@
 package io.avaje.validation.constraints;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.ElementType.TYPE_USE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.time.Clock;
-import java.time.Year;
+
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
 
 /**
  * The annotated element must be an instant, date or time in the past or in the present.
  *
- * <p><i>Now</i> is defined by the {@link Clock} Supplier attached to the {@link Validator}. The
+ * <p><i>Now</i> is defined by the {@code Clock} Supplier attached to the {@code Validator}. The
  * default clock defines the current time according to the virtual machine, applying the current
  * default time zone if needed.
  *
  * <p>The notion of present is defined relatively to the type on which the constraint is used. For
- * instance, if the constraint is on a {@link Year}, present would mean the whole current year.
+ * instance, if the constraint is on a {@code Year}, present would mean the whole current year.
  *
  * <p>Supported types are:
  *

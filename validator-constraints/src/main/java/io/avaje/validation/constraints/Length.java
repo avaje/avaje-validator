@@ -6,8 +6,8 @@ import static java.lang.annotation.ElementType.*;
 
 /**
  * The annotated string length must be between the specified boundaries (included).
- *
- * <p>Supported types are:
+ * <p>
+ * Supported types are:
  * <ul>
  *   <li>{@code CharSequence} (length of character sequence is evaluated)
  *   <li>{@code String} (length of character sequence is evaluated)
@@ -23,10 +23,17 @@ public @interface Length {
 
   Class<?>[] groups() default {};
 
+  /** @return size the string must be higher or equal to */
   int min() default 0;
 
+	/** @return size the string must be lower or equal to */
   int max() default Integer.MAX_VALUE;
 
+  /**
+	 * Defines several {@link Length} annotations on the same element.
+	 *
+	 * @see Length
+	 */
   @Target({ElementType.METHOD, ElementType.FIELD})
   @Retention(RetentionPolicy.RUNTIME)
   @Documented

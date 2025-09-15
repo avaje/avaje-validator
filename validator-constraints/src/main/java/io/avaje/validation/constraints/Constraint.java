@@ -7,7 +7,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Marks an annotation as a Constraint class. Only annotations marked with Constraint are composable
+ * Marks an annotation as a constraint class.
+ * Only annotations marked with {@code @Constraint} are composable.
  */
 @Retention(CLASS)
 @Target({ANNOTATION_TYPE})

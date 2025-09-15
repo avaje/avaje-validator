@@ -20,20 +20,18 @@ import java.lang.annotation.Target;
 /**
  * The annotated element must be a number whose value must be higher or equal to the specified
  * minimum.
- *
- * <p>Supported types are:
- *
+ * <p>
+ * Supported types are:
  * <ul>
  *   <li>{@code BigDecimal}
  *   <li>{@code BigInteger}
  *   <li>{@code CharSequence}
  *   <li>{@code byte}, {@code short}, {@code int}, {@code long}, and their respective wrappers
  * </ul>
- *
  * Note that {@code double} and {@code float} are not supported due to rounding errors (some
  * providers might provide some approximative support).
- *
- * <p>{@code null} elements are considered valid.
+ * <p>
+ * {@code null} elements are considered valid.
  *
  * @author Emmanuel Bernard
  */
@@ -58,8 +56,8 @@ public @interface DecimalMin {
   /**
    * Specifies whether the specified maximum is inclusive or exclusive. By default, it is inclusive.
    *
-   * @return {@code true} if the value must be lower or equal to the specified maximum, {@code
-   *     false} if the value must be lower
+   * @return {@code true} if the value must be lower or equal to the specified maximum,
+   *         {@code false} if the value must be lower
    * @since 1.1
    */
   boolean inclusive() default true;

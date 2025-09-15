@@ -14,21 +14,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotated element must be a number whose value must be lower or equal to the specified
- * maximum.
- *
- * <p>Supported types are:
- *
+ * The annotated element must be a number whose value must be lower or
+ * equal to the specified maximum.
+ * <p>
+ * Supported types are:
  * <ul>
- *   <li>{@code BigDecimal}
- *   <li>{@code BigInteger}
- *   <li>{@code byte}, {@code short}, {@code int}, {@code long}, and their respective wrappers
+ *     <li>{@code BigDecimal}</li>
+ *     <li>{@code BigInteger}</li>
+ *     <li>{@code byte}, {@code short}, {@code int}, {@code long}, and their respective
+ *     wrappers</li>
  * </ul>
- *
- * Note that {@code double} and {@code float} are not supported due to rounding errors (some
- * providers might provide some approximative support).
- *
- * <p>{@code null} elements are considered valid.
+ * Note that {@code double} and {@code float} are not supported due to rounding errors
+ * (some providers might provide some approximative support).
+ * <p>
+ * {@code null} elements are considered valid.
  *
  * @author Emmanuel Bernard
  */
@@ -41,8 +40,14 @@ public @interface Max {
 
   Class<?>[] groups() default {};
 
+	/** @return value the element must be lower or equal to */
   long value();
 
+	/**
+	 * Defines several {@link Max} annotations on the same element.
+	 *
+	 * @see Max
+	 */
   @Target({ElementType.METHOD, ElementType.FIELD})
   @Retention(RetentionPolicy.RUNTIME)
   @Documented

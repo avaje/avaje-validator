@@ -1,4 +1,5 @@
 package io.avaje.validation.constraints;
+
 /** Possible Regexp flags. */
 public enum RegexFlag {
 

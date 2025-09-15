@@ -11,9 +11,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotated element must be true. Supported types are {@code boolean} and {@code Boolean}.
- *
- * <p>{@code null} elements are considered valid.
+ * The annotated element must be true.
+ * Supported types are {@code boolean} and {@code Boolean}.
+ * <p>
+ * {@code null} elements are considered valid.
  *
  * @author Emmanuel Bernard
  */
