@@ -40,7 +40,7 @@ public @interface Max {
 
   Class<?>[] groups() default {};
 
-	/** @return value the element must be lower or equal to */
+	/** Return value the element must be lower or equal to */
   long value();
 
 	/**

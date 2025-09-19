@@ -37,10 +37,10 @@ public @interface Digits {
 
   Class<?>[] groups() default {};
 
-  /** @return maximum number of integral digits accepted for this number */
+  /** Return maximum number of integral digits accepted for this number */
   int integer();
 
-  /** @return maximum number of fractional digits accepted for this number */
+  /** Return maximum number of fractional digits accepted for this number */
   int fraction() default 0;
 
 	/**
@@ -51,7 +51,7 @@ public @interface Digits {
   @Target({ElementType.METHOD, ElementType.FIELD})
   @Retention(RetentionPolicy.RUNTIME)
   @Documented
-  public @interface Digitses {
+  @interface Digitses {
     Digits[] value();
   }
 }

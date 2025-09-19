@@ -23,10 +23,10 @@ public @interface Length {
 
   Class<?>[] groups() default {};
 
-  /** @return size the string must be higher or equal to */
+  /** Return size the string must be higher or equal to */
   int min() default 0;
 
-	/** @return size the string must be lower or equal to */
+	/** Return size the string must be lower or equal to */
   int max() default Integer.MAX_VALUE;
 
   /**

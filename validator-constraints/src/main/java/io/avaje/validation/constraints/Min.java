@@ -40,7 +40,7 @@ public @interface Min {
 
   Class<?>[] groups() default {};
 
-	/** @return value the element must be higher or equal to */
+	/** Return value the element must be higher or equal to */
   long value();
 
 	/**
