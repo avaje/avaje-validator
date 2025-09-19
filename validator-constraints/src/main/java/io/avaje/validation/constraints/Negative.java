@@ -17,9 +17,9 @@ import java.lang.annotation.Target;
  * <p>
  * Supported types are:
  * <ul>
- *     <li>{@code BigDecimal}</li>
- *     <li>{@code BigInteger}</li>
- *     <li>{@code byte}, {@code short}, {@code int}, {@code long}, {@code float},
+ *   <li>{@code BigDecimal}</li>
+ *   <li>{@code BigInteger}</li>
+ *   <li>{@code byte}, {@code short}, {@code int}, {@code long}, {@code float},
  *     {@code double} and their respective wrappers</li>
  * </ul>
  * <p>
