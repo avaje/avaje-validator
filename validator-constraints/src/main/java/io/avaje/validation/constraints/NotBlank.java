@@ -12,8 +12,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * The annotated element must not be {@code null} and must contain at least one non-whitespace
- * character. Accepts {@code CharSequence}.
+ * The annotated element must not be {@code null} and must contain at least one
+ * non-whitespace character. Accepts {@code CharSequence}.
  *
  * @author Hardy Ferentschik
  * @see Character#isWhitespace(char)
@@ -24,7 +24,10 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface NotBlank {
 
-  /** Set the maximum length. By default this is 0 meaning unlimited. */
+  /**
+   * Set the maximum length. By default, this is 0 (meaning unlimited).
+   * This mimics the functionality of {@link Size} & {@link Length}, for a verbosity reduction.
+   */
   int max() default 0;
 
   String message() default "{avaje.NotBlank.message}";

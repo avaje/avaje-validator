@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 /**
  * The annotated element must be an instant, date or time in the past.
  *
- * <p><i>Now</i> is defined by the {@link Clock} Supplier attached to the {@link Validator}. The
+ * <p><i>Now</i> is defined by the {@code Clock} Supplier attached to the {@code Validator}. The
  * default clock defines the current time according to the virtual machine, applying the current
  * default time zone if needed.
  *

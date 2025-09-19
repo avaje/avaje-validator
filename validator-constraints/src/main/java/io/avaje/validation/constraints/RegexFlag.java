@@ -1,4 +1,5 @@
 package io.avaje.validation.constraints;
+
 /** Possible Regexp flags. */
 public enum RegexFlag {
 
@@ -58,7 +59,7 @@ public enum RegexFlag {
     this.value = value;
   }
 
-  /** @return flag value as defined in {@link java.util.regex.Pattern} */
+  /** Return flag value as defined in {@link java.util.regex.Pattern} */
   public int getValue() {
     return value;
   }

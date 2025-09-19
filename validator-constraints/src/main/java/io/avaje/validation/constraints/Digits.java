@@ -15,17 +15,16 @@ import java.lang.annotation.Target;
 
 /**
  * The annotated element must be a number within accepted range.
- *
- * <p>Supported types are:
- *
+ * <p>
+ * Supported types are:
  * <ul>
  *   <li>{@code BigDecimal}
  *   <li>{@code BigInteger}
  *   <li>{@code CharSequence}
  *   <li>{@code byte}, {@code short}, {@code int}, {@code long}, and their respective wrapper types
  * </ul>
- *
- * <p>{@code null} elements are considered valid.
+ * <p>
+ * {@code null} elements are considered valid.
  *
  * @author Emmanuel Bernard
  */
@@ -38,14 +37,21 @@ public @interface Digits {
 
   Class<?>[] groups() default {};
 
+  /** Return maximum number of integral digits accepted for this number */
   int integer();
 
+  /** Return maximum number of fractional digits accepted for this number */
   int fraction() default 0;
 
+	/**
+	 * Defines several {@link Digits} annotations on the same element.
+	 *
+	 * @see Digits
+	 */
   @Target({ElementType.METHOD, ElementType.FIELD})
   @Retention(RetentionPolicy.RUNTIME)
   @Documented
-  public @interface Digitses {
+  @interface Digitses {
     Digits[] value();
   }
 }

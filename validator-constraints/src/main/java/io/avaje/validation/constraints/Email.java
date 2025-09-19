@@ -13,10 +13,10 @@ import java.lang.annotation.Target;
 
 /**
  * The string has to be a well-formed email address. Exact semantics of what makes up a valid email
- * address are left to the provided Email Annotation ValidationAdapter providers. Accepts {@code
- * CharSequence}.
- *
- * <p>{@code null} elements are considered valid.
+ * address are left to the provided Email Annotation ValidationAdapter providers.
+ * <p>
+ * Accepts {@code CharSequence}.
+ * {@code null} elements are considered valid.
  */
 @Constraint
 @Documented
