@@ -77,7 +77,10 @@ final class CoreAdapterBuilder {
             + type
             + "\nPossible Causes: \n"
             + "1. Missing @Valid or @Valid.Import annotation.\n"
-            + "2. The avaje-validator-generator dependency was not present during compilation\n");
+            + "2. The avaje-validator-generator dependency was not present during compilation"
+            + (Runtime.version().feature() >= 23
+                ? " or -proc full was not enabled in maven compiler\n"
+                : "\n"));
   }
 
   <T> ValidationAdapter<T> annotationAdapter(
