@@ -7,7 +7,6 @@ public class Repro {
   @Valid
   public static class Top {
     @NotNull public Nested nested;
-
     public static record Nested(String prop) {}
   }
 }
