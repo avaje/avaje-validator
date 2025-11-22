@@ -23,6 +23,9 @@ public final class DefaultValidatorProvider implements InjectPlugin {
 
   private static boolean aspectsOnClasspath() {
     try {
+      if (ModuleLayer.boot().findModule("io.avaje.inject.aop").isPresent()) {
+        return true;
+      }
       Class.forName("io.avaje.inject.aop.Aspect");
       return true;
     } catch (ClassNotFoundException e) {

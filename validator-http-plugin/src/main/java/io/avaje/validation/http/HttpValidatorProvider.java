@@ -1,38 +1,43 @@
 package io.avaje.validation.http;
 
-import io.avaje.inject.BeanScopeBuilder;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+
+import io.avaje.http.api.Validator;
+import io.avaje.inject.BeanScopeBuilder;
 
 /**
  * Plugin for avaje inject that provides a default Http Validator instance.
  */
 public final class HttpValidatorProvider implements io.avaje.inject.spi.InjectPlugin {
 
-  private static final Class<?> VALIDATOR_HTTP_CLASS = avajeHttpOnClasspath();
+  private static final boolean VALIDATOR_HTTP_CLASS = avajeHttpOnClasspath();
 
-  private static Class<?> avajeHttpOnClasspath() {
+  private static boolean avajeHttpOnClasspath() {
     try {
-      return Class.forName("io.avaje.http.api.Validator");
+      if (ModuleLayer.boot().findModule("io.avaje.http.api").isPresent()) {
+        return true;
+      }
+      Class.forName("io.avaje.http.api.Validator");
+      return true;
     } catch (ClassNotFoundException e) {
-      return null;
+      return false;
     }
-  }
+	  }
 
   @Override
   public Class<?>[] provides() {
-    return VALIDATOR_HTTP_CLASS == null ? new Class<?>[]{} : new Class<?>[]{VALIDATOR_HTTP_CLASS};
+    return !VALIDATOR_HTTP_CLASS ? new Class<?>[]{} : new Class<?>[]{Validator.class};
   }
 
   @Override
   public void apply(BeanScopeBuilder builder) {
-    if (VALIDATOR_HTTP_CLASS == null) {
+    if (!VALIDATOR_HTTP_CLASS) {
       return;
     }
 
-    builder.provideDefault(null, VALIDATOR_HTTP_CLASS, () -> {
+    builder.provideDefault(null, Validator.class, () -> {
       final var props = builder.configPlugin();
       final var locales = new ArrayList<Locale>();
 
