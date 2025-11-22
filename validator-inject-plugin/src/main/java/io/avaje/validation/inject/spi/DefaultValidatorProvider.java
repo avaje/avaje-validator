@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import io.avaje.inject.BeanScopeBuilder;
+import io.avaje.inject.aop.Aspect;
 import io.avaje.inject.aop.AspectProvider;
 import io.avaje.inject.spi.GenericType;
 import io.avaje.inject.spi.InjectPlugin;
@@ -23,12 +24,9 @@ public final class DefaultValidatorProvider implements InjectPlugin {
 
   private static boolean aspectsOnClasspath() {
     try {
-      if (ModuleLayer.boot().findModule("io.avaje.inject.aop").isPresent()) {
-        return true;
-      }
-      Class.forName("io.avaje.inject.aop.Aspect");
+      var __ = Aspect.class;
       return true;
-    } catch (ClassNotFoundException e) {
+    } catch (NoClassDefFoundError e) {
       return false;
     }
   }

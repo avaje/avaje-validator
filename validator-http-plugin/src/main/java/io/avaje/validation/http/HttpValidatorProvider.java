@@ -7,33 +7,27 @@ import java.util.Locale;
 import io.avaje.http.api.Validator;
 import io.avaje.inject.BeanScopeBuilder;
 
-/**
- * Plugin for avaje inject that provides a default Http Validator instance.
- */
+/** Plugin for avaje inject that provides a default Http Validator instance. */
 public final class HttpValidatorProvider implements io.avaje.inject.spi.InjectPlugin {
 
-  private static final boolean VALIDATOR_HTTP_CLASS = avajeHttpOnClasspath();
+  private static final Class<?> VALIDATOR_HTTP_CLASS = avajeHttpOnClasspath();
 
-  private static boolean avajeHttpOnClasspath() {
+  private static Class<?> avajeHttpOnClasspath() {
     try {
-      if (ModuleLayer.boot().findModule("io.avaje.http.api").isPresent()) {
-        return true;
-      }
-      Class.forName("io.avaje.http.api.Validator");
-      return true;
-    } catch (ClassNotFoundException e) {
-      return false;
+      return Validator.class;
+    } catch (NoClassDefFoundError e) {
+      return null;
     }
-	  }
+  }
 
   @Override
   public Class<?>[] provides() {
-    return !VALIDATOR_HTTP_CLASS ? new Class<?>[]{} : new Class<?>[]{Validator.class};
+    return VALIDATOR_HTTP_CLASS == null ? new Class<?>[] {} : new Class<?>[] {VALIDATOR_HTTP_CLASS};
   }
 
   @Override
   public void apply(BeanScopeBuilder builder) {
-    if (!VALIDATOR_HTTP_CLASS) {
+    if (VALIDATOR_HTTP_CLASS == null) {
       return;
     }
 
