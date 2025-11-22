@@ -65,6 +65,10 @@ final class ClassReader implements BeanReader {
     return allFields;
   }
 
+  public boolean hasConstraint() {
+    return !allFields.isEmpty();
+  }
+
   @Override
   public boolean nonAccessibleField() {
     return nonAccessibleField;

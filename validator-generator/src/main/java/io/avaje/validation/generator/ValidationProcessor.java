@@ -2,6 +2,7 @@ package io.avaje.validation.generator;
 
 import static io.avaje.validation.generator.APContext.asTypeElement;
 import static io.avaje.validation.generator.APContext.logError;
+import static io.avaje.validation.generator.APContext.logWarn;
 import static io.avaje.validation.generator.APContext.typeElement;
 import static io.avaje.validation.generator.ProcessingContext.createMetaInfWriterFor;
 import static java.util.stream.Collectors.joining;
@@ -344,25 +345,35 @@ public final class ValidationProcessor extends AbstractProcessor {
       // payloads should be validated - ignore this one
       return;
     }
-    processedAnything = true;
     beanReader.read();
     if (beanReader.nonAccessibleField()) {
       if (beanReader.hasValidationAnnotation()) {
-        logError("Error ValidationAdapter due to nonAccessibleField for %s ", beanReader);
+        logError(typeElement, "Error ValidationAdapter due to nonAccessibleField for %s ", beanReader);
       }
       return;
     }
+
     try {
       final SimpleAdapterWriter beanWriter = new SimpleAdapterWriter(beanReader);
-      if (beanReader instanceof ClassReader) {
+      if (beanReader instanceof ClassReader cr) {
+        if (!cr.hasConstraint()) {
+          logNoConstraint(beanReader, cr);
+          return;
+        }
         writeMeta(typeElement, beanReader, beanWriter);
       }
+      processedAnything = true;
       beanWriter.write();
       allReaders.add(beanReader);
       sourceTypes.add(typeElement.getSimpleName().toString());
     } catch (final IOException e) {
       logError("Error writing ValidationAdapter for %s %s", beanReader, e);
     }
+  }
+
+  private void logNoConstraint(BeanReader beanReader, ClassReader cr) {
+    if (!ControllerPrism.isPresent(cr.beanType()) || !PathPrism.isPresent(cr.beanType()))
+      logWarn(cr.beanType(), "No Constraints Defined", beanReader);
   }
 
   private void writeMeta(
