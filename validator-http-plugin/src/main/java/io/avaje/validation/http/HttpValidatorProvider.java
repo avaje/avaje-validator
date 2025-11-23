@@ -19,8 +19,7 @@ public final class HttpValidatorProvider implements io.avaje.inject.spi.InjectPl
       if (ModuleLayer.boot().findModule("io.avaje.http.api").isPresent()) {
         return true;
       }
-      var __ = Validator.class;
-      return true;
+      return Validator.class != null;
     } catch (NoClassDefFoundError e) {
       return false;
     }

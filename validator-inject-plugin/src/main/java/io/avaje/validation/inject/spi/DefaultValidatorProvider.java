@@ -27,8 +27,7 @@ public final class DefaultValidatorProvider implements InjectPlugin {
       if (ModuleLayer.boot().findModule("io.avaje.inject.aop").isPresent()) {
         return true;
       }
-      var __ = Aspect.class;
-      return true;
+      return Aspect.class != null;
     } catch (NoClassDefFoundError e) {
       return false;
     }
