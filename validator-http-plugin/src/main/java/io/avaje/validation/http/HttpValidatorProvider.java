@@ -15,14 +15,19 @@ public final class HttpValidatorProvider implements io.avaje.inject.spi.InjectPl
   private static final boolean VALIDATOR_HTTP_AVAILABLE = avajeHttpOnClasspath();
 
   private static boolean avajeHttpOnClasspath() {
-    try {
-      if (ModuleLayer.boot().findModule("io.avaje.http.api").isPresent()) {
-        return true;
-      }
-      return Validator.class != null;
-    } catch (NoClassDefFoundError e) {
-      return false;
-    }
+
+    var modules = ModuleLayer.boot();
+    return modules
+        .findModule("io.avaje.validation.http")
+        .map(m -> modules.findModule("io.avaje.http.api").isPresent())
+        .orElseGet(
+            () -> {
+              try {
+                return Validator.class != null;
+              } catch (NoClassDefFoundError e) {
+                return false;
+              }
+            });
   }
 
   @Override

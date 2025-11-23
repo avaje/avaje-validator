@@ -23,14 +23,19 @@ public final class DefaultValidatorProvider implements InjectPlugin {
   private static final boolean WIRE_ASPECTS = aspectsOnClasspath();
 
   private static boolean aspectsOnClasspath() {
-    try {
-      if (ModuleLayer.boot().findModule("io.avaje.inject.aop").isPresent()) {
-        return true;
-      }
-      return Aspect.class != null;
-    } catch (NoClassDefFoundError e) {
-      return false;
-    }
+
+    var modules = ModuleLayer.boot();
+    return modules
+        .findModule("io.avaje.validation.plugin")
+        .map(m -> modules.findModule("io.avaje.inject.aop").isPresent())
+        .orElseGet(
+            () -> {
+              try {
+                return Aspect.class != null;
+              } catch (NoClassDefFoundError e) {
+                return false;
+              }
+            });
   }
 
   @Override
