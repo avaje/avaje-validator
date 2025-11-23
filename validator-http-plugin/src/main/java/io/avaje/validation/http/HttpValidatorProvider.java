@@ -12,7 +12,7 @@ import io.avaje.inject.BeanScopeBuilder;
  */
 public final class HttpValidatorProvider implements io.avaje.inject.spi.InjectPlugin {
 
-  private static final boolean VALIDATOR_HTTP_AVAILABLE = avajeHttpOnClasspath();
+  private static final boolean WIRE_VALIDATOR = avajeHttpOnClasspath();
 
   private static boolean avajeHttpOnClasspath() {
 
@@ -32,12 +32,12 @@ public final class HttpValidatorProvider implements io.avaje.inject.spi.InjectPl
 
   @Override
   public Class<?>[] provides() {
-    return !VALIDATOR_HTTP_AVAILABLE ? new Class<?>[]{} : new Class<?>[]{Validator.class};
+    return WIRE_VALIDATOR ? new Class<?>[] {Validator.class} : new Class<?>[] {};
   }
 
   @Override
   public void apply(BeanScopeBuilder builder) {
-    if (!VALIDATOR_HTTP_AVAILABLE) {
+    if (!WIRE_VALIDATOR) {
       return;
     }
 
