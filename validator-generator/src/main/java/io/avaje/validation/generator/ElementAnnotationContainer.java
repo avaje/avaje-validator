@@ -68,6 +68,7 @@ record ElementAnnotationContainer(
         return a;
       })
       .filter(Objects::nonNull)
+      .map(a -> checkType(element, uType, a))
       .map(a ->
         Map.entry(
           UType.parse(a.getAnnotationType()),
@@ -80,6 +81,24 @@ record ElementAnnotationContainer(
       .collect(toList());
   }
 
+  private static final AnnotationMirror checkType(
+      Element element, UType uType, AnnotationMirror a) {
+    ConstraintPrism.getOptionalOn(a.getAnnotationType().asElement())
+        .map(ConstraintPrism::targets)
+        .filter(l -> !l.isEmpty())
+        .ifPresent(
+            l -> {
+              if (l.stream().noneMatch(t -> APContext.types().isAssignable(uType.mirror(), t))) {
+                APContext.logError(
+                    element,
+                    "@%s cannot be used on %s",
+                    ProcessorUtils.shortType(a.getAnnotationType().toString()),
+                    uType.shortWithoutAnnotations());
+              }
+            });
+    return a;
+  }
+
   /** Only include Valid with groups defined */
   private static boolean excludePlainValid(AnnotationMirror a, Element element) {
     return !ValidPrism.isInstance(a) || !ValidPrism.instance(a).groups().isEmpty() && !(element instanceof TypeElement);
@@ -89,6 +108,7 @@ record ElementAnnotationContainer(
     return Optional.ofNullable(uType).map(UType::annotations).stream()
       .flatMap(List::stream)
       .filter(ElementAnnotationContainer::hasMetaConstraintAnnotation)
+      .map(a -> checkType(element, uType, a))
       .map(a ->
         Map.entry(
           UType.parse(a.getAnnotationType()),
