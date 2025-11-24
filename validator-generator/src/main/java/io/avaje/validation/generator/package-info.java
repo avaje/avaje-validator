@@ -1,3 +1,5 @@
+@GeneratePrism(io.avaje.http.api.Controller.class)
+@GeneratePrism(io.avaje.http.api.Path.class)
 @GeneratePrism(io.avaje.validation.adapter.ConstraintAdapter.class)
 @GeneratePrism(io.avaje.validation.ImportValidPojo.class)
 @GeneratePrism(io.avaje.validation.ValidSubTypes.class)
