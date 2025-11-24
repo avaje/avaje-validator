@@ -65,7 +65,7 @@ final class ClassReader implements BeanReader {
     return allFields;
   }
 
-  public boolean hasConstraint() {
+  boolean hasConstraint() {
     return !allFields.isEmpty();
   }
 
