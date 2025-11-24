@@ -81,21 +81,19 @@ record ElementAnnotationContainer(
       .collect(toList());
   }
 
-  private static final AnnotationMirror checkType(
-      Element element, UType uType, AnnotationMirror a) {
+  private static AnnotationMirror checkType(Element element, UType uType, AnnotationMirror a) {
     ConstraintPrism.getOptionalOn(a.getAnnotationType().asElement())
-        .map(ConstraintPrism::targets)
-        .filter(l -> !l.isEmpty())
-        .ifPresent(
-            l -> {
-              if (l.stream().noneMatch(t -> APContext.types().isAssignable(uType.mirror(), t))) {
-                APContext.logError(
-                    element,
-                    "@%s cannot be used on %s",
-                    ProcessorUtils.shortType(a.getAnnotationType().toString()),
-                    uType.shortWithoutAnnotations());
-              }
-            });
+      .map(ConstraintPrism::targets)
+      .filter(l -> !l.isEmpty())
+      .ifPresent(l -> {
+        if (l.stream().noneMatch(t -> APContext.types().isAssignable(uType.mirror(), t))) {
+          APContext.logError(
+            element,
+            "@%s cannot be used on %s",
+            ProcessorUtils.shortType(a.getAnnotationType().toString()),
+            uType.shortWithoutAnnotations());
+        }
+      });
     return a;
   }
 
