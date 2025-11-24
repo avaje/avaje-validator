@@ -113,11 +113,6 @@ final class FieldReader {
   }
 
   void cascadeTypes(Set<String> types) {
-
-    if (genericType.allAnnotationsInType().stream().noneMatch(ValidPrism::isInstance)) {
-      return;
-    }
-
     final String mainType = genericType.mainType();
     if ("java.util.List".equals(mainType) || "java.util.Set".equals(mainType)) {
       types.add(genericType.param0().fullWithoutAnnotations());
