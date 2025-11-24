@@ -8,7 +8,7 @@ import io.avaje.validation.constraints.NotEmpty;
 public final class ByIdSelectorSealed implements SealedEntitySelector {
 
   @NotEmpty
-  private List<UUID> ids;
+  private List<@io.avaje.validation.generator.models.valid.typeconstraint.TypeConstrained UUID> ids;
 
   public void setIds(List<UUID> ids) {
     this.ids = ids;
