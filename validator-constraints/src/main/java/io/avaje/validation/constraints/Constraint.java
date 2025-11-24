@@ -16,4 +16,12 @@ public @interface Constraint {
 
   /** Determines if the constraint can validate primitives without boxing */
   boolean unboxPrimitives() default false;
+
+
+  /**
+   * The assignable types the constraint can be placed on. When the constraint
+   * is placed on a type that cannot be assigned a compiler error will be thrown.
+   */
+  Class<?>[] targets() default {};
+
 }
