@@ -109,10 +109,7 @@ final class AdapterHelper {
           writer.eol().append("%s    .andThen(this)", indent, mainType.param0().shortType());
         } else {
           // cascade validate
-          writer
-              .eol()
-              .append(
-                  "%s    .andThen(ctx.adapter(%s.class))", indent, mainType.param0().shortType());
+          writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, mainType.param0().shortType());
         }
       }
       writer.eol().append("%s    .optional()", indent);
@@ -122,11 +119,7 @@ final class AdapterHelper {
       if (genericType.mainType().equals(recursiveType)) {
         writer.eol().append("%s    .andThen(this)", indent);
       } else {
-        writer
-            .eol()
-            .append(
-                "%s    .andThen(ctx.adapter(%s.class))",
-                indent, genericType.shortWithoutAnnotations());
+        writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, genericType.shortWithoutAnnotations());
       }
     }
   }
@@ -135,15 +128,13 @@ final class AdapterHelper {
     boolean first = true;
 
     var type =
-        OPTIONAL.equals(genericType.mainType())
-            ? genericType.param0().shortWithoutAnnotations()
-            : this.type;
+      OPTIONAL.equals(genericType.mainType())
+        ? genericType.param0().shortWithoutAnnotations()
+        : this.type;
 
     for (final var a : annotations) {
       if (first) {
-        writer.append(
-            "%sctx.<%s>adapter(%s.class, %s)",
-            indent, type, a.getKey().shortWithoutAnnotations(), a.getValue());
+        writer.append("%sctx.<%s>adapter(%s.class, %s)", indent, type, a.getKey().shortWithoutAnnotations(), a.getValue());
         first = false;
         continue;
       }

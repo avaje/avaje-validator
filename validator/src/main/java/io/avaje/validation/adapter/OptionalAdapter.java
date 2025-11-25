@@ -4,10 +4,10 @@ import java.util.Optional;
 
 final class OptionalAdapter<T> implements ValidationAdapter<Optional<T>> {
 
-  private ValidationAdapter<T> initalAdapter;
+  private final ValidationAdapter<T> adapter;
 
-  OptionalAdapter(ValidationAdapter<T> initalAdapter) {
-    this.initalAdapter = initalAdapter;
+  OptionalAdapter(ValidationAdapter<T> adapter) {
+    this.adapter = adapter;
   }
 
   @Override
@@ -16,7 +16,7 @@ final class OptionalAdapter<T> implements ValidationAdapter<Optional<T>> {
       return true;
     }
 
-    value.ifPresent(v -> initalAdapter.validate(v, req, propertyName));
+    value.ifPresent(v -> adapter.validate(v, req, propertyName));
     return true;
   }
 }
