@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  * @author Hardy Ferentschik
  * @see Character#isWhitespace(char)
  */
-@Constraint
+@Constraint(targets = CharSequence.class)
 @Documented
 @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)

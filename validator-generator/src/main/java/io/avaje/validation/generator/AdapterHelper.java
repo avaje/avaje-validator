@@ -106,10 +106,10 @@ final class AdapterHelper {
       if (hasValid) {
         if (mainType.param0().fullWithoutAnnotations().equals(recursiveType)) {
           // cascade validate
-          writer.eol().append("%s    .andThen(this)", indent, mainType.param0().shortType());
+          writer.eol().append("%s    .andThen(this)", indent, mainType.param0().shortWithoutAnnotations());
         } else {
           // cascade validate
-          writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, mainType.param0().shortType());
+          writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, mainType.param0().shortWithoutAnnotations());
         }
       }
       writer.eol().append("%s    .optional()", indent);
