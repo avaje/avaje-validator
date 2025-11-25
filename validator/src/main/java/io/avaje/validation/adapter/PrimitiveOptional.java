@@ -13,6 +13,7 @@ final class PrimitiveOptional<T> implements ValidationAdapter<T> {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public boolean validate(T value, ValidationRequest req, String propertyName) {
     if (value == null) {
       return true;
