@@ -119,7 +119,7 @@ final class FieldReader {
     }
 
     final String mainType = genericType.mainType();
-    if ("java.util.List".equals(mainType) || "java.util.Set".equals(mainType)) {
+    if ("java.util.List".equals(mainType) || "java.util.Set".equals(mainType) || "java.util.Optional".equals(mainType)) {
       types.add(genericType.param0().fullWithoutAnnotations());
     } else if ("java.util.Map".equals(mainType)) {
       types.add(genericType.param1().fullWithoutAnnotations());

@@ -1,4 +1,4 @@
-package example.avaje.optional;
+package io.avaje.validation.generator.models.valid.optional;
 
 import java.util.Optional;
 import java.util.OptionalDouble;

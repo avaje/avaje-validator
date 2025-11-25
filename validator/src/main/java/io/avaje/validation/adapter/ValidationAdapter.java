@@ -1,6 +1,7 @@
 package io.avaje.validation.adapter;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -80,8 +81,17 @@ public interface ValidationAdapter<T> {
    *
    * @return The adapter for optional value validation
    */
-  default ContainerAdapter<T> optional() {
-    return new OptionalValidationAdapter<>(this);
+  default ValidationAdapter<Optional<T>> optional() {
+    return new OptionalAdapter<>(this);
+  }
+
+  /**
+   * Create an adapter for validating a primitive optional value. (OptionalInt, OptionalDouble, etc.)
+   *
+   * @return The adapter for optional value validation
+   */
+  default ValidationAdapter<T> primitiveOptional() {
+    return new PrimitiveOptional<>(this);
   }
 
   /**
