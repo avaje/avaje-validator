@@ -4,12 +4,10 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-final class PrimitiveOptional<T> implements ValidationAdapter<T> {
+final class PrimitiveOptional<T> extends ContainerAdapter<T> {
 
-  private ValidationAdapter<T> initalAdapter;
-
-  PrimitiveOptional(ValidationAdapter<T> initalAdapter) {
-    this.initalAdapter = initalAdapter;
+  PrimitiveOptional(ValidationAdapter<T> adapter) {
+    super(adapter);
   }
 
   @Override
