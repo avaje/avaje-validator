@@ -4,4 +4,4 @@ import io.avaje.validation.constraints.Valid;
 
 @Valid
 @PassingSkill
-public record Tarnished(int vigor, int endurance) {}
+public record Tarnished(int vigor, @TypeConstrained int endurance) {}

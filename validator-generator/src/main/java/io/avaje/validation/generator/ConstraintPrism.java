@@ -1,8 +1,10 @@
 package io.avaje.validation.generator;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeMirror;
 
 import io.avaje.prism.GeneratePrism;
 
@@ -32,6 +34,10 @@ public interface ConstraintPrism {
 
   default Boolean unboxPrimitives() {
     return false;
+  }
+
+  default List<TypeMirror> targets() {
+    return List.of();
   }
 
   static Optional<ConstraintPrism> getOptionalOn(Element e) {
