@@ -86,7 +86,10 @@ record ElementAnnotationContainer(
       .map(ConstraintPrism::targets)
       .filter(l -> !l.isEmpty())
       .ifPresent(l -> {
-        if (l.stream().noneMatch(t -> APContext.types().isAssignable(uType.mirror(), t))) {
+        if (l.stream().noneMatch(t ->
+          APContext.types().isAssignable(uType.mirror(), t)
+            || "java.util.Optional".equals(uType.mainType())
+            && APContext.types().isAssignable(uType.param0().mirror(), t))) {
           APContext.logError(
             element,
             "@%s cannot be used on %s",

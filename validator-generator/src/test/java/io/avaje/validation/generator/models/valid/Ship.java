@@ -10,10 +10,7 @@ import io.avaje.validation.constraints.Valid;
 @Valid
 public record Ship(
     @NotEmpty(message = "sus ", groups = Ship.class)
-        Map<
-                @NotEmpty(groups = Ship.class) @NotBlank String,
-                @NotBlank(groups = Ship.class) @Valid CrewMate>
-            crew,
+        Map<@NotEmpty(groups = Ship.class) @NotBlank String, @Valid CrewMate> crew,
     @NotEmpty(message = "tasks,=(testing wierd chars&rparen; ")
         List<
                 @NotEmpty(groups = List.class)
