@@ -9,6 +9,7 @@ public class Contact {
   public String firstName;
   public String lastName;
 
+  @Valid
   public Optional<Address> address;
 
   public Contact() {

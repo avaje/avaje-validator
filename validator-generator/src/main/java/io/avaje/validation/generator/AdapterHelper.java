@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 final class AdapterHelper {
 
+  private static final String OPTIONAL = "java.util.Optional";
   private final Append writer;
   private final ElementAnnotationContainer elementAnnotations;
   private final String indent;
@@ -68,7 +69,7 @@ final class AdapterHelper {
       return;
     }
 
-    if (!typeUse1.isEmpty() && (isAssignable(genericType.mainType(), "java.lang.Iterable"))) {
+    if (!typeUse1.isEmpty() && isAssignable(genericType.mainType(), "java.lang.Iterable")) {
       writer.eol().append("%s    .list()", indent);
       writeTypeUse(genericType.param0(), typeUse1);
 
@@ -100,25 +101,49 @@ final class AdapterHelper {
           indent, mainType.shortWithoutAnnotations().replace("[]", ""));
       }
 
-    } else if (hasValid) {
-      if (!classLevel) {
-        if (genericType.mainType().equals(recursiveType)) {
-          writer.eol().append("%s    .andThen(this)", indent);
+    } else if (OPTIONAL.equals(genericType.mainType())) {
+      // cascade validate
+      if (hasValid) {
+        if (mainType.param0().fullWithoutAnnotations().equals(recursiveType)) {
+          // cascade validate
+          writer.eol().append("%s    .andThen(this)", indent, mainType.param0().shortType());
         } else {
-          writer.eol().append("%s    .andThen(ctx.adapter(%s.class))", indent, genericType.shortWithoutAnnotations());
+          // cascade validate
+          writer
+              .eol()
+              .append(
+                  "%s    .andThen(ctx.adapter(%s.class))", indent, mainType.param0().shortType());
         }
       }
-
-    } else if (genericType.mainType().contains("java.util.Optional")) {
       writer.eol().append("%s    .optional()", indent);
+    } else if (genericType.mainType().contains(OPTIONAL)) {
+      writer.eol().append("%s    .primitiveOptional()", indent);
+    } else if (hasValid && !classLevel) {
+      if (genericType.mainType().equals(recursiveType)) {
+        writer.eol().append("%s    .andThen(this)", indent);
+      } else {
+        writer
+            .eol()
+            .append(
+                "%s    .andThen(ctx.adapter(%s.class))",
+                indent, genericType.shortWithoutAnnotations());
+      }
     }
   }
 
   private void writeFirst(List<Entry<UType, String>> annotations) {
     boolean first = true;
+
+    var type =
+        OPTIONAL.equals(genericType.mainType())
+            ? genericType.param0().shortWithoutAnnotations()
+            : this.type;
+
     for (final var a : annotations) {
       if (first) {
-        writer.append("%sctx.<%s>adapter(%s.class, %s)", indent, type, a.getKey().shortWithoutAnnotations(), a.getValue());
+        writer.append(
+            "%sctx.<%s>adapter(%s.class, %s)",
+            indent, type, a.getKey().shortWithoutAnnotations(), a.getValue());
         first = false;
         continue;
       }
