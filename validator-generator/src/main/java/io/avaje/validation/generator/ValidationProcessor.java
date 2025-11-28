@@ -70,6 +70,9 @@ public final class ValidationProcessor extends AbstractProcessor {
   private final SimpleComponentWriter componentWriter = new SimpleComponentWriter(metaData);
   private boolean readModuleInfo;
   private boolean processedAnything;
+  private boolean generateComponent;
+  private boolean finished;
+  private int rounds;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -112,7 +115,8 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-    if (round.errorRaised()) {
+    generateComponent = rounds++ > 0;
+    if (finished || round.errorRaised()) {
       return false;
     }
     APContext.setProjectModuleElement(annotations, round);
@@ -139,13 +143,18 @@ public final class ValidationProcessor extends AbstractProcessor {
 
     metaData.fullName(false);
     cascadeTypes();
-    writeComponent(round.processingOver());
+    writeComponent(generateComponent);
     return false;
   }
 
   // Optional because these annotations are not guaranteed to exist
   private Optional<? extends Set<? extends Element>> getElements(RoundEnvironment round, String name) {
-    return Optional.ofNullable(typeElement(name)).map(round::getElementsAnnotatedWith);
+    var op =
+        Optional.ofNullable(typeElement(name))
+            .map(round::getElementsAnnotatedWith)
+            .filter(n -> !n.isEmpty());
+    generateComponent = generateComponent && op.isEmpty();
+    return op;
   }
 
   private void registerCustomAdapters(Set<? extends Element> elements) {
@@ -203,6 +212,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     }
     for (final String type : extraTypes) {
       if (!ignoreType(type)) {
+        generateComponent = false;
         final TypeElement element = typeElement(type);
         if (cascadeElement(element)) {
           writeAdapterForType(element);
@@ -276,6 +286,7 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private void writeComponent(boolean processingOver) {
     if (processingOver && processedAnything) {
+      this.finished = true;
       try {
         if (!metaData.all().isEmpty()) {
           componentWriter.initialise(false);
