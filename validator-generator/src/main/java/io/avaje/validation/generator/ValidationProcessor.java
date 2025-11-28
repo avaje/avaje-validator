@@ -71,7 +71,6 @@ public final class ValidationProcessor extends AbstractProcessor {
   private boolean readModuleInfo;
   private boolean processedAnything;
   private boolean generateComponent;
-  private boolean finished;
   private int rounds;
 
   @Override
@@ -115,10 +114,10 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-    generateComponent = rounds++ > 0;
-    if (finished || round.errorRaised()) {
+    if (generateComponent || round.errorRaised()) {
       return false;
     }
+    generateComponent = rounds++ > 0;
     APContext.setProjectModuleElement(annotations, round);
     readModule();
     getElements(round, AvajeConstraintPrism.PRISM_TYPE).ifPresent(this::writeConstraintAdapters);
@@ -286,7 +285,6 @@ public final class ValidationProcessor extends AbstractProcessor {
 
   private void writeComponent(boolean processingOver) {
     if (processingOver && processedAnything) {
-      this.finished = true;
       try {
         if (!metaData.all().isEmpty()) {
           componentWriter.initialise(false);
