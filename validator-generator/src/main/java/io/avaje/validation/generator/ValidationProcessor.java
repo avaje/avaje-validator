@@ -152,6 +152,7 @@ public final class ValidationProcessor extends AbstractProcessor {
         Optional.ofNullable(typeElement(name))
             .map(round::getElementsAnnotatedWith)
             .filter(n -> !n.isEmpty());
+    // skip generateComponent if anything needs processing in this round
     generateComponent = generateComponent && op.isEmpty();
     return op;
   }
@@ -211,6 +212,7 @@ public final class ValidationProcessor extends AbstractProcessor {
     }
     for (final String type : extraTypes) {
       if (!ignoreType(type)) {
+        // skip generateComponent for this round due to cascade
         generateComponent = false;
         final TypeElement element = typeElement(type);
         if (cascadeElement(element)) {
