@@ -13,7 +13,7 @@
   <name>validator generator</name>
   <description>annotation processor generating validation adapters</description>
   <properties>
-    <avaje.prisms.version>1.44-RC4</avaje.prisms.version>
+    <avaje.prisms.version>2.0-RC1</avaje.prisms.version>
     <io.jstach.version>1.3.7</io.jstach.version>
   </properties>
 
