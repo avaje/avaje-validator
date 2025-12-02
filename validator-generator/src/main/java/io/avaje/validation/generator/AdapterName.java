@@ -20,15 +20,16 @@ final class AdapterName {
     String originPackage = APContext.elements().getPackageOf(type).getQualifiedName().toString();
     var name = shortName(type);
     shortName = name.substring(0, name.length() - 1);
-    if (pkgPrivate) {
+    if (pkgPrivate || "".equals(originPackage)) {
       this.adapterPackage = originPackage;
-    } else if ("".equals(originPackage)) {
-      this.adapterPackage = "valid";
     } else {
       this.adapterPackage =
           ProcessingContext.isImported(type) ? originPackage + ".valid" : originPackage;
     }
-    this.fullName = adapterPackage + "." + shortName + "ValidationAdapter";
+    this.fullName =
+        adapterPackage.isBlank()
+            ? shortName + "ValidationAdapter"
+            : adapterPackage + "." + shortName + "ValidationAdapter";
   }
 
   private String shortName(TypeElement origin) {

@@ -28,7 +28,7 @@
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
     <maven.compiler.release>17</maven.compiler.release>
     <inject.version>12.1-RC6</inject.version>
-    <spi.version>2.13</spi.version>
+    <spi.version>2.14-RC1</spi.version>
     <project.build.outputTimestamp>2025-12-01T15:48:59Z</project.build.outputTimestamp>
   </properties>
 

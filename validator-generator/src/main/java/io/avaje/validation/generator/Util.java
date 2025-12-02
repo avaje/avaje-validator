@@ -54,7 +54,7 @@ final class Util {
   }
 
   private static boolean importDifferentPackage(String type, String packageName) {
-    return type.replace(packageName + '.', "").indexOf('.') > 0;
+    return packageName.isBlank() || type.replace(packageName + '.', "").indexOf('.') > 0;
   }
 
   private static boolean importJavaLangSubpackage(String type) {

@@ -47,13 +47,24 @@ final class ComponentMetaData {
         adapter.getQualifiedName().toString().transform(types::add);
       }
       String topPackage = TopPackage.of(types);
-      if (!topPackage.endsWith(".valid") && !pkgPrivate) {
+      var defaultPackage =
+          !topPackage.contains(".")
+              && APContext.getProjectModuleElement().isUnnamed()
+              && APContext.elements().getPackageElement(topPackage) == null;
+
+      if (!defaultPackage && !pkgPrivate && !topPackage.endsWith(".valid")) {
         topPackage += ".valid";
       }
-      fullName =
-          pkgPrivate
-              ? topPackage + "." + name(topPackage) + "ValidatorComponent"
-              : topPackage + ".GeneratedValidatorComponent";
+
+      if (defaultPackage) {
+        fullName = "GeneratedValidatorComponent";
+      } else if (pkgPrivate) {
+        fullName = topPackage + "." + name(topPackage) + "ValidatorComponent";
+      } else if (APContext.isTestCompilation()) {
+        fullName = topPackage + ".TestValidatorComponent";
+      } else {
+        fullName = topPackage + ".GeneratedValidatorComponent";
+      }
     }
     return fullName;
   }
