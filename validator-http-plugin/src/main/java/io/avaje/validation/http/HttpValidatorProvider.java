@@ -22,7 +22,7 @@ public final class HttpValidatorProvider implements io.avaje.inject.spi.InjectPl
       .orElseGet(() -> {
         try {
           return Validator.class != null;
-        } catch (NoClassDefFoundError e) {
+        } catch (Throwable e) {
           return false;
         }
       });

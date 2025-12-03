@@ -30,7 +30,7 @@ public final class DefaultValidatorProvider implements InjectPlugin {
       .orElseGet(() -> {
         try {
           return Aspect.class != null;
-        } catch (NoClassDefFoundError e) {
+        } catch (Throwable e) {
           return false;
         }
       });
