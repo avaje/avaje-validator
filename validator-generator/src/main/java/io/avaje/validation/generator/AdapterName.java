@@ -27,9 +27,9 @@ final class AdapterName {
           ProcessingContext.isImported(type) ? originPackage + ".valid" : originPackage;
     }
     this.fullName =
-        adapterPackage.isBlank()
-            ? shortName + "ValidationAdapter"
-            : adapterPackage + "." + shortName + "ValidationAdapter";
+      adapterPackage.isBlank()
+        ? shortName + "ValidationAdapter"
+        : adapterPackage + "." + shortName + "ValidationAdapter";
   }
 
   private String shortName(TypeElement origin) {
