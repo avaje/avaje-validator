@@ -112,7 +112,7 @@
 			<plugin>
 				<groupId>io.avaje</groupId>
 				<artifactId>avaje-inject-maven-plugin</artifactId>
-				<version>12.0</version>
+				<version>${inject.version}</version>
 				<executions>
 					<execution>
 						<phase>process-sources</phase>
