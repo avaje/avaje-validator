@@ -22,7 +22,7 @@ jobs:
     - uses: actions/checkout@v6
 
     - name: Maven cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       env:
         cache-name: maven-cache
       with:
