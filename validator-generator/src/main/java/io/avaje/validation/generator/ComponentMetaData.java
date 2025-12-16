@@ -48,9 +48,10 @@ final class ComponentMetaData {
       }
       String topPackage = TopPackage.of(types);
       var defaultPackage =
-        !topPackage.contains(".")
-          && APContext.getProjectModuleElement().isUnnamed()
-          && APContext.elements().getPackageElement(topPackage) == null;
+          topPackage == null
+              || !topPackage.contains(".")
+                  && APContext.getProjectModuleElement().isUnnamed()
+                  && APContext.elements().getPackageElement(topPackage) == null;
 
       if (!defaultPackage && !pkgPrivate && !topPackage.endsWith(".valid")) {
         topPackage += ".valid";
