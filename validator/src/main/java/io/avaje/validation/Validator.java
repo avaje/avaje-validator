@@ -40,7 +40,7 @@ import io.avaje.validation.spi.ValidatorCustomizer;
 public interface Validator {
 
   /**
-   * Validate the object using the default locale throwing ConstraintViolationException when
+   * Validate the object using the default locale, throwing ConstraintViolationException when
    * there are constraint violations.
    *
    * @param any The object to validate
@@ -51,12 +51,12 @@ public interface Validator {
   void validate(Object any, @Nullable Class<?>... groups) throws ConstraintViolationException;
 
   /**
-   * Validate the object with a given locale throwing ConstraintViolationException when
+   * Validate the object with a given locale for error messages, throwing ConstraintViolationException when
    * there are constraint violations.
    *
-   * <p>If the locale is not one of the supported locales then the default locale will be used.
+   * <p>If the locale is not supported, then the default locale will be used.
    *
-   * <p>This is expected to be used when the Validator is configured to support multiple locales.
+   * <p>This is used when the Validator is configured to support multiple locales.
 
    * @param any The object to validate
    * @param locale The locale to use for constraint messages

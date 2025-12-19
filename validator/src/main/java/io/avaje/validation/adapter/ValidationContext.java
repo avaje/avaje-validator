@@ -154,9 +154,7 @@ public interface ValidationContext {
   /** Used to build default ValidationAdapters with the default group and message. */
   interface RequestBuilder {
 
-    /**
-     * Build a default AdapterCreateRequest with the appropriate default message.
-     */
+    /** Build a default AdapterCreateRequest with the appropriate default message. */
     AdapterCreateRequest defaultRequest(String defaultMessage);
   }
 }

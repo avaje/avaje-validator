@@ -1,6 +1,6 @@
 package io.avaje.validation.adapter;
 
-/** */
+/** Enumeration of regex flags corresponding to java.util.regex.Pattern flags. */
 public enum RegexFlag {
 
   /**

@@ -2,6 +2,7 @@ package io.avaje.validation.adapter;
 
 import io.avaje.validation.adapter.ValidationContext.AdapterCreateRequest;
 
+/** Base class for primitive type adapters. */
 public abstract class PrimitiveAdapter<T> extends AbstractConstraintAdapter<T>
     implements ValidationAdapter.Primitive {
 
@@ -14,34 +15,42 @@ public abstract class PrimitiveAdapter<T> extends AbstractConstraintAdapter<T>
     return this;
   }
 
+  /** Validate using primitive boolean. */
   public boolean isValid(boolean value) {
     throw unsupported("boolean");
   }
 
+  /** Validate using primitive byte. */
   public boolean isValid(byte value) {
     throw unsupported("byte");
   }
 
+  /** Validate using primitive char. */
   public boolean isValid(char value) {
     throw unsupported("char");
   }
 
+  /** Validate using primitive double. */
   public boolean isValid(double value) {
     throw unsupported("double");
   }
 
+  /** Validate using primitive float. */
   public boolean isValid(float value) {
     throw unsupported("float");
   }
 
+  /** Validate using primitive int. */
   public boolean isValid(int value) {
     throw unsupported("int");
   }
 
+  /** Validate using primitive long. */
   public boolean isValid(long value) {
     throw unsupported("long");
   }
 
+  /** Validate using primitive short. */
   public boolean isValid(short value) {
     throw unsupported("short");
   }
