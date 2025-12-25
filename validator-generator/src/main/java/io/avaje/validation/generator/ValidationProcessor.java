@@ -139,7 +139,10 @@ public final class ValidationProcessor extends AbstractProcessor {
         .ifPresent(this::writeParamProviderForMethod);
     getElements(round, MixInPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForMixInTypes);
     getElements(round, ImportValidPojoPrism.PRISM_TYPE).ifPresent(this::writeAdaptersForImported);
-    getElements(round, "io.avaje.spi.ServiceProvider").ifPresent(this::registerSPI);
+    Optional.ofNullable(typeElement("io.avaje.spi.ServiceProvider"))
+        .map(round::getElementsAnnotatedWith)
+        .filter(n -> !n.isEmpty())
+        .ifPresent(this::registerSPI);
     getElements(round, ValidSubTypesPrism.PRISM_TYPE).ifPresent(this::writeSubTypeAdaptersForImported);
 
     metaData.fullName(false);
