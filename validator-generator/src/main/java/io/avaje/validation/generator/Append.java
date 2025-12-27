@@ -6,7 +6,9 @@ import java.io.Writer;
 /** Helper that wraps a writer with some useful methods to append content. */
 final class Append {
 
+  private static final boolean debug = Boolean.getBoolean("append.debug");
   private final Writer writer;
+  private final StringBuilder stringBuilder = new StringBuilder();
 
   Append(Writer writer) {
     this.writer = writer;
@@ -14,7 +16,12 @@ final class Append {
 
   Append append(String content) {
     try {
-      writer.append(content.replace("\"groups\",List.of(", "\"groups\",Set.of("));
+      String replace = content.replace("\"groups\",List.of(", "\"groups\",Set.of(");
+      writer.append(replace);
+
+      if (debug) {
+        stringBuilder.append(replace);
+      }
       return this;
     } catch (final IOException e) {
       throw new RuntimeException(e);
@@ -33,6 +40,9 @@ final class Append {
   Append eol() {
     try {
       writer.append("\n");
+      if (debug) {
+        stringBuilder.append("\n");
+      }
       return this;
     } catch (final IOException e) {
       throw new RuntimeException(e);
@@ -44,4 +54,8 @@ final class Append {
     return append(String.format(format, args));
   }
 
+  @Override
+  public String toString() {
+    return stringBuilder.toString();
+  }
 }

@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeKind;
 
 final class ValidMethodReader {
 
@@ -82,17 +83,32 @@ final class ValidMethodReader {
     writer.append(paramClasses);
 
     writer.append(
-        """
+"""
 );
   }
 
   @Override
-  public List<ValidationAdapter<Object>> paramAdapters(ValidationContext ctx) {
+  public List<ValidationAdapter<?>> paramAdapters(ValidationContext ctx) {
 """);
     writer.append("    return List.of(");
     final var size = paramAnnotations.size();
     for (int i = 0; i < paramAnnotations.size(); i++) {
-      new AdapterHelper(writer, paramAnnotations.get(i), "\n        ").write();
+      var container = paramAnnotations.get(i);
+      var genericType = container.genericType();
+      if (genericType.kind() == TypeKind.DECLARED) {
+
+        new AdapterHelper(
+                writer,
+                container,
+                "\n        ",
+                genericType.shortWithoutAnnotations(),
+                genericType,
+                false)
+            .write();
+      } else {
+        new AdapterHelper(writer, container, "\n        ", "Object", genericType, false).write();
+      }
+
       if (i + 1 != size) {
         writer.append(",");
       }
