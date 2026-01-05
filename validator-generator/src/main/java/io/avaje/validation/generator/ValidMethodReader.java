@@ -95,19 +95,8 @@ final class ValidMethodReader {
     for (int i = 0; i < paramAnnotations.size(); i++) {
       var container = paramAnnotations.get(i);
       var genericType = container.genericType();
-      if (genericType.kind() == TypeKind.DECLARED) {
-
-        new AdapterHelper(
-                writer,
-                container,
-                "\n        ",
-                genericType.shortWithoutAnnotations(),
-                genericType,
-                false)
-            .write();
-      } else {
-        new AdapterHelper(writer, container, "\n        ", "Object", genericType, false).write();
-      }
+      var type = genericType.kind() != TypeKind.DECLARED ? "Object" : genericType.shortWithoutAnnotations();
+      new AdapterHelper(writer, container, "\n        ", type, genericType, false).write();
 
       if (i + 1 != size) {
         writer.append(",");
