@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.stereotype.Component;
-
 import io.avaje.validation.adapter.MethodAdapterProvider;
 import io.avaje.validation.adapter.ValidationAdapter;
 import io.avaje.validation.adapter.ValidationContext;
@@ -25,7 +23,7 @@ public final class TestParamProvider implements MethodAdapterProvider {
   }
 
   @Override
-  public List<ValidationAdapter<Object>> paramAdapters(ValidationContext ctx) {
+  public List<ValidationAdapter<?>> paramAdapters(ValidationContext ctx) {
     return List.of(
         ctx.<Object>adapter(
                 NotEmpty.class, Map.of("groups", Set.of(), "message", "{avaje.NotEmpty.message}"))

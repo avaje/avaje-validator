@@ -25,7 +25,7 @@ public interface MethodAdapterProvider {
    * @param ctx the validation context
    * @return list of parameter adapters
    */
-  List<ValidationAdapter<Object>> paramAdapters(ValidationContext ctx);
+  List<ValidationAdapter<?>> paramAdapters(ValidationContext ctx);
 
   /**
    * Provides an adapter for validating the method return value.

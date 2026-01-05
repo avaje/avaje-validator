@@ -45,6 +45,7 @@ class ValidatorProcessorTest {
 
   @Test
   void testGeneration() throws Exception {
+    System.setProperty("append.debug", "true");
     final String source =
         Paths.get("src/test/java/io/avaje/validation/generator/models/valid")
             .toAbsolutePath()

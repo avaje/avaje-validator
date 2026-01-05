@@ -12,7 +12,7 @@ final class ParamInterceptor {
 
   private final Locale locale;
   private final boolean throwOnParamFailure;
-  private final List<ValidationAdapter<Object>> paramValidationAdapter;
+  private final List<ValidationAdapter<?>> paramValidationAdapter;
   private final ValidationAdapter<Object> returnValidationAdapter;
   private final ValidationContext ctx;
   private final ValidationAdapter<Object[]> crossParamAdapter;
@@ -21,7 +21,7 @@ final class ParamInterceptor {
       Locale locale,
       boolean throwOnParamFailure,
       ValidationContext ctx,
-      List<ValidationAdapter<Object>> paramValidationAdapter,
+      List<ValidationAdapter<?>> paramValidationAdapter,
       ValidationAdapter<Object> returnValidationAdapter,
       ValidationAdapter<Object[]> crossParamAdapter) {
     this.locale = locale;
@@ -38,7 +38,8 @@ final class ParamInterceptor {
     var i = 0;
     for (final var adapter : paramValidationAdapter) {
       final Object object = args[i];
-      adapter.validate(object, req);
+
+      ((ValidationAdapter<Object>) adapter).validate(object, req);
       ++i;
     }
     crossParamAdapter.validate(args, req);
