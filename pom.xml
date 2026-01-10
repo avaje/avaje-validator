@@ -11,7 +11,7 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-validator-parent</artifactId>
-  <version>2.16-RC2</version>
+  <version>2.16</version>
 
   <packaging>pom</packaging>
   <name>validator parent</name>
@@ -29,7 +29,7 @@
     <maven.compiler.release>17</maven.compiler.release>
     <inject.version>12.2</inject.version>
     <spi.version>2.15</spi.version>
-    <project.build.outputTimestamp>2026-01-05T20:51:33Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-01-10T03:57:24Z</project.build.outputTimestamp>
   </properties>
 
   <modules>
