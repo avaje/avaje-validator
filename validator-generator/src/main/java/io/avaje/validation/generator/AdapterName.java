@@ -9,6 +9,7 @@ final class AdapterName {
 
   static final String IMPORTED_PKG =
       Optional.ofNullable(APContext.getProjectModuleElement())
+              .filter(m -> !m.isUnnamed())
               .map(Element::getEnclosedElements)
               .map(l -> l.get(0).getSimpleName().toString())
               .orElse("unknown")
