@@ -60,9 +60,4 @@ final class AdapterName {
   String fullName() {
     return fullName;
   }
-
-  static String importedPkg() {
-    return APContext.getProjectModuleElement().getEnclosedElements().get(0).getSimpleName()
-        + ".valid";
-  }
 }
