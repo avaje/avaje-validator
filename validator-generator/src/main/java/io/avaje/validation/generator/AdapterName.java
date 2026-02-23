@@ -1,8 +1,18 @@
 package io.avaje.validation.generator;
 
+import java.util.Optional;
+
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 final class AdapterName {
+
+  static final String IMPORTED_PKG =
+      Optional.ofNullable(APContext.getProjectModuleElement())
+              .map(Element::getEnclosedElements)
+              .map(l -> l.get(0).getSimpleName().toString())
+              .orElse("unknown")
+          + ".valid";
 
   final String shortName;
   final String adapterPackage;
@@ -23,8 +33,7 @@ final class AdapterName {
     if (pkgPrivate || "".equals(originPackage)) {
       this.adapterPackage = originPackage;
     } else {
-      this.adapterPackage =
-          ProcessingContext.isImported(type) ? originPackage + ".valid" : originPackage;
+      this.adapterPackage = ProcessingContext.isImported(type) ? IMPORTED_PKG : originPackage;
     }
     this.fullName =
       adapterPackage.isBlank()
@@ -50,5 +59,10 @@ final class AdapterName {
 
   String fullName() {
     return fullName;
+  }
+
+  static String importedPkg() {
+    return APContext.getProjectModuleElement().getEnclosedElements().get(0).getSimpleName()
+        + ".valid";
   }
 }
