@@ -262,15 +262,16 @@ final class AnnotationUtil {
       sb.append(")");
     }
 
-    /**
-     * Escapes special characters for a Java String literal.
-     */
     private static String escape(String value) {
       if (value == null) return "";
-      return value.replace("\\", "\\\\")
-                  .replace("\"", "\\\"")
-                  .replace("\n", "\\n")
-                  .replace("\r", "\\r");
+      return value
+          .replace("\\", "\\\\")
+          .replace("\"", "\\\"")
+          .replace("\'", "\\\'")
+          .replace("\n", "\\n")
+          .replace("\b", "\\b")
+          .replace("\t", "\\t")
+          .replace("\r", "\\r");
     }
   }
 
