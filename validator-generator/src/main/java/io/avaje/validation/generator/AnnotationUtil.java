@@ -247,7 +247,7 @@ final class AnnotationUtil {
     }
 
     private static void pattern(StringBuilder sb, PatternPrism prism) {
-      sb.append("\"regexp\",\"").append(prism.regexp()).append("\"");
+      sb.append("\"regexp\",\"").append(escape(prism.regexp())).append("\"");
       if (prism.message() != null) {
         sb.append(", \"message\",\"").append(avajeKey(prism.message())).append("\"");
       }
@@ -260,6 +260,17 @@ final class AnnotationUtil {
             .append(")");
       }
       sb.append(")");
+    }
+
+    /**
+     * Escapes special characters for a Java String literal.
+     */
+    private static String escape(String value) {
+      if (value == null) return "";
+      return value.replace("\\", "\\\\")
+                  .replace("\"", "\\\"")
+                  .replace("\n", "\\n")
+                  .replace("\r", "\\r");
     }
   }
 
