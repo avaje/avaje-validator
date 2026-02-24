@@ -7,14 +7,6 @@ import javax.lang.model.element.TypeElement;
 
 final class AdapterName {
 
-  static final String IMPORTED_PKG =
-      Optional.ofNullable(APContext.getProjectModuleElement())
-              .filter(m -> !m.isUnnamed())
-              .map(Element::getEnclosedElements)
-              .map(l -> l.get(0).getSimpleName().toString())
-              .orElse("unknown")
-          + ".valid";
-
   final String shortName;
   final String adapterPackage;
   final String fullName;
@@ -34,7 +26,8 @@ final class AdapterName {
     if (pkgPrivate || "".equals(originPackage)) {
       this.adapterPackage = originPackage;
     } else {
-      this.adapterPackage = ProcessingContext.isImported(type) ? IMPORTED_PKG : originPackage;
+      this.adapterPackage =
+          ProcessingContext.isImported(type) ? importedPkg(originPackage) : originPackage;
     }
     this.fullName =
       adapterPackage.isBlank()
@@ -60,5 +53,14 @@ final class AdapterName {
 
   String fullName() {
     return fullName;
+  }
+
+  private static String importedPkg(String originPackage) {
+    return Optional.ofNullable(APContext.getProjectModuleElement())
+            .filter(m -> !m.isUnnamed())
+            .map(Element::getEnclosedElements)
+            .map(l -> l.get(0).getSimpleName().toString())
+            .orElse(originPackage)
+        + ".valid";
   }
 }
