@@ -1,5 +1,8 @@
 package io.avaje.validation.generator;
 
+import java.util.Optional;
+
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 final class AdapterName {
@@ -24,7 +27,7 @@ final class AdapterName {
       this.adapterPackage = originPackage;
     } else {
       this.adapterPackage =
-          ProcessingContext.isImported(type) ? originPackage + ".valid" : originPackage;
+          ProcessingContext.isImported(type) ? importedPkg(originPackage) : originPackage;
     }
     this.fullName =
       adapterPackage.isBlank()
@@ -50,5 +53,14 @@ final class AdapterName {
 
   String fullName() {
     return fullName;
+  }
+
+  private static String importedPkg(String originPackage) {
+    return Optional.ofNullable(APContext.getProjectModuleElement())
+            .filter(m -> !m.isUnnamed())
+            .map(Element::getEnclosedElements)
+            .map(l -> l.get(0).getSimpleName().toString())
+            .orElse(originPackage)
+        + ".valid";
   }
 }
