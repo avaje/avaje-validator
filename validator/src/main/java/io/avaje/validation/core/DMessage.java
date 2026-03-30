@@ -12,10 +12,6 @@ record DMessage(String template, Map<String, Object> attributes, String lookupke
   private static int messageCounter = 0;
 
   DMessage(String template, Map<String, Object> attributes) {
-    this(template, attributes, messageCounter++);
-  }
-
-  DMessage(String template, Map<String, Object> attributes, int dedupNumber) {
-    this(template, attributes, template + dedupNumber);
+    this(template, attributes, template + messageCounter++);
   }
 }
