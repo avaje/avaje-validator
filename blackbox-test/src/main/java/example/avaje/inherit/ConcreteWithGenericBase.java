@@ -11,6 +11,7 @@ public class ConcreteWithGenericBase extends GenericBase<ConcreteWithGenericBase
     super(config);
   }
 
+  @Valid
   public static class InnerConfig {
 
     @NotBlank public String value;
