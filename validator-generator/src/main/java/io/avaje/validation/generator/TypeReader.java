@@ -20,6 +20,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 
 /**
  * Read points for field injection and method injection on baseType plus inherited injection points.
@@ -60,11 +62,15 @@ final class TypeReader {
   }
 
   void read(TypeElement type) {
+    read(type, null);
+  }
+
+  private void read(TypeElement type, DeclaredType superContext) {
     final List<FieldReader> localFields = new ArrayList<>();
     for (final Element element : type.getEnclosedElements()) {
       switch (element.getKind()) {
         case FIELD:
-          readField(element, localFields);
+          readField(element, localFields, superContext);
           break;
         case METHOD:
           readMethod(element, type, localFields);
@@ -90,6 +96,10 @@ final class TypeReader {
   }
 
   private void readField(Element element, List<FieldReader> localFields) {
+    readField(element, localFields, null);
+  }
+
+  private void readField(Element element, List<FieldReader> localFields, DeclaredType superContext) {
     final Element mixInField = mixInFields.get(element.getSimpleName().toString());
     if (mixInField != null && APContext.types().isSameType(mixInField.asType(), element.asType())) {
 
@@ -112,11 +122,28 @@ final class TypeReader {
         || !element.getModifiers().contains(Modifier.STATIC)
             && Util.isNonNullable(element)) {
       seenFields.add(element.toString());
-      var reader = new FieldReader(element, genericTypeParams);
+      final TypeMirror resolvedType = resolveFieldType(element, superContext);
+      var reader = new FieldReader(element, resolvedType, genericTypeParams);
       if (reader.hasConstraints() || ValidPrism.isPresent(element)) {
         localFields.add(reader);
       }
     }
+  }
+
+  private static TypeMirror resolveFieldType(Element element, DeclaredType superContext) {
+    if (superContext == null) return null;
+    try {
+      return APContext.types().asMemberOf(superContext, element);
+    } catch (IllegalArgumentException e) {
+      return null;
+    }
+  }
+
+  private static DeclaredType toDeclaredType(TypeMirror mirror) {
+    if (mirror instanceof DeclaredType) {
+      return (DeclaredType) mirror;
+    }
+    return null;
   }
 
   private List<String> initTypeParams(TypeElement beanType) {
@@ -259,7 +286,7 @@ final class TypeReader {
     }
     final TypeElement superElement = superOf(baseType);
     if (superElement != null) {
-      addSuperType(superElement);
+      addSuperType(superElement, toDeclaredType(baseType.getSuperclass()));
     }
     processCompleted();
   }
@@ -269,10 +296,17 @@ final class TypeReader {
   }
 
   private void addSuperType(TypeElement element) {
+    addSuperType(element, null);
+  }
+
+  private void addSuperType(TypeElement element, DeclaredType concreteType) {
     final String type = element.getQualifiedName().toString();
     if (!JAVA_LANG_OBJECT.equals(type) && !type.contains("<")) {
-      read(element);
-      addSuperType(superOf(element));
+      read(element, concreteType);
+      final TypeElement nextSuper = superOf(element);
+      if (nextSuper != null) {
+        addSuperType(nextSuper, toDeclaredType(element.getSuperclass()));
+      }
     }
   }
 

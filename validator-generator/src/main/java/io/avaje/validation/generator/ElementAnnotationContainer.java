@@ -18,6 +18,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 record ElementAnnotationContainer(
     UType genericType,
@@ -27,6 +28,10 @@ record ElementAnnotationContainer(
     List<Entry<UType, String>> typeUse2,
     List<Entry<UType, String>> crossParam) {
 
+  static ElementAnnotationContainer create(Element element, TypeMirror resolvedType) {
+    return create(element, UType.parse(resolvedType));
+  }
+
   static ElementAnnotationContainer create(Element element) {
     UType uType;
     if (element instanceof final ExecutableElement executableElement) {
@@ -34,7 +39,10 @@ record ElementAnnotationContainer(
     } else {
       uType = UType.parse(element.asType());
     }
+    return create(element, uType);
+  }
 
+  private static ElementAnnotationContainer create(Element element, UType uType) {
     final var hasValid =
       ValidPrism.isPresent(element)
         || uType.annotations().stream().anyMatch(ValidPrism::isInstance);

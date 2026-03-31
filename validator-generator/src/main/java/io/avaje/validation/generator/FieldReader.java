@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 final class FieldReader {
 
@@ -28,15 +29,25 @@ final class FieldReader {
   private final boolean usePrimitiveValidation;
 
   FieldReader(Element element, List<String> genericTypeParams) {
-    this(element, genericTypeParams, false);
+    this(element, null, genericTypeParams, false);
+  }
+
+  FieldReader(Element element, TypeMirror resolvedType, List<String> genericTypeParams) {
+    this(element, resolvedType, genericTypeParams, false);
   }
 
   FieldReader(Element element, List<String> genericTypeParams, boolean classLevel) {
+    this(element, null, genericTypeParams, classLevel);
+  }
+
+  private FieldReader(Element element, TypeMirror resolvedType, List<String> genericTypeParams, boolean classLevel) {
     this.genericTypeParams = genericTypeParams;
     this.fieldName = element.getSimpleName().toString();
     this.publicField = Util.isPublic(element);
     this.element = element;
-    this.elementAnnotations = ElementAnnotationContainer.create(element);
+    this.elementAnnotations = resolvedType != null
+        ? ElementAnnotationContainer.create(element, resolvedType)
+        : ElementAnnotationContainer.create(element);
     this.genericType = elementAnnotations.genericType();
     final String shortType = genericType.shortWithoutAnnotations();
     this.usePrimitiveValidation = isPrimitiveValidationType(shortType) && elementAnnotations.supportsPrimitiveValidation();
