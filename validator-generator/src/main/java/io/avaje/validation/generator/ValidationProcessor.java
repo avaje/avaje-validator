@@ -423,7 +423,11 @@ public final class ValidationProcessor extends AbstractProcessor {
     final ValidMethodReader beanReader = new ValidMethodReader(typeElement);
     try {
       final var beanWriter = new SimpleParamBeanWriter(beanReader);
-      if (!alreadyGenerated.add(typeElement.getSimpleName().toString())) {
+      final var qualifiedKey =
+          ((TypeElement) typeElement.getEnclosingElement()).getQualifiedName()
+              + "."
+              + typeElement.getSimpleName();
+      if (!alreadyGenerated.add(qualifiedKey)) {
         return;
       }
       beanWriter.write();
