@@ -17,11 +17,7 @@ final class MapValidationAdapter<T> extends ContainerAdapter<T> {
     final var map = (Map<Object, Object>) value;
 
     if (initalAdapter.validate(value, req, propertyName)) {
-      if (keys) {
-        validateAll(map.keySet(), req, propertyName);
-      } else {
-        validateAll(map.values(), req, propertyName);
-      }
+      validateMap(map, req, propertyName, keys);
     }
 
     return true;
