@@ -9,11 +9,13 @@ import io.avaje.validation.constraints.NotEmpty;
 import io.avaje.validation.constraints.Positive;
 import io.avaje.validation.constraints.Valid;
 import io.avaje.validation.generator.models.valid.CrewMate;
+import io.avaje.validation.generator.models.valid.methods.constraint.Cross;
 
 @Component
 public class MethodTest {
   @NotEmpty
   @ValidMethod
+  @Cross
   String test(
       @Valid CrewMate crewm,
       @NotEmpty List<@Valid CrewMate> crew,

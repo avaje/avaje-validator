@@ -139,6 +139,7 @@ record ElementAnnotationContainer(
     annotations.forEach(t -> importTypes.addAll(t.getKey().importTypes()));
     typeUse1.forEach(t -> importTypes.addAll(t.getKey().importTypes()));
     typeUse2.forEach(t -> importTypes.addAll(t.getKey().importTypes()));
+    crossParam.forEach(t -> importTypes.addAll(t.getKey().importTypes()));
   }
 
   boolean isEmpty() {

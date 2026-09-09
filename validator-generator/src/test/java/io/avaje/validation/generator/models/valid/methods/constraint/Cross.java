@@ -1,7 +1,11 @@
-package io.avaje.validation.generator.models.valid.methods;
+package io.avaje.validation.generator.models.valid.methods.constraint;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 import io.avaje.validation.CrossParamConstraint;
 
+@Target(ElementType.METHOD)
 @CrossParamConstraint
 public @interface Cross {
 
