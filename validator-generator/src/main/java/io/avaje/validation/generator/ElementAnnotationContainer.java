@@ -134,9 +134,9 @@ record ElementAnnotationContainer(
 
   /**
    * When a repeatable annotation (e.g. {@code @Size}) is applied more than once to the same
-   * element, javac collapses the individual mirrors into a single mirror of the generated
-   * container type (e.g. {@code Size.Sizes}). Expand any such container mirror back into its
-   * contained mirrors so repeated constraints are not silently dropped.
+   * element, javac collapses the individual mirrors into a single mirror of the generated container
+   * type (e.g. {@code Size.Sizes}). Expand any such container mirror back into its contained
+   * mirrors so repeated constraints are not silently dropped.
    */
   private static Stream<AnnotationMirror> expandRepeatable(AnnotationMirror mirror) {
     final var containerType = mirror.getAnnotationType();
@@ -148,34 +148,28 @@ record ElementAnnotationContainer(
   }
 
   private static TypeMirror containerValueComponentType(DeclaredType containerType) {
-    for (final ExecutableElement method : ElementFilter.methodsIn(containerType.asElement().getEnclosedElements())) {
-      if ("value".contentEquals(method.getSimpleName()) && method.getReturnType().getKind() == TypeKind.ARRAY) {
+    for (final ExecutableElement method :
+        ElementFilter.methodsIn(containerType.asElement().getEnclosedElements())) {
+      if ("value".contentEquals(method.getSimpleName())
+          && method.getReturnType().getKind() == TypeKind.ARRAY) {
         return ((ArrayType) method.getReturnType()).getComponentType();
       }
     }
     return null;
   }
 
-  private static boolean isRepeatableContainerOf(TypeMirror componentType, DeclaredType containerType) {
+  private static boolean isRepeatableContainerOf(
+      TypeMirror componentType, DeclaredType containerType) {
     if (componentType.getKind() != TypeKind.DECLARED) {
       return false;
     }
     final var componentElement = ((DeclaredType) componentType).asElement();
-    for (final AnnotationMirror meta : componentElement.getAnnotationMirrors()) {
-      final var metaElement = (TypeElement) meta.getAnnotationType().asElement();
-      if ("java.lang.annotation.Repeatable".contentEquals(metaElement.getQualifiedName())) {
-        for (final var entry : meta.getElementValues().entrySet()) {
-          if ("value".contentEquals(entry.getKey().getSimpleName())
-              && entry.getValue().getValue() instanceof final TypeMirror repeatContainer) {
-            return APContext.types().isSameType(repeatContainer, containerType);
-          }
-        }
-      }
-    }
-    return false;
+    return RepeatablePrism.getOptionalOn(componentElement)
+        .map(RepeatablePrism::value)
+        .filter(repeatContainer -> APContext.types().isSameType(repeatContainer, containerType))
+        .isPresent();
   }
 
-  @SuppressWarnings("unchecked")
   private static List<AnnotationMirror> containedMirrors(AnnotationMirror mirror) {
     for (final var entry : mirror.getElementValues().entrySet()) {
       if ("value".contentEquals(entry.getKey().getSimpleName())
