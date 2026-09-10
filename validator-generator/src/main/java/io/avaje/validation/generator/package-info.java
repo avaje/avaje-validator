@@ -11,6 +11,7 @@
 @GeneratePrism(org.jspecify.annotations.NullUnmarked.class)
 @GeneratePrism(org.jspecify.annotations.NonNull.class)
 @GeneratePrism(io.avaje.validation.ValidMethod.class)
+@GeneratePrism(java.lang.annotation.Repeatable.class)
 @JStacheConfig(type = JStacheType.STACHE)
 package io.avaje.validation.generator;
 

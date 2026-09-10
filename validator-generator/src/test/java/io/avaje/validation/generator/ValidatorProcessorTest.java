@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
@@ -61,11 +63,24 @@ class ValidatorProcessorTest {
     final Iterable<JavaFileObject> files =
         manager.list(StandardLocation.SOURCE_PATH, "", fileKinds, true);
 
+    final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     final CompilationTask task =
         compiler.getTask(
-            new PrintWriter(System.out), null, null, Arrays.asList("--release=" + Integer.getInteger("java.specification.version")), null, files);
+            new PrintWriter(System.out), null, diagnostics, Arrays.asList("--release=" + Integer.getInteger("java.specification.version")), null, files);
     task.setProcessors(Arrays.asList(new ValidationProcessor()));
 
     assertThat(task.call()).isTrue();
+
+    final boolean repeatedConstraintsWarned =
+        diagnostics.getDiagnostics().stream()
+            .filter(d -> d.getKind() == Diagnostic.Kind.MANDATORY_WARNING || d.getKind() == Diagnostic.Kind.WARNING)
+            .anyMatch(
+                d ->
+                    d.getSource() != null
+                        && d.getSource().toString().contains("RepeatedConstraints")
+                        && d.getMessage(null).contains("No Constraints Defined"));
+    assertThat(repeatedConstraintsWarned)
+        .as("repeated constraint annotations on the same field should not be dropped")
+        .isFalse();
   }
 }
