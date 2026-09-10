@@ -75,6 +75,8 @@ public @interface DateRange {
 
   Class<?>[] groups() default {};
 
+  Class<? extends Payload>[] payload() default {};
+
   /** Defines several {@code @DateRange} annotations on the same element. */
   @Target({METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE})
   @Retention(RUNTIME)

@@ -70,14 +70,18 @@ public final class BasicAdapters {
     }
 
     private ValidationAdapter<?> notNull(AdapterCreateRequest request) {
-      if (request.isDefaultGroupOnly() && NOT_NULL_MESSAGE.equals(request.attribute("message"))) {
+      if (request.isDefaultGroupOnly()
+          && NOT_NULL_MESSAGE.equals(request.attribute("message"))
+          && !request.hasPayload()) {
         return defaultNotNullAdapter;
       }
       return new NullableAdapter(request, false);
     }
 
     private ValidationAdapter<?> nullable(AdapterCreateRequest request) {
-      if (request.isDefaultGroupOnly() && NULL_MESSAGE.equals(request.attribute("message"))) {
+      if (request.isDefaultGroupOnly()
+          && NULL_MESSAGE.equals(request.attribute("message"))
+          && !request.hasPayload()) {
         return defaultNullAdapter;
       }
       return new NullableAdapter(request, true);
@@ -200,7 +204,8 @@ public final class BasicAdapters {
     private static boolean isDefault(AdapterCreateRequest request) {
       return request.isDefaultGroupOnly()
         && standardMessage(request)
-        && maxLength(request) == 0;
+        && maxLength(request) == 0
+        && !request.hasPayload();
     }
 
     private static int maxLength(AdapterCreateRequest request) {

@@ -37,6 +37,8 @@ public @interface Digits {
 
   Class<?>[] groups() default {};
 
+  Class<? extends Payload>[] payload() default {};
+
   /** Return maximum number of integral digits accepted for this number */
   int integer();
 

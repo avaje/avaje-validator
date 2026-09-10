@@ -33,4 +33,6 @@ public @interface NotEmpty {
   String message() default "{avaje.NotEmpty.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }

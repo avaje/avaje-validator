@@ -38,4 +38,6 @@ public @interface URI {
   String message() default "{avaje.URI.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }

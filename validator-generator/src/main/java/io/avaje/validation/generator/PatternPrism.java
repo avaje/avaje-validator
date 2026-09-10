@@ -48,6 +48,9 @@ public interface PatternPrism {
   /** @return the error message template */
   List<TypeMirror> groups();
 
+  /** @return the payload associated with the constraint */
+  List<TypeMirror> payload();
+
   static Optional<PatternPrism> isInstance(AnnotationMirror e) {
 
     return Optional.<PatternPrism>empty()

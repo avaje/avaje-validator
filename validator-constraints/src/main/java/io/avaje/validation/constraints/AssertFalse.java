@@ -26,4 +26,5 @@ public @interface AssertFalse {
 
   Class<?>[] groups() default {};
 
+  Class<? extends Payload>[] payload() default {};
 }

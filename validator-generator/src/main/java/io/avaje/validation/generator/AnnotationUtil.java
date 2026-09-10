@@ -259,7 +259,23 @@ final class AnnotationUtil {
             .append(String.join(", ", prism.groups() + ".class"))
             .append(")");
       }
+      if (!prism.payload().isEmpty()) {
+        sb.append(", \"payload\",List.of(").append(classLiterals(prism.payload())).append(")");
+      }
       sb.append(")");
+    }
+
+    private static String classLiterals(List<TypeMirror> types) {
+      final var joined = new StringBuilder();
+      boolean first = true;
+      for (final TypeMirror type : types) {
+        if (!first) {
+          joined.append(", ");
+        }
+        joined.append(type).append(".class");
+        first = false;
+      }
+      return joined.toString();
     }
 
     private static String escape(String value) {

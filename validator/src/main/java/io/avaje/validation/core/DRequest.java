@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
@@ -67,7 +68,7 @@ final class DRequest implements ValidationRequest {
     } else {
       path = currentPath() + field;
     }
-    violations.add(new ConstraintViolation(path, field, message));
+    violations.add(new ConstraintViolation(path, field, message, payload(msg.attributes())));
     if (failfast) {
       throwWithViolations();
     }
@@ -75,6 +76,12 @@ final class DRequest implements ValidationRequest {
 
   private String field(String propertyName) {
     return propertyName == null ? "" : propertyName;
+  }
+
+  @SuppressWarnings("unchecked")
+  private static Set<Class<?>> payload(Map<String, Object> attributes) {
+    final Object payload = attributes.get("payload");
+    return payload instanceof Set<?> set ? (Set<Class<?>>) set : Set.of();
   }
 
   @Override

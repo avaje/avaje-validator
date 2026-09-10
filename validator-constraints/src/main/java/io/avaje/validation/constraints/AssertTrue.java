@@ -26,4 +26,6 @@ public @interface AssertTrue {
   String message() default "{avaje.AssertTrue.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }

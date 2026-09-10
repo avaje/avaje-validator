@@ -146,6 +146,12 @@ final class CoreAdapterBuilder {
     }
 
     @Override
+    public boolean hasPayload() {
+      final Object payload = attributes.get("payload");
+      return payload instanceof Set<?> set && !set.isEmpty();
+    }
+
+    @Override
     public String targetType() {
       return attribute("_type");
     }
