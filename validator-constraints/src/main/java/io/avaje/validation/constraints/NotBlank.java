@@ -34,4 +34,5 @@ public @interface NotBlank {
 
   Class<?>[] groups() default {};
 
+  Class<? extends Payload>[] payload() default {};
 }

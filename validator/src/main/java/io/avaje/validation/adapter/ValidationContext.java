@@ -147,6 +147,9 @@ public interface ValidationContext {
     /** Return true if the groups is ONLY the default group */
     boolean isDefaultGroupOnly();
 
+    /** Return true if the constraint declares a non-empty {@code payload}. */
+    boolean hasPayload();
+
     /** Clone and return the request with a new value attribute */
     AdapterCreateRequest withValue(long value);
   }

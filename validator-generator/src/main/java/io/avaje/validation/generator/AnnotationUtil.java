@@ -19,6 +19,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
@@ -259,7 +261,23 @@ final class AnnotationUtil {
             .append(String.join(", ", prism.groups() + ".class"))
             .append(")");
       }
+      if (!prism.payload().isEmpty()) {
+        sb.append(", \"payload\",List.of(").append(classLiterals(prism.payload())).append(")");
+      }
       sb.append(")");
+    }
+
+    private static String classLiterals(List<TypeMirror> types) {
+      final var joined = new StringBuilder();
+      boolean first = true;
+      for (final TypeMirror type : types) {
+        if (!first) {
+          joined.append(", ");
+        }
+        joined.append(type).append(".class");
+        first = false;
+      }
+      return joined.toString();
     }
 
     private static String escape(String value) {
@@ -305,6 +323,9 @@ final class AnnotationUtil {
     String writeAttributes() {
       validate();
       for (final ExecutableElement member : ElementFilter.methodsIn(element.getEnclosedElements())) {
+        if ("payload".contentEquals(member.getSimpleName())) {
+          validatePayloadType(member);
+        }
         final AnnotationValue value = annotationMirror.getElementValues().get(member);
         final AnnotationValue defaultValue = member.getDefaultValue();
         if (value == null && defaultValue == null) {
@@ -315,6 +336,22 @@ final class AnnotationUtil {
       writeTypeAttribute();
       sb.append(")");
       return sb.toString();
+    }
+
+    private static void validatePayloadType(ExecutableElement member) {
+      final var returnType = member.getReturnType();
+      final var valid =
+          returnType.getKind() == TypeKind.ARRAY
+              && ((ArrayType) returnType)
+                  .getComponentType()
+                  .toString()
+                  .startsWith("java.lang.Class");
+      if (!valid) {
+        logError(
+            member,
+            "payload() must be declared as Class<? extends Payload>[] but is %s",
+            returnType);
+      }
     }
 
     protected void writeTypeAttribute() {

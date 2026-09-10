@@ -48,4 +48,6 @@ public @interface FutureOrPresent {
   String message() default "{avaje.FutureOrPresent.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }

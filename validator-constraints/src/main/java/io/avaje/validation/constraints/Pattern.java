@@ -39,6 +39,8 @@ public @interface Pattern {
   /** the groups the constraint belongs to */
   Class<?>[] groups() default {};
 
+  Class<? extends Payload>[] payload() default {};
+
   /**
    * Defines several {@link Pattern} annotations on the same element.
    *

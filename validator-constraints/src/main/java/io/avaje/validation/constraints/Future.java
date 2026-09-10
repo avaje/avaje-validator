@@ -45,4 +45,6 @@ public @interface Future {
   String message() default "{avaje.Future.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }

@@ -37,4 +37,6 @@ public @interface PositiveOrZero {
   String message() default "{avaje.PositiveOrZero.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }
