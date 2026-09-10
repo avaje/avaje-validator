@@ -39,6 +39,25 @@ class APrimitiveTest {
     validator.validate(new APrimitiveMax(byte3, short3, 3, 3, 2.9d, 2.9f));
     validator.validate(new APrimitiveMin(byte3, short3, 3, 3, 3.0d, 3.0f));
     validator.validate(new APrimitiveMin(byte3, short3, 3, 3, 3.01d, 3.01f));
+    validator.validate(new APrimitiveMinMax(byte3, short3, 3, 3, 3.0d, 3.0f));
+  }
+
+  @Test
+  void minMaxBelowMin() {
+    var violations = new ArrayList<>(validator.check(new APrimitiveMinMax(byte0, short0, 0, 0, 0.9d, 0.9f)));
+    assertThat(violations).hasSize(6);
+    violations.stream()
+      .map(ConstraintViolation::message)
+      .forEach(msg -> assertThat(msg).isEqualTo("must be greater than or equal to 1"));
+  }
+
+  @Test
+  void minMaxAboveMax() {
+    var violations = new ArrayList<>(validator.check(new APrimitiveMinMax(byte4, short4, 4, 4, 3.1d, 3.1f)));
+    assertThat(violations).hasSize(6);
+    violations.stream()
+      .map(ConstraintViolation::message)
+      .forEach(msg -> assertThat(msg).isEqualTo("must be less than or equal to 3"));
   }
 
   @Test
