@@ -147,8 +147,7 @@ final class CoreAdapterBuilder {
 
     @Override
     public boolean hasPayload() {
-      final Object payload = attributes.get("payload");
-      return payload instanceof Set<?> set && !set.isEmpty();
+      return attributes.get("payload") instanceof Set<?> set && !set.isEmpty();
     }
 
     @Override
