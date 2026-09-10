@@ -57,8 +57,17 @@ final class DRequest implements ValidationRequest {
   @Override
   public void addViolation(ValidationContext.Message msg, String propertyName) {
     final String message = validator.interpolate(msg, locale);
-    final String field = field(propertyName);
-    violations.add(new ConstraintViolation(currentPath() + field, field, message));
+    String field = field(propertyName);
+    final String path;
+    if (!field.isEmpty() && field.charAt(0) == '[') {
+      // container element (list/set/array/map) index or key, not a pushed path segment
+      field = field + "]";
+      final String current = currentPath();
+      path = (current.isEmpty() ? current : current.substring(0, current.length() - 1)) + field;
+    } else {
+      path = currentPath() + field;
+    }
+    violations.add(new ConstraintViolation(path, field, message));
     if (failfast) {
       throwWithViolations();
     }

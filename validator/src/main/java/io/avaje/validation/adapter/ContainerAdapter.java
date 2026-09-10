@@ -1,5 +1,7 @@
 package io.avaje.validation.adapter;
 
+import java.util.Map;
+
 /**
  * Adapter that validates container types.
  *
@@ -42,6 +44,24 @@ public abstract class ContainerAdapter<T> implements ValidationAdapter<T> {
     for (final var element : value) {
       multiAdapter.validate(element, req, "[" + index);
       index++;
+    }
+    if (propertyName != null) {
+      req.popPath();
+    }
+  }
+
+  /** Execute validations for all entries in the given map, keying the path on the map key */
+  protected void validateMap(
+      Map<Object, Object> map, ValidationRequest req, String propertyName, boolean keys) {
+    if (map == null || multiAdapter == null) {
+      return;
+    }
+    if (propertyName != null) {
+      req.pushPath(propertyName);
+    }
+    for (final var entry : map.entrySet()) {
+      final Object element = keys ? entry.getKey() : entry.getValue();
+      multiAdapter.validate(element, req, "[" + entry.getKey());
     }
     if (propertyName != null) {
       req.popPath();

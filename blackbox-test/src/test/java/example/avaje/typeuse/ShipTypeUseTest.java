@@ -37,6 +37,20 @@ class ShipTypeUseTest {
     assertThat(violation.message()).isEqualTo("Tasks cannot be blank");
   }
 
+  @Test
+  void listElement_pathHasBracketIndex_noStrayDot() {
+    var violation = one(new Ship(Map.of("tank", new CrewMate("gh")), List.of("ok", "")));
+    assertThat(violation.path()).isEqualTo("tasks[1]");
+    assertThat(violation.field()).isEqualTo("[1]");
+  }
+
+  @Test
+  void mapKey_pathUsesActualKey_notPositionalIndex() {
+    var violation = one(new Ship(Map.of("engineer", new CrewMate("")), List.of("ok")));
+    assertThat(violation.path()).isEqualTo("crew[engineer].assignedTasks");
+    assertThat(violation.field()).isEqualTo("assignedTasks");
+  }
+
   ConstraintViolation one(Object any) {
     try {
       validator.validate(any);
