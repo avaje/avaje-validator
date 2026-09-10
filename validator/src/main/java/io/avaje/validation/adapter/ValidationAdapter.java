@@ -103,6 +103,9 @@ public interface ValidationAdapter<T> {
    */
   default ValidationAdapter<T> andThen(ValidationAdapter<? super T> after) {
     Objects.requireNonNull(after, "after cannot be null");
+    if (this instanceof Primitive && after instanceof Primitive) {
+      return new CombinedPrimitiveAdapter<>(this, after);
+    }
     return (value, req, propertyName) -> validate(value, req, propertyName) && after.validate(value, req, propertyName);
   }
 
