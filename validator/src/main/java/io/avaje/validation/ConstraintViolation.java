@@ -14,8 +14,7 @@ import java.util.Set;
  * @param payload The {@code payload} classes declared on the violated constraint, or an empty set
  *     when none were declared.
  */
-public record ConstraintViolation(
-    String path, String field, String message, Set<Class<?>> payload) {
+public record ConstraintViolation(String path, String field, String message, Set<Class<?>> payload) {
 
   /** Create a violation with no payload. */
   public ConstraintViolation(String path, String field, String message) {
