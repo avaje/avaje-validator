@@ -35,6 +35,12 @@ class MySerialTest {
   }
 
   @Test
+  void carriesPayload() {
+    var violation = one(new MySerialExample("*", "Hi"));
+    assertThat(violation.payload()).containsExactly(MySerialExample.Severity.Error.class);
+  }
+
+  @Test
   void notValid_DE() {
     var violation = one(new MySerialExample("*", "Hi"), Locale.GERMAN);
     assertThat(violation.message()).isEqualTo("Invalid my serial"); // not translated for DE

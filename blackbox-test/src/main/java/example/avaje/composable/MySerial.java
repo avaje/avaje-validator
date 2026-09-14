@@ -3,6 +3,7 @@ package example.avaje.composable;
 import io.avaje.validation.constraints.Constraint;
 import io.avaje.validation.constraints.Length;
 import io.avaje.validation.constraints.Pattern;
+import io.avaje.validation.constraints.Payload;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -20,4 +21,6 @@ public @interface MySerial {
   String message() default "{example.avaje.MySerial.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }
