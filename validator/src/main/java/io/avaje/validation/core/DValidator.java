@@ -146,6 +146,19 @@ final class DValidator implements Validator, ValidationContext {
   }
 
   @Override
+  public <T> ValidationAdapter<T> adapter(
+      Class<? extends Annotation> cls,
+      Set<Class<?>> groups,
+      String message,
+      Set<Class<?>> payload,
+      Map<String, Object> attributes) {
+    attributes = new HashMap<>(attributes);
+    attributes.put("message", message);
+    attributes.put("payload", payload);
+    return builder.annotationAdapter(cls, Map.copyOf(attributes), groups);
+  }
+
+  @Override
   public <T> ValidationAdapter<T> adapter(Type type) {
     final Type cacheKey = removeSubtypeWildcard(canonicalize(requireNonNull(type)));
     return builder.build(cacheKey);
