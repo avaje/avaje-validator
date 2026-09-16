@@ -2,6 +2,7 @@ package example.avaje.recursive;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,10 @@ class JRecursiveNodeTest {
     assertThat(validator.check(node))
         .extracting("path")
         .containsExactly(
-            "children[0].children[0].getId", "getChildren[0].getChildren[0].getId");
+            "children[0].children[0].getId",
+            "children[0].getChildren[0].getId",
+            "getChildren[0].children[0].getId",
+            "getChildren[0].getChildren[0].getId");
   }
 
   @Test
@@ -76,7 +80,7 @@ class JRecursiveNodeTest {
   @Test
   void nullChildElement_isValid() {
     final var node = new JRecursiveNode("root");
-    node.setChildren(List.of((JRecursiveNode) null));
+    node.setChildren(Arrays.asList((JRecursiveNode) null));
 
     assertThat(validator.check(node)).isEmpty();
   }
