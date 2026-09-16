@@ -189,20 +189,13 @@ final class TypeReader {
     }
 
     if (Util.isPublic(methodElement)) {
+      // collect getter metadata without creating a duplicate field reader
       final List<? extends VariableElement> parameters = methodElement.getParameters();
       final String methodKey = methodElement.getSimpleName().toString();
       final MethodReader methodReader = new MethodReader(methodElement, type).read();
       if (parameters.isEmpty()) {
         maybeGetterMethods.putIfAbsent(methodKey, methodReader);
         allGetterMethods.put(methodKey.toLowerCase(), methodReader);
-      }
-      // for reading methods
-      if (includeField(methodElement)
-          && methodElement.getParameters().isEmpty()
-          && seenFields.add(methodElement.getSimpleName().toString())) {
-        final var reader = new FieldReader(methodElement, genericTypeParams);
-        localFields.add(reader);
-        reader.getterMethod(new MethodReader(methodElement, type));
       }
     }
   }
@@ -234,22 +227,26 @@ final class TypeReader {
     MethodReader getter = getterLookup(name, loose);
     if (getter != null) {
       field.getterMethod(getter);
+      field.mergeAnnotations(getter.element());
       return true;
     }
     getter = getterLookup(getterName(name), loose);
     if (getter != null) {
       field.getterMethod(getter);
+      field.mergeAnnotations(getter.element());
       return true;
     }
     getter = getterLookup(isGetterName(name), loose);
     if (getter != null) {
       field.getterMethod(getter);
+      field.mergeAnnotations(getter.element());
       return true;
     }
     if (field.typeObjectBooleanWithIsPrefix()) { // isRegistered -> getRegistered() for Boolean
       getter = getterLookup(getterName(name.substring(2)), loose);
       if (getter != null) {
         field.getterMethod(getter);
+        field.mergeAnnotations(getter.element());
         return true;
       }
     }
@@ -293,6 +290,21 @@ final class TypeReader {
 
   void processCompleted() {
     matchFieldsToGetter();
+    addGetterOnlyFields();
+  }
+
+  private void addGetterOnlyFields() {
+    for (final MethodReader getter : maybeGetterMethods.values()) {
+      if (allFields.stream().anyMatch(field -> getter.getName().equals(field.getterName()))) {
+        continue;
+      }
+      final var reader = new FieldReader(getter.element(), genericTypeParams, getter.propertyName());
+      if (reader.hasConstraints() || reader.hasValid()) {
+        // add constrained getter-only properties
+        reader.getterMethod(getter);
+        allFields.add(reader);
+      }
+    }
   }
 
   private void addSuperType(TypeElement element) {
