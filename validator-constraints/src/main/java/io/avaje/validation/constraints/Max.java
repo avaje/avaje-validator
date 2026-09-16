@@ -40,6 +40,7 @@ public @interface Max {
 
   Class<?>[] groups() default {};
 
+  Class<? extends Payload>[] payload() default {};
 	/** Return value the element must be lower or equal to */
   long value();
 

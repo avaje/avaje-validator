@@ -16,7 +16,9 @@ final class Append {
 
   Append append(String content) {
     try {
-      String replace = content.replace("\"groups\",List.of(", "\"groups\",Set.of(");
+      String replace = content
+          .replace("\"groups\",List.of(", "\"groups\",Set.of(")
+          .replace("\"payload\",List.of(", "\"payload\",Set.of(");
       writer.append(replace);
 
       if (debug) {

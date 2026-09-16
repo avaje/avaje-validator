@@ -28,6 +28,8 @@ public @interface Email {
 
   Class<?>[] groups() default {};
 
+  Class<? extends Payload>[] payload() default {};
+
   /**
    * An additional regular expression the annotated element must match. The default is any string
    * ('.*')

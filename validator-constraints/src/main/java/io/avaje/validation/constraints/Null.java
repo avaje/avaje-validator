@@ -25,4 +25,6 @@ public @interface Null {
   String message() default "{avaje.Null.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }

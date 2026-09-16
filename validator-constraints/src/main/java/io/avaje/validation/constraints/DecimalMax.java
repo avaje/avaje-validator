@@ -39,6 +39,8 @@ public @interface DecimalMax {
 
   Class<?>[] groups() default {};
 
+  Class<? extends Payload>[] payload() default {};
+
   /**
    * The {@code String} representation of the max value according to the {@code BigDecimal} string
    * representation.

@@ -47,4 +47,6 @@ public @interface PastOrPresent {
   String message() default "{avaje.PastOrPresent.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }

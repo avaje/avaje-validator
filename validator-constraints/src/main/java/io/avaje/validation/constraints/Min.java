@@ -40,6 +40,7 @@ public @interface Min {
 
   Class<?>[] groups() default {};
 
+  Class<? extends Payload>[] payload() default {};
 	/** Return value the element must be higher or equal to */
   long value();
 

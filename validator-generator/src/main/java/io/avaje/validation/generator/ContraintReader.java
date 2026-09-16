@@ -122,20 +122,21 @@ final class ContraintReader implements BeanReader {
     final var message = req.message().template();
     final var ctx = req.ctx();
     final var groups = req.groups();
+    final Set<Class<?>> payload = req.hasPayload() ? req.attribute("payload") : Set.of();
     this.adapter =
 """);
 
     boolean first = true;
     for (final var a : new ArrayList<>(annotations.entrySet())) {
       if (first) {
-        writer.append("        ctx.adapter(%s.class, groups, message, %s)", a.getKey().shortWithoutAnnotations(), a.getValue());
+        writer.append("        ctx.adapter(%s.class, groups, message, payload, %s)", a.getKey().shortWithoutAnnotations(), a.getValue());
         first = false;
         continue;
       }
       writer
           .eol()
           .append(
-              "            .andThen(ctx.adapter(%s.class, groups, message, %s))",
+              "            .andThen(ctx.adapter(%s.class, groups, message, payload, %s))",
               a.getKey().shortWithoutAnnotations(), a.getValue());
     }
     writer.append(";").eol();

@@ -46,4 +46,6 @@ public @interface Past {
   String message() default "{avaje.Past.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }

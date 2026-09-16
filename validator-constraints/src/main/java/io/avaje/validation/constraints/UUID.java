@@ -21,4 +21,6 @@ public @interface UUID {
   String message() default "{avaje.UUID.message}";
 
   Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }

@@ -58,6 +58,24 @@ public interface ValidationContext {
       Map<String, Object> attributes);
 
   /**
+   * Return the constraint adapter for a composed annotation with propagated payload metadata.
+   *
+   * @param cls The class representing the annotation type
+   * @param groups The validation groups associated with the annotation
+   * @param message The error message associated with the annotation
+   * @param payload The payload associated with the annotation
+   * @param attributes The attributes associated with the annotation
+   * @param <T> The type this adapter validates
+   * @return The validation adapter for the given annotation with attributes
+   */
+  <T> ValidationAdapter<T> adapter(
+      Class<? extends Annotation> cls,
+      Set<Class<?>> groups,
+      String message,
+      Set<Class<?>> payload,
+      Map<String, Object> attributes);
+
+  /**
    * Return a no-op adapter.
    *
    * @param <T> The type this adapter validates
@@ -146,6 +164,9 @@ public interface ValidationContext {
 
     /** Return true if the groups is ONLY the default group */
     boolean isDefaultGroupOnly();
+
+    /** Return true if the constraint declares a non-empty {@code payload}. */
+    boolean hasPayload();
 
     /** Clone and return the request with a new value attribute */
     AdapterCreateRequest withValue(long value);

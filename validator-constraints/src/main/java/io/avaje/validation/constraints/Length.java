@@ -23,6 +23,7 @@ public @interface Length {
 
   Class<?>[] groups() default {};
 
+  Class<? extends Payload>[] payload() default {};
   /** Return size the string must be higher or equal to */
   int min() default 0;
 
