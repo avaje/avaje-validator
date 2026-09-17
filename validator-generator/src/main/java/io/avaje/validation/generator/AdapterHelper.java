@@ -241,9 +241,12 @@ final class AdapterHelper {
             .map(UType::mainType)
             .anyMatch(Constants.VALID_ANNOTATIONS::contains)) {
       var typeUse = keys ? genericType.param0() : genericType.param1();
-      writer
-          .eol()
-          .append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, typeUse.shortWithoutAnnotations());
+      writer.eol();
+      if (typeUse.fullWithoutAnnotations().equals(recursiveType)) {
+        writer.append("%s    .andThenMulti(this)", indent);
+      } else {
+        writer.append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, typeUse.shortWithoutAnnotations());
+      }
     }
   }
 
