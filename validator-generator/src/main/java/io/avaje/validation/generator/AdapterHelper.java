@@ -90,13 +90,17 @@ final class AdapterHelper {
         }
       }
 
-    } else if (isMapType(typeUse1, typeUse2, nested1, nested2)) {
+    } else if (isMapType(typeUse1, typeUse2, nested1, nested2)
+        || hasValid && "java.util.Map".equals(genericType.mainType())) {
       writer.eol().append("%s    .mapKeys()", indent);
       writeTypeUse(genericType.param0(), typeUse1);
       writeNested(nested1);
       writer.eol().append("%s    .mapValues()", indent);
       writeTypeUse(genericType.param1(), typeUse2, false);
       writeNested(nested2);
+      if (hasValid && typeUse2.isEmpty() && nested2 == null) {
+        writer.eol().append("%s    .andThenMulti(ctx.adapter(%s.class))", indent, genericType.param1().shortWithoutAnnotations());
+      }
 
     } else if (hasValid && genericType.mainType().contains("[]")) {
       writer.eol().append("%s    .array()", indent);
