@@ -27,7 +27,7 @@ import javax.lang.model.util.ElementFilter;
 final class AnnotationUtil {
 
   interface Handler {
-    String attributes(AnnotationMirror annotationMirror, Element element, Element target);
+    String attributes(AnnotationMirror annotationMirror, Element element, Element target, TypeMirror targetType);
 
   }
 
@@ -163,10 +163,14 @@ final class AnnotationUtil {
   private AnnotationUtil() {}
 
   static String annotationAttributeMap(AnnotationMirror annotationMirror, Element target) {
+    return annotationAttributeMap(annotationMirror, target, target.asType());
+  }
+
+  static String annotationAttributeMap(AnnotationMirror annotationMirror, Element target, TypeMirror targetType) {
     final var element = APContext.asTypeElement(annotationMirror.getAnnotationType());
     final Handler handler = handlers.get(element.getQualifiedName().toString());
     return Objects.requireNonNullElse(handler, defaultHandler)
-        .attributes(annotationMirror, element, target);
+        .attributes(annotationMirror, element, target, targetType);
   }
 
   static String[] splitString(String input, String delimiter) {
@@ -238,7 +242,7 @@ final class AnnotationUtil {
   static class PatternHandler extends BaseHandler {
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target, TypeMirror targetType) {
       return new PatternHandler().writeAttributes(annotationMirror);
     }
 
@@ -309,15 +313,19 @@ final class AnnotationUtil {
     }
 
     StandardHandler(AnnotationMirror annotationMirror, Element element, Element target) {
+      this(annotationMirror, element, target, target.asType());
+    }
+
+    StandardHandler(AnnotationMirror annotationMirror, Element element, Element target, TypeMirror targetType) {
       this.annotationMirror = annotationMirror;
       this.element = element;
       this.target = target;
-      this._type = lookupType(target.asType());
+      this._type = lookupType(targetType);
     }
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
-      return new StandardHandler(annotationMirror, element, target).writeAttributes();
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target, TypeMirror targetType) {
+      return new StandardHandler(annotationMirror, element, target, targetType).writeAttributes();
     }
 
     String writeAttributes() {
@@ -442,14 +450,14 @@ final class AnnotationUtil {
       this.meta = meta;
     }
 
-    TypeCheckingHandler(SupportedMeta meta, AnnotationMirror annotationMirror, Element element, Element target) {
-      super(annotationMirror, element, target);
+    TypeCheckingHandler(SupportedMeta meta, AnnotationMirror annotationMirror, Element element, Element target, TypeMirror targetType) {
+      super(annotationMirror, element, target, targetType);
       this.meta = meta;
     }
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
-      return new TypeCheckingHandler(meta, annotationMirror, element, target).writeAttributes();
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target, TypeMirror targetType) {
+      return new TypeCheckingHandler(meta, annotationMirror, element, target, targetType).writeAttributes();
     }
 
     @Override
@@ -469,9 +477,13 @@ final class AnnotationUtil {
       super(annotationMirror, element, target);
     }
 
+    CommonHandler(AnnotationMirror annotationMirror, Element element, Element target, TypeMirror targetType) {
+      super(annotationMirror, element, target, targetType);
+    }
+
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
-      return new CommonHandler(annotationMirror, element, target).writeAttributes();
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target, TypeMirror targetType) {
+      return new CommonHandler(annotationMirror, element, target, targetType).writeAttributes();
     }
 
     @Override
@@ -501,12 +513,16 @@ final class AnnotationUtil {
     DecimalHandler() {}
 
     @Override
-    public String attributes(AnnotationMirror annotationMirror, Element element, Element target) {
-      return new DecimalHandler(annotationMirror, element, target).writeAttributes();
+    public String attributes(AnnotationMirror annotationMirror, Element element, Element target, TypeMirror targetType) {
+      return new DecimalHandler(annotationMirror, element, target, targetType).writeAttributes();
     }
 
     DecimalHandler(AnnotationMirror annotationMirror, Element element, Element target) {
       super(annotationMirror, element, target);
+    }
+
+    DecimalHandler(AnnotationMirror annotationMirror, Element element, Element target, TypeMirror targetType) {
+      super(annotationMirror, element, target, targetType);
     }
 
     @Override
