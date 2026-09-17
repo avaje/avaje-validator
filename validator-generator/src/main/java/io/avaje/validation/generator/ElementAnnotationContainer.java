@@ -216,7 +216,7 @@ record ElementAnnotationContainer(
       .map(a ->
         Map.entry(
           UType.parse(a.getAnnotationType()),
-          AnnotationUtil.annotationAttributeMap(a, element)))
+          AnnotationUtil.annotationAttributeMap(a, element, uType.mirror())))
       .toList();
   }
 
