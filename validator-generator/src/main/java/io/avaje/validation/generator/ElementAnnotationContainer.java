@@ -63,6 +63,40 @@ record ElementAnnotationContainer(
     return create(element, uType);
   }
 
+  static ElementAnnotationContainer merge(ElementAnnotationContainer first, ElementAnnotationContainer second) {
+    // merge the field and getter metadata for one logical property
+    return new ElementAnnotationContainer(
+        first.genericType,
+        first.hasValid || second.hasValid,
+        mergeEntries(first.annotations, second.annotations),
+        mergeEntries(first.typeUse1, second.typeUse1),
+        mergeEntries(first.typeUse2, second.typeUse2),
+        mergeEntries(first.crossParam, second.crossParam),
+        mergeNested(first.nested1, second.nested1),
+        mergeNested(first.nested2, second.nested2));
+  }
+
+  private static <T> List<T> mergeEntries(List<T> first, List<T> second) {
+    return Stream.concat(first.stream(), second.stream()).distinct().toList();
+  }
+
+  private static NestedElement mergeNested(NestedElement first, NestedElement second) {
+    // merge nested container metadata from matching field and getter
+    if (first == null) {
+      return second;
+    }
+    if (second == null) {
+      return first;
+    }
+    return new NestedElement(
+        first.type(),
+        mergeEntries(first.direct0(), second.direct0()),
+        mergeEntries(first.direct1(), second.direct1()),
+        mergeNested(first.child0(), second.child0()),
+        mergeNested(first.child1(), second.child1()),
+        first.map());
+  }
+
   private static ElementAnnotationContainer create(Element element, UType uType) {
     final var hasValid =
       ValidPrism.isPresent(element)

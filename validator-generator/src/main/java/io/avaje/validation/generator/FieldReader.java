@@ -22,14 +22,18 @@ final class FieldReader {
 
   private MethodReader getter;
   private boolean genericTypeParameter;
-  private final boolean optionalValidation;
+  private boolean optionalValidation;
   private final Element element;
-  private final ElementAnnotationContainer elementAnnotations;
+  private ElementAnnotationContainer elementAnnotations;
   private final boolean classLevel;
   private final boolean usePrimitiveValidation;
 
   FieldReader(Element element, List<String> genericTypeParams) {
     this(element, null, genericTypeParams, false);
+  }
+
+  FieldReader(Element element, List<String> genericTypeParams, String fieldName) {
+    this(element, null, genericTypeParams, false, fieldName);
   }
 
   FieldReader(Element element, TypeMirror resolvedType, List<String> genericTypeParams) {
@@ -41,8 +45,12 @@ final class FieldReader {
   }
 
   private FieldReader(Element element, TypeMirror resolvedType, List<String> genericTypeParams, boolean classLevel) {
+    this(element, resolvedType, genericTypeParams, classLevel, element.getSimpleName().toString());
+  }
+
+  private FieldReader(Element element, TypeMirror resolvedType, List<String> genericTypeParams, boolean classLevel, String fieldName) {
     this.genericTypeParams = genericTypeParams;
-    this.fieldName = element.getSimpleName().toString();
+    this.fieldName = fieldName;
     this.publicField = Util.isPublic(element);
     this.element = element;
     this.elementAnnotations = resolvedType != null
@@ -145,6 +153,15 @@ final class FieldReader {
     }
   }
 
+  String getterName() {
+    return getter == null ? null : getter.getName();
+  }
+
+  void mergeAnnotations(Element getter) {
+    elementAnnotations = ElementAnnotationContainer.merge(elementAnnotations, ElementAnnotationContainer.create(getter));
+    optionalValidation |= Util.isNullable(getter);
+  }
+
   boolean isPublicField() {
     return publicField;
   }
@@ -224,5 +241,9 @@ final class FieldReader {
 
   boolean hasConstraints() {
     return !elementAnnotations.isEmpty();
+  }
+
+  boolean hasValid() {
+    return elementAnnotations.hasValid();
   }
 }

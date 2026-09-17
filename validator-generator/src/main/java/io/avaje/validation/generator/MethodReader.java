@@ -3,6 +3,7 @@ package io.avaje.validation.generator;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -33,6 +34,20 @@ final class MethodReader {
   }
 
   String getName() {
+    return methodName;
+  }
+
+  Element element() {
+    return element;
+  }
+
+  String propertyName() {
+    if (methodName.startsWith("get") && methodName.length() > 3) {
+      return Util.initLower(methodName.substring(3));
+    }
+    if (methodName.startsWith("is") && methodName.length() > 2) {
+      return Util.initLower(methodName.substring(2));
+    }
     return methodName;
   }
 
