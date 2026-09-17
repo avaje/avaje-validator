@@ -76,7 +76,7 @@ class JNestedMinTest {
     } catch (final ConstraintViolationException e) {
       assertThat(e.violations()).hasSize(1);
       final var violation = e.violations().iterator().next();
-      assertThat(violation.path()).isEqualTo("getValues[0]");
+      assertThat(violation.path()).isEqualTo("values[0]");
       assertThat(violation.message()).isEqualTo("must be greater than or equal to 1");
     }
   }

@@ -26,7 +26,7 @@ class MapCascadeTest {
     var violations = validator.check(new MapCascade(Map.of("default", new MapTemplate(""))));
 
     assertThat(violations).hasSize(1);
-    assertThat(violations.iterator().next().path()).isEqualTo("getDynamicBlocks[default].getName");
+    assertThat(violations.iterator().next().path()).isEqualTo("dynamicBlocks[default].name");
   }
 
   @Test
@@ -35,7 +35,7 @@ class MapCascadeTest {
 
     assertThat(violations)
       .extracting(ConstraintViolation::path)
-      .containsExactlyInAnyOrder("getDynamicBlocks[first].getName", "getDynamicBlocks[second].getName");
+      .containsExactlyInAnyOrder("dynamicBlocks[first].name", "dynamicBlocks[second].name");
   }
 
   @Test
@@ -51,7 +51,7 @@ class MapCascadeTest {
     var violations = validator.check(new MapCascade(null));
 
     assertThat(violations).hasSize(1);
-    assertThat(violations.iterator().next().path()).isEqualTo("getDynamicBlocks");
+    assertThat(violations.iterator().next().path()).isEqualTo("dynamicBlocks");
   }
 
   @Test
@@ -59,6 +59,6 @@ class MapCascadeTest {
     var violations = validator.check(new MapCascade(Map.of()));
 
     assertThat(violations).hasSize(1);
-    assertThat(violations.iterator().next().path()).isEqualTo("getDynamicBlocks");
+    assertThat(violations.iterator().next().path()).isEqualTo("dynamicBlocks");
   }
 }

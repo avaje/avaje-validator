@@ -28,7 +28,7 @@ class JRecursiveNodeTest {
 
     assertThat(validator.check(node))
         .extracting("path")
-        .containsExactly("children[0].getId", "getChildren[0].getId");
+        .containsExactly("children[0].id");
   }
 
   @Test
@@ -39,7 +39,7 @@ class JRecursiveNodeTest {
 
     assertThat(validator.check(node))
         .extracting("path")
-        .containsExactly("children[1].getId", "getChildren[1].getId");
+        .containsExactly("children[1].id");
   }
 
   @Test
@@ -53,10 +53,7 @@ class JRecursiveNodeTest {
     assertThat(validator.check(node))
         .extracting("path")
         .containsExactly(
-            "children[0].children[0].getId",
-            "children[0].getChildren[0].getId",
-            "getChildren[0].children[0].getId",
-            "getChildren[0].getChildren[0].getId");
+            "children[0].children[0].id");
   }
 
   @Test
@@ -74,7 +71,7 @@ class JRecursiveNodeTest {
 
     assertThat(validator.check(node))
         .extracting("path")
-        .containsExactly("getChildren");
+        .containsExactly("children");
   }
 
   @Test
