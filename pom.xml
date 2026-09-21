@@ -27,7 +27,7 @@
     <surefire.useModulePath>false</surefire.useModulePath>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
     <maven.compiler.release>17</maven.compiler.release>
-    <inject.version>12.6</inject.version>
+    <inject.version>12.7</inject.version>
     <spi.version>2.17</spi.version>
     <project.build.outputTimestamp>2026-09-17T07:57:18Z</project.build.outputTimestamp>
   </properties>
