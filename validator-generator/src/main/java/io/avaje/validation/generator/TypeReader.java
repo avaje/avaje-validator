@@ -296,8 +296,7 @@ final class TypeReader {
           || allFields.stream().anyMatch(field -> getter.getName().equals(field.getterName()))) {
         continue;
       }
-      final var reader =
-          new FieldReader(getter.element(), genericTypeParams, getter.propertyName());
+      final var reader = new FieldReader(getter.element(), genericTypeParams, getter.propertyName());
       if (reader.hasConstraints() || reader.hasValid()) {
         // add constrained getter-only properties
         reader.getterMethod(getter);
