@@ -21,6 +21,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 /**
@@ -93,10 +94,6 @@ final class TypeReader {
         allFields.add(localField);
       }
     }
-  }
-
-  private void readField(Element element, List<FieldReader> localFields) {
-    readField(element, localFields, null);
   }
 
   private void readField(Element element, List<FieldReader> localFields, DeclaredType superContext) {
@@ -193,7 +190,7 @@ final class TypeReader {
       final List<? extends VariableElement> parameters = methodElement.getParameters();
       final String methodKey = methodElement.getSimpleName().toString();
       final MethodReader methodReader = new MethodReader(methodElement, type).read();
-      if (parameters.isEmpty()) {
+      if (parameters.isEmpty() && methodElement.getReturnType().getKind() != TypeKind.VOID) {
         maybeGetterMethods.putIfAbsent(methodKey, methodReader);
         allGetterMethods.put(methodKey.toLowerCase(), methodReader);
       }
@@ -295,20 +292,18 @@ final class TypeReader {
 
   private void addGetterOnlyFields() {
     for (final MethodReader getter : maybeGetterMethods.values()) {
-      if (allFields.stream().anyMatch(field -> getter.getName().equals(field.getterName()))) {
+      if (!includeField(getter.element())
+          || allFields.stream().anyMatch(field -> getter.getName().equals(field.getterName()))) {
         continue;
       }
-      final var reader = new FieldReader(getter.element(), genericTypeParams, getter.propertyName());
+      final var reader =
+          new FieldReader(getter.element(), genericTypeParams, getter.propertyName());
       if (reader.hasConstraints() || reader.hasValid()) {
         // add constrained getter-only properties
         reader.getterMethod(getter);
         allFields.add(reader);
       }
     }
-  }
-
-  private void addSuperType(TypeElement element) {
-    addSuperType(element, null);
   }
 
   private void addSuperType(TypeElement element, DeclaredType concreteType) {
