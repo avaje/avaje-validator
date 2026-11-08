@@ -12,4 +12,7 @@ public record JSpecifyNotNull(String basic, String withMax, @Nullable String wit
    */
   public void method() {}
 
+  public String describe() {
+    return null;
+  }
 }
