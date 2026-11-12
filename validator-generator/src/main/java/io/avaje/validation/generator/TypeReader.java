@@ -295,7 +295,9 @@ final class TypeReader {
 
   private void addGetterOnlyFields() {
     for (final MethodReader getter : maybeGetterMethods.values()) {
-      if (allFields.stream().anyMatch(field -> getter.getName().equals(field.getterName()))) {
+      // only explicitly annotated methods are candidates
+      if (!includeField(getter.element())
+          || allFields.stream().anyMatch(field -> getter.getName().equals(field.getterName()))) {
         continue;
       }
       final var reader = new FieldReader(getter.element(), genericTypeParams, getter.propertyName());

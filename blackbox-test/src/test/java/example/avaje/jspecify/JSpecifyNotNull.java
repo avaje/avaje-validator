@@ -5,4 +5,8 @@ import org.jspecify.annotations.Nullable;
 import jakarta.validation.Valid;
 
 @Valid
-public record JSpecifyNotNull(String basic, String withMax, @Nullable String withCustom) {}
+public record JSpecifyNotNull(String basic, String withMax, @Nullable String withCustom) {
+  public String describe() {
+    return null;
+  }
+}
